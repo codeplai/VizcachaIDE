@@ -21,3 +21,9 @@ Thumbs.db
 
 # Test output
 coverage/
+
+# Release packaging output and generated installer inputs
+dist/
+build/windows/installer/tmp/
+build/windows/installer/LICENSE-NOTICE.txt
+packaging/cache/
