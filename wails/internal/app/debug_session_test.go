@@ -46,6 +46,23 @@ func TestChangeTrackerMarksOnlyValuesThatChanged(t *testing.T) {
 	}
 }
 
+// A line such as `product := multiply(5, 7)` declares a variable: when the frame is visited again
+// the new variable is shown as just changed (found by the QA with functions.go).
+func TestChangeTrackerMarksAVariableDeclaredAfterTheFirstStop(t *testing.T) {
+	tracker := NewChangeTracker()
+	stack := []domain.StackFrame{frame("main.main")}
+
+	first := tracker.Mark(stack, values("sum", "30"))
+	second := tracker.Mark(stack, values("sum", "30", "product", "35"))
+
+	if got := changedNames(first); len(got) != 0 {
+		t.Errorf("first stop of the frame changed %v, want none", got)
+	}
+	if got := changedNames(second); len(got) != 1 || got[0] != "product" {
+		t.Errorf("second stop changed %v, want [product]", got)
+	}
+}
+
 func TestChangeTrackerComparesRecursiveCallsWithTheirOwnDepth(t *testing.T) {
 	tracker := NewChangeTracker()
 	outer := []domain.StackFrame{frame("main.factorial"), frame("main.main")}

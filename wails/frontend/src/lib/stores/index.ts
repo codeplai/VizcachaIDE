@@ -1,10 +1,12 @@
 import type { Bridge, Unsubscribe } from '../bridge'
+import { connectAssistant } from './assistant'
 import { connectDebug } from './debug'
 import { connectDiagnostics } from './diagnostics'
 import { connectOutline } from './outline'
 import { connectRun } from './run'
 import { connectSettings } from './settings'
 
+export * from './assistant'
 export * from './commands'
 export * from './confirm'
 export * from './debug'
@@ -31,6 +33,7 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
     connectRun(bridge),
     connectDebug(bridge),
     connectDiagnostics(bridge),
+    connectAssistant(bridge),
     connectOutline(bridge),
     offSettings
   ]

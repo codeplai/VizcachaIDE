@@ -1,13 +1,13 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { baseName, goToLocation, problems } from '../stores'
+  import { baseName, goToLocation, problemKey, problems } from '../stores'
 </script>
 
 <div class="list">
   {#if $problems.length > 0}
     <ul aria-label={$t('a11y.problemsList')}>
-      {#each $problems as item (item.diagnostic.rawText)}
+      {#each $problems as item (problemKey(item.diagnostic))}
         {@const location = item.diagnostic.location}
         <li>
           <button

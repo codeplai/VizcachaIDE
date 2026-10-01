@@ -27,6 +27,45 @@ export const splitChunk = (text: string): string[] => {
   return lines
 }
 
+type Stream = 'stdout' | 'stderr'
+
+/**
+ * Adds a chunk of program output. A chunk is whatever one read of the pipe returned, so it can end in
+ * the middle of a line (Go prints "panic: " and the message in two writes, a prompt has no newline):
+ * `tail` is the stream whose last line is still open, and the next chunk of that stream continues it.
+ */
+export const addChunk = (
+  lines: RawRunLine[],
+  tail: Stream | null,
+  stream: Stream,
+  text: string
+): { lines: RawRunLine[]; tail: Stream | null } => {
+  const pieces = text.split(/\r?\n/)
+  const open = pieces[pieces.length - 1] !== ''
+  const complete = open ? pieces : pieces.slice(0, -1)
+  const next = [...lines]
+  complete.forEach((piece, index) => {
+    const last = next[next.length - 1]
+    if (index === 0 && tail === stream && last && last.kind === stream) {
+      next[next.length - 1] = { ...last, text: last.text + piece }
+    } else {
+      next.push({ kind: stream, text: piece })
+    }
+  })
+  return { lines: next, tail: open ? stream : null }
+}
+
+let openTail: Stream | null = null
+
+/** Appends program output (or what the user typed for it) to the run's lines. */
+export const pushRunText = (stream: Stream, text: string): void => {
+  runLines.update((lines) => {
+    const result = addChunk(lines, openTail, stream, text)
+    openTail = result.tail
+    return result.lines
+  })
+}
+
 /**
  * The "preparing Go for the first time" message is not made here: the backend prints it as program
  * output (`run:output`) when a run stays silent, so it arrives like any other line.
@@ -37,12 +76,10 @@ export const connectRun = (bridge: Bridge): Unsubscribe => {
       runResult.set(null)
       running.set(true)
       lastRunConfiguration.set(config)
+      openTail = null
       runLines.set([{ kind: 'start', text: fileName(config.target) }])
     }),
-    bridge.on('run:output', ({ stream, text }) => {
-      const added = splitChunk(text).map((line) => ({ kind: stream, text: line }))
-      runLines.update((lines) => [...lines, ...added])
-    }),
+    bridge.on('run:output', ({ stream, text }) => pushRunText(stream, text)),
     bridge.on('run:finished', (result) => {
       running.set(false)
       runResult.set(result)
@@ -52,6 +89,7 @@ export const connectRun = (bridge: Bridge): Unsubscribe => {
 }
 
 export const resetRun = (): void => {
+  openTail = null
   runLines.set([])
   runResult.set(null)
   running.set(false)

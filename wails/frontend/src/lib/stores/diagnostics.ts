@@ -6,7 +6,7 @@ export const diagnosticsByFile = writable<Record<string, Diagnostic[]>>({})
 export const explained = writable<ExplainedDiagnostic[]>([])
 export const lspStatus = writable<ServerStatus>('starting')
 
-const keyOf = (d: Diagnostic): string =>
+export const problemKey = (d: Diagnostic): string =>
   `${d.location?.file ?? ''}:${d.location?.line ?? 0}:${d.location?.column ?? 0}:${d.message}`
 
 /** Joins what gopls published with what the Assistant explained, without duplicates. */
@@ -14,10 +14,10 @@ export const mergeProblems = (
   byFile: Record<string, Diagnostic[]>,
   explanations: ExplainedDiagnostic[]
 ): ExplainedDiagnostic[] => {
-  const explainedByKey = new Map(explanations.map((item) => [keyOf(item.diagnostic), item]))
+  const explainedByKey = new Map(explanations.map((item) => [problemKey(item.diagnostic), item]))
   const merged = new Map<string, ExplainedDiagnostic>()
   for (const diagnostic of Object.values(byFile).flat()) {
-    const key = keyOf(diagnostic)
+    const key = problemKey(diagnostic)
     merged.set(key, explainedByKey.get(key) ?? { diagnostic, explanation: null })
   }
   for (const [key, item] of explainedByKey) merged.set(key, item)

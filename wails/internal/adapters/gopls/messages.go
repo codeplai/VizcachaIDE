@@ -63,14 +63,26 @@ func didOpenParams(doc document) protocol.DidOpenTextDocumentParams {
 	}}
 }
 
+// fullTextChange is a change event without a range: the whole document is replaced.
+// protocol.TextDocumentContentChangeEvent cannot be used for this: its Range is not a pointer, so
+// it always serializes as {0:0 - 0:0} and gopls inserts the text at the top (a duplicated file).
+type fullTextChange struct {
+	Text string `json:"text"`
+}
+
+type didChangeFullParams struct {
+	TextDocument   protocol.VersionedTextDocumentIdentifier `json:"textDocument"`
+	ContentChanges []fullTextChange                         `json:"contentChanges"`
+}
+
 // didChangeParams sends the whole document, versioned.
-func didChangeParams(doc document) protocol.DidChangeTextDocumentParams {
-	return protocol.DidChangeTextDocumentParams{
+func didChangeParams(doc document) didChangeFullParams {
+	return didChangeFullParams{
 		TextDocument: protocol.VersionedTextDocumentIdentifier{
 			TextDocumentIdentifier: protocol.TextDocumentIdentifier{URI: pathToURI(doc.path)},
 			Version:                doc.version,
 		},
-		ContentChanges: []protocol.TextDocumentContentChangeEvent{{Text: doc.text}},
+		ContentChanges: []fullTextChange{{Text: doc.text}},
 	}
 }
 
