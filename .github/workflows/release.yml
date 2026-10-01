@@ -30,9 +30,7 @@ jobs:
             label: macos-arm64
             exe: VizcachaIDE.app/Contents/MacOS/VizcachaIDE
             go: VizcachaIDE.app/Contents/MacOS/toolchain/go/bin/go
-          # NOTE: GitHub is retiring the macos-13 image; if this job cannot get a runner,
-          # switch to the "macos-15-intel" label (x86_64) and keep everything else.
-          - os: macos-13            # Intel (x86_64)
+          - os: macos-15-intel      # Intel (x86_64); macos-13 is being retired by GitHub
             label: macos-x86_64
             exe: VizcachaIDE.app/Contents/MacOS/VizcachaIDE
             go: VizcachaIDE.app/Contents/MacOS/toolchain/go/bin/go
