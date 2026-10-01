@@ -14,12 +14,14 @@ from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.i18n import install_language, resolve_language
 from vizcacha.infrastructure.delve_dap import DelveDapDebugger
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
+from vizcacha.infrastructure.gopls_lsp import GoplsLanguageServer
 from vizcacha.infrastructure.settings import QSettingsRepository
 from vizcacha.ui.features.assistant import register as register_assistant
 from vizcacha.ui.features.debugger import register as register_debugger
 from vizcacha.ui.features.editor import register as register_editor
 from vizcacha.ui.features.files import register as register_files
 from vizcacha.ui.features.help import register as register_help
+from vizcacha.ui.features.language import register as register_language
 from vizcacha.ui.features.project import register as register_project
 from vizcacha.ui.features.run import register as register_run
 from vizcacha.ui.features.settings import register as register_settings
@@ -33,6 +35,7 @@ APPLICATION_NAME = "VizcachaIDE"
 FEATURES = (
     register_files,
     register_editor,
+    register_language,
     register_run,
     register_project,
     register_debugger,
@@ -49,6 +52,7 @@ def build_services(settings_repository: SettingsRepository) -> Services:
         environment=environment,
         toolchain=GoToolchain(environment),
         debugger=DelveDapDebugger(environment),
+        language_server=GoplsLanguageServer(environment),
     )
 
 

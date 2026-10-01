@@ -1,10 +1,12 @@
 """Offline completion from static Go language data (fallback when gopls is unavailable).
 
 Mostly data tables, which is why this file is longer than the usual 200-line limit.
-Track C (gopls) keeps this as the fallback provider.
+Track C (gopls) keeps this as the fallback provider; it also suggests the names
+declared in the file itself (see ``local_symbols``).
 """
 
 from vizcacha.domain.completion import CompletionItem, CompletionKind
+from vizcacha.infrastructure.static_completion.local_symbols import local_completions
 
 MAX_SUGGESTIONS = 20
 
@@ -199,6 +201,8 @@ class GoAnalyzer:
             items = self._package_members(package_name, prefix)
         else:
             items = self._global_names(prefix)
+            known = {item.label for item in items}
+            items += local_completions(code, prefix, known)
         items.sort(key=lambda item: item.label.lower())
         return items[:MAX_SUGGESTIONS]
 
