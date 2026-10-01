@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-UNEXPORTED.go:10:22: undefined: strings.toUpper (but have ToUpper)

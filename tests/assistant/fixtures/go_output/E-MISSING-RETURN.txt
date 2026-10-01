@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-MISSING-RETURN.go:10:1: missing return

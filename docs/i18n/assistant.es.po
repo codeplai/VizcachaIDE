@@ -1,0 +1,561 @@
+# DRAFT Spanish translation of the Assistant (track B) messages.
+# The translation track (G) merges it into vizcacha/i18n/locale/es/LC_MESSAGES/vizcacha.po.
+# Placeholders like {name} and doubled braces {{ }} must be kept as they are.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: VizcachaIDE VERSION\n"
+"Report-Msgid-Bugs-To: hola@codeplai.pe\n"
+"POT-Creation-Date: 2026-09-30 20:07-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: Spanish <es@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:14
+#, python-brace-format
+msgid "Variable \"{name}\" is never used"
+msgstr "La variable \"{name}\" nunca se usa"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:16
+#, python-brace-format
+msgid ""
+"You created the variable \"{name}\" but never read it. Go refuses to compile code with unused "
+"variables, because they are usually a mistake or leftover code."
+msgstr ""
+"Creaste la variable \"{name}\", pero nunca lees su valor. Go no compila código con variables sin "
+"usar, porque casi siempre son un error o restos de código viejo."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:20
+#, python-brace-format
+msgid ""
+"Use \"{name}\" somewhere (for example, print it), delete it, or replace it with _ if you must "
+"receive a value you do not need."
+msgstr ""
+"Usa \"{name}\" en algún lugar (por ejemplo, imprímela), bórrala o cámbiala por _ si tienes que "
+"recibir un valor que no necesitas."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:27
+#, python-brace-format
+msgid "Package \"{package}\" is imported but never used"
+msgstr "El paquete \"{package}\" se importa, pero nunca se usa"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:29
+#, python-brace-format
+msgid ""
+"The file imports the package \"{package}\", but no code uses it. Go does not allow unused "
+"imports, to keep programs clean and fast to compile."
+msgstr ""
+"El archivo importa el paquete \"{package}\", pero ningún código lo usa. Go no permite "
+"importaciones sin usar, para que los programas sean limpios y compilen rápido."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:32
+#, python-brace-format
+msgid "Delete the line that imports \"{package}\", or use something from it."
+msgstr "Borra la línea que importa \"{package}\" o usa algo de ese paquete."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:37
+msgid "The function can end without returning a value"
+msgstr "La función puede terminar sin devolver un valor"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:39
+msgid ""
+"This function says it returns a value, but there is a way to reach its closing brace without a "
+"return statement. For example, an if returns a value but the case where the condition is false "
+"does not."
+msgstr ""
+"Esta función dice que devuelve un valor, pero hay un camino que llega a su llave de cierre sin "
+"pasar por un return. Por ejemplo, un if devuelve un valor, pero el caso en que la condición es "
+"falsa no lo hace."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:44
+msgid "Add a return statement at the end of the function, or an else branch that also returns a value."
+msgstr "Agrega un return al final de la función, o una rama else que también devuelva un valor."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:55
+#, python-brace-format
+msgid "\"{name}\" is private to package {package}"
+msgstr "\"{name}\" es privado del paquete {package}"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:57
+#, python-brace-format
+msgid ""
+"In Go, only names that start with a capital letter can be used from another package. \"{name}\" "
+"starts with a lowercase letter, so package {package} keeps it private, or the real name has "
+"different capital letters."
+msgstr ""
+"En Go, solo los nombres que empiezan con mayúscula se pueden usar desde otro paquete. \"{name}\" "
+"empieza con minúscula, así que el paquete {package} lo mantiene privado, o el nombre real lleva "
+"otras mayúsculas."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:62
+msgid ""
+"Write the name exactly as the package documents it, starting with a capital letter (for example "
+"strings.ToUpper, not strings.toUpper)."
+msgstr ""
+"Escribe el nombre tal como aparece en la documentación del paquete, empezando con mayúscula (por "
+"ejemplo strings.ToUpper, no strings.toUpper)."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:69
+#, python-brace-format
+msgid "Unknown name: {name}"
+msgstr "Nombre desconocido: {name}"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:71
+#, python-brace-format
+msgid ""
+"Go does not know anything called \"{name}\". It was never declared, it is declared in a place "
+"this code cannot see (such as inside another function or block), or it is misspelled."
+msgstr ""
+"Go no conoce nada llamado \"{name}\". Nunca se declaró, se declaró en un lugar que este código no"
+" puede ver (por ejemplo, dentro de otra función o bloque) o está mal escrito."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:76
+msgid ""
+"Check the spelling and the capital letters, declare the variable before you use it (for example "
+"with :=), or import the package it belongs to."
+msgstr ""
+"Revisa la ortografía y las mayúsculas, declara la variable antes de usarla (por ejemplo con :=) o"
+" importa el paquete al que pertenece."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:83
+msgid "The variable already exists: use = instead of :="
+msgstr "La variable ya existe: usa = en lugar de :="
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:85
+msgid ""
+":= creates new variables. Every variable on its left side already exists in this block, so there "
+"is nothing new to create."
+msgstr ""
+":= crea variables nuevas. Todas las variables a su izquierda ya existen en este bloque, así que "
+"no hay nada nuevo que crear."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:88
+msgid "Use = to change the value of an existing variable. Use := only the first time."
+msgstr "Usa = para cambiar el valor de una variable que ya existe. Usa := solo la primera vez."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:93
+msgid "The program has no main function"
+msgstr "El programa no tiene función main"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:95
+msgid ""
+"A Go program starts running in the function main of package main. This package is called main, "
+"but it does not contain a function named main."
+msgstr ""
+"Un programa en Go empieza a ejecutarse en la función main del paquete main. Este paquete se llama"
+" main, pero no tiene ninguna función llamada main."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:98
+msgid "Add a function with exactly this header: func main() {{ ... }}"
+msgstr "Agrega una función con exactamente esta cabecera: func main() {{ ... }}"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:103
+msgid "This file is not a runnable program"
+msgstr "Este archivo no es un programa ejecutable"
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:105
+msgid ""
+"Only code in package main can be run. The first line of this file declares a different package, "
+"which Go treats as a library."
+msgstr ""
+"Solo se puede ejecutar el código del paquete main. La primera línea de este archivo declara otro "
+"paquete, y Go lo trata como una biblioteca."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:108
+msgid "Change the first line to: package main (and make sure there is a func main)."
+msgstr "Cambia la primera línea por: package main (y asegúrate de que haya una func main)."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:117
+#, python-brace-format
+msgid "Package \"{package}\" was not found"
+msgstr "No se encontró el paquete \"{package}\""
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:119
+#, python-brace-format
+msgid ""
+"Go cannot find the package \"{package}\". Standard packages have fixed names (fmt, math, strings,"
+" os...), and packages from the internet must be added to your module before you can import them."
+msgstr ""
+"Go no encuentra el paquete \"{package}\". Los paquetes estándar tienen nombres fijos (fmt, math, "
+"strings, os...), y los paquetes de internet hay que agregarlos a tu módulo antes de poder "
+"importarlos."
+
+#: vizcacha/infrastructure/error_catalog/compile_errors.py:124
+#, python-brace-format
+msgid ""
+"Check the spelling of the import path. For an external package, run go get {package} in a folder "
+"that has a go.mod file."
+msgstr ""
+"Revisa cómo está escrita la ruta del import. Para un paquete externo, ejecuta go get {package} en"
+" una carpeta que tenga un archivo go.mod."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:10
+#, python-brace-format
+msgid "Index {index} is out of range"
+msgstr "El índice {index} está fuera de rango"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:12
+#, python-brace-format
+msgid ""
+"The program tried to use position {index}, but the slice, array or string only has {length} "
+"element(s). Valid positions go from 0 to {length} - 1."
+msgstr ""
+"El programa intentó usar la posición {index}, pero el slice, arreglo o string solo tiene {length}"
+" elemento(s). Las posiciones válidas van de 0 a {length} - 1."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:16
+msgid ""
+"Check the index before using it (for example: if i < len(items)) and remember that counting "
+"starts at 0."
+msgstr ""
+"Comprueba el índice antes de usarlo (por ejemplo: if i < len(items)) y recuerda que se empieza a "
+"contar desde 0."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:23
+msgid "Writing to a map that was never created"
+msgstr "Escritura en un map que nunca se creó"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:25
+msgid ""
+"The map variable was declared but never created, so it is nil. You can read from a nil map, but "
+"writing to it stops the program."
+msgstr ""
+"La variable del map se declaró, pero nunca se creó, así que vale nil. Puedes leer de un map nil, "
+"pero escribir en él detiene el programa."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:29
+msgid "Create the map before writing to it: ages := make(map[string]int) or ages := map[string]int{{}}."
+msgstr "Crea el map antes de escribir en él: ages := make(map[string]int) o ages := map[string]int{{}}."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:36
+msgid "Using a pointer that is nil"
+msgstr "Uso de un puntero que vale nil"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:38
+msgid ""
+"The program read or wrote through a pointer (or an interface, map or slice element holding one) "
+"whose value is nil, so it points to nothing."
+msgstr ""
+"El programa leyó o escribió a través de un puntero (o de una interfaz, map o elemento de slice "
+"que lo contiene) cuyo valor es nil, es decir, que no apunta a nada."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:42
+msgid ""
+"Make sure the pointer gets a value before you use it, for example p := &Person{{}} or p := "
+"new(Person), or check if p != nil first."
+msgstr ""
+"Asegúrate de que el puntero tenga un valor antes de usarlo, por ejemplo p := &Person{{}} o p := "
+"new(Person), o comprueba primero if p != nil."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:49
+msgid "Deadlock: every goroutine is waiting forever"
+msgstr "Deadlock: todas las goroutines esperan para siempre"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:51
+msgid ""
+"All goroutines are blocked waiting for each other, so nothing can continue. Usually a channel is "
+"sent to with nobody receiving, or received from with nobody sending, or a WaitGroup or Mutex is "
+"never released."
+msgstr ""
+"Todas las goroutines están bloqueadas esperándose entre sí, así que nada puede continuar. "
+"Normalmente se envía por un canal que nadie recibe, se recibe de un canal al que nadie envía, o "
+"nunca se libera un WaitGroup o un Mutex."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:56
+msgid ""
+"Make sure another goroutine receives what you send (go func() {{ ... }}()), use a buffered "
+"channel, close the channel when you are done, or call wg.Done()."
+msgstr ""
+"Asegúrate de que otra goroutine reciba lo que envías (go func() {{ ... }}()), usa un canal con "
+"buffer, cierra el canal cuando termines o llama a wg.Done()."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:63
+msgid "Division by zero"
+msgstr "División entre cero"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:65
+msgid "The program divided an integer by zero (with / or %). That has no result, so Go stops the program."
+msgstr ""
+"El programa dividió un entero entre cero (con / o %). Eso no tiene resultado, así que Go detiene "
+"el programa."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:69
+msgid "Check that the divisor is not 0 before dividing, for example: if people != 0 {{ ... }}."
+msgstr "Comprueba que el divisor no sea 0 antes de dividir, por ejemplo: if people != 0 {{ ... }}."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:76
+#, python-brace-format
+msgid "Slice limits [{bounds}] are out of range"
+msgstr "Los límites [{bounds}] del slice están fuera de rango"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:78
+#, python-brace-format
+msgid ""
+"The program tried to take the part [{bounds}] of a slice or string, but those limits go past its "
+"end, or the start is bigger than the end."
+msgstr ""
+"El programa intentó tomar la parte [{bounds}] de un slice o string, pero esos límites pasan del "
+"final, o el inicio es mayor que el fin."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:82
+msgid "Make sure that 0 <= start <= end <= len(s) before slicing, for example with min(end, len(s))."
+msgstr "Asegúrate de que 0 <= inicio <= fin <= len(s) antes de cortar, por ejemplo con min(end, len(s))."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:89
+#, python-brace-format
+msgid "Type assertion failed: {actual} is not {type}"
+msgstr "Falló la aserción de tipo: {actual} no es {type}"
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:91
+#, python-brace-format
+msgid ""
+"The program asserted that a value holds a {type}, but it actually holds a {actual}. A failed "
+"assertion with a single result stops the program."
+msgstr ""
+"El programa afirmó que un valor contiene un {type}, pero en realidad contiene un {actual}. Una "
+"aserción fallida con un solo resultado detiene el programa."
+
+#: vizcacha/infrastructure/error_catalog/runtime_panics.py:95
+#, python-brace-format
+msgid "Use the two-result form to check safely: n, ok := value.({type}). Or use a type switch."
+msgstr ""
+"Usa la forma con dos resultados para comprobarlo sin riesgo: n, ok := value.({type}). O usa un "
+"type switch."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:17
+msgid "A curly brace {{ }} is missing"
+msgstr "Falta una llave {{ }}"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:19
+msgid ""
+"Every {{ needs a matching }}. Go reached the end of the file, or of a block, while it was still "
+"waiting for one. Go also needs the opening {{ on the same line as func, if, for or else."
+msgstr ""
+"Cada {{ necesita su }}. Go llegó al final del archivo, o de un bloque, mientras todavía esperaba "
+"una. Go también exige que la {{ de apertura esté en la misma línea que func, if, for o else."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:24
+msgid ""
+"Count your {{ and }} and add the missing one. Keep each opening {{ at the end of the line that "
+"starts the block."
+msgstr ""
+"Cuenta tus {{ y }} y agrega la que falta. Deja cada {{ de apertura al final de la línea que "
+"empieza el bloque."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:31
+#, python-brace-format
+msgid "Syntax error: unexpected {token}"
+msgstr "Error de sintaxis: {token} inesperado"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:33
+#, python-brace-format
+msgid ""
+"Go could not understand this line. It found {token} in a place where Go's grammar does not allow "
+"it. The real mistake is often just before that point."
+msgstr ""
+"Go no pudo entender esta línea. Encontró {token} en un lugar donde la gramática de Go no lo "
+"permite. A menudo el error real está justo antes de ese punto."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:37
+msgid "Look right before the marked position for a missing comma, parenthesis, quote or operator."
+msgstr ""
+"Busca justo antes de la posición marcada una coma, un paréntesis, unas comillas o un operador que"
+" falte."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:44
+#, python-brace-format
+msgid "Wrong type: a {type} was expected"
+msgstr "Tipo incorrecto: se esperaba un {type}"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:46
+#, python-brace-format
+msgid ""
+"The value {value} does not have the type {type}, which is what Go expects here. Go never converts"
+" between types such as int and string automatically."
+msgstr ""
+"El valor {value} no es del tipo {type}, que es lo que Go espera aquí. Go nunca convierte "
+"automáticamente entre tipos como int y string."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:50
+#, python-brace-format
+msgid ""
+"Use a value of type {type}, or convert it explicitly, for example with int(x), float64(x) or "
+"strconv.Itoa(n)."
+msgstr ""
+"Usa un valor de tipo {type} o conviértelo de forma explícita, por ejemplo con int(x), float64(x) "
+"o strconv.Itoa(n)."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:60
+#, python-brace-format
+msgid "Cannot combine {left_type} and {right_type}"
+msgstr "No se puede combinar {left_type} con {right_type}"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:62
+#, python-brace-format
+msgid ""
+"In {expression} the two sides have different types ({left_type} and {right_type}). Operators such"
+" as +, - or == only work between values of the same type."
+msgstr ""
+"En {expression} los dos lados tienen tipos distintos ({left_type} y {right_type}). Operadores "
+"como +, - o == solo funcionan entre valores del mismo tipo."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:67
+msgid ""
+"Convert one side so both have the same type, for example strconv.Itoa(n) to turn an int into a "
+"string, or float64(n) to mix it with decimals."
+msgstr ""
+"Convierte uno de los lados para que ambos tengan el mismo tipo, por ejemplo strconv.Itoa(n) para "
+"pasar un int a string, o float64(n) para mezclarlo con decimales."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:77
+msgid "The number of variables and values does not match"
+msgstr "La cantidad de variables y de valores no coincide"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:79
+#, python-brace-format
+msgid ""
+"The left side of = or := has {left} variable(s), but the right side gives {right} value(s). Both "
+"numbers must be equal. Many functions, such as strconv.Atoi, return two values: a result and an "
+"error."
+msgstr ""
+"El lado izquierdo de = o := tiene {left} variable(s), pero el lado derecho da {right} valor(es). "
+"Ambos números deben ser iguales. Muchas funciones, como strconv.Atoi, devuelven dos valores: un "
+"resultado y un error."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:84
+msgid ""
+"Add or remove variables until both sides match, for example: number, err := strconv.Atoi(text). "
+"Use _ for a value you do not need."
+msgstr ""
+"Agrega o quita variables hasta que ambos lados coincidan, por ejemplo: number, err := "
+"strconv.Atoi(text). Usa _ para un valor que no necesites."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:91
+#, python-brace-format
+msgid "Not enough arguments for {function}"
+msgstr "Faltan argumentos para {function}"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:93
+#, python-brace-format
+msgid ""
+"The function {function} needs more values than you passed. In the original message, \"have\" "
+"lists what you passed and \"want\" lists what it expects."
+msgstr ""
+"La función {function} necesita más valores de los que le pasaste. En el mensaje original, "
+"\"have\" muestra lo que pasaste y \"want\" lo que espera."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:96
+msgid "Pass one value for each parameter, in the same order and with the right types."
+msgstr "Pasa un valor por cada parámetro, en el mismo orden y con los tipos correctos."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:101
+#, python-brace-format
+msgid "Too many arguments for {function}"
+msgstr "Sobran argumentos para {function}"
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:103
+#, python-brace-format
+msgid ""
+"The function {function} receives fewer values than you passed. In the original message, \"have\" "
+"lists what you passed and \"want\" lists what it expects."
+msgstr ""
+"La función {function} recibe menos valores de los que le pasaste. En el mensaje original, "
+"\"have\" muestra lo que pasaste y \"want\" lo que espera."
+
+#: vizcacha/infrastructure/error_catalog/syntax_type_errors.py:106
+msgid "Remove the extra values so there is exactly one for each parameter."
+msgstr "Quita los valores que sobran para que haya exactamente uno por cada parámetro."
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:15
+#, python-brace-format
+msgid "The format of {function} does not match its values"
+msgstr "El formato de {function} no coincide con sus valores"
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:17
+#, python-brace-format, python-format
+msgid ""
+"The format text given to {function} does not match the values after it. Each verb such as %d, %s "
+"or %v needs exactly one value, of a suitable type."
+msgstr ""
+"El texto de formato que recibe {function} no coincide con los valores que van después. Cada verbo"
+" como %d, %s o %v necesita exactamente un valor, de un tipo adecuado."
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:21
+msgid "Add or remove values so there is one per verb, or use fmt.Println if you do not need formatting."
+msgstr "Agrega o quita valores para que haya uno por verbo, o usa fmt.Println si no necesitas formato."
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:28
+msgid "This code can never run"
+msgstr "Este código nunca se puede ejecutar"
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:30
+msgid ""
+"These statements come after a return, panic, break or infinite loop, so the program can never "
+"reach them."
+msgstr ""
+"Estas instrucciones están después de un return, panic, break o bucle infinito, así que el "
+"programa nunca puede llegar a ellas."
+
+#: vizcacha/infrastructure/error_catalog/vet_warnings.py:33
+msgid "Delete the unreachable lines, or move them before the return."
+msgstr "Borra las líneas inalcanzables o muévelas antes del return."
+
+#: vizcacha/ui/features/assistant/error_card.py:47
+#, python-brace-format
+msgid "Try this: {hint}"
+msgstr "Prueba esto: {hint}"
+
+#: vizcacha/ui/features/assistant/error_card.py:49
+msgid "Original message from Go:"
+msgstr "Mensaje original de Go:"
+
+#: vizcacha/ui/features/assistant/error_card.py:61
+msgid "Go to line"
+msgstr "Ir a la línea"
+
+#: vizcacha/ui/features/assistant/error_card.py:65
+msgid "Search this error"
+msgstr "Buscar este error"
+
+#: vizcacha/ui/features/assistant/feature.py:41
+msgid "Assistant"
+msgstr "Asistente"
+
+#: vizcacha/ui/features/assistant/panel.py:56
+msgid "Nothing to explain. When Go reports an error, I will explain it here."
+msgstr "Nada que explicar. Cuando Go informe de un error, te lo explicaré aquí."
+
+#: vizcacha/ui/features/assistant/panel.py:58
+#, python-brace-format
+msgid "Go reported {count} problem:"
+msgid_plural "Go reported {count} problems:"
+msgstr[0] "Go informó de {count} problema:"
+msgstr[1] "Go informó de {count} problemas:"
+
+#: vizcacha/ui/features/assistant/presentation.py:43
+#, python-brace-format
+msgid "{file}, line {line}"
+msgstr "{file}, línea {line}"
+
+#: vizcacha/ui/features/assistant/presentation.py:51
+msgid "Go reported a problem"
+msgstr "Go informó de un problema"
+
+#: vizcacha/ui/features/assistant/presentation.py:53
+msgid ""
+"There is no beginner explanation for this message yet. The text below is exactly what Go printed:"
+" searching for it on the web usually helps."
+msgstr ""
+"Todavía no hay una explicación para principiantes de este mensaje. El texto de abajo es "
+"exactamente lo que imprimió Go: buscarlo en la web suele ayudar."
+
+#: vizcacha/ui/widgets/console.py:153
+msgid "Click to go to this line"
+msgstr "Haz clic para ir a esta línea"
+

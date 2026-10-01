@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-SYNTAX-UNEXPECTED.go:7:22: syntax error: unexpected literal "World" in argument list; possibly missing comma or )

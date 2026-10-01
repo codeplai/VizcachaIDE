@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-UNUSED-IMPORT.go:6:2: "os" imported and not used
