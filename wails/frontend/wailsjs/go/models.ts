@@ -331,6 +331,7 @@ export namespace domain {
 	    goplsPath: string;
 	    firstRun: boolean;
 	    lastFolder: string;
+	    formatOnSave: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Settings(source);
@@ -346,6 +347,7 @@ export namespace domain {
 	        this.goplsPath = source["goplsPath"];
 	        this.firstRun = source["firstRun"];
 	        this.lastFolder = source["lastFolder"];
+	        this.formatOnSave = source["formatOnSave"];
 	    }
 	}
 	export class SignatureHelp {
@@ -372,6 +374,9 @@ export namespace domain {
 	    goVersion: string;
 	    delveVersion: string;
 	    goplsVersion: string;
+	    goSource: string;
+	    delveSource: string;
+	    goplsSource: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ToolchainInfo(source);
@@ -382,6 +387,9 @@ export namespace domain {
 	        this.goVersion = source["goVersion"];
 	        this.delveVersion = source["delveVersion"];
 	        this.goplsVersion = source["goplsVersion"];
+	        this.goSource = source["goSource"];
+	        this.delveSource = source["delveSource"];
+	        this.goplsSource = source["goplsSource"];
 	    }
 	}
 

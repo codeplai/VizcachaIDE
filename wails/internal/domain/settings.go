@@ -34,9 +34,11 @@ type Settings struct {
 	GoplsPath  string `json:"goplsPath"`
 	FirstRun   bool   `json:"firstRun"`
 	LastFolder string `json:"lastFolder"`
+	// FormatOnSave runs gofmt (go/format) every time a .go file is saved.
+	FormatOnSave bool `json:"formatOnSave"`
 }
 
 // DefaultSettings returns the settings of a fresh installation.
 func DefaultSettings() Settings {
-	return Settings{Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, FirstRun: true}
+	return Settings{Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, FirstRun: true, FormatOnSave: true}
 }

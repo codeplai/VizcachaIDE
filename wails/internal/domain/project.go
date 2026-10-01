@@ -75,4 +75,19 @@ type ToolchainInfo struct {
 	GoVersion    string `json:"goVersion"`
 	DelveVersion string `json:"delveVersion"`
 	GoplsVersion string `json:"goplsVersion"`
+	// Where each tool was found: one of the ToolSource values.
+	GoSource    ToolSource `json:"goSource"`
+	DelveSource ToolSource `json:"delveSource"`
+	GoplsSource ToolSource `json:"goplsSource"`
 }
+
+// ToolSource says where a Go tool comes from (settings, bundled toolchain or PATH).
+type ToolSource string
+
+// ToolSource values.
+const (
+	ToolConfigured ToolSource = "configured"
+	ToolBundled    ToolSource = "bundled"
+	ToolOnPath     ToolSource = "path"
+	ToolMissing    ToolSource = "missing"
+)

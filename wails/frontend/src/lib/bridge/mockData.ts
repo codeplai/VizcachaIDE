@@ -156,5 +156,6 @@ export const defaultSettings = (): Settings => ({
   delvePath: '',
   goplsPath: '',
   firstRun: false,
-  lastFolder: ''
+  lastFolder: '',
+  formatOnSave: true
 })

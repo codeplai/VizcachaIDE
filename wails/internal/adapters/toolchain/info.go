@@ -29,7 +29,15 @@ func (t *Toolchain) Info(ctx context.Context) domain.ToolchainInfo {
 		}()
 	}
 	wg.Wait()
+	info.GoSource = t.source(ToolGo)
+	info.DelveSource = t.source(ToolDelve)
+	info.GoplsSource = t.source(ToolGopls)
 	return info
+}
+
+// source maps the locator origin to the domain value (same names on both sides).
+func (t *Toolchain) source(tool string) domain.ToolSource {
+	return domain.ToolSource(t.locator.Locate(tool).Origin)
 }
 
 // version runs "<tool> version" and returns the first version number it prints ("" if it fails).

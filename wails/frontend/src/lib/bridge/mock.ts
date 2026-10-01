@@ -40,7 +40,14 @@ interface MockState {
   debugging: boolean
 }
 
-const TOOLCHAIN = { goVersion: '1.25.5', delveVersion: '1.27.2', goplsVersion: '0.21.1' }
+const TOOLCHAIN = {
+  goVersion: '1.25.5',
+  delveVersion: '1.27.2',
+  goplsVersion: '0.21.1',
+  goSource: 'bundled',
+  delveSource: 'bundled',
+  goplsSource: 'path'
+} as const
 const LAST_LINE = 7
 const FIELDS_DELAY_MS = 250
 

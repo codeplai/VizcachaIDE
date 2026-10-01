@@ -142,10 +142,15 @@ export interface FileNode {
   children: FileNode[]
 }
 
+export type ToolSource = 'configured' | 'bundled' | 'path' | 'missing'
+
 export interface ToolchainInfo {
   goVersion: string
   delveVersion: string
   goplsVersion: string
+  goSource: ToolSource
+  delveSource: ToolSource
+  goplsSource: ToolSource
 }
 
 export type ServerStatus = 'starting' | 'ready' | 'unavailable'
@@ -161,4 +166,5 @@ export interface Settings {
   goplsPath: string
   firstRun: boolean
   lastFolder: string
+  formatOnSave: boolean
 }
