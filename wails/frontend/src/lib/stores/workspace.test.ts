@@ -11,7 +11,6 @@ import {
   connectStores,
   dirty,
   fileTree,
-  formatOnSave,
   isUntitled,
   missingToolIn,
   notice,
@@ -24,7 +23,8 @@ import {
   saveFile,
   settings,
   splitOutputLinks,
-  toolOrigin
+  toolSourceKey,
+  updateSettings
 } from '.'
 
 const tree: FileNode = {
@@ -61,12 +61,12 @@ describe('output links', () => {
 })
 
 describe('settings helpers', () => {
-  it('keeps the font size in range and tells where a tool path comes from', () => {
+  it('keeps the font size in range and maps a tool source to its text', () => {
     expect(clampFontSize(3)).toBe(10)
     expect(clampFontSize(99)).toBe(28)
     expect(clampFontSize(Number.NaN)).toBe(10)
-    expect(toolOrigin('')).toBe('automatic')
-    expect(toolOrigin('C:\\go\\bin\\go.exe')).toBe('custom')
+    expect(toolSourceKey('bundled')).toBe('settings.originBundled')
+    expect(toolSourceKey('configured')).toBe('settings.originCustom')
   })
 
   it('recognises a missing tool in a backend error', () => {
@@ -126,7 +126,7 @@ describe('workspace with the mock bridge', () => {
 
   it('formats when saving if asked to, and shows a retry message when saving fails', async () => {
     await openFile(bridge, 'hola-go/main.go')
-    formatOnSave.set(true)
+    await updateSettings(bridge, { formatOnSave: true })
     const format = vi.spyOn(bridge.run, 'format').mockResolvedValue('formatted')
     expect(await saveFile(bridge, 'hola-go/main.go')).toBe(true)
     expect(get(buffers)['hola-go/main.go']).toBe('formatted')

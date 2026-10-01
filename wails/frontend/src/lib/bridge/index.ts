@@ -3,7 +3,7 @@ import { createMockBridge, type MockControls } from './mock'
 import type { Bridge } from './types'
 import { createWailsBridge, hasWailsBackend } from './wails'
 
-export type { Bridge, Unsubscribe } from './types'
+export type { Bridge, ToolId, Unsubscribe } from './types'
 export type { MockControls } from './mock'
 export type { Scenario } from './mockScenarios'
 

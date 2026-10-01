@@ -3,9 +3,8 @@ import type { Bridge } from '../bridge'
 import {
   debugActive,
   resumeDebugging,
-  activePath,
   runActiveFile,
-  saveFile,
+  saveActiveFile,
   startDebugging,
   stepInto,
   stepOut,
@@ -15,11 +14,6 @@ import {
 } from '../stores'
 
 type Action = (bridge: Bridge) => Promise<void>
-
-const saveActiveFile: Action = async (bridge) => {
-  const path = get(activePath)
-  if (path) await saveFile(bridge, path)
-}
 
 const actionFor = (event: KeyboardEvent): Action | null => {
   const debugging = get(debugActive)

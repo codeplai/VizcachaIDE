@@ -73,9 +73,15 @@ export interface FilesApi {
 }
 
 /** Mirrors bridge.SettingsService (Go). */
+export type ToolId = 'go' | 'dlv' | 'gopls'
+
 export interface SettingsApi {
   get: () => Promise<Settings>
   save: (settings: Settings) => Promise<void>
+  /** Native file dialog for a tool; saves the path and returns the tools detected again. */
+  pickExecutable: (tool: ToolId) => Promise<ToolchainInfo>
+  /** The language the backend resolved ("auto" becomes the system language). */
+  resolvedLanguage: () => Promise<'en' | 'es'>
 }
 
 /** Things only the desktop shell can do (the Wails runtime in the app, the browser in the mock). */

@@ -1,16 +1,9 @@
 import { get } from 'svelte/store'
 import { describe, expect, it } from 'vitest'
 import { createMockBridge } from '../bridge/mock'
-import { connectStores, settings } from '../stores'
+import { DEFAULT_FONT_SIZE, MAX_FONT_SIZE, MIN_FONT_SIZE, connectStores, settings } from '../stores'
 import { minimalChange } from './textChange'
-import {
-  DEFAULT_FONT_SIZE,
-  MAX_FONT_SIZE,
-  MIN_FONT_SIZE,
-  editorFontSize,
-  nextFontSize,
-  zoomEditor
-} from './zoom'
+import { editorFontSize, nextFontSize, zoomEditor } from './zoom'
 import { editorPhrases, phrasesFor } from './phrases'
 import { EditorState } from '@codemirror/state'
 

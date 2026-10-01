@@ -50,8 +50,19 @@ export const editBuffer = (path: string, text: string): void => {
   dirty.update((all) => ({ ...all, [path]: true }))
 }
 
-export const closeTab = (path: string): void => {
+const closeTab = (path: string): void => {
   const tabs = get(openTabs).filter((tab) => tab !== path)
   openTabs.set(tabs)
   if (get(activePath) === path) activePath.set(tabs[tabs.length - 1] ?? null)
+}
+
+const without = <T>(all: Record<string, T>, path: string): Record<string, T> =>
+  Object.fromEntries(Object.entries(all).filter(([key]) => key !== path))
+
+/** Closes the tab and forgets its text (saved or discarded), also for the language server. */
+export const closeFile = async (bridge: Bridge, path: string): Promise<void> => {
+  closeTab(path)
+  buffers.update((all) => without(all, path))
+  dirty.update((all) => without(all, path))
+  await bridge.language.closeDocument(path)
 }

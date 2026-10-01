@@ -1,5 +1,5 @@
 // Mock bridge: lets `npm run dev` show the whole app in a browser without Go.
-import type { RunConfiguration, Settings } from '../domain'
+import type { RunConfiguration, Settings, ToolchainInfo } from '../domain'
 import { TERMINATED_BY_USER } from '../events'
 import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
@@ -40,14 +40,14 @@ interface MockState {
   debugging: boolean
 }
 
-const TOOLCHAIN = {
+const toolchainFor = (settings: Settings): ToolchainInfo => ({
   goVersion: '1.25.5',
   delveVersion: '1.27.2',
   goplsVersion: '0.21.1',
-  goSource: 'bundled',
-  delveSource: 'bundled',
-  goplsSource: 'path'
-} as const
+  goSource: settings.goPath ? 'configured' : 'bundled',
+  delveSource: settings.delvePath ? 'configured' : 'bundled',
+  goplsSource: settings.goplsPath ? 'configured' : 'path'
+})
 const LAST_LINE = 7
 const FIELDS_DELAY_MS = 250
 
@@ -77,7 +77,7 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
     format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
-    toolchain: async () => TOOLCHAIN
+    toolchain: async () => toolchainFor(state.settings)
   }
 }
 
@@ -149,13 +149,23 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
   documentSymbols: async () => sampleSymbols()
 })
 
-const mockSettings = (state: MockState, emit: Emit): Bridge['settings'] => ({
-  get: async () => state.settings,
-  save: async (next) => {
+const TOOL_FIELDS = { go: 'goPath', dlv: 'delvePath', gopls: 'goplsPath' } as const
+
+const mockSettings = (state: MockState, emit: Emit): Bridge['settings'] => {
+  const save = async (next: Settings): Promise<void> => {
     state.settings = next
     emit('settings:changed', next)
   }
-})
+  return {
+    get: async () => state.settings,
+    save,
+    pickExecutable: async (tool) => {
+      await save({ ...state.settings, [TOOL_FIELDS[tool]]: `C:\\tools\\${tool}.exe` })
+      return toolchainFor(state.settings)
+    },
+    resolvedLanguage: async () => resolveLanguage(state.settings.language, systemLanguage())
+  }
+}
 
 export const createMockBridge = (): MockBridge => {
   const { on, emit } = createEmitter()

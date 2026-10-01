@@ -1,14 +1,7 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import {
-    MAX_FONT_SIZE,
-    MIN_FONT_SIZE,
-    clampFontSize,
-    formatOnSave,
-    settings,
-    updateSettings
-  } from '../stores'
+  import { MAX_FONT_SIZE, MIN_FONT_SIZE, clampFontSize, settings, updateSettings } from '../stores'
 </script>
 
 <div class="field">
@@ -30,9 +23,9 @@
   <label>
     <input
       type="checkbox"
-      checked={$formatOnSave}
+      checked={$settings?.formatOnSave ?? true}
       aria-describedby="setting-format-hint"
-      onchange={(event) => formatOnSave.set(event.currentTarget.checked)}
+      onchange={(event) => updateSettings(bridge, { formatOnSave: event.currentTarget.checked })}
     />
     {$t('settings.formatOnSave')}
   </label>

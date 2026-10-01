@@ -5,7 +5,7 @@
   import { applyLanguage, locale } from './lib/i18n'
   import Layout from './lib/shell/Layout.svelte'
   import { registerShortcuts } from './lib/shell/shortcuts'
-  import { settings } from './lib/stores'
+  import { interfaceLanguage, settings } from './lib/stores'
   import { startApp } from './lib/stores/startup'
   import { applyTheme } from './lib/theme/theme'
 
@@ -14,9 +14,8 @@
   // Settings drive the language and the theme.
   $effect(() => {
     if ($settings) {
-      applyLanguage($settings.language)
+      applyLanguage($interfaceLanguage)
       applyTheme($settings.theme)
-      document.documentElement.style.setProperty('--editor-font-size', `${$settings.fontSize}px`)
     }
   })
 

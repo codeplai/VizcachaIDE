@@ -1,8 +1,8 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { openFile } from '../stores'
-  import { requestCloseTab, tabItems } from './tabs'
+  import { openFile, requestCloseTab } from '../stores'
+  import { tabItems } from './tabs'
 </script>
 
 <div class="tabs" role="tablist" aria-label={$t('editor.tab.list')}>

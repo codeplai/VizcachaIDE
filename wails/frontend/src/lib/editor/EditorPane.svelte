@@ -11,11 +11,11 @@
     debugState,
     editBuffer,
     problems,
+    revealRequest,
     toggleBreakpoint
   } from '../stores'
   import Editor from './Editor.svelte'
   import { registerEditorShortcuts } from './editorShortcuts'
-  import { gotoRequest } from './navigation'
   import TabBar from './TabBar.svelte'
   import { toMarks } from './toMarks'
   import { languageWiring } from './wiring'
@@ -45,7 +45,7 @@
         {marks}
         {wiring}
         fontSize={$editorFontSize}
-        goto={$gotoRequest}
+        goto={$revealRequest}
         onChange={(text) => $activePath && editBuffer($activePath, text)}
         onCursor={(line, column) => cursor.set({ line, column })}
         onToggleBreakpoint={(line) => $activePath && toggleBreakpoint(bridge, $activePath, line)}

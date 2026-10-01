@@ -4,7 +4,7 @@ import { debugActive, debugOutput, debugStarting, currentLine } from './debug'
 import { activeFileName } from './files'
 import { problemCount } from './diagnostics'
 import { splitOutputLinks, type OutputSegment } from './outputLinks'
-import { preparingGo, runLines, runResult, stoppedByUser } from './run'
+import { runLines, runResult, stoppedByUser } from './run'
 
 /** A line of the Output panel: either program text or an i18n key with its values. */
 export interface OutputLine {
@@ -37,15 +37,14 @@ const verdictOf = (
 }
 
 const programLines = derived(
-  [runLines, runResult, problemCount, stoppedByUser, preparingGo],
-  ([lines, result, problems, stopped, preparing]) => {
+  [runLines, runResult, problemCount, stoppedByUser],
+  ([lines, result, problems, stopped]) => {
     const view: OutputLine[] = lines.map((line) => {
       if (line.kind === 'start') {
         return { tone: 'system', key: 'run.starting', values: { file: line.text } }
       }
       return textLine(line.kind === 'stderr' ? 'error' : 'plain', line.text)
     })
-    if (preparing && !result) view.push({ tone: 'system', key: 'run.firstBuild' })
     if (result) view.push(verdictOf(result.exitCode, result.durationMs, problems, stopped))
     return view
   }

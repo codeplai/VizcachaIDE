@@ -21,7 +21,6 @@ export interface EditorHandle {
   setPhrases: (phrases: Extension) => void
   setFontSize: (pixels: number) => void
   goTo: (line: number, column: number) => void
-  forget: (path: string) => void
   destroy: () => void
 }
 
@@ -72,7 +71,6 @@ export const createEditor = (
       })
       view.focus()
     },
-    forget: (path) => states.delete(path),
     destroy: () => view.destroy()
   }
 }

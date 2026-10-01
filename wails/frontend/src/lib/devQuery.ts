@@ -10,6 +10,8 @@ export interface DevQuery {
   noFolder: boolean
   /** `firstrun=1` shows the first-start wizard. */
   firstRun: boolean
+  /** `closechanges=1` edits the open file and tries to close it (the "save changes?" dialog). */
+  closeChanges: boolean
   /** `dialog=settings|about|modules` opens that dialog. */
   dialog: DialogName | null
 }
@@ -29,6 +31,7 @@ export const parseDevQuery = (search: string): DevQuery => {
     theme: pick(params.get('theme'), ['light', 'dark'] as const),
     noFolder: params.get('folder') === 'none',
     firstRun: params.get('firstrun') === '1',
+    closeChanges: params.get('closechanges') === '1',
     dialog: pick(params.get('dialog'), ['settings', 'about', 'modules'] as const)
   }
 }

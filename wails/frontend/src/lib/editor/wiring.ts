@@ -1,6 +1,6 @@
 import type { Bridge } from '../bridge'
+import { goToLocation } from '../stores/navigation'
 import type { LanguageWiring } from './extensions'
-import { goToLocation } from './navigation'
 
 /** What the editor's language extensions need: the language service and "open this location". */
 export const languageWiring = (bridge: Bridge): LanguageWiring => ({

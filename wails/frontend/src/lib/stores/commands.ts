@@ -6,6 +6,7 @@ import { breakpoints, debugActive, debugStarting } from './debug'
 import { activePath, buffers } from './files'
 import { openDialog } from './layout'
 import { showNotice } from './notice'
+import { programArguments } from './programArguments'
 import { resetRun, stoppedByUser } from './run'
 import { isUntitled } from './untitled'
 
@@ -67,14 +68,26 @@ const withToolErrors = async (bridge: Bridge, action: () => Promise<unknown>): P
   }
 }
 
+/** The "Program arguments" text split like a shell, or null (after saying why) if it is invalid. */
+const splitProgramArguments = async (bridge: Bridge, text: string): Promise<string[] | null> => {
+  if (text.trim() === '') return []
+  try {
+    return await bridge.run.splitArguments(text)
+  } catch {
+    showNotice({ messageKey: 'errors.invalidArgs', values: {}, actions: [] })
+    return null
+  }
+}
+
 export const runActiveFile = async (bridge: Bridge): Promise<void> => {
   const path = get(activePath)
-  if (!path) return
+  const args = await splitProgramArguments(bridge, get(programArguments))
+  if (!path || !args) return
   resetRun()
   await withToolErrors(bridge, () =>
     isUntitled(path)
-      ? bridge.run.runUntitled(get(buffers)[path] ?? '', [])
-      : bridge.run.run(path, [])
+      ? bridge.run.runUntitled(get(buffers)[path] ?? '', args)
+      : bridge.run.run(path, args)
   )
 }
 
@@ -86,8 +99,10 @@ export const stopProgram = (bridge: Bridge): Promise<void> => {
 export const startDebugging = async (bridge: Bridge): Promise<void> => {
   const path = get(activePath)
   if (!path || get(debugActive) || isUntitled(path)) return
+  const argsText = get(programArguments)
+  if (!(await splitProgramArguments(bridge, argsText))) return
   debugStarting.set(true)
-  await withToolErrors(bridge, () => bridge.debug.start(path, breakpointsOf(path)))
+  await withToolErrors(bridge, () => bridge.debug.start(path, breakpointsOf(path), argsText))
 }
 
 export const stopDebugging = (bridge: Bridge): Promise<void> => bridge.debug.stop()

@@ -7,7 +7,7 @@
     type EditorHandlers,
     type LanguageWiring
   } from './createEditor'
-  import type { GotoRequest } from './navigation'
+  import type { RevealRequest } from '../stores/navigation'
   import type { EditorMarks } from './marks'
   import { editorPhrases } from './phrases'
 
@@ -16,7 +16,7 @@
     text: string
     marks: EditorMarks
     fontSize: number
-    goto: GotoRequest | null
+    goto: RevealRequest | null
     wiring: LanguageWiring | null
   }
 
@@ -36,9 +36,9 @@
   $effect(() => handle?.setPhrases(editorPhrases($t)))
   $effect(() => handle?.setFontSize(fontSize))
   $effect(() => {
-    if (!goto || goto.nonce === lastGoto || goto.file !== path) return
+    if (!goto || goto.nonce === lastGoto || goto.location.file !== path) return
     lastGoto = goto.nonce
-    handle?.goTo(goto.line, goto.column)
+    handle?.goTo(goto.location.line, goto.location.column)
   })
 </script>
 

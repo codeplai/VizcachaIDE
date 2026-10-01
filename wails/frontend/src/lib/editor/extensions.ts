@@ -86,6 +86,8 @@ export const editorExtensions = (
     drawSelection(),
     bracketMatching(),
     goIndentation,
+    // Replace all runs CodeMirror's own command; asking `confirmReplaceAll` first would need a
+    // custom search panel, so the shell's confirmation is not connected to it (see the report).
     search({ top: true }),
     problemLint,
     keys,

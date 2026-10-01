@@ -1,12 +1,12 @@
 import type { Bridge, MockControls, Unsubscribe } from '../bridge'
 import type { DevQuery } from '../devQuery'
 import type { FileNode } from '../domain'
-import { fileTree, openFile } from './files'
+import { editBuffer, fileTree, openFile } from './files'
 import { toggleBreakpoint } from './debug'
 import { connectStores } from './index'
 import { openDialog } from './layout'
-import { get } from 'svelte/store'
-import { settings, updateSettings } from './settings'
+import { requestCloseTab } from './saving'
+import { updateSettings } from './settings'
 
 const firstGoFile = (tree: FileNode): FileNode | undefined =>
   tree.children.find((node) => node.name === 'main.go') ??
@@ -22,15 +22,23 @@ const applyDevQuery = async (
   if (query.theme) await updateSettings(bridge, { theme: query.theme })
   if (query.firstRun) await updateSettings(bridge, { firstRun: true })
   if (query.dialog) openDialog.set(query.dialog)
+  if (query.closeChanges && path) {
+    editBuffer(path, '// edited\n')
+    void requestCloseTab(bridge, path)
+  }
   if (query.scenario === 'debug' && path) await toggleBreakpoint(bridge, path, 6)
   await mock.play(query.scenario)
 }
 
-/** The folder to show at start: the last one used, or the demo project with the mock backend. */
+/** The folder to show at start: the last one used (the backend remembers it), if there is one. */
 const initialTree = async (bridge: Bridge, query: DevQuery): Promise<FileNode | null> => {
-  const last = get(settings)?.lastFolder
-  if (last) return bridge.files.listTree(last)
-  return bridge.isMock && !query.noFolder ? bridge.files.openFolder() : null
+  if (bridge.isMock && query.noFolder) return null
+  try {
+    const tree = await bridge.files.listTree('')
+    return tree.path ? tree : null
+  } catch {
+    return null // The last folder was moved or deleted: start without one.
+  }
 }
 
 /** Connects the stores, opens the project folder and its first Go file. */

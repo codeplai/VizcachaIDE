@@ -1,12 +1,12 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { openDialog, toolchain } from '../stores'
+  import { openDialog, toolSourceKey, toolchain } from '../stores'
   import Modal from './Modal.svelte'
 
   const tools = [
-    { name: 'Go', key: 'goVersion' },
-    { name: 'Delve', key: 'delveVersion' },
-    { name: 'gopls', key: 'goplsVersion' }
+    { name: 'Go', key: 'goVersion', source: 'goSource' },
+    { name: 'Delve', key: 'delveVersion', source: 'delveSource' },
+    { name: 'gopls', key: 'goplsVersion', source: 'goplsSource' }
   ] as const
 </script>
 
@@ -21,7 +21,10 @@
     <dl>
       {#each tools as tool (tool.name)}
         <dt>{tool.name}</dt>
-        <dd>{$toolchain?.[tool.key] || $t('shell.aboutNotFound')}</dd>
+        <dd>
+          {$toolchain?.[tool.key] || $t('shell.aboutNotFound')}
+          {#if $toolchain}<small>{$t(toolSourceKey($toolchain[tool.source]))}</small>{/if}
+        </dd>
       {/each}
     </dl>
   </div>
@@ -34,6 +37,10 @@
     gap: 4px 16px;
     margin: 0;
     font-size: 14px;
+  }
+  small {
+    display: block;
+    font: 400 12px var(--ui);
   }
   dd {
     margin: 0;

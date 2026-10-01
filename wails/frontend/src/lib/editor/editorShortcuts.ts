@@ -1,6 +1,5 @@
-// Window-level editor shortcuts: Ctrl+S saves (formatting first); Ctrl+= / Ctrl+- / Ctrl+0 zoom.
+// Window-level zoom shortcuts: Ctrl+= / Ctrl+- / Ctrl+0 and Ctrl+wheel. (Ctrl+S lives in the shell.)
 import type { Bridge } from '../bridge'
-import { saveActiveDocument } from './tabs'
 import { zoomEditor, type ZoomAction } from './zoom'
 
 const ZOOM_KEYS: Record<string, ZoomAction> = {
@@ -14,11 +13,6 @@ const ZOOM_KEYS: Record<string, ZoomAction> = {
 export const registerEditorShortcuts = (bridge: Bridge): (() => void) => {
   const onKey = (event: KeyboardEvent): void => {
     if (!(event.ctrlKey || event.metaKey) || event.altKey) return
-    if (event.key.toLowerCase() === 's') {
-      event.preventDefault()
-      void saveActiveDocument(bridge)
-      return
-    }
     const zoom = ZOOM_KEYS[event.key]
     if (!zoom) return
     event.preventDefault()

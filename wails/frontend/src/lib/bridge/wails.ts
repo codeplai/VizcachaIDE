@@ -69,7 +69,10 @@ export const createWailsBridge = (): Bridge => ({
   },
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
-    save: (settings) => SettingsService.Save(toWire(settings))
+    save: (settings) => SettingsService.Save(toWire(settings)),
+    pickExecutable: async (tool) => fromWire(await SettingsService.PickExecutable(tool)),
+    resolvedLanguage: async () =>
+      (await SettingsService.ResolvedLanguage()) === 'es' ? 'es' : 'en'
   },
   system: { openUrl: (url) => BrowserOpenURL(url) },
   on: (name, handler) => EventsOn(name, handler)

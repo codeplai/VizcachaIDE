@@ -9,7 +9,6 @@ import {
   confirmReplaceAll,
   connectStores,
   debugActive,
-  formatOnSave,
   lastRunConfiguration,
   openDialog,
   openTabs,
@@ -72,15 +71,15 @@ describe('Settings dialog', () => {
     await waitFor(() => expect(get(settings)?.fontSize).toBe(28))
     const format = screen.getByLabelText('Format when saving') as HTMLInputElement
     await fireEvent.click(format)
-    expect(get(formatOnSave)).toBe(false)
-    formatOnSave.set(true)
+    await waitFor(() => expect(get(settings)?.formatOnSave).toBe(false))
   })
 
   it('saves the tool paths and says where each tool comes from', async () => {
     openDialog.set('settings')
     settingsTab.set('tools')
     render(SettingsDialog)
-    expect(await screen.findAllByText(/Found automatically/)).toHaveLength(3)
+    expect(await screen.findAllByText(/Included with VizcachaIDE/)).toHaveLength(2)
+    expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(1)
     const go = screen.getByLabelText('Go')
     await fireEvent.change(go, { target: { value: ' C:\\go\\bin\\go.exe ' } })
     await waitFor(() => expect(get(settings)?.goPath).toBe('C:\\go\\bin\\go.exe'))
@@ -93,7 +92,8 @@ describe('About and Go modules dialogs', () => {
   it('lists the tool versions', async () => {
     openDialog.set('about')
     render(AboutDialog)
-    expect(await screen.findByText('1.25.5')).toBeTruthy()
+    expect(await screen.findByText(/1.25.5/)).toBeTruthy()
+    expect(screen.getAllByText('Included with VizcachaIDE')).toHaveLength(2)
   })
 
   it('explains that there is no go.mod, then shows the module of the last run', async () => {
