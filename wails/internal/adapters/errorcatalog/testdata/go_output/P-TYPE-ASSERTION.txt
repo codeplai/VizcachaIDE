@@ -1,0 +1,6 @@
+panic: interface conversion: interface {} is string, not int
+
+goroutine 1 [running]:
+main.main()
+	$WORKDIR/P-TYPE-ASSERTION.go:8 +0x28
+exit status 2

@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-ASSIGN-MISMATCH.go:10:12: assignment mismatch: 1 variable but strconv.Atoi returns 2 values

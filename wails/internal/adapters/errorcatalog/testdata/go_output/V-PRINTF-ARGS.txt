@@ -1,0 +1,3 @@
+# command-line-arguments
+# [command-line-arguments]
+.\V-PRINTF-ARGS.go:7:22: fmt.Printf format %d reads arg #1, but call has 0 args

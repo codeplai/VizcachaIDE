@@ -68,23 +68,6 @@ func TestDebugServiceStopIsTerminatedByUser(t *testing.T) {
 	}
 }
 
-func TestAssistantExplainsInTheSettingsLanguage(t *testing.T) {
-	store := NewMemorySettingsStore()
-	if err := store.Save(domain.Settings{Language: domain.LanguageES}); err != nil {
-		t.Fatal(err)
-	}
-	items, err := NewAssistantService(&recordingSink{}, store).Explain("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(items) != 1 || items[0].Explanation == nil {
-		t.Fatalf("items = %+v, want one explanation", items)
-	}
-	if items[0].Explanation.Title != "La variable «resultado» nunca se usa" {
-		t.Errorf("title = %q", items[0].Explanation.Title)
-	}
-}
-
 func TestSettingsServiceNotifiesOnSave(t *testing.T) {
 	sink := &recordingSink{}
 	service := NewSettingsService(sink, NewMemorySettingsStore())

@@ -1,0 +1,413 @@
+[
+ {
+  "id": "E-UNUSED-VAR",
+  "patterns": [
+   "declared and not used: (?P<name>\\w+)",
+   "^(?P<name>\\w+) declared (?:and|but) not used"
+  ],
+  "en": {
+   "title": "Variable \"{name}\" is never used",
+   "body": "You created the variable \"{name}\" but never read it. Go refuses to compile code with unused variables, because they are usually a mistake or leftover code.",
+   "fix": "Use \"{name}\" somewhere (for example, print it), delete it, or replace it with _ if you must receive a value you do not need."
+  },
+  "es": {
+   "title": "La variable \"{name}\" nunca se usa",
+   "body": "Creaste la variable \"{name}\", pero nunca lees su valor. Go no compila código con variables sin usar, porque casi siempre son un error o restos de código viejo.",
+   "fix": "Usa \"{name}\" en algún lugar (por ejemplo, imprímela), bórrala o cámbiala por _ si tienes que recibir un valor que no necesitas."
+  }
+ },
+ {
+  "id": "E-UNUSED-IMPORT",
+  "patterns": [
+   "\\\"(?P<package>[^\\\"]+)\\\" imported (?:as \\w+ )?and not used"
+  ],
+  "en": {
+   "title": "Package \"{package}\" is imported but never used",
+   "body": "The file imports the package \"{package}\", but no code uses it. Go does not allow unused imports, to keep programs clean and fast to compile.",
+   "fix": "Delete the line that imports \"{package}\", or use something from it."
+  },
+  "es": {
+   "title": "El paquete \"{package}\" se importa, pero nunca se usa",
+   "body": "El archivo importa el paquete \"{package}\", pero ningún código lo usa. Go no permite importaciones sin usar, para que los programas sean limpios y compilen rápido.",
+   "fix": "Borra la línea que importa \"{package}\" o usa algo de ese paquete."
+  }
+ },
+ {
+  "id": "E-MISSING-RETURN",
+  "patterns": [
+   "^missing return"
+  ],
+  "en": {
+   "title": "The function can end without returning a value",
+   "body": "This function says it returns a value, but there is a way to reach its closing brace without a return statement. For example, an if returns a value but the case where the condition is false does not.",
+   "fix": "Add a return statement at the end of the function, or an else branch that also returns a value."
+  },
+  "es": {
+   "title": "La función puede terminar sin devolver un valor",
+   "body": "Esta función dice que devuelve un valor, pero hay un camino que llega a su llave de cierre sin pasar por un return. Por ejemplo, un if devuelve un valor, pero el caso en que la condición es falsa no lo hace.",
+   "fix": "Agrega un return al final de la función, o una rama else que también devuelva un valor."
+  }
+ },
+ {
+  "id": "E-UNEXPORTED",
+  "patterns": [
+   "undefined: (?P<package>\\w+)\\.(?P<name>\\w+) \\(but have \\w+\\)",
+   "name (?P<name>\\w+) not exported by package (?P<package>\\w+)",
+   "cannot refer to unexported (?:name|field|method) (?P<package>\\w+)\\.(?P<name>\\w+)"
+  ],
+  "en": {
+   "title": "\"{name}\" is private to package {package}",
+   "body": "In Go, only names that start with a capital letter can be used from another package. \"{name}\" starts with a lowercase letter, so package {package} keeps it private, or the real name has different capital letters.",
+   "fix": "Write the name exactly as the package documents it, starting with a capital letter (for example strings.ToUpper, not strings.toUpper)."
+  },
+  "es": {
+   "title": "\"{name}\" es privado del paquete {package}",
+   "body": "En Go, solo los nombres que empiezan con mayúscula se pueden usar desde otro paquete. \"{name}\" empieza con minúscula, así que el paquete {package} lo mantiene privado, o el nombre real lleva otras mayúsculas.",
+   "fix": "Escribe el nombre tal como aparece en la documentación del paquete, empezando con mayúscula (por ejemplo strings.ToUpper, no strings.toUpper)."
+  }
+ },
+ {
+  "id": "E-UNDEFINED",
+  "patterns": [
+   "undefined: (?P<name>[\\w.]+)"
+  ],
+  "en": {
+   "title": "Unknown name: {name}",
+   "body": "Go does not know anything called \"{name}\". It was never declared, it is declared in a place this code cannot see (such as inside another function or block), or it is misspelled.",
+   "fix": "Check the spelling and the capital letters, declare the variable before you use it (for example with :=), or import the package it belongs to."
+  },
+  "es": {
+   "title": "Nombre desconocido: {name}",
+   "body": "Go no conoce nada llamado \"{name}\". Nunca se declaró, se declaró en un lugar que este código no puede ver (por ejemplo, dentro de otra función o bloque) o está mal escrito.",
+   "fix": "Revisa la ortografía y las mayúsculas, declara la variable antes de usarla (por ejemplo con :=) o importa el paquete al que pertenece."
+  }
+ },
+ {
+  "id": "E-NO-NEW-VARS",
+  "patterns": [
+   "no new variables on left side of :="
+  ],
+  "en": {
+   "title": "The variable already exists: use = instead of :=",
+   "body": ":= creates new variables. Every variable on its left side already exists in this block, so there is nothing new to create.",
+   "fix": "Use = to change the value of an existing variable. Use := only the first time."
+  },
+  "es": {
+   "title": "La variable ya existe: usa = en lugar de :=",
+   "body": ":= crea variables nuevas. Todas las variables a su izquierda ya existen en este bloque, así que no hay nada nuevo que crear.",
+   "fix": "Usa = para cambiar el valor de una variable que ya existe. Usa := solo la primera vez."
+  }
+ },
+ {
+  "id": "E-NO-MAIN",
+  "patterns": [
+   "function main is undeclared in the main package"
+  ],
+  "en": {
+   "title": "The program has no main function",
+   "body": "A Go program starts running in the function main of package main. This package is called main, but it does not contain a function named main.",
+   "fix": "Add a function with exactly this header: func main() { ... }"
+  },
+  "es": {
+   "title": "El programa no tiene función main",
+   "body": "Un programa en Go empieza a ejecutarse en la función main del paquete main. Este paquete se llama main, pero no tiene ninguna función llamada main.",
+   "fix": "Agrega una función con exactamente esta cabecera: func main() { ... }"
+  }
+ },
+ {
+  "id": "E-PACKAGE-NOT-MAIN",
+  "patterns": [
+   "is not a main package",
+   "cannot run non-main package"
+  ],
+  "en": {
+   "title": "This file is not a runnable program",
+   "body": "Only code in package main can be run. The first line of this file declares a different package, which Go treats as a library.",
+   "fix": "Change the first line to: package main (and make sure there is a func main)."
+  },
+  "es": {
+   "title": "Este archivo no es un programa ejecutable",
+   "body": "Solo se puede ejecutar el código del paquete main. La primera línea de este archivo declara otro paquete, y Go lo trata como una biblioteca.",
+   "fix": "Cambia la primera línea por: package main (y asegúrate de que haya una func main)."
+  }
+ },
+ {
+  "id": "E-IMPORT-NOT-FOUND",
+  "patterns": [
+   "package (?P<package>\\S+) is not in (?:std|GOROOT)",
+   "no required module provides package (?P<package>[^\\s;:]+)",
+   "cannot find package \\\"(?P<package>[^\\\"]+)\\\""
+  ],
+  "en": {
+   "title": "Package \"{package}\" was not found",
+   "body": "Go cannot find the package \"{package}\". Standard packages have fixed names (fmt, math, strings, os...), and packages from the internet must be added to your module before you can import them.",
+   "fix": "Check the spelling of the import path. For an external package, run go get {package} in a folder that has a go.mod file."
+  },
+  "es": {
+   "title": "No se encontró el paquete \"{package}\"",
+   "body": "Go no encuentra el paquete \"{package}\". Los paquetes estándar tienen nombres fijos (fmt, math, strings, os...), y los paquetes de internet hay que agregarlos a tu módulo antes de poder importarlos.",
+   "fix": "Revisa cómo está escrita la ruta del import. Para un paquete externo, ejecuta go get {package} en una carpeta que tenga un archivo go.mod."
+  }
+ },
+ {
+  "id": "E-MISSING-BRACE",
+  "patterns": [
+   "syntax error: unexpected EOF, expect(?:ed|ing) \\}",
+   "expected '\\}', found 'EOF'",
+   "syntax error: unexpected .+, expect(?:ed|ing) \\{ after"
+  ],
+  "en": {
+   "title": "A curly brace { } is missing",
+   "body": "Every { needs a matching }. Go reached the end of the file, or of a block, while it was still waiting for one. Go also needs the opening { on the same line as func, if, for or else.",
+   "fix": "Count your { and } and add the missing one. Keep each opening { at the end of the line that starts the block."
+  },
+  "es": {
+   "title": "Falta una llave { }",
+   "body": "Cada { necesita su }. Go llegó al final del archivo, o de un bloque, mientras todavía esperaba una. Go también exige que la { de apertura esté en la misma línea que func, if, for o else.",
+   "fix": "Cuenta tus { y } y agrega la que falta. Deja cada { de apertura al final de la línea que empieza el bloque."
+  }
+ },
+ {
+  "id": "E-SYNTAX-UNEXPECTED",
+  "patterns": [
+   "syntax error: unexpected (?P<token>.+?)(?:,|;| in | at | after |$)"
+  ],
+  "en": {
+   "title": "Syntax error: unexpected {token}",
+   "body": "Go could not understand this line. It found {token} in a place where Go's grammar does not allow it. The real mistake is often just before that point.",
+   "fix": "Look right before the marked position for a missing comma, parenthesis, quote or operator."
+  },
+  "es": {
+   "title": "Error de sintaxis: {token} inesperado",
+   "body": "Go no pudo entender esta línea. Encontró {token} en un lugar donde la gramática de Go no lo permite. A menudo el error real está justo antes de ese punto.",
+   "fix": "Busca justo antes de la posición marcada una coma, un paréntesis, unas comillas o un operador que falte."
+  }
+ },
+ {
+  "id": "E-TYPE-MISMATCH",
+  "patterns": [
+   "cannot use (?P<value>.+?) \\([^()]*\\) as (?P<type>.+?) value in"
+  ],
+  "en": {
+   "title": "Wrong type: a {type} was expected",
+   "body": "The value {value} does not have the type {type}, which is what Go expects here. Go never converts between types such as int and string automatically.",
+   "fix": "Use a value of type {type}, or convert it explicitly, for example with int(x), float64(x) or strconv.Itoa(n)."
+  },
+  "es": {
+   "title": "Tipo incorrecto: se esperaba un {type}",
+   "body": "El valor {value} no es del tipo {type}, que es lo que Go espera aquí. Go nunca convierte automáticamente entre tipos como int y string.",
+   "fix": "Usa un valor de tipo {type} o conviértelo de forma explícita, por ejemplo con int(x), float64(x) o strconv.Itoa(n)."
+  }
+ },
+ {
+  "id": "E-MISMATCHED-TYPES-OP",
+  "patterns": [
+   "invalid operation: (?P<expression>.+) \\(mismatched types (?P<left_type>\\S+) and (?P<right_type>\\S+)\\)"
+  ],
+  "en": {
+   "title": "Cannot combine {left_type} and {right_type}",
+   "body": "In {expression} the two sides have different types ({left_type} and {right_type}). Operators such as +, - or == only work between values of the same type.",
+   "fix": "Convert one side so both have the same type, for example strconv.Itoa(n) to turn an int into a string, or float64(n) to mix it with decimals."
+  },
+  "es": {
+   "title": "No se puede combinar {left_type} con {right_type}",
+   "body": "En {expression} los dos lados tienen tipos distintos ({left_type} y {right_type}). Operadores como +, - o == solo funcionan entre valores del mismo tipo.",
+   "fix": "Convierte uno de los lados para que ambos tengan el mismo tipo, por ejemplo strconv.Itoa(n) para pasar un int a string, o float64(n) para mezclarlo con decimales."
+  }
+ },
+ {
+  "id": "E-ASSIGN-MISMATCH",
+  "patterns": [
+   "assignment mismatch: (?P<left>\\d+) variables? but (?:\\S+ returns )?(?P<right>\\d+) values?"
+  ],
+  "en": {
+   "title": "The number of variables and values does not match",
+   "body": "The left side of = or := has {left} variable(s), but the right side gives {right} value(s). Both numbers must be equal. Many functions, such as strconv.Atoi, return two values: a result and an error.",
+   "fix": "Add or remove variables until both sides match, for example: number, err := strconv.Atoi(text). Use _ for a value you do not need."
+  },
+  "es": {
+   "title": "La cantidad de variables y de valores no coincide",
+   "body": "El lado izquierdo de = o := tiene {left} variable(s), pero el lado derecho da {right} valor(es). Ambos números deben ser iguales. Muchas funciones, como strconv.Atoi, devuelven dos valores: un resultado y un error.",
+   "fix": "Agrega o quita variables hasta que ambos lados coincidan, por ejemplo: number, err := strconv.Atoi(text). Usa _ para un valor que no necesites."
+  }
+ },
+ {
+  "id": "E-NOT-ENOUGH-ARGS",
+  "patterns": [
+   "not enough arguments in call to (?P<function>\\S+)"
+  ],
+  "en": {
+   "title": "Not enough arguments for {function}",
+   "body": "The function {function} needs more values than you passed. In the original message, \"have\" lists what you passed and \"want\" lists what it expects.",
+   "fix": "Pass one value for each parameter, in the same order and with the right types."
+  },
+  "es": {
+   "title": "Faltan argumentos para {function}",
+   "body": "La función {function} necesita más valores de los que le pasaste. En el mensaje original, \"have\" muestra lo que pasaste y \"want\" lo que espera.",
+   "fix": "Pasa un valor por cada parámetro, en el mismo orden y con los tipos correctos."
+  }
+ },
+ {
+  "id": "E-TOO-MANY-ARGS",
+  "patterns": [
+   "too many arguments in call to (?P<function>\\S+)"
+  ],
+  "en": {
+   "title": "Too many arguments for {function}",
+   "body": "The function {function} receives fewer values than you passed. In the original message, \"have\" lists what you passed and \"want\" lists what it expects.",
+   "fix": "Remove the extra values so there is exactly one for each parameter."
+  },
+  "es": {
+   "title": "Sobran argumentos para {function}",
+   "body": "La función {function} recibe menos valores de los que le pasaste. En el mensaje original, \"have\" muestra lo que pasaste y \"want\" lo que espera.",
+   "fix": "Quita los valores que sobran para que haya exactamente uno por cada parámetro."
+  }
+ },
+ {
+  "id": "P-INDEX-RANGE",
+  "patterns": [
+   "index out of range \\[(?P<index>-?\\d+)\\] with length (?P<length>\\d+)"
+  ],
+  "en": {
+   "title": "Index {index} is out of range",
+   "body": "The program tried to use position {index}, but the slice, array or string only has {length} element(s). Valid positions go from 0 to {length} - 1.",
+   "fix": "Check the index before using it (for example: if i < len(items)) and remember that counting starts at 0."
+  },
+  "es": {
+   "title": "El índice {index} está fuera de rango",
+   "body": "El programa intentó usar la posición {index}, pero el slice, arreglo o string solo tiene {length} elemento(s). Las posiciones válidas van de 0 a {length} - 1.",
+   "fix": "Comprueba el índice antes de usarlo (por ejemplo: if i < len(items)) y recuerda que se empieza a contar desde 0."
+  }
+ },
+ {
+  "id": "P-NIL-MAP",
+  "patterns": [
+   "assignment to entry in nil map"
+  ],
+  "en": {
+   "title": "Writing to a map that was never created",
+   "body": "The map variable was declared but never created, so it is nil. You can read from a nil map, but writing to it stops the program.",
+   "fix": "Create the map before writing to it: ages := make(map[string]int) or ages := map[string]int{}."
+  },
+  "es": {
+   "title": "Escritura en un map que nunca se creó",
+   "body": "La variable del map se declaró, pero nunca se creó, así que vale nil. Puedes leer de un map nil, pero escribir en él detiene el programa.",
+   "fix": "Crea el map antes de escribir en él: ages := make(map[string]int) o ages := map[string]int{}."
+  }
+ },
+ {
+  "id": "P-NIL-POINTER",
+  "patterns": [
+   "invalid memory address or nil pointer dereference"
+  ],
+  "en": {
+   "title": "Using a pointer that is nil",
+   "body": "The program read or wrote through a pointer (or an interface, map or slice element holding one) whose value is nil, so it points to nothing.",
+   "fix": "Make sure the pointer gets a value before you use it, for example p := &Person{} or p := new(Person), or check if p != nil first."
+  },
+  "es": {
+   "title": "Uso de un puntero que vale nil",
+   "body": "El programa leyó o escribió a través de un puntero (o de una interfaz, map o elemento de slice que lo contiene) cuyo valor es nil, es decir, que no apunta a nada.",
+   "fix": "Asegúrate de que el puntero tenga un valor antes de usarlo, por ejemplo p := &Person{} o p := new(Person), o comprueba primero if p != nil."
+  }
+ },
+ {
+  "id": "P-DEADLOCK",
+  "patterns": [
+   "all goroutines are asleep - deadlock!"
+  ],
+  "en": {
+   "title": "Deadlock: every goroutine is waiting forever",
+   "body": "All goroutines are blocked waiting for each other, so nothing can continue. Usually a channel is sent to with nobody receiving, or received from with nobody sending, or a WaitGroup or Mutex is never released.",
+   "fix": "Make sure another goroutine receives what you send (go func() { ... }()), use a buffered channel, close the channel when you are done, or call wg.Done()."
+  },
+  "es": {
+   "title": "Deadlock: todas las goroutines esperan para siempre",
+   "body": "Todas las goroutines están bloqueadas esperándose entre sí, así que nada puede continuar. Normalmente se envía por un canal que nadie recibe, se recibe de un canal al que nadie envía, o nunca se libera un WaitGroup o un Mutex.",
+   "fix": "Asegúrate de que otra goroutine reciba lo que envías (go func() { ... }()), usa un canal con buffer, cierra el canal cuando termines o llama a wg.Done()."
+  }
+ },
+ {
+  "id": "P-DIVIDE-ZERO",
+  "patterns": [
+   "integer divide by zero"
+  ],
+  "en": {
+   "title": "Division by zero",
+   "body": "The program divided an integer by zero (with / or %). That has no result, so Go stops the program.",
+   "fix": "Check that the divisor is not 0 before dividing, for example: if people != 0 { ... }."
+  },
+  "es": {
+   "title": "División entre cero",
+   "body": "El programa dividió un entero entre cero (con / o %). Eso no tiene resultado, así que Go detiene el programa.",
+   "fix": "Comprueba que el divisor no sea 0 antes de dividir, por ejemplo: if people != 0 { ... }."
+  }
+ },
+ {
+  "id": "P-SLICE-BOUNDS",
+  "patterns": [
+   "slice bounds out of range \\[(?P<bounds>[^\\]]*)\\]"
+  ],
+  "en": {
+   "title": "Slice limits [{bounds}] are out of range",
+   "body": "The program tried to take the part [{bounds}] of a slice or string, but those limits go past its end, or the start is bigger than the end.",
+   "fix": "Make sure that 0 <= start <= end <= len(s) before slicing, for example with min(end, len(s))."
+  },
+  "es": {
+   "title": "Los límites [{bounds}] del slice están fuera de rango",
+   "body": "El programa intentó tomar la parte [{bounds}] de un slice o string, pero esos límites pasan del final, o el inicio es mayor que el fin.",
+   "fix": "Asegúrate de que 0 <= inicio <= fin <= len(s) antes de cortar, por ejemplo con min(end, len(s))."
+  }
+ },
+ {
+  "id": "P-TYPE-ASSERTION",
+  "patterns": [
+   "interface conversion: (?P<interface>.+?) is (?P<actual>.+?), not (?P<type>.+)$"
+  ],
+  "en": {
+   "title": "Type assertion failed: {actual} is not {type}",
+   "body": "The program asserted that a value holds a {type}, but it actually holds a {actual}. A failed assertion with a single result stops the program.",
+   "fix": "Use the two-result form to check safely: n, ok := value.({type}). Or use a type switch."
+  },
+  "es": {
+   "title": "Falló la aserción de tipo: {actual} no es {type}",
+   "body": "El programa afirmó que un valor contiene un {type}, pero en realidad contiene un {actual}. Una aserción fallida con un solo resultado detiene el programa.",
+   "fix": "Usa la forma con dos resultados para comprobarlo sin riesgo: n, ok := value.({type}). O usa un type switch."
+  }
+ },
+ {
+  "id": "V-PRINTF-ARGS",
+  "patterns": [
+   "(?P<function>[\\w.]+) format %\\S+ reads arg #\\d+, but call has \\d+ args?",
+   "(?P<function>[\\w.]+) call needs \\d+ args? but has \\d+ args?",
+   "(?P<function>[\\w.]+) call has arguments but no formatting directives",
+   "(?P<function>[\\w.]+) format %\\S+ has arg .+ of wrong type"
+  ],
+  "en": {
+   "title": "The format of {function} does not match its values",
+   "body": "The format text given to {function} does not match the values after it. Each verb such as %d, %s or %v needs exactly one value, of a suitable type.",
+   "fix": "Add or remove values so there is one per verb, or use fmt.Println if you do not need formatting."
+  },
+  "es": {
+   "title": "El formato de {function} no coincide con sus valores",
+   "body": "El texto de formato que recibe {function} no coincide con los valores que van después. Cada verbo como %d, %s o %v necesita exactamente un valor, de un tipo adecuado.",
+   "fix": "Agrega o quita valores para que haya uno por verbo, o usa fmt.Println si no necesitas formato."
+  }
+ },
+ {
+  "id": "V-UNREACHABLE",
+  "patterns": [
+   "^unreachable code"
+  ],
+  "en": {
+   "title": "This code can never run",
+   "body": "These statements come after a return, panic, break or infinite loop, so the program can never reach them.",
+   "fix": "Delete the unreachable lines, or move them before the return."
+  },
+  "es": {
+   "title": "Este código nunca se puede ejecutar",
+   "body": "Estas instrucciones están después de un return, panic, break o bucle infinito, así que el programa nunca puede llegar a ellas.",
+   "fix": "Borra las líneas inalcanzables o muévelas antes del return."
+  }
+ }
+]

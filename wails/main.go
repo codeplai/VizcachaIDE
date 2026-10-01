@@ -10,6 +10,7 @@ import (
 	"log"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/wailsapp/wails/v2"
@@ -31,14 +32,18 @@ func run() error {
 	sink := bridge.NewWailsEventSink()
 	settingsStore := bridge.NewMemorySettingsStore() // W1: adapters/settings
 
-	// W1 G3: pass gopls.Config{Environment: toolchain.Environment} once the toolchain adapter exists.
+	explainer, err := errorcatalog.NewExplainer()
+	if err != nil {
+		return err
+	}
+	// W2: pass the toolchain environment and tool paths once the toolchain adapter (G1) is merged.
 	languageServer := gopls.New(sink, gopls.Config{})
 
 	services := []any{
 		bridge.NewRunService(sink),
 		bridge.NewDebugService(delve.New(sink, delve.Options{})),
 		bridge.NewLanguageService(languageServer),
-		bridge.NewAssistantService(sink, settingsStore),
+		bridge.NewAssistantService(sink, explainer, settingsStore),
 		bridge.NewFilesService(),
 		bridge.NewSettingsService(sink, settingsStore),
 	}
