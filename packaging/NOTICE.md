@@ -2,7 +2,7 @@ VizcachaIDE - LICENSE NOTICE FOR THE DISTRIBUTED PROGRAM
 =========================================================
 
 The VizcachaIDE source code is released under the MIT License
-(Copyright (c) 2025 Marks Calderon - Codeplai Games).
+(Copyright (c) 2025-2026 Marks Calderon - Codeplai Games).
 
 This installer / package, however, also contains third-party software:
 
@@ -33,7 +33,7 @@ VizcachaIDE - AVISO DE LICENCIA DEL PROGRAMA DISTRIBUIDO
 =========================================================
 
 El código fuente de VizcachaIDE se publica bajo la licencia MIT
-(Copyright (c) 2025 Marks Calderon - Codeplai Games).
+(Copyright (c) 2025-2026 Marks Calderon - Codeplai Games).
 
 Sin embargo, este instalador o paquete incluye software de terceros:
 PyQt5 (GPLv3), las bibliotecas de Qt 5 (LGPLv3), PyQt5-sip (licencia SIP),

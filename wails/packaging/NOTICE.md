@@ -4,7 +4,7 @@ VizcachaIDE (Wails variant) - LICENSE NOTICE / AVISO DE LICENCIAS
 English
 -------
 The VizcachaIDE source code is released under the MIT License
-(Copyright (c) 2025 Marks Calderon - Codeplai Games). The full text follows this notice.
+(Copyright (c) 2025-2026 Marks Calderon - Codeplai Games). The full text follows this notice.
 
 Unlike the 1.x series (PyQt5, GPLv3), the Wails variant contains NO GPL code, so the
 distributed program is licensed under the MIT License. It bundles or links the following
@@ -29,7 +29,7 @@ This program is provided WITHOUT ANY WARRANTY, to the extent permitted by law.
 Espanol
 -------
 El codigo fuente de VizcachaIDE se publica bajo la licencia MIT
-(Copyright (c) 2025 Marks Calderon - Codeplai Games). El texto completo sigue a este aviso.
+(Copyright (c) 2025-2026 Marks Calderon - Codeplai Games). El texto completo sigue a este aviso.
 
 A diferencia de la serie 1.x (PyQt5, GPLv3), la variante Wails NO contiene codigo GPL, asi que
 el programa distribuido tiene licencia MIT. Incluye o enlaza el siguiente software de terceros,

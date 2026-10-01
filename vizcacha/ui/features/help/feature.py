@@ -31,7 +31,7 @@ def show_about(workbench: Workbench) -> None:
         "<b>" + _("Contact:") + "</b> hola@codeplai.pe<br>"
         "CEO of Codeplai Games<br>Peru</p>"
         "<p><b>" + _("License:") + "</b> MIT License<br>"
-        "Copyright (c) 2025 Marks Calderon - Codeplai Games</p>"
+        "Copyright (c) 2025-2026 Marks Calderon - Codeplai Games</p>"
         "<p><small>"
         + _(
             "The installable package bundles PyQt5 (GPLv3), Go, Delve and gopls, so the "

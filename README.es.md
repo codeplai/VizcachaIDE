@@ -269,7 +269,7 @@ error nuevo al Asistente.
 
 ## Licencia
 
-- **Código fuente:** [MIT](LICENSE), © 2025 Marks Calderon – Codeplai Games.
+- **Código fuente:** [MIT](LICENSE), © 2025-2026 Marks Calderon – Codeplai Games.
 - **Binarios distribuidos:** incluyen PyQt5 (GPLv3), así que los instaladores y paquetes, en su
   conjunto, quedan bajo la **GPLv3**. En [`packaging/NOTICE.md`](packaging/NOTICE.md) está la
   lista completa de componentes incluidos y sus licencias (Qt LGPLv3, Python PSF, Go y gopls

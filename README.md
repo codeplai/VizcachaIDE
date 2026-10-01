@@ -258,7 +258,7 @@ to the Assistant.
 
 ## License
 
-- **Source code:** [MIT](LICENSE), © 2025 Marks Calderon – Codeplai Games.
+- **Source code:** [MIT](LICENSE), © 2025-2026 Marks Calderon – Codeplai Games.
 - **Distributed binaries:** they bundle PyQt5 (GPLv3), so the installers and packages are
   licensed under the **GPLv3** as a whole. See [`packaging/NOTICE.md`](packaging/NOTICE.md)
   for the full list of bundled components and their licenses (Qt LGPLv3, Python PSF, Go and
