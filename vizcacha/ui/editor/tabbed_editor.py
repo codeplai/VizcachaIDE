@@ -1,15 +1,21 @@
-"""Tabs of CodeEditors: open, save, close, unsaved-changes guard."""
+"""Tabs of CodeEditors: open, save, close, unsaved-changes guard.
 
-from collections.abc import Iterator
+``add_save_hook(hook)`` lets features transform an editor right before it is
+written to disk (e.g. gofmt on save): ``hook(editor, path)``.
+"""
+
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QTabWidget
+from PyQt5.QtWidgets import QMessageBox, QTabWidget
 
 from vizcacha.i18n import _
 from vizcacha.ui.editor.code_editor import CodeEditor
+from vizcacha.ui.editor.file_dialogs import ask_save_changes, ask_save_path, show_file_error
 
 MODIFIED_MARK = "*"
+SaveHook = Callable[[CodeEditor, Path], None]
 
 
 class TabbedEditor(QTabWidget):
@@ -25,6 +31,10 @@ class TabbedEditor(QTabWidget):
         self.tabCloseRequested.connect(self.close_tab)
         self.currentChanged.connect(self._on_tab_changed)
         self._untitled_counter = 0
+        self._save_hooks: list[SaveHook] = []
+
+    def add_save_hook(self, hook: SaveHook) -> None:
+        self._save_hooks.append(hook)
 
     # --- queries ----------------------------------------------------------
     def editors(self) -> Iterator[CodeEditor]:
@@ -37,6 +47,9 @@ class TabbedEditor(QTabWidget):
     def current_file_path(self) -> Path | None:
         editor = self.current_editor()
         return editor.file_path if editor else None
+
+    def editor_for_path(self, file_path: Path) -> CodeEditor | None:
+        return next((e for e in self.editors() if e.file_path == Path(file_path)), None)
 
     def get_all_breakpoints(self) -> list[int]:
         editor = self.current_editor()
@@ -65,10 +78,8 @@ class TabbedEditor(QTabWidget):
                 return True
         try:
             content = file_path.read_text(encoding="utf-8")
-        except OSError as error:
-            QMessageBox.critical(
-                self, _("Error"), _("Could not open file: {error}").format(error=error)
-            )
+        except (OSError, UnicodeDecodeError) as error:
+            show_file_error(self, _("Could not open file: {error}").format(error=error))
             return False
         self._reuse_or_create_tab(file_path, content)
         self.file_opened.emit(str(file_path))
@@ -88,12 +99,7 @@ class TabbedEditor(QTabWidget):
         """Ask to save unsaved changes. Returns False if the user cancelled."""
         if not editor.document().isModified():
             return True
-        reply = QMessageBox.question(
-            self,
-            _("Unsaved Changes"),
-            _("Do you want to save changes to '{name}'?").format(name=self._base_title(editor)),
-            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
-        )
+        reply = ask_save_changes(self, self._base_title(editor))
         if reply == QMessageBox.Save:
             self.setCurrentWidget(editor)
             return self.save_current_tab()
@@ -111,23 +117,29 @@ class TabbedEditor(QTabWidget):
         editor = self.current_editor()
         if editor is None:
             return False
-        filename, _filter = QFileDialog.getSaveFileName(
-            self, _("Save Go File"), "", _("Go Files (*.go);;All Files (*)")
-        )
-        if not filename:
-            return False
-        path = Path(filename)
-        if path.suffix != ".go":
-            path = path.with_name(path.name + ".go")
-        return self.save_to_file(editor, path)
+        path = ask_save_path(self)
+        return path is not None and self.save_to_file(editor, path)
+
+    def save_all(self) -> bool:
+        """Save every modified tab. Returns False if one could not be saved or was cancelled."""
+        current = self.current_editor()
+        saved = True
+        for editor in list(self.editors()):
+            if not editor.document().isModified():
+                continue
+            self.setCurrentWidget(editor)
+            saved = self.save_current_tab() and saved
+        if current is not None:
+            self.setCurrentWidget(current)
+        return saved
 
     def save_to_file(self, editor: CodeEditor, path: Path) -> bool:
+        for hook in self._save_hooks:
+            hook(editor, Path(path))
         try:
             Path(path).write_text(editor.toPlainText(), encoding="utf-8")
         except OSError as error:
-            QMessageBox.critical(
-                self, _("Error"), _("Could not save file: {error}").format(error=error)
-            )
+            show_file_error(self, _("Could not save file: {error}").format(error=error))
             return False
         editor.file_path = Path(path)
         editor.document().setModified(False)
@@ -167,9 +179,8 @@ class TabbedEditor(QTabWidget):
 
     def _next_untitled_name(self) -> str:
         self._untitled_counter += 1
-        if self._untitled_counter == 1:
-            return _("Untitled")
-        return _("Untitled {number}").format(number=self._untitled_counter)
+        number = self._untitled_counter
+        return _("Untitled") if number == 1 else _("Untitled {number}").format(number=number)
 
     def _base_title(self, editor: CodeEditor) -> str:
         return editor.file_path.name if editor.file_path else editor.untitled_name
@@ -178,8 +189,7 @@ class TabbedEditor(QTabWidget):
         index = self.indexOf(editor)
         if index < 0:
             return
-        suffix = MODIFIED_MARK if modified else ""
-        self.setTabText(index, self._base_title(editor) + suffix)
+        self.setTabText(index, self._base_title(editor) + (MODIFIED_MARK if modified else ""))
 
     def _on_tab_changed(self, index: int) -> None:
         if index < 0:

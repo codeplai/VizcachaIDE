@@ -1,13 +1,13 @@
-"""Gutter with line numbers, breakpoint dots and the current-line marker."""
+"""Gutter with line numbers, breakpoint dots and the current-line marker.
+
+When line numbers are hidden the gutter shrinks to the breakpoint column, so
+breakpoints stay visible and can still be toggled with a click.
+"""
 
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import QWidget
 
-GUTTER_BACKGROUND = QColor("#F0F0F0")
-LINE_NUMBER_COLOR = QColor("#808080")
-BREAKPOINT_COLOR = QColor("#FF0000")
-CURRENT_LINE_COLOR = QColor("#FFFF00")
 BREAKPOINT_MARGIN = 18  # room for the breakpoint dot, left of the numbers
 
 
@@ -20,6 +20,8 @@ class LineNumberArea(QWidget):
         return QSize(self.preferred_width(), 0)
 
     def preferred_width(self) -> int:
+        if not self.editor.line_numbers_visible:
+            return BREAKPOINT_MARGIN
         digits = len(str(max(1, self.editor.blockCount())))
         return BREAKPOINT_MARGIN + 8 + self.editor.fontMetrics().horizontalAdvance("9") * digits
 
@@ -32,19 +34,23 @@ class LineNumberArea(QWidget):
 
     def paintEvent(self, event) -> None:  # noqa: N802 - Qt override
         painter = QPainter(self)
-        painter.fillRect(event.rect(), GUTTER_BACKGROUND)
+        painter.fillRect(event.rect(), QColor(self.editor.theme.gutter_background))
         for line, top in self._visible_lines(event.rect().top(), event.rect().bottom()):
             self._paint_line(painter, line, top)
 
     def _paint_line(self, painter: QPainter, line: int, top: int) -> None:
+        theme = self.editor.theme
         height = self.editor.fontMetrics().height()
+        if line == self.editor.current_line:
+            painter.fillRect(0, top, self.width(), height, QColor(theme.current_line))
         if line in self.editor.breakpoints:
             painter.setPen(Qt.NoPen)
-            painter.setBrush(BREAKPOINT_COLOR)
-            painter.drawEllipse(3, top + 2, 12, 12)
-        if line == self.editor.current_line:
-            painter.fillRect(0, top, self.width(), height, CURRENT_LINE_COLOR)
-        painter.setPen(LINE_NUMBER_COLOR)
+            painter.setBrush(QColor(theme.breakpoint))
+            diameter = min(12, max(height - 4, 6))
+            painter.drawEllipse(3, top + (height - diameter) // 2, diameter, diameter)
+        if not self.editor.line_numbers_visible:
+            return
+        painter.setPen(QColor(theme.gutter_text))
         painter.drawText(0, top, self.width() - 5, height, Qt.AlignRight, str(line))
 
     def _visible_lines(self, rect_top: int, rect_bottom: int):
