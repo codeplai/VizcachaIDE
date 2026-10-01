@@ -30,17 +30,15 @@ class LanguageFeature:
         self.outline = OutlineView()
         self.sessions: list[EditorSession] = []
         self._notice_shown = False
-        self._outline_added = False
 
     def register(self) -> None:
+        self.workbench.add_panel("outline", _("Outline"), self.outline, "left")
         self.outline.symbol_activated.connect(self.workbench.events.navigate_to.emit)
         if self.server is None:
             self.show_notice("not_found")
             return
         self.server.diagnostics_published.connect(self._on_diagnostics)
-        unavailable = getattr(self.server, "server_unavailable", None)
-        if unavailable is not None:
-            unavailable.connect(self.show_notice)
+        self.server.server_unavailable.connect(self.show_notice)
         self.editor.editor_created.connect(self.attach)
         self.editor.active_file_changed.connect(self._on_active_file_changed)
         self.editor.file_saved.connect(lambda _path: self._sync_paths())
@@ -89,19 +87,10 @@ class LanguageFeature:
 
     def refresh_outline(self) -> None:
         session = self.session_for(self.editor.current_editor())
-        query = getattr(self.server, "document_symbols", None)
-        if session is None or session.path is None or query is None or not session.is_analyzed:
+        if session is None or session.path is None or not session.is_analyzed:
             self.outline.clear()
             return
-        self._ensure_outline_panel()
-        self.outline.show_symbols(query(session.path))
-
-    def _ensure_outline_panel(self) -> None:
-        """Added once gopls has analyzed a file: without gopls there is no outline."""
-        if self._outline_added:
-            return
-        self._outline_added = True
-        self.workbench.add_panel("outline", _("Outline"), self.outline, "left")
+        self.outline.show_symbols(self.server.document_symbols(session.path))
 
     # --- lifecycle --------------------------------------------------------------
     def show_notice(self, reason: str = "not_found") -> None:

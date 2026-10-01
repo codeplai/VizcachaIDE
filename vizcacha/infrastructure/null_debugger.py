@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vizcacha.domain.debugging import Breakpoint, Variable
+from vizcacha.domain.debugging import Breakpoint
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.domain.project import RunConfiguration
 from vizcacha.i18n import _
@@ -20,6 +20,7 @@ class NullDebugger(QObject):
     stopped = pyqtSignal(object)
     output = pyqtSignal(str, str)
     terminated = pyqtSignal(int)
+    variables_loaded = pyqtSignal(int, object)  # reference, list[Variable]
 
     def start(self, config: RunConfiguration, breakpoints: Sequence[Breakpoint]) -> None:
         self.output.emit(
@@ -46,8 +47,8 @@ class NullDebugger(QObject):
     def run_to(self, location: SourceLocation) -> None:
         return
 
-    def variables(self, reference: int) -> list[Variable]:
-        return []
+    def request_variables(self, reference: int) -> None:
+        self.variables_loaded.emit(reference, [])
 
     def stop(self) -> None:
         return

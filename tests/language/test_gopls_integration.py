@@ -1,4 +1,4 @@
-"""End-to-end with a real ``gopls``: diagnostics, completion and definition.
+"""End-to-end with a real ``gopls``: diagnostics, completion, definition and structure.
 
 gopls may need a long time to load packages the first time (cold caches,
 antivirus…), so these tests wait generously for the first diagnostics and then
@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 from PyQt5.QtWidgets import QApplication
 
+from vizcacha.domain.code_structure import SourceRange, SymbolKind
 from vizcacha.domain.diagnostics import Severity, SourceLocation
 from vizcacha.infrastructure.go_toolchain import GoEnvironment
 from vizcacha.infrastructure.gopls_lsp import GoplsLanguageServer
@@ -70,6 +71,7 @@ def test_file_with_errors_publishes_diagnostics(session):
     unused = [d for d in diagnostics if "unused" in d.message]
     assert unused, diagnostics
     assert unused[0].location == SourceLocation(source, 10, 2)
+    assert unused[0].end == SourceLocation(source, 10, 8)
     assert unused[0].severity == Severity.ERROR
     assert unused[0].source == "gopls"
 
@@ -92,3 +94,26 @@ def test_definition_of_a_local_function(session):
     assert target is not None
     assert (target.line, target.column) == (5, 6)
     assert Path(target.file).resolve() == source.resolve()
+
+
+def test_document_symbols_list_the_functions(session):
+    server, source, _published = session
+
+    symbols = wait_for(lambda: server.document_symbols(source), QUERY_TIMEOUT_S)
+
+    assert [(s.name, s.kind, s.location.line) for s in symbols] == [
+        ("greet", SymbolKind.FUNCTION, 5),
+        ("main", SymbolKind.FUNCTION, 9),
+    ]
+    assert symbols[0].range.end.line == 7
+
+
+def test_document_highlights_of_a_local_function(session):
+    server, source, _published = session
+    call = SourceLocation(source, 11, SOURCE.splitlines()[10].index("greet") + 1)
+
+    ranges = wait_for(lambda: server.document_highlights(call), QUERY_TIMEOUT_S)
+
+    declaration = SourceRange(SourceLocation(source, 5, 6), SourceLocation(source, 5, 11))
+    assert declaration in ranges
+    assert len(ranges) == 2
