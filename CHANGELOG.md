@@ -1,0 +1,194 @@
+# Changelog
+
+All notable changes to VizcachaIDE are documented in this file. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project aims to follow
+[Semantic Versioning](https://semver.org/).
+
+*La versión en español está más abajo: [Historial de cambios (español)](#historial-de-cambios-español).*
+
+## [Unreleased]
+
+## [1.0.0-rc1] - 2026-10-01
+
+First release candidate of the public, bilingual 1.0. The code base was rewritten
+around a layered architecture; most of what the 0.1 README promised is now real.
+
+### Added
+- **Real debugger based on Delve** (`dlv dap`): breakpoints (also added or removed while the
+  program runs), Continue, Step Over, Step Into, Step Out, Run to Cursor and Stop; Variables
+  panel with lazily expanded structs, slices and maps; Call Stack (click to jump to a frame)
+  and Goroutines panels; current-line highlight.
+- **Assistant** panel that explains Go problems for beginners in English and Spanish:
+  25 kinds of messages (16 compiler errors, 7 runtime panics, 2 `go vet` checks), each with
+  a title, an explanation, a suggested fix, the untranslated original message, *Go to line* and
+  *Search this error*. One example program per error in `examples/errors/<ID>/`.
+- Clickable `file.go:LINE:COL` links in the console.
+- **gopls integration:** completion (with a static fallback when gopls is missing), live
+  diagnostics underlined over the exact range of the error, hover documentation, Ctrl+click to
+  go to a definition, call-tips when typing `(`, highlighting of other occurrences and an
+  **Outline** panel.
+- Editor: 4 editor themes and 2 console themes that are actually applied, real tabs with a
+  configurable width, gofmt on save and *Format Code* (Ctrl+Shift+F), Find/Replace bar,
+  Go to Line, toggle comment, indent/unindent selection, zoom, bracket matching, up to 10
+  recent files, and reload/prompt when a file changes outside the IDE.
+- Run: **program arguments** field, running unsaved tabs, **Go modules** (`go run .` inside a
+  folder with `go.mod`), a real Stop (interrupt, then kill after 2 s), non-blocking Build
+  (Ctrl+B), keyboard input in the console.
+- *File → Open Folder…* with a **Files** panel, and *Tools → Go Modules…* for `go mod init`,
+  `go get` and `go mod tidy`.
+- *Tools → Options…* with Environment (paths to go/dlv/gopls, GOPATH, GOROOT, extra variables,
+  detected tools), Editor and Appearance pages.
+- **English and Spanish user interface** with gettext/Babel catalogs; the language follows the
+  operating system.
+- **Packaging:** PyInstaller builds in two variants, *lite* (IDE only) and *full* (with Go
+  1.25.14, Delve 1.27.2 and gopls 0.21.1 pinned and checksum-verified); Windows installer
+  (Inno Setup, per-user, English/Spanish, optional `.go` association) and portable zip; macOS
+  `.dmg` (arm64 and x86_64) and Linux AppImage scripts; GitHub Actions workflows for CI and
+  for draft releases.
+- `NOTICE.md` explaining the license of the distributed binaries, also shown in *Help → About*.
+- Automated tests (pytest + pytest-qt, 334 tests including integration tests with real Go,
+  Delve and gopls), ruff, and import-linter architecture contracts.
+
+### Changed
+- New layered architecture (`domain`, `application`, `infrastructure`, `ui`) where every
+  feature plugs into the window through `register(workbench)`. `python -m vizcacha` is the new
+  entry point (`python main.py` still works).
+- Indentation uses tabs, as `gofmt` does, instead of 4 spaces; the automatic indent after `:`
+  was removed.
+- Settings dialog moved to *Tools → Options…*; the settings stored by 0.1 (`env/*`, `editor/*`,
+  `appearance/*`, last file) are kept.
+- Running and building no longer block the window.
+- Python 3.10 or newer is now required.
+
+### Removed
+- The **simulated debugger** of 0.1, which faked stepping and variables without running Delve.
+  It was replaced by the real Delve debugger.
+- Pygments is no longer a dependency.
+
+### Fixed
+- Theme, tab size, auto-indent, line numbers and status bar options were saved but ignored;
+  they are now applied.
+- Bracket matching, which 0.1 announced but did not implement.
+- Stop now ends the whole process tree of `go run`, not only the `go` command.
+
+### Known limitations
+- macOS and Linux packages are a **preview**: not tested on real machines yet. The CI and
+  release workflows have not been run yet, and the Windows Inno Setup installer has not been
+  compiled in the release environment (the PyInstaller builds and the portable zip were
+  verified on Windows).
+- No code signing (Windows SmartScreen warning; macOS app not notarized).
+- The Spanish translation is incomplete, and there is no language selector in the app yet.
+- A program being debugged cannot read from stdin.
+- The default panel layout is still being tuned; the Assistant panel can start small.
+
+## [0.1.0] - 2025-10-01
+
+### Added
+- First prototype: PyQt5 editor with Go syntax highlighting, line numbers, tabs and a static
+  autocomplete list (Ctrl+Space).
+- Run (F5) and Stop (Shift+F5) through `go run`, with an output console.
+- Settings dialog (Environment, Editor and Appearance).
+- A **simulated** debugger user interface (Variables and Call Stack panels) that did not use
+  Delve.
+
+---
+
+# Historial de cambios (español)
+
+Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
+[Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el proyecto intenta seguir el
+[versionado semántico](https://semver.org/lang/es/).
+
+## [Sin publicar]
+
+## [1.0.0-rc1] - 2026-10-01
+
+Primera versión candidata de la 1.0 pública y bilingüe. El código se reescribió sobre una
+arquitectura en capas, y casi todo lo que prometía el README de la 0.1 ahora existe de verdad.
+
+### Añadido
+- **Depurador real basado en Delve** (`dlv dap`): puntos de interrupción (también se ponen y se
+  quitan con el programa en marcha), Continuar, Paso sobre, Paso adentro, Paso afuera, Ejecutar
+  hasta el cursor y Detener; panel de Variables con structs, slices y maps que se despliegan
+  bajo demanda; paneles de Pila de llamadas (un clic lleva al frame) y Goroutines; resaltado de
+  la línea actual.
+- Panel **Asistente**, que explica los problemas de Go a principiantes en español y en inglés:
+  25 tipos de mensajes (16 errores de compilación, 7 panics y 2 avisos de `go vet`), cada uno
+  con título, explicación, sugerencia, el mensaje original sin traducir y los botones *Ir a la
+  línea* y *Buscar este error*. Hay un programa de ejemplo por error en `examples/errors/<ID>/`.
+- Enlaces clicables `archivo.go:LÍNEA:COL` en la consola.
+- **Integración con gopls:** autocompletado (con una lista estática de respaldo si falta gopls),
+  diagnósticos en vivo subrayados en el rango exacto del error, documentación al pasar el ratón,
+  Ctrl+clic para ir a la definición, ayuda de parámetros al escribir `(`, resaltado de las demás
+  apariciones y panel **Outline**.
+- Editor: 4 temas de editor y 2 de consola que ahora sí se aplican, tabulaciones reales con
+  ancho configurable, gofmt al guardar y *Format Code* (Ctrl+Shift+F), barra de buscar y
+  reemplazar, ir a línea, comentar, indentar/desindentar la selección, zoom, emparejado de
+  llaves, hasta 10 archivos recientes y recarga (o pregunta) cuando un archivo cambia fuera del
+  IDE.
+- Ejecución: campo de **argumentos del programa**, ejecutar pestañas sin guardar, **módulos de
+  Go** (`go run .` en una carpeta con `go.mod`), un Detener de verdad (interrumpe y, a los 2 s,
+  mata el proceso), Compilar sin bloquear (Ctrl+B) y entrada por teclado en la consola.
+- *Archivo → Open Folder…* con un panel **Files**, y *Herramientas → Go Modules…* para
+  `go mod init`, `go get` y `go mod tidy`.
+- *Herramientas → Opciones…* con las páginas Entorno (rutas de go/dlv/gopls, GOPATH, GOROOT,
+  variables adicionales y herramientas detectadas), Editor y Apariencia.
+- **Interfaz en español y en inglés** con catálogos gettext/Babel; el idioma sigue al del
+  sistema operativo.
+- **Empaquetado:** builds de PyInstaller en dos variantes, *lite* (sólo el IDE) y *full* (con
+  Go 1.25.14, Delve 1.27.2 y gopls 0.21.1 fijados y verificados con sha256); instalador de
+  Windows (Inno Setup, por usuario, español/inglés, asociación `.go` opcional) y zip portable;
+  scripts para `.dmg` de macOS (arm64 y x86_64) y AppImage de Linux; workflows de GitHub Actions
+  para CI y para releases en borrador.
+- `NOTICE.md`, que explica la licencia de los binarios distribuidos; también aparece en
+  *Ayuda → Acerca de*.
+- Tests automáticos (pytest + pytest-qt, 334 tests, incluidos los de integración con Go, Delve y
+  gopls reales), ruff y contratos de arquitectura con import-linter.
+
+### Cambiado
+- Nueva arquitectura en capas (`domain`, `application`, `infrastructure`, `ui`), en la que cada
+  función se conecta a la ventana con `register(workbench)`. El nuevo punto de entrada es
+  `python -m vizcacha` (`python main.py` sigue funcionando).
+- La indentación usa tabulaciones, como `gofmt`, en lugar de 4 espacios; se quitó la
+  indentación automática después de `:`.
+- La configuración pasó a *Herramientas → Opciones…*; se conservan los ajustes guardados por la
+  0.1 (`env/*`, `editor/*`, `appearance/*` y el último archivo).
+- Ejecutar y compilar ya no bloquean la ventana.
+- Ahora se necesita Python 3.10 o posterior.
+
+### Eliminado
+- El **depurador simulado** de la 0.1, que fingía los pasos y las variables sin ejecutar Delve.
+  Lo sustituye el depurador real con Delve.
+- Pygments ya no es una dependencia.
+
+### Corregido
+- Las opciones de tema, ancho del tabulador, autoindentado, números de línea y barra de estado
+  se guardaban pero no se aplicaban; ahora sí.
+- El emparejado de llaves, que la 0.1 anunciaba pero no tenía.
+- Detener ahora termina todo el árbol de procesos de `go run`, no sólo el comando `go`.
+
+### Limitaciones conocidas
+- Los paquetes de macOS y Linux son una **vista previa**: aún no se han probado en máquinas
+  reales. Los workflows de CI y de release todavía no se han ejecutado, y el instalador de
+  Inno Setup para Windows aún no se ha compilado en el entorno de release (sí se verificaron en
+  Windows los builds de PyInstaller y el zip portable).
+- Sin firma de código (aviso de SmartScreen en Windows; app de macOS sin notarizar).
+- La traducción al español está incompleta y todavía no hay selector de idioma en la app.
+- Un programa en depuración no puede leer de stdin.
+- La disposición inicial de los paneles aún se está ajustando; el Asistente puede empezar
+  pequeño.
+
+## [0.1.0] - 2025-10-01
+
+### Añadido
+- Primer prototipo: editor en PyQt5 con resaltado de sintaxis de Go, números de línea, pestañas
+  y una lista estática de autocompletado (Ctrl+Space).
+- Ejecutar (F5) y Detener (Shift+F5) con `go run`, con una consola de salida.
+- Diálogo de configuración (Entorno, Editor y Apariencia).
+- Una interfaz de depurador **simulada** (paneles de Variables y Pila de llamadas) que no usaba
+  Delve.
+
+[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/v1.0.0-rc1...HEAD
+[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/v1.0.0-rc1...HEAD
+[1.0.0-rc1]: https://github.com/codeplai/VizcachaIDE/compare/v0.1.0...v1.0.0-rc1
+[0.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/v0.1.0
