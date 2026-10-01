@@ -9,7 +9,7 @@ description = "Beginner-friendly IDE for Go, inspired by Thonny (English / EspaÃ
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
-dependencies = ["PyQt5>=5.15"]
+dependencies = ["PyQt5>=5.15", "lsprotocol>=2023.0", "cattrs>=23.1"]
 
 [project.optional-dependencies]
 dev = [
@@ -19,7 +19,6 @@ dev = [
     "import-linter>=2.1",
     "Babel>=2.14",
 ]
-lsp = ["lsprotocol>=2023.0", "cattrs>=23.1"]
 
 [project.gui-scripts]
 vizcacha = "vizcacha.ui.app:main"

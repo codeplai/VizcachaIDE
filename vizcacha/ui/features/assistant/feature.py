@@ -68,6 +68,8 @@ class AssistantFeature(QObject):
             self.dock.raise_()
 
     def _on_diagnostics_changed(self, file: Path, diagnostics: list[Diagnostic]) -> None:
+        if file != self.workbench.editor.current_file_path():
+            return  # live diagnostics of background files would hide the one being edited
         results = self.use_case.from_diagnostics(diagnostics)
         if not results and self._live_file != file:
             return  # keep showing the last run's explanation
@@ -82,4 +84,5 @@ def _has_errors(results: list[ExplainedDiagnostic]) -> bool:
 
 
 def register(workbench: Workbench, explainer: ErrorExplainerPort | None = None) -> None:
-    AssistantFeature(workbench, explainer or GoErrorExplainer()).register()
+    chosen = explainer or workbench.services.explainer or GoErrorExplainer()
+    AssistantFeature(workbench, chosen).register()

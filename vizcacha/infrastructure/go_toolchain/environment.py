@@ -105,6 +105,7 @@ class GoEnvironment:
 
     def _apply_bundled_toolchain(self, env: dict[str, str]) -> None:
         env["GOROOT"] = str(self._locator.bundled_goroot())
+        env.setdefault("GOTOOLCHAIN", "local")
         path_name = _path_variable_name(env)
         directories = [str(directory) for directory in self._locator.bundled_bin_directories()]
         current = env.get(path_name, "")

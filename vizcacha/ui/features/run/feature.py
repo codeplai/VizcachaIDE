@@ -63,7 +63,9 @@ class RunFeature:
             return
         self.console.clear()
         self._begin(interactive=False)
-        self.toolchain.build(configuration_for_file(path))
+        config = configuration_for_file(path)
+        self.workbench.events.program_started.emit(config)  # the Assistant explains build errors
+        self.toolchain.build(config)
 
     def _start_run(self, editor, program_args: tuple[str, ...]) -> RunConfiguration | None:
         if editor.file_path is None:
@@ -124,8 +126,7 @@ class RunFeature:
             self.console.append_error(
                 "\n" + _("[Process exited with code {code}]").format(code=exit_code)
             )
-        if self._interactive:
-            self.workbench.events.program_finished.emit(exit_code)
+        self.workbench.events.program_finished.emit(exit_code)
 
     def _set_running(self, running: bool) -> None:
         self.run_action.setEnabled(not running)

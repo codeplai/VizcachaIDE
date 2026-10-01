@@ -36,6 +36,8 @@ class ConsoleTheme:
     name: str
     background: str
     text: str
+    error: str = "#F48771"
+    success: str = "#4EC9B0"
 
 
 SYNTAX_CATEGORIES = ("keyword", "type", "builtin", "string", "number", "comment")
@@ -135,7 +137,9 @@ EDITOR_THEMES: dict[str, EditorTheme] = {
 
 CONSOLE_THEMES: dict[str, ConsoleTheme] = {
     "Dark": ConsoleTheme("Dark", background="#1E1E1E", text="#D4D4D4"),
-    "Light": ConsoleTheme("Light", background="#FFFFFF", text="#1E1E1E"),
+    "Light": ConsoleTheme(
+        "Light", background="#FFFFFF", text="#1E1E1E", error="#C72E0F", success="#1A7F37"
+    ),
 }
 
 

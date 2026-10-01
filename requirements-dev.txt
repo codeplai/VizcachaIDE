@@ -4,5 +4,3 @@ pytest-qt>=4.4
 ruff>=0.6
 import-linter>=2.1
 Babel>=2.14
-lsprotocol>=2023.0
-cattrs>=23.1

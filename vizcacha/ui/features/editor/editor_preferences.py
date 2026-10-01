@@ -1,6 +1,6 @@
 """Applies the stored editor / appearance settings to editors and to the console."""
 
-from PyQt5.QtGui import QColor, QFont, QPalette
+from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget
 
 from vizcacha.application.ports import SettingsRepository
@@ -9,8 +9,8 @@ from vizcacha.ui.editor.code_editor import CodeEditor
 from vizcacha.ui.editor.themes import console_theme, editor_theme
 
 # New keys owned by track D (Contract change request: move to SettingsKeys).
-FORMAT_ON_SAVE_KEY = "editor/format_on_save"
-USE_CUSTOM_COLORS_KEY = "appearance/use_custom_colors"
+FORMAT_ON_SAVE_KEY = Keys.FORMAT_ON_SAVE
+USE_CUSTOM_COLORS_KEY = Keys.USE_CUSTOM_COLORS
 
 DEFAULTS = {
     Keys.FONT_FAMILY: "Consolas",
@@ -57,10 +57,7 @@ def apply_editor_preferences(editor: CodeEditor, settings: SettingsRepository) -
 def apply_console_theme(console: QWidget, settings: SettingsRepository) -> None:
     """Colours the console from outside (the widget belongs to another track)."""
     theme = console_theme(setting(settings, Keys.CONSOLE_THEME))
-    palette = console.palette()
-    palette.setColor(QPalette.Base, QColor(theme.background))
-    palette.setColor(QPalette.Text, QColor(theme.text))
-    console.setPalette(palette)
+    console.set_colors(theme.background, theme.text, theme.error, theme.success)
 
 
 def _valid(color: str) -> str:

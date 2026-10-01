@@ -5,14 +5,16 @@ in ``build_services`` (track A: debugger). Nothing else.
 """
 
 import sys
+from pathlib import Path
 
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLibraryInfo, QLocale, QTranslator
 from PyQt5.QtWidgets import QApplication
 
 from vizcacha.application.ports import SettingsRepository
 from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.i18n import install_language, resolve_language
 from vizcacha.infrastructure.delve_dap import DelveDapDebugger
+from vizcacha.infrastructure.error_catalog import GoErrorExplainer
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
 from vizcacha.infrastructure.gopls_lsp import GoplsLanguageServer
 from vizcacha.infrastructure.settings import QSettingsRepository
@@ -53,6 +55,7 @@ def build_services(settings_repository: SettingsRepository) -> Services:
         toolchain=GoToolchain(environment),
         debugger=DelveDapDebugger(environment),
         language_server=GoplsLanguageServer(environment),
+        explainer=GoErrorExplainer(),
     )
 
 
@@ -69,12 +72,30 @@ def configure_language(settings_repository: SettingsRepository) -> str:
     return install_language(resolve_language(preferred, QLocale.system().name()))
 
 
+def install_qt_translations(app: QApplication, language: str) -> None:
+    """Standard Qt buttons/dialogs (OK, Cancel, Save...) in the UI language."""
+    translator = QTranslator(app)
+    directory = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    if translator.load(f"qtbase_{language}", directory):
+        app.installTranslator(translator)
+
+
+def open_files_from_arguments(workbench: Workbench, arguments: list[str]) -> None:
+    """Files passed on the command line (e.g. double-click on a .go file in the OS)."""
+    for argument in arguments:
+        path = Path(argument)
+        if path.suffix == ".go" and path.is_file():
+            workbench.editor.open_file(path.resolve())
+
+
 def main(argv: list[str] | None = None) -> int:
-    app = QApplication(argv if argv is not None else sys.argv)
+    arguments = argv if argv is not None else sys.argv
+    app = QApplication(arguments)
     app.setApplicationName(APPLICATION_NAME)
     app.setOrganizationName(APPLICATION_NAME)
     settings_repository = QSettingsRepository()
-    configure_language(settings_repository)
+    install_qt_translations(app, configure_language(settings_repository))
     workbench = build_workbench(build_services(settings_repository))
+    open_files_from_arguments(workbench, arguments[1:])
     workbench.window.show()
     return app.exec_()

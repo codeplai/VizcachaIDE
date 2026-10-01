@@ -9,12 +9,18 @@ from PyQt5.QtCore import pyqtBoundSignal
 
 from vizcacha.application.ports import (
     DEBUGGER_SIGNALS,
+    LANGUAGE_SERVER_SIGNALS,
     TOOLCHAIN_SIGNALS,
     DebuggerPort,
+    ErrorExplainerPort,
     GoToolchainPort,
+    LanguageServerPort,
     SettingsRepository,
 )
+from vizcacha.infrastructure.delve_dap import DelveDapDebugger
+from vizcacha.infrastructure.error_catalog import GoErrorExplainer
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
+from vizcacha.infrastructure.gopls_lsp import GoplsLanguageServer
 from vizcacha.infrastructure.null_debugger import NullDebugger
 from vizcacha.infrastructure.settings import InMemorySettingsRepository, QSettingsRepository
 
@@ -34,11 +40,23 @@ def test_toolchain_adapters_follow_contract(factory, settings):
     _assert_signals(adapter, TOOLCHAIN_SIGNALS)
 
 
-@pytest.mark.parametrize("factory", [NullDebugger])
-def test_debugger_adapters_follow_contract(factory):
-    adapter = factory()
+@pytest.mark.parametrize(
+    "factory", [lambda s: NullDebugger(), lambda s: DelveDapDebugger(GoEnvironment(s))]
+)
+def test_debugger_adapters_follow_contract(factory, settings):
+    adapter = factory(settings)
     assert isinstance(adapter, DebuggerPort)
     _assert_signals(adapter, DEBUGGER_SIGNALS)
+
+
+def test_language_server_follows_contract(settings):
+    adapter = GoplsLanguageServer(GoEnvironment(settings))
+    assert isinstance(adapter, LanguageServerPort)
+    _assert_signals(adapter, LANGUAGE_SERVER_SIGNALS)
+
+
+def test_error_explainer_follows_contract():
+    assert isinstance(GoErrorExplainer(), ErrorExplainerPort)
 
 
 def test_settings_repositories_follow_contract():

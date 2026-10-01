@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from vizcacha.application.ports import (
     DebuggerPort,
+    ErrorExplainerPort,
     GoToolchainPort,
     LanguageServerPort,
     SettingsRepository,
@@ -17,4 +18,5 @@ class Services:
     environment: GoEnvironment
     toolchain: GoToolchainPort
     debugger: DebuggerPort
-    language_server: LanguageServerPort | None = None  # track C (gopls)
+    language_server: LanguageServerPort | None = None  # gopls
+    explainer: ErrorExplainerPort | None = None  # Assistant error catalog

@@ -48,7 +48,7 @@ def test_placeholders_are_named_groups_of_every_pattern(entry):
 
 @pytest.mark.parametrize("error_id", CATALOG_IDS)
 def test_example_output_produces_the_expected_id(error_id, tmp_path: Path):
-    assert (EXAMPLES / f"{error_id}.go").is_file()
+    assert (EXAMPLES / error_id / f"{error_id}.go").is_file()
     raw = (FIXTURES / f"{error_id}.txt").read_text(encoding="utf-8")
     raw = raw.replace("$WORKDIR", tmp_path.as_posix())
     explainer = GoErrorExplainer()

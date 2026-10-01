@@ -35,6 +35,7 @@ DEBUGGER_SIGNALS = {
 }
 LANGUAGE_SERVER_SIGNALS = {
     "diagnostics_published": (object, object),  # Path, list[Diagnostic]
+    "server_unavailable": (str,),  # "not_found" | "crashed"
 }
 
 

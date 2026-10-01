@@ -98,10 +98,14 @@ def test_successful_run_shows_nothing_to_explain(workbench, tmp_path: Path):
 
 def test_live_diagnostics_are_explained(workbench, tmp_path: Path):
     source = tmp_path / "main.go"
+    source.write_text("package main\n\nfunc main() {\n\ttotal++\n}\n", encoding="utf-8")
+    workbench.editor.open_file(source)
     diagnostic = Diagnostic(
         SourceLocation(source, 4, 2), Severity.ERROR, "undefined: total", "undefined: total"
     )
 
+    workbench.events.diagnostics_changed.emit(tmp_path / "other.go", [diagnostic])
+    assert _dock(workbench).isHidden()  # files in the background do not take over the panel
     workbench.events.diagnostics_changed.emit(source, [diagnostic])
 
     assert not _dock(workbench).isHidden()

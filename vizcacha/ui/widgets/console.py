@@ -28,6 +28,7 @@ class ConsoleWidget(QTextEdit):
         self.input_start_pos = 0
         self.waiting_for_input = False
         self._link_base_dir = Path.cwd()
+        self._colors = {"output": OUTPUT_COLOR, "error": ERROR_COLOR, "success": SUCCESS_COLOR}
         self._link_targets: list[SourceLocation] = []
         font = QFont("Consolas", 10)
         if not font.exactMatch():
@@ -42,20 +43,28 @@ class ConsoleWidget(QTextEdit):
         self.append_output(_("VizcachaIDE Console - Ready") + "\n")
 
     def append_output(self, text: str) -> None:
-        self._append(text, OUTPUT_COLOR)
+        self._append(text, self._colors["output"])
         if self.waiting_for_input and not self.input_enabled:
             QTimer.singleShot(INPUT_ENABLE_DELAY_MS, self.enable_input)
 
     def append_error(self, text: str) -> None:
-        self._append(text, ERROR_COLOR)
+        self._append(text, self._colors["error"])
 
     def append_success(self, text: str) -> None:
-        self._append(text, SUCCESS_COLOR)
+        self._append(text, self._colors["success"])
 
     def clear(self) -> None:
         super().clear()
         self.waiting_for_input = False
         self._link_targets = []
+
+    def set_colors(self, background: str, output: str, error: str, success: str) -> None:
+        """Theme colours for new text (existing text keeps its colours)."""
+        palette = self.palette()
+        palette.setColor(QPalette.Base, QColor(background))
+        palette.setColor(QPalette.Text, QColor(output))
+        self.setPalette(palette)
+        self._colors = {"output": output, "error": error, "success": success}
 
     def set_link_base_dir(self, directory: Path) -> None:
         """Directory that relative ``file.go:LINE`` links are resolved against."""

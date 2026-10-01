@@ -32,6 +32,12 @@ def show_about(workbench: Workbench) -> None:
         "CEO of Codeplai Games<br>Peru</p>"
         "<p><b>" + _("License:") + "</b> MIT License<br>"
         "Copyright (c) 2025 Marks Calderon - Codeplai Games</p>"
+        "<p><small>"
+        + _(
+            "The installable package bundles PyQt5 (GPLv3), Go, Delve and gopls, so the "
+            "distributed program is licensed under GPLv3. See NOTICE.md."
+        )
+        + "</small></p>"
     )
     box.exec_()
 

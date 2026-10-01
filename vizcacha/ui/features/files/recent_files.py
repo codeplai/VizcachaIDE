@@ -6,10 +6,11 @@ from pathlib import Path
 from PyQt5.QtWidgets import QAction, QMenu, QWidget
 
 from vizcacha.application.ports import SettingsRepository
+from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.i18n import _
 
 # New key owned by track D (Contract change request: move to SettingsKeys).
-RECENT_FILES_KEY = "files/recent"
+RECENT_FILES_KEY = SettingsKeys.RECENT_FILES
 MAX_RECENT_FILES = 10
 SEPARATOR = "\n"  # stored as one string: QSettings round-trips lists inconsistently
 

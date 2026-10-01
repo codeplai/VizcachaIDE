@@ -25,7 +25,7 @@ SAMPLE_IDS = [
 @pytest.mark.parametrize("error_id", SAMPLE_IDS)
 def test_real_go_output_produces_the_expected_id(error_id, tmp_path: Path):
     source = tmp_path / f"{error_id}.go"
-    shutil.copy(EXAMPLES / source.name, source)
+    shutil.copy(EXAMPLES / error_id / source.name, source)
     command = ["go", "vet" if error_id.startswith("V-") else "run", source.name]
 
     result = subprocess.run(
