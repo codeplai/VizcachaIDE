@@ -4,16 +4,14 @@ import re
 import shlex
 from pathlib import Path
 
-from vizcacha.application.errors import VizcachaError
+from vizcacha.application.errors import ProgramArgumentsError
 from vizcacha.domain.project import GoModule, RunConfiguration, RunTarget
 from vizcacha.i18n import _
 
 GO_MOD_FILE = "go.mod"
 _MODULE_DIRECTIVE = re.compile(r'^\s*module\s+"?([^"\s]+)"?', re.MULTILINE)
 
-
-class ProgramArgumentsError(VizcachaError):
-    """The "Program arguments" text cannot be split (e.g. an unclosed quote)."""
+__all__ = ["ProgramArgumentsError", "configuration_for_file", "find_go_module"]
 
 
 def parse_module_path(go_mod_text: str) -> str:

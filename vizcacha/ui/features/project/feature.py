@@ -8,13 +8,14 @@ from pathlib import Path
 
 from PyQt5.QtWidgets import QAction, QDockWidget, QFileDialog, QMenu, QMessageBox
 
+from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.i18n import _
 from vizcacha.ui.features.project.files_panel import FilesPanel
 from vizcacha.ui.features.project.modules_dialog import GoModulesDialog
 from vizcacha.ui.workbench import Workbench
 
-LAST_FOLDER_KEY = "project/last_folder"
+LAST_FOLDER_KEY = SettingsKeys.LAST_FOLDER
 FILES_PANEL_ID = "project_files"
 
 

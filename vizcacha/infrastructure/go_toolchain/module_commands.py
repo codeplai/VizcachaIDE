@@ -1,11 +1,9 @@
 """Arguments for ``go mod init``, ``go get`` and ``go mod tidy`` (validated)."""
 
-from vizcacha.application.errors import VizcachaError
+from vizcacha.application.errors import GoCommandArgumentError
 from vizcacha.i18n import _
 
-
-class GoCommandArgumentError(VizcachaError):
-    """A module path or package typed by the user cannot be passed to ``go``."""
+__all__ = ["GoCommandArgumentError"]
 
 
 def _single_word(value: str, empty_message: str) -> str:

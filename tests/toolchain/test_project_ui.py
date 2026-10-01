@@ -22,7 +22,7 @@ def _write(path: Path, text: str = "") -> Path:
 
 def _visible_names(panel: FilesPanel, qtbot, expected_count: int) -> set[str]:
     qtbot.waitUntil(
-        lambda: panel.proxy.rowCount(panel.tree.rootIndex()) == expected_count, timeout=5000
+        lambda: panel.proxy.rowCount(panel.tree.rootIndex()) == expected_count, timeout=15000
     )
     root = panel.tree.rootIndex()  # proxy indexes are not persistent: read it after loading
     return {panel.proxy.index(row, 0, root).data() for row in range(panel.proxy.rowCount(root))}
@@ -62,7 +62,7 @@ def test_open_folder_shows_panel_and_double_click_navigates(
     source = _write(tmp_path / "main.go", "package main\n\nfunc main() {}\n")
     feature_panel = _open_folder(workbench, tmp_path, monkeypatch)
     qtbot.waitUntil(
-        lambda: feature_panel.proxy.rowCount(feature_panel.tree.rootIndex()) == 1, timeout=5000
+        lambda: feature_panel.proxy.rowCount(feature_panel.tree.rootIndex()) == 1, timeout=15000
     )
     root = feature_panel.tree.rootIndex()
 

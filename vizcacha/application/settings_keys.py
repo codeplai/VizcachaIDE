@@ -30,3 +30,4 @@ class SettingsKeys:
     SHOW_STATUS_BAR = "appearance/show_status_bar"
 
     LAST_FILE = "last_file"
+    LAST_FOLDER = "project/last_folder"

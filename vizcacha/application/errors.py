@@ -21,5 +21,13 @@ class DebugAdapterError(VizcachaError):
     """Delve reported an error or the DAP connection failed."""
 
 
+class ProgramArgumentsError(VizcachaError):
+    """The "Program arguments" text cannot be split (e.g. an unclosed quote)."""
+
+
+class GoCommandArgumentError(VizcachaError):
+    """A module path or package typed by the user cannot be passed to ``go``."""
+
+
 class LanguageServerError(VizcachaError):
     """gopls could not be started or answered with an error."""

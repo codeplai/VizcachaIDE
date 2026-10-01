@@ -61,6 +61,16 @@ class GoToolchainPort(Protocol):
 
     def write_input(self, text: str) -> None: ...
 
+    def run_untitled(
+        self, source: str, program_args: Sequence[str] = ()
+    ) -> RunConfiguration | None:
+        """Run unsaved source from a temporary directory. None if busy."""
+        ...
+
+    def run_go_command(self, working_dir: Path, args: Sequence[str]) -> bool:
+        """Run ``go <args>`` (e.g. ``mod tidy``) with the same signals. False if busy."""
+        ...
+
     def format_source(self, text: str) -> str:
         """Return gofmt-formatted text. Raises GoFormatError / GoToolchainNotFoundError."""
         ...
