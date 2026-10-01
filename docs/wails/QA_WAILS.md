@@ -13,7 +13,7 @@ QA de paridad con la 1.0, hecho el **2026-10-01 en Windows 10** con el **backend
   - Faltaba "Ejecutar hasta aquí".
   - Había un fallo en los mensajes a gopls.
   - El Asistente mostraba tarjetas de otros archivos; ahora muestra solo el archivo activo y la última ejecución.
-- **Pendiente:** ver §3. Lo más visible es que los ejemplos de primer nivel comparten carpeta y gopls marca "main redeclared". Se corrige moviendo cada ejemplo a su propia carpeta.
+- **Corregido después del QA:** los ejemplos ahora viven cada uno en su carpeta, así que gopls ya no marca "main redeclared". Ver §3 para lo pendiente.
 
 ## 1. Environment
 
@@ -57,7 +57,7 @@ QA de paridad con la 1.0, hecho el **2026-10-01 en Windows 10** con el **backend
 
 | # | Severity | Issue | Next step |
 |---|---|---|---|
-| Q1 | High (first impression) | Top-level `examples/*.go` share one folder, all `package main`: gopls reports "main redeclared" on every example. | Move each example to its own folder (`examples/hello/hello.go`, …), as was done for `examples/errors/`. |
+| Q1 | ~~High~~ **Fixed** | Top-level examples shared one folder (`package main` ×6), so gopls reported "main redeclared". | Fixed: each example now lives in `examples/<name>/<name>.go`; `gopls check` reports nothing. |
 | Q2 | Medium | Settings persistence after restart not confirmed end-to-end (the settings JSON store has unit tests). | Repeat `settings-steps.mjs` once the menu selector is fixed. |
 | Q3 | Low | E2E steps `modules`, `editor-extras` and `layout-1024` hit 30 s timeouts in the harness. | Re-run with longer waits; features have unit/integration tests. |
 | Q4 | Low | "Replace all" does not ask for confirmation (CodeMirror's search panel replaces directly). | Custom search panel if wanted. |
