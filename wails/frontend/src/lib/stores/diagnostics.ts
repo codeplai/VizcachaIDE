@@ -24,6 +24,27 @@ export const mergeProblems = (
   return [...merged.values()]
 }
 
+const slashed = (path: string): string => path.replace(/\\/g, '/')
+
+/** Same file when the paths match or one is the other's tail ("main.go" vs "proj/main.go"). */
+export const sameFile = (a: string, b: string): boolean => {
+  const left = slashed(a)
+  const right = slashed(b)
+  return left === right || left.endsWith(`/${right}`) || right.endsWith(`/${left}`)
+}
+
+/** The problems that belong to one file, in the order gopls and the Assistant gave them. */
+export const problemsOfFile = (
+  items: ExplainedDiagnostic[],
+  path: string | null
+): ExplainedDiagnostic[] =>
+  path
+    ? items.filter((item) => {
+        const file = item.diagnostic.location?.file
+        return !!file && sameFile(file, path)
+      })
+    : []
+
 export const problems = derived([diagnosticsByFile, explained], ([byFile, items]) =>
   mergeProblems(byFile, items)
 )

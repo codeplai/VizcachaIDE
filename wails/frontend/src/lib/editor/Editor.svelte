@@ -1,26 +1,45 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { createEditor, type EditorHandle, type EditorHandlers } from './createEditor'
+  import { t } from '../i18n'
+  import {
+    createEditor,
+    type EditorHandle,
+    type EditorHandlers,
+    type LanguageWiring
+  } from './createEditor'
+  import type { GotoRequest } from './navigation'
   import type { EditorMarks } from './marks'
+  import { editorPhrases } from './phrases'
 
   interface Props extends EditorHandlers {
+    path: string
     text: string
     marks: EditorMarks
+    fontSize: number
+    goto: GotoRequest | null
+    wiring: LanguageWiring | null
   }
 
-  let { text, marks, onChange, onCursor, onToggleBreakpoint }: Props = $props()
+  let { path, text, marks, fontSize, goto, wiring, ...handlers }: Props = $props()
 
   let host: HTMLDivElement
   let handle: EditorHandle | undefined
+  let lastGoto = 0
 
   onMount(() => {
-    handle = createEditor(host, text, { onChange, onCursor, onToggleBreakpoint })
-    handle.setMarks(marks)
+    handle = createEditor(host, handlers, wiring)
     return () => handle?.destroy()
   })
 
-  $effect(() => handle?.setText(text))
+  $effect(() => handle?.show(path, text))
   $effect(() => handle?.setMarks(marks))
+  $effect(() => handle?.setPhrases(editorPhrases($t)))
+  $effect(() => handle?.setFontSize(fontSize))
+  $effect(() => {
+    if (!goto || goto.nonce === lastGoto || goto.file !== path) return
+    lastGoto = goto.nonce
+    handle?.goTo(goto.line, goto.column)
+  })
 </script>
 
 <div class="host" bind:this={host}></div>

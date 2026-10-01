@@ -61,7 +61,7 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
     runUntitled: (_source, args) => run('untitled/main.go', args),
     stop: async () => {},
     writeInput: async () => {},
-    format: async (text) => text,
+    format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
     toolchain: async () => TOOLCHAIN
   }
 }
@@ -101,13 +101,32 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
       label: 'Println',
       kind: 'function',
       detail: 'func(a ...any)',
+      documentation: 'Println formats using the default formats and writes to standard output.',
+      insertText: ''
+    },
+    {
+      label: 'Printf',
+      kind: 'function',
+      detail: 'func(format string, a ...any)',
+      documentation: '',
+      insertText: ''
+    },
+    {
+      label: 'Sprintf',
+      kind: 'function',
+      detail: 'func(format string, a ...any) string',
       documentation: '',
       insertText: ''
     }
   ],
   hover: async () => 'func sumar(a, b int) int',
   definition: async () => sampleLocation(5, 6),
-  signatureHelp: async () => null,
+  signatureHelp: async () => ({
+    label: 'func Println(a ...any) (n int, err error)',
+    documentation: '',
+    parameters: ['a ...any'],
+    activeParameter: 0
+  }),
   documentHighlights: async () => [],
   documentSymbols: async () => sampleSymbols()
 })

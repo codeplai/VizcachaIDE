@@ -1,8 +1,6 @@
 import type { ExplainedDiagnostic } from '../domain'
+import { problemsOfFile, sameFile } from '../stores/diagnostics'
 import type { EditorMarks, ProblemMark } from './marks'
-
-const sameFile = (a: string, b: string): boolean =>
-  a === b || a.endsWith(`/${b}`) || b.endsWith(`/${a}`)
 
 const toProblemMark = (item: ExplainedDiagnostic): ProblemMark | null => {
   const { location, end, message } = item.diagnostic
@@ -12,6 +10,7 @@ const toProblemMark = (item: ExplainedDiagnostic): ProblemMark | null => {
     line: location.line,
     from: location.column,
     to: sameLine ? end.column : location.column,
+    severity: item.diagnostic.severity,
     title: item.explanation?.title ?? message,
     detail: message
   }
@@ -25,13 +24,11 @@ export const toMarks = (
   debugFile: string | null,
   debugLine: number | null
 ): EditorMarks => {
-  const here = (file: string | undefined): boolean => !!path && !!file && sameFile(file, path)
-  const marks = problems
-    .filter((item) => here(item.diagnostic.location?.file))
+  const marks = problemsOfFile(problems, path)
     .map(toProblemMark)
     .filter((mark): mark is ProblemMark => mark !== null)
   return {
-    debugLine: here(debugFile ?? undefined) ? debugLine : null,
+    debugLine: path && debugFile && sameFile(debugFile, path) ? debugLine : null,
     breakpoints,
     problems: marks
   }
