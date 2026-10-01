@@ -4,9 +4,9 @@ from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QHelpEvent, QTextCharFormat
 from PyQt5.QtWidgets import QApplication, QToolTip
 
+from vizcacha.domain.code_structure import DocumentSymbol, SymbolKind
 from vizcacha.domain.completion import CompletionItem, CompletionKind
 from vizcacha.domain.diagnostics import Diagnostic, Severity, SourceLocation
-from vizcacha.infrastructure.gopls_lsp import OutlineSymbol
 
 NOT_FOUND_TEXT = "gopls not found: using basic completion"
 
@@ -25,6 +25,16 @@ def test_without_language_server_static_completion_and_notice(make_workbench):
 
     assert {"Print", "Printf", "Println"} <= labels
     assert workbench.window.statusBar().currentMessage() == NOT_FOUND_TEXT
+
+
+def test_outline_panel_is_registered_at_startup(make_workbench, fake):
+    workbench = make_workbench(fake)
+
+    outline = workbench.window.findChild(QObject, "outline")
+
+    assert outline is not None
+    assert outline.widget().topLevelItemCount() == 0
+    assert "Outline" in [action.text() for action in workbench.menu("view").actions()]
 
 
 def test_documents_are_opened_and_changes_debounced(qtbot, opened, fake, source):
@@ -58,7 +68,7 @@ def test_completion_uses_server_and_falls_back_to_static(opened, fake, source):
 def test_diagnostics_are_underlined_and_republished(qtbot, opened, fake, source):
     workbench, editor = opened
     error = Diagnostic(SourceLocation(source, 6, 5), Severity.ERROR, "boom", "boom", "gopls")
-    fake.symbols = [OutlineSymbol("main", "function", SourceLocation(source, 5, 6))]
+    fake.symbols = [DocumentSymbol("main", SymbolKind.FUNCTION, SourceLocation(source, 5, 6))]
 
     args = publish(qtbot, workbench, fake, source, [error])
 
@@ -76,7 +86,7 @@ def test_diagnostics_are_underlined_and_republished(qtbot, opened, fake, source)
 
 def test_outline_double_click_navigates(qtbot, opened, fake, source):
     workbench, _editor = opened
-    fake.symbols = [OutlineSymbol("main", "function", SourceLocation(source, 5, 6))]
+    fake.symbols = [DocumentSymbol("main", SymbolKind.FUNCTION, SourceLocation(source, 5, 6))]
     publish(qtbot, workbench, fake, source, [])
     tree = workbench.window.findChild(QObject, "outline").widget()
 

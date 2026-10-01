@@ -9,8 +9,7 @@ from lsprotocol.converters import get_converter
 from vizcacha.domain.completion import CompletionItem, CompletionKind, SignatureHelp
 from vizcacha.domain.diagnostics import Diagnostic, Severity, SourceLocation
 from vizcacha.infrastructure.gopls_lsp.documents import OpenDocuments
-from vizcacha.infrastructure.gopls_lsp.positions import from_lsp_position, uri_to_path
-from vizcacha.infrastructure.gopls_lsp.symbols import OutlineSymbol, TextRange
+from vizcacha.infrastructure.gopls_lsp.positions import location_in, uri_to_path
 
 TextLookup = Callable[[Path], str]  # full text of a file (open document or disk)
 DIAGNOSTIC_SOURCE = "gopls"
@@ -52,11 +51,6 @@ def markup_text(value: object) -> str:
     return getattr(value, "value", "") or ""
 
 
-def location_in(text: str, path: Path, position: types.Position) -> SourceLocation:
-    line, column = from_lsp_position(text, position)
-    return SourceLocation(path, line, column)
-
-
 def published_diagnostics(
     raw_params: object, documents: OpenDocuments
 ) -> tuple[Path, list[Diagnostic]]:
@@ -81,6 +75,7 @@ def to_diagnostic(item: types.Diagnostic, path: Path, text: str) -> Diagnostic:
         raw_text=item.message,
         source=DIAGNOSTIC_SOURCE,
         code="" if item.code is None else str(item.code),
+        end=location_in(text, path, item.range.end),
     )
 
 
@@ -152,27 +147,3 @@ def _parameter_label(signature_label: str, parameter: types.ParameterInformation
     start, end = label  # UTF-16 offsets inside the signature label
     encoded = signature_label.encode("utf-16-le")
     return encoded[start * 2 : end * 2].decode("utf-16-le")
-
-
-def to_ranges(highlights: object, path: Path, text: str) -> list[TextRange]:
-    return [
-        TextRange(
-            location_in(text, path, item.range.start), location_in(text, path, item.range.end)
-        )
-        for item in highlights or ()
-    ]
-
-
-def to_outline(symbols: object, path: Path, text: str) -> list[OutlineSymbol]:
-    return [_outline_symbol(symbol, path, text) for symbol in symbols or ()]
-
-
-def _outline_symbol(symbol: object, path: Path, text: str) -> OutlineSymbol:
-    if isinstance(symbol, types.DocumentSymbol):
-        start = symbol.selection_range.start
-        children = tuple(_outline_symbol(child, path, text) for child in symbol.children or ())
-        detail = symbol.detail or ""
-    else:  # SymbolInformation (flat list)
-        start, children, detail = symbol.location.range.start, (), ""
-    kind = types.SymbolKind(symbol.kind).name.lower()
-    return OutlineSymbol(symbol.name, kind, location_in(text, path, start), detail, children)

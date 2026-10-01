@@ -52,6 +52,7 @@ def test_debugger_adapters_follow_contract(factory, settings):
 def test_language_server_follows_contract(settings):
     adapter = GoplsLanguageServer(GoEnvironment(settings))
     assert isinstance(adapter, LanguageServerPort)
+    assert {"document_highlights", "document_symbols"} <= set(dir(LanguageServerPort))
     _assert_signals(adapter, LANGUAGE_SERVER_SIGNALS)
 
 
