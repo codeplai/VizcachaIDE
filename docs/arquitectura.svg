@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="900" viewBox="0 0 1240 900" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrSig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font-size: 24px; font-weight: 700; fill: #0f172a; }
+      .sub { font-size: 13px; fill: #475569; }
+      .layer { font-size: 13px; font-weight: 700; fill: #334155; letter-spacing: 1px; }
+      .name { font-size: 14px; font-weight: 700; fill: #0f172a; }
+      .file { font-size: 11px; fill: #475569; font-family: Consolas, monospace; }
+      .desc { font-size: 11.5px; fill: #334155; }
+      .lbl { font-size: 11px; fill: #475569; }
+      .sig { font-size: 11px; fill: #6d28d9; }
+      .ok { fill: #ecfdf5; stroke: #10b981; stroke-width: 1.5; }
+      .part { fill: #fffbeb; stroke: #f59e0b; stroke-width: 1.5; }
+      .fake { fill: #fef2f2; stroke: #ef4444; stroke-width: 1.5; stroke-dasharray: 5 3; }
+      .ext { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.5; }
+      .edge { stroke: #475569; stroke-width: 1.4; fill: none; }
+      .edgeSig { stroke: #7c3aed; stroke-width: 1.4; fill: none; }
+      .edgeNo { stroke: #ef4444; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+    </style>
+  </defs>
+
+  <rect width="1240" height="900" fill="#ffffff"/>
+
+  <text x="30" y="40" class="title">VizcachaIDE — Arquitectura actual</text>
+  <text x="30" y="62" class="sub">Python 3 + PyQt5 · ~2 800 líneas · 2 commits (2025-10-01) · aplicación de escritorio monoproceso</text>
+
+  <!-- Leyenda -->
+  <g transform="translate(830,24)">
+    <rect x="0" y="0" width="16" height="12" class="ok"/><text x="22" y="10" class="lbl">Funcional</text>
+    <rect x="95" y="0" width="16" height="12" class="part"/><text x="117" y="10" class="lbl">Parcial</text>
+    <rect x="180" y="0" width="16" height="12" class="fake"/><text x="202" y="10" class="lbl">Simulado / stub</text>
+    <line x1="0" y1="32" x2="30" y2="32" class="edgeSig" marker-end="url(#arrSig)"/><text x="36" y="36" class="lbl">señal Qt (pyqtSignal)</text>
+    <line x1="180" y1="32" x2="210" y2="32" class="edge" marker-end="url(#arr)"/><text x="216" y="36" class="lbl">llamada directa</text>
+  </g>
+
+  <!-- ===== Capa presentación ===== -->
+  <rect x="20" y="85" width="1200" height="400" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="36" y="108" class="layer">CAPA DE PRESENTACIÓN · gui/</text>
+
+  <!-- main.py -->
+  <rect x="40" y="125" width="170" height="60" rx="8" class="ok"/>
+  <text x="54" y="148" class="name">main.py</text>
+  <text x="54" y="168" class="desc">QApplication → MainWindow</text>
+  <line x1="210" y1="155" x2="425" y2="155" class="edge" marker-end="url(#arr)"/>
+
+  <!-- MainWindow -->
+  <rect x="430" y="120" width="380" height="95" rx="8" class="ok"/>
+  <text x="446" y="143" class="name">MainWindow</text>
+  <text x="560" y="143" class="file">main_window.py · 562 LOC</text>
+  <text x="446" y="163" class="desc">Orquestador: menús, toolbar, splitters, estado de botones.</text>
+  <text x="446" y="180" class="desc">Conecta señales core ↔ widgets. Build con subprocess (bloqueante).</text>
+  <text x="446" y="197" class="desc">Restaura último archivo · confirma cambios sin guardar al cerrar.</text>
+
+  <!-- SettingsDialog -->
+  <rect x="880" y="120" width="320" height="95" rx="8" class="part"/>
+  <text x="896" y="143" class="name">SettingsDialog</text>
+  <text x="1010" y="143" class="file">settings_dialog.py</text>
+  <text x="896" y="163" class="desc">Pestañas Entorno / Editor / Apariencia.</text>
+  <text x="896" y="180" class="desc">Guarda todo, pero sólo se aplican fuente,</text>
+  <text x="896" y="197" class="desc">word-wrap y toolbar (temas, tab, etc. no).</text>
+  <line x1="810" y1="167" x2="875" y2="167" class="edge" marker-end="url(#arr)"/>
+
+  <!-- TabbedEditor -->
+  <rect x="40" y="250" width="300" height="80" rx="8" class="ok"/>
+  <text x="56" y="273" class="name">TabbedEditor</text>
+  <text x="160" y="273" class="file">tabbed_editor.py</text>
+  <text x="56" y="293" class="desc">QTabWidget: abrir/guardar/cerrar pestañas,</text>
+  <text x="56" y="310" class="desc">agrega breakpoints, reenvía resaltado de línea.</text>
+
+  <!-- CodeEditor -->
+  <rect x="40" y="355" width="300" height="115" rx="8" class="ok"/>
+  <text x="56" y="378" class="name">CodeEditor</text>
+  <text x="150" y="378" class="file">editor.py · QPlainTextEdit</text>
+  <text x="56" y="398" class="desc">• LineNumberArea (clic = breakpoint)</text>
+  <text x="56" y="415" class="desc">• GoSyntaxHighlighter (regex propio)</text>
+  <text x="56" y="432" class="desc">• Auto-indent (4 espacios fijos)</text>
+  <text x="56" y="449" class="desc">• Ctrl+Space → autocompletado</text>
+  <line x1="190" y1="330" x2="190" y2="352" class="edge" marker-end="url(#arr)"/>
+
+  <!-- AutocompleteWidget -->
+  <rect x="370" y="385" width="220" height="85" rx="8" class="ok"/>
+  <text x="386" y="408" class="name">AutocompleteWidget</text>
+  <text x="386" y="426" class="file">autocomplete.py</text>
+  <text x="386" y="446" class="desc">Popup QListWidget con</text>
+  <text x="386" y="462" class="desc">firma + doc por ítem</text>
+  <line x1="340" y1="428" x2="366" y2="428" class="edge" marker-end="url(#arr)"/>
+
+  <!-- ConsoleWidget -->
+  <rect x="620" y="250" width="250" height="100" rx="8" class="ok"/>
+  <text x="636" y="273" class="name">ConsoleWidget</text>
+  <text x="756" y="273" class="file">console.py</text>
+  <text x="636" y="293" class="desc">QTextEdit: stdout / stderr / éxito</text>
+  <text x="636" y="310" class="desc">en colores. Entrada de usuario</text>
+  <text x="636" y="327" class="desc">(stdin) → señal input_submitted</text>
+
+  <!-- VariablesWidget -->
+  <rect x="900" y="250" width="300" height="80" rx="8" class="part"/>
+  <text x="916" y="273" class="name">VariablesWidget</text>
+  <text x="1046" y="273" class="file">variables.py</text>
+  <text x="916" y="293" class="desc">QTreeWidget nombre/tipo/valor expandible.</text>
+  <text x="916" y="310" class="desc">UI lista, pero hoy recibe datos falsos.</text>
+
+  <!-- CallStackWidget -->
+  <rect x="900" y="355" width="300" height="80" rx="8" class="part"/>
+  <text x="916" y="378" class="name">CallStackWidget</text>
+  <text x="1046" y="378" class="file">callstack.py</text>
+  <text x="916" y="398" class="desc">QListWidget de frames. Sin navegación</text>
+  <text x="916" y="415" class="desc">a código; hoy recibe datos falsos.</text>
+
+  <!-- MainWindow → children -->
+  <path d="M470,215 L470,235 L190,235 L190,247" class="edge" marker-end="url(#arr)"/>
+  <path d="M620,215 L620,235 L745,235 L745,247" class="edge" marker-end="url(#arr)"/>
+  <path d="M760,215 L760,230 L1050,230 L1050,247" class="edge" marker-end="url(#arr)"/>
+
+  <!-- ===== Capa core ===== -->
+  <rect x="20" y="505" width="1200" height="200" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="36" y="528" class="layer">CAPA DE LÓGICA · core/</text>
+
+  <!-- GoAnalyzer -->
+  <rect x="40" y="545" width="300" height="140" rx="8" class="part"/>
+  <text x="56" y="568" class="name">GoAnalyzer</text>
+  <text x="150" y="568" class="file">go_analyzer.py</text>
+  <text x="56" y="588" class="desc">Diccionarios estáticos: keywords, tipos,</text>
+  <text x="56" y="605" class="desc">builtins y ~10 paquetes stdlib con doc.</text>
+  <text x="56" y="622" class="desc">Sin análisis del código del usuario.</text>
+  <text x="56" y="646" class="desc" fill="#b91c1c">get_completions_with_gopls() → stub</text>
+  <text x="56" y="666" class="desc">(lazy import desde CodeEditor)</text>
+  <line x1="190" y1="470" x2="190" y2="541" class="edge" marker-end="url(#arr)"/>
+
+  <!-- GoRunner -->
+  <rect x="400" y="545" width="330" height="140" rx="8" class="ok"/>
+  <text x="416" y="568" class="name">GoRunner</text>
+  <text x="500" y="568" class="file">runner.py · QProcess</text>
+  <text x="416" y="588" class="desc">go run &lt;archivo&gt; en su carpeta.</text>
+  <text x="416" y="605" class="desc">Inyecta GOPATH / GOROOT / vars extra</text>
+  <text x="416" y="622" class="desc">desde QSettings. stdout/stderr async,</text>
+  <text x="416" y="639" class="desc">write_input() para stdin, kill() para Stop.</text>
+  <text x="416" y="666" class="sig">⇢ output_received · error_received · execution_finished</text>
+
+  <!-- GoDebugger -->
+  <rect x="790" y="545" width="410" height="140" rx="8" class="fake"/>
+  <text x="806" y="568" class="name">GoDebugger</text>
+  <text x="905" y="568" class="file">debugger.py</text>
+  <text x="806" y="588" class="desc">Sólo ejecuta «dlv version»; NO lanza Delve.</text>
+  <text x="806" y="605" class="desc">Step over/into/out → línea aleatoria (1‑50) y</text>
+  <text x="806" y="622" class="desc">variables/pila hardcodeadas. Breakpoints ignorados.</text>
+  <text x="806" y="639" class="desc">DelveAPIDebugger (JSON‑RPC) = stub vacío.</text>
+  <text x="806" y="666" class="sig">⇢ variables_updated · callstack_updated · current_line_changed</text>
+
+  <!-- Signals up -->
+  <path d="M600,545 L600,500 L745,500 L745,353" class="edgeSig" marker-end="url(#arrSig)"/>
+  <path d="M1100,545 L1100,438" class="edgeSig" marker-end="url(#arrSig)"/>
+  <path d="M1170,545 L1170,333" class="edgeSig" marker-end="url(#arrSig)"/>
+  <path d="M870,545 L870,490 L360,490 L360,300 L343,300" class="edgeSig" marker-end="url(#arrSig)"/>
+  <text x="372" y="500" class="sig">current_line_changed → resaltado</text>
+  <!-- console input down -->
+  <path d="M700,350 L700,480 L520,480 L520,541" class="edgeSig" marker-end="url(#arrSig)"/>
+  <text x="706" y="395" class="sig">input_submitted →</text><text x="706" y="409" class="sig">write_input</text>
+
+  <!-- ===== Persistencia / Externo ===== -->
+  <rect x="20" y="725" width="1200" height="160" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="36" y="748" class="layer">PERSISTENCIA Y HERRAMIENTAS EXTERNAS</text>
+
+  <rect x="40" y="765" width="260" height="100" rx="8" class="ext"/>
+  <text x="56" y="788" class="name">QSettings</text>
+  <text x="56" y="808" class="desc">Registro de Windows / .ini</text>
+  <text x="56" y="825" class="desc">env/*, editor/*, appearance/*,</text>
+  <text x="56" y="842" class="desc">last_file</text>
+
+  <rect x="340" y="765" width="260" height="100" rx="8" class="ok"/>
+  <text x="356" y="788" class="name">Toolchain Go</text>
+  <text x="356" y="808" class="file">go run · go build</text>
+  <text x="356" y="828" class="desc">Usado por GoRunner y</text>
+  <text x="356" y="845" class="desc">MainWindow.build_code()</text>
+  <line x1="565" y1="685" x2="490" y2="761" class="edge" marker-end="url(#arr)"/>
+
+  <rect x="640" y="765" width="260" height="100" rx="8" class="fake"/>
+  <text x="656" y="788" class="name">Delve (dlv)</text>
+  <text x="656" y="808" class="desc">Sólo verificación de versión.</text>
+  <text x="656" y="825" class="desc">Ruta «env/delve_path» guardada</text>
+  <text x="656" y="842" class="desc">pero no usada (hardcode «dlv»).</text>
+  <line x1="900" y1="685" x2="790" y2="761" class="edgeNo" marker-end="url(#arr)"/>
+
+  <rect x="940" y="765" width="260" height="100" rx="8" class="fake"/>
+  <text x="956" y="788" class="name">gopls (LSP)</text>
+  <text x="956" y="808" class="desc">No integrado.</text>
+  <text x="956" y="825" class="desc">Sólo mencionado en stub</text>
+  <text x="956" y="842" class="desc">del analizador.</text>
+  <path d="M310,685 L310,715 L1070,715 L1070,761" class="edgeNo" marker-end="url(#arr)"/>
+
+</svg>
