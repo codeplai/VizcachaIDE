@@ -1,10 +1,10 @@
 """Selection layers painted by the language feature: diagnostics and occurrences."""
 
-from PyQt5.QtGui import QColor, QTextCharFormat
+from PyQt5.QtGui import QColor, QTextCharFormat, QTextCursor
 from PyQt5.QtWidgets import QTextEdit
 
+from vizcacha.domain.code_structure import SourceRange
 from vizcacha.domain.diagnostics import Diagnostic, Severity
-from vizcacha.infrastructure.gopls_lsp import TextRange
 from vizcacha.ui.editor import CodeEditor
 from vizcacha.ui.features.language.locations import span_cursor, word_cursor
 
@@ -15,9 +15,16 @@ WARNING_COLOR = QColor("#D7A100")
 OCCURRENCE_COLOR = QColor("#DCE6F7")
 
 
+def diagnostic_cursor(editor: CodeEditor, diagnostic: Diagnostic) -> QTextCursor:
+    """The exact range reported for ``diagnostic``; the word at its start without one."""
+    if diagnostic.end is None or SourceRange(diagnostic.location, diagnostic.end).is_empty:
+        return word_cursor(editor, diagnostic.location)
+    return span_cursor(editor, diagnostic.location, diagnostic.end)
+
+
 def _diagnostic_selection(editor: CodeEditor, diagnostic: Diagnostic) -> QTextEdit.ExtraSelection:
     selection = QTextEdit.ExtraSelection()
-    selection.cursor = word_cursor(editor, diagnostic.location)
+    selection.cursor = diagnostic_cursor(editor, diagnostic)
     text_format = QTextCharFormat()
     text_format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
     color = ERROR_COLOR if diagnostic.severity == Severity.ERROR else WARNING_COLOR
@@ -35,7 +42,7 @@ def show_diagnostics(editor: CodeEditor, diagnostics: list[Diagnostic]) -> None:
     editor.set_selection_layer(DIAGNOSTICS_LAYER, selections)
 
 
-def show_occurrences(editor: CodeEditor, ranges: list[TextRange]) -> None:
+def show_occurrences(editor: CodeEditor, ranges: list[SourceRange]) -> None:
     selections = []
     for text_range in ranges:
         selection = QTextEdit.ExtraSelection()

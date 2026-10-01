@@ -27,6 +27,7 @@ class Diagnostic:
 
     ``message`` is the tool's message for that problem and ``raw_text`` the exact
     text the tool printed. Both stay untranslated, so they can be searched on the web.
+    ``end`` is where the problem ends (exclusive), when the tool reports a range.
     """
 
     location: SourceLocation | None
@@ -35,3 +36,4 @@ class Diagnostic:
     raw_text: str
     source: str = "go"
     code: str = ""
+    end: SourceLocation | None = None

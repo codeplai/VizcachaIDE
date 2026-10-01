@@ -9,8 +9,9 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vizcacha.application.errors import DebugAdapterError, VizcachaError
-from vizcacha.domain.debugging import Breakpoint, Variable
+from vizcacha.application.errors import VizcachaError
+from vizcacha.application.ports import TERMINATED_BY_USER
+from vizcacha.domain.debugging import Breakpoint
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.domain.project import RunConfiguration
 from vizcacha.i18n import _
@@ -19,16 +20,17 @@ from vizcacha.infrastructure.delve_dap import state_mapping
 from vizcacha.infrastructure.delve_dap.breakpoint_registry import BreakpointRegistry
 from vizcacha.infrastructure.delve_dap.connection import response_error
 from vizcacha.infrastructure.delve_dap.session import DapSession
+from vizcacha.infrastructure.delve_dap.variable_requests import VariableRequests
 from vizcacha.infrastructure.go_toolchain import GoEnvironment
 
-STOPPED_BY_USER = -1
 FAILED = 1
 
 
 class DelveDapDebugger(QObject):
     stopped = pyqtSignal(object)  # DebugState
     output = pyqtSignal(str, str)  # text, "stdout" | "stderr" | "console"
-    terminated = pyqtSignal(int)
+    terminated = pyqtSignal(int)  # exit code or TERMINATED_BY_USER
+    variables_loaded = pyqtSignal(int, object)  # reference, list[Variable]
 
     def __init__(self, environment: GoEnvironment, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -40,6 +42,7 @@ class DelveDapDebugger(QObject):
         self._configured = False
         self._thread_id = 0
         self._exit_code = 0
+        self._variables = VariableRequests(self.variables_loaded.emit)
 
     # --- DebuggerPort -------------------------------------------------------
     def is_active(self) -> bool:
@@ -84,21 +87,14 @@ class DelveDapDebugger(QObject):
         self._send_breakpoints(self._registry.set_temporary(location))
         self._execute("continue")
 
-    def variables(self, reference: int) -> list[Variable]:
-        if reference == 0 or not self._configured:
-            return []
-        arguments = {"variablesReference": reference}
-        try:
-            response = self._session.connection.request_blocking("variables", arguments)
-        except DebugAdapterError as error:
-            self.output.emit(str(error) + "\n", "console")
-            return []
-        if not response.get("success"):
-            return []
-        return state_mapping.map_variables(response.get("body") or {})
+    def request_variables(self, reference: int) -> None:
+        if not self._configured:
+            self.variables_loaded.emit(reference, [])
+            return
+        self._variables.request(self._session.connection, reference)
 
     def stop(self) -> None:
-        self._finish(STOPPED_BY_USER)
+        self._finish(TERMINATED_BY_USER)
 
     # --- session wiring -------------------------------------------------------
     def _create_session(self) -> DapSession:
@@ -148,6 +144,7 @@ class DelveDapDebugger(QObject):
         if not self._configured or self._thread_id == 0:
             return
         self._session.inspector.cancel()
+        self._variables.invalidate()
         self._request(command, {"threadId": self._thread_id})
 
     # --- events -----------------------------------------------------------------
@@ -193,5 +190,6 @@ class DelveDapDebugger(QObject):
         if not self._active:
             return
         self._active = self._configured = False
+        self._variables.invalidate()
         self._session.close()
         self.terminated.emit(exit_code)

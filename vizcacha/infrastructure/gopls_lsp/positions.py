@@ -10,6 +10,8 @@ from urllib.request import url2pathname
 
 from lsprotocol import types
 
+from vizcacha.domain.diagnostics import SourceLocation
+
 GO_MODULE_FILE = "go.mod"
 
 
@@ -65,3 +67,9 @@ def from_lsp_position(text: str, position: types.Position) -> tuple[int, int]:
     """LSP Position -> 1-based (line, column) in ``text``."""
     column = code_point_index(line_of(text, position.line), position.character)
     return position.line + 1, column + 1
+
+
+def location_in(text: str, path: Path, position: types.Position) -> SourceLocation:
+    """LSP Position in ``text`` (the content of ``path``) -> domain SourceLocation."""
+    line, column = from_lsp_position(text, position)
+    return SourceLocation(path, line, column)

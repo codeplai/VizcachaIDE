@@ -2,33 +2,16 @@
 
 from pathlib import Path
 
-import pytest
 from PyQt5.QtCore import QMetaMethod, pyqtBoundSignal
 
-from vizcacha.application.ports import DEBUGGER_SIGNALS, DebuggerPort
+from vizcacha.application.ports import DEBUGGER_SIGNALS, TERMINATED_BY_USER, DebuggerPort
 from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.domain.debugging import Breakpoint, StopReason
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.domain.project import RunConfiguration
-from vizcacha.infrastructure.delve_dap import DelveDapDebugger
 from vizcacha.infrastructure.delve_dap.adapter_process import INSTALL_COMMAND
-from vizcacha.infrastructure.go_toolchain import GoEnvironment
 
 QT_TYPES = {str: "QString", int: "int", object: "PyQt_PyObject"}
-
-
-@pytest.fixture
-def adapter(settings):
-    return DelveDapDebugger(GoEnvironment(settings))
-
-
-@pytest.fixture
-def recorder(adapter):
-    events = {"stopped": [], "output": [], "terminated": []}
-    adapter.stopped.connect(events["stopped"].append)
-    adapter.output.connect(lambda text, category: events["output"].append((text, category)))
-    adapter.terminated.connect(events["terminated"].append)
-    return events
 
 
 def _start(adapter, sessions, transcript, source: Path, lines=(13,)):
@@ -80,7 +63,9 @@ def test_stopped_event_becomes_a_debug_state(
     assert state.current_location == SourceLocation(source_dir / "functions.go", 13)
     assert {v.name: v.value for v in state.variables}["result"] == "35"
     assert len(state.goroutines) == 6 and state.current_goroutine == 1
-    assert connection.commands()[-4:] == ["threads", "stackTrace", "scopes", "variables"]
+    inspection = connection.commands()[4:]
+    assert inspection[:4] == ["threads", "stackTrace", "scopes", "variables"]
+    assert inspection[4:] == ["stackTrace"] * 5  # top frame of each other goroutine
 
 
 def test_steps_and_resume_use_the_stopped_goroutine(
@@ -129,19 +114,6 @@ def test_breakpoints_change_during_the_session(
     assert connection.sent[-1][1]["breakpoints"] == [{"line": 13}, {"line": 20}]
 
 
-def test_variables_are_loaded_on_demand(
-    adapter, fake_sessions, functions_transcript, panic_transcript, source_dir
-):
-    connection = _start(adapter, fake_sessions, functions_transcript, source_dir / "panic.go")
-    connection.responses["variables"] = panic_transcript["panic"]["long_variable"]
-
-    children = adapter.variables(1001)
-
-    assert children[0].name == "msgs"
-    assert connection.sent[-1] == ("variables", {"variablesReference": 1001})
-    assert adapter.variables(0) == []
-
-
 def test_program_output_and_exit(
     adapter, recorder, fake_sessions, functions_transcript, source_dir
 ):
@@ -182,7 +154,7 @@ def test_stop_disconnects_and_terminates(
     adapter.stop()
 
     assert fake_sessions[-1].connection.sent[-1] == ("disconnect", {"terminateDebuggee": True})
-    assert len(recorder["terminated"]) == 1
+    assert recorder["terminated"] == [TERMINATED_BY_USER]
 
 
 def test_missing_dlv_reports_install_instructions(adapter, recorder, settings, tmp_path):

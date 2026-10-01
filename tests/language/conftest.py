@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from vizcacha.domain.code_structure import DocumentSymbol, SourceRange
 from vizcacha.domain.completion import CompletionItem, SignatureHelp
 from vizcacha.domain.diagnostics import SourceLocation
-from vizcacha.infrastructure.gopls_lsp import OutlineSymbol
 from vizcacha.ui.app import build_services, build_workbench
 
 SOURCE = 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Pr\n}\n'
@@ -22,7 +22,8 @@ class FakeLanguageServer(QObject):
         self.calls: list[tuple] = []
         self.completions: list[CompletionItem] = []
         self.target: SourceLocation | None = None
-        self.symbols: list[OutlineSymbol] = []
+        self.symbols: list[DocumentSymbol] = []
+        self.highlights: list[SourceRange] = []
 
     def open_document(self, path, text):
         self.calls.append(("open", Path(path), text))
@@ -49,7 +50,8 @@ class FakeLanguageServer(QObject):
         return SignatureHelp("f(a int)", parameters=("a int",))
 
     def document_highlights(self, location):
-        return []
+        self.calls.append(("document_highlights", location))
+        return list(self.highlights)
 
     def document_symbols(self, path):
         return list(self.symbols)
