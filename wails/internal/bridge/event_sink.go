@@ -28,6 +28,13 @@ func (s *WailsEventSink) SetContext(ctx context.Context) {
 	s.ctx = ctx
 }
 
+// Context returns the Wails application context, or nil before OnStartup.
+func (s *WailsEventSink) Context() context.Context {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.ctx
+}
+
 func (s *WailsEventSink) emit(name string, payload any) {
 	s.mu.RLock()
 	ctx := s.ctx

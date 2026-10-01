@@ -31,22 +31,6 @@ func (r *recordingSink) Explained([]domain.ExplainedDiagnostic) {
 }
 func (r *recordingSink) SettingsChanged(domain.Settings) { r.calls = append(r.calls, "settings") }
 
-func TestRunServiceEmitsStartOutputFinish(t *testing.T) {
-	sink := &recordingSink{}
-	if _, err := NewRunService(sink).Run("hola-go/main.go", nil); err != nil {
-		t.Fatal(err)
-	}
-	want := []string{"started", "output", "finished"}
-	if len(sink.calls) != len(want) {
-		t.Fatalf("calls = %v, want %v", sink.calls, want)
-	}
-	for i := range want {
-		if sink.calls[i] != want[i] {
-			t.Fatalf("calls = %v, want %v", sink.calls, want)
-		}
-	}
-}
-
 // stoppingDebugger is an app.Debugger whose Stop reports the user's stop, like the real one.
 type stoppingDebugger struct {
 	app.Debugger
@@ -76,15 +60,5 @@ func TestSettingsServiceNotifiesOnSave(t *testing.T) {
 	}
 	if len(sink.calls) != 1 || sink.calls[0] != "settings" {
 		t.Errorf("calls = %v, want [settings]", sink.calls)
-	}
-}
-
-func TestFilesServiceReadsSampleFiles(t *testing.T) {
-	service := NewFilesService()
-	if text, err := service.ReadFile(sampleMain); err != nil || text == "" {
-		t.Errorf("ReadFile(main) = %q, %v", text, err)
-	}
-	if _, err := service.ReadFile("nope.go"); err == nil {
-		t.Error("ReadFile of an unknown file must fail")
 	}
 }

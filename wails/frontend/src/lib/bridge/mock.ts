@@ -59,6 +59,11 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
   return {
     run,
     runUntitled: (_source, args) => run('untitled/main.go', args),
+    build: async (path) => configurationFor(path),
+    splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
+    modInit: async () => {},
+    modGet: async () => {},
+    modTidy: async () => {},
     stop: async () => {},
     writeInput: async () => {},
     format: async (text) => text,

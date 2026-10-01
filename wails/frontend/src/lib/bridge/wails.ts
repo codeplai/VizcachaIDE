@@ -6,7 +6,7 @@ import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge } from './types'
+import type { Bridge, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -15,16 +15,23 @@ const toWire = (value: unknown): never => value as never
 export const hasWailsBackend = (): boolean =>
   typeof window !== 'undefined' && 'go' in window && window.go !== undefined
 
+const createRunApi = (): RunApi => ({
+  run: async (path, args) => fromWire(await RunService.Run(path, args)),
+  runUntitled: async (source, args) => fromWire(await RunService.RunUntitled(source, args)),
+  build: async (path, args) => fromWire(await RunService.Build(path, args)),
+  splitArguments: (text) => RunService.SplitArguments(text),
+  modInit: (dir, modulePath) => RunService.ModInit(dir, modulePath),
+  modGet: (dir, pkg) => RunService.ModGet(dir, pkg),
+  modTidy: (dir) => RunService.ModTidy(dir),
+  stop: () => RunService.Stop(),
+  writeInput: (text) => RunService.WriteInput(text),
+  format: (text) => RunService.Format(text),
+  toolchain: async () => fromWire(await RunService.Toolchain())
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
-  run: {
-    run: async (path, args) => fromWire(await RunService.Run(path, args)),
-    runUntitled: async (source, args) => fromWire(await RunService.RunUntitled(source, args)),
-    stop: () => RunService.Stop(),
-    writeInput: (text) => RunService.WriteInput(text),
-    format: (text) => RunService.Format(text),
-    toolchain: async () => fromWire(await RunService.Toolchain())
-  },
+  run: createRunApi(),
   debug: {
     start: (path, breakpoints) => DebugService.Start(path, toWire(breakpoints)),
     setBreakpoints: (file, lines) => DebugService.SetBreakpoints(file, lines),
