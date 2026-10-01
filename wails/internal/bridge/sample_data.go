@@ -98,10 +98,3 @@ func sampleDebugState() domain.DebugState {
 		CurrentGoroutine: &goroutine,
 	}
 }
-
-func sampleSymbols() []domain.DocumentSymbol {
-	return []domain.DocumentSymbol{
-		{Name: "sumar", Kind: domain.SymbolFunction, Location: sampleLocation(5, 6), Detail: "func(a, b int) int"},
-		{Name: "main", Kind: domain.SymbolFunction, Location: sampleLocation(10, 6), Detail: "func()"},
-	}
-}

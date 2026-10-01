@@ -1,62 +1,64 @@
 package bridge
 
 import (
+	"context"
+
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// LanguageService gives code intelligence. W0 STUB: owned by track G3, which
-// replaces the body of each method with calls to app.LanguageServer. Emits
-// lsp:diagnostics and lsp:status.
+// LanguageService gives code intelligence by delegating to app.LanguageServer (gopls).
+// The adapter emits lsp:diagnostics and lsp:status through the EventSink.
 type LanguageService struct {
-	sink app.EventSink
+	server app.LanguageServer
 }
 
 // NewLanguageService creates the service.
-func NewLanguageService(sink app.EventSink) *LanguageService { return &LanguageService{sink: sink} }
+func NewLanguageService(server app.LanguageServer) *LanguageService {
+	return &LanguageService{server: server}
+}
 
 // OpenDocument tells the language server about a file the user opened.
 func (s *LanguageService) OpenDocument(path, text string) error {
-	s.sink.LanguageServerStatus(domain.ServerReady)
-	return nil
+	return s.server.OpenDocument(context.Background(), path, text)
 }
 
 // ChangeDocument sends the new text of an open file.
-func (s *LanguageService) ChangeDocument(path, text string, version int) error { return nil }
+func (s *LanguageService) ChangeDocument(path, text string, version int) error {
+	return s.server.ChangeDocument(context.Background(), path, text, version)
+}
 
 // CloseDocument tells the language server that a file was closed.
-func (s *LanguageService) CloseDocument(path string) error { return nil }
+func (s *LanguageService) CloseDocument(path string) error {
+	return s.server.CloseDocument(context.Background(), path)
+}
 
 // Completion returns code suggestions at a position.
 func (s *LanguageService) Completion(at domain.SourceLocation) ([]domain.CompletionItem, error) {
-	return []domain.CompletionItem{
-		{Label: "Println", Kind: domain.CompletionFunction, Detail: "func(a ...any) (n int, err error)"},
-		{Label: "Printf", Kind: domain.CompletionFunction, Detail: "func(format string, a ...any) (n int, err error)"},
-	}, nil
+	return s.server.Completion(context.Background(), at)
 }
 
 // Hover returns the documentation at a position.
 func (s *LanguageService) Hover(at domain.SourceLocation) (string, error) {
-	return "func sumar(a, b int) int", nil
+	return s.server.Hover(context.Background(), at)
 }
 
 // Definition returns where the symbol at a position is declared.
 func (s *LanguageService) Definition(at domain.SourceLocation) (*domain.SourceLocation, error) {
-	loc := sampleLocation(5, 6)
-	return &loc, nil
+	return s.server.Definition(context.Background(), at)
 }
 
 // SignatureHelp returns the call tip at a position.
 func (s *LanguageService) SignatureHelp(at domain.SourceLocation) (*domain.SignatureHelp, error) {
-	return &domain.SignatureHelp{Label: "sumar(a, b int) int", Parameters: []string{"a", "b int"}}, nil
+	return s.server.SignatureHelp(context.Background(), at)
 }
 
 // DocumentHighlights returns the occurrences of the symbol at a position.
 func (s *LanguageService) DocumentHighlights(at domain.SourceLocation) ([]domain.SourceRange, error) {
-	return []domain.SourceRange{}, nil
+	return s.server.DocumentHighlights(context.Background(), at)
 }
 
 // DocumentSymbols returns the declarations of a file for the Outline.
 func (s *LanguageService) DocumentSymbols(path string) ([]domain.DocumentSymbol, error) {
-	return sampleSymbols(), nil
+	return s.server.DocumentSymbols(context.Background(), path)
 }

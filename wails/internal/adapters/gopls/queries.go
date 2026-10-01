@@ -1,0 +1,133 @@
+package gopls
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"time"
+
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
+)
+
+const (
+	requestTimeout = 1500 * time.Millisecond
+	busyTimeout    = 150 * time.Millisecond // after a timeout gopls is probably still loading
+)
+
+// request sends a query and returns its raw result. ok is false when gopls is missing,
+// not ready in time, failed or timed out: callers then answer with an empty result.
+func (s *Server) request(ctx context.Context, method string, params any) (raw json.RawMessage, ok bool) {
+	limit := requestTimeout
+	if s.busy.Load() {
+		limit = busyTimeout
+	}
+	ctx, cancel := context.WithTimeout(ctx, limit)
+	defer cancel()
+	conn, ready, usable := s.snapshot()
+	if !usable {
+		return nil, false
+	}
+	select {
+	case <-ready:
+	case <-ctx.Done():
+		s.busy.Store(true)
+		return nil, false
+	}
+	if conn, usable = s.readyConnection(conn); !usable {
+		return nil, false
+	}
+	result, err := conn.call(ctx, method, params)
+	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			s.busy.Store(true)
+		}
+		return nil, false
+	}
+	s.busy.Store(false)
+	return result, true
+}
+
+// snapshot returns the connection and the channel closed when the server is ready.
+func (s *Server) snapshot() (*connection, <-chan struct{}, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.state != stateStarting && s.state != stateReady {
+		return nil, nil, false
+	}
+	return s.conn, s.ready, true
+}
+
+// readyConnection checks, after waiting, that the same connection is still ready.
+func (s *Server) readyConnection(previous *connection) (*connection, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.conn, s.state == stateReady && s.conn == previous
+}
+
+// atPosition runs a position query on an open document.
+func (s *Server) atPosition(ctx context.Context, method string, at domain.SourceLocation) (raw json.RawMessage, doc document, ok bool) {
+	doc, open := s.docs.get(at.File)
+	if !open {
+		return nil, doc, false
+	}
+	raw, ok = s.request(ctx, method, positionParams(doc, at.Line, at.Column))
+	return raw, doc, ok
+}
+
+// Completion returns code suggestions at a position.
+func (s *Server) Completion(ctx context.Context, at domain.SourceLocation) ([]domain.CompletionItem, error) {
+	raw, _, ok := s.atPosition(ctx, "textDocument/completion", at)
+	if !ok {
+		return []domain.CompletionItem{}, nil
+	}
+	return toCompletionItems(raw), nil
+}
+
+// Hover returns the documentation at a position, or "".
+func (s *Server) Hover(ctx context.Context, at domain.SourceLocation) (string, error) {
+	raw, _, ok := s.atPosition(ctx, "textDocument/hover", at)
+	if !ok {
+		return "", nil
+	}
+	return toHoverText(raw), nil
+}
+
+// Definition returns where the symbol is declared, or nil.
+func (s *Server) Definition(ctx context.Context, at domain.SourceLocation) (*domain.SourceLocation, error) {
+	raw, _, ok := s.atPosition(ctx, "textDocument/definition", at)
+	if !ok {
+		return nil, nil
+	}
+	return toDefinition(raw, s.docs.textOf), nil
+}
+
+// SignatureHelp returns the call tip at a position, or nil.
+func (s *Server) SignatureHelp(ctx context.Context, at domain.SourceLocation) (*domain.SignatureHelp, error) {
+	raw, _, ok := s.atPosition(ctx, "textDocument/signatureHelp", at)
+	if !ok {
+		return nil, nil
+	}
+	return toSignatureHelp(raw), nil
+}
+
+// DocumentHighlights returns the occurrences of the symbol at a position.
+func (s *Server) DocumentHighlights(ctx context.Context, at domain.SourceLocation) ([]domain.SourceRange, error) {
+	raw, doc, ok := s.atPosition(ctx, "textDocument/documentHighlight", at)
+	if !ok {
+		return []domain.SourceRange{}, nil
+	}
+	return toHighlightRanges(raw, doc.path, doc.text), nil
+}
+
+// DocumentSymbols returns the nested declarations of an open document.
+func (s *Server) DocumentSymbols(ctx context.Context, path string) ([]domain.DocumentSymbol, error) {
+	doc, open := s.docs.get(path)
+	if !open {
+		return []domain.DocumentSymbol{}, nil
+	}
+	raw, ok := s.request(ctx, "textDocument/documentSymbol", documentParams(doc.path))
+	if !ok {
+		return []domain.DocumentSymbol{}, nil
+	}
+	return toDocumentSymbols(raw, doc.path, doc.text), nil
+}
