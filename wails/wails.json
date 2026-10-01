@@ -13,7 +13,7 @@
   "info": {
     "companyName": "Codeplai Games",
     "productName": "VizcachaIDE",
-    "productVersion": "2.0.0",
+    "productVersion": "2.0.0-rc1",
     "copyright": "Copyright © 2026 Codeplai Games",
     "comments": "A Go IDE for beginners"
   }
