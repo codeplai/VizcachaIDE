@@ -7,9 +7,11 @@ import pytest
 from lsprotocol import types
 from lsprotocol.converters import get_converter
 
+from vizcacha.domain.code_structure import SymbolKind
 from vizcacha.domain.completion import CompletionKind
 from vizcacha.domain.diagnostics import Severity, SourceLocation
 from vizcacha.infrastructure.gopls_lsp import domain_mapping as mapping
+from vizcacha.infrastructure.gopls_lsp import symbols
 from vizcacha.infrastructure.gopls_lsp.client_messages import (
     did_change_params,
     initialize_params,
@@ -53,6 +55,7 @@ def test_publish_diagnostics_become_domain_diagnostics(recorded):
     assert path == source
     [diagnostic] = diagnostics
     assert diagnostic.location == SourceLocation(source, 10, 2)
+    assert diagnostic.end == SourceLocation(source, 10, 3)
     assert diagnostic.severity == Severity.ERROR
     assert diagnostic.message == diagnostic.raw_text == "declared and not used: x"
     assert (diagnostic.source, diagnostic.code) == ("gopls", "UnusedVar")
@@ -72,6 +75,7 @@ def test_diagnostic_severity_and_numeric_code(severity, expected):
     assert diagnostic.severity == expected
     assert diagnostic.code == "42"
     assert diagnostic.location.column == 4
+    assert diagnostic.end.column == 5
 
 
 def test_completion_items(recorded):
@@ -98,12 +102,12 @@ def test_hover_definition_signature_highlights_and_outline(recorded):
         result_of(messages["signatureHelp"], types.TEXT_DOCUMENT_SIGNATURE_HELP)
     )
     text = documents.text_of(source)
-    ranges = mapping.to_ranges(
+    ranges = symbols.to_ranges(
         result_of(messages["documentHighlight"], types.TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT),
         source,
         text,
     )
-    outline = mapping.to_outline(
+    outline = symbols.to_document_symbols(
         result_of(messages["documentSymbol"], types.TEXT_DOCUMENT_DOCUMENT_SYMBOL), source, text
     )
 
@@ -116,8 +120,8 @@ def test_hover_definition_signature_highlights_and_outline(recorded):
         (11, 14, 19),
     ]
     assert [(s.name, s.kind, s.location.line) for s in outline] == [
-        ("greet", "function", 5),
-        ("main", "function", 9),
+        ("greet", SymbolKind.FUNCTION, 5),
+        ("main", SymbolKind.FUNCTION, 9),
     ]
 
 
@@ -127,7 +131,8 @@ def test_empty_results_map_to_empty_values():
     assert mapping.to_location(None, lambda path: "") is None
     assert mapping.to_location([], lambda path: "") is None
     assert mapping.to_signature_help(None) is None
-    assert mapping.to_outline(None, Path("a.go"), "") == []
+    assert symbols.to_document_symbols(None, Path("a.go"), "") == []
+    assert symbols.to_ranges(None, Path("a.go"), "") == []
 
 
 def test_signature_parameter_given_as_utf16_offsets():

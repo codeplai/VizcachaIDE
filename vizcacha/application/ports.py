@@ -14,6 +14,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Protocol, TypeVar, runtime_checkable
 
+from vizcacha.domain.code_structure import DocumentSymbol, SourceRange
 from vizcacha.domain.completion import CompletionItem, SignatureHelp
 from vizcacha.domain.debugging import Breakpoint
 from vizcacha.domain.diagnostics import Diagnostic, SourceLocation
@@ -131,6 +132,14 @@ class LanguageServerPort(Protocol):
     def definition(self, location: SourceLocation) -> SourceLocation | None: ...
 
     def signature_help(self, location: SourceLocation) -> SignatureHelp | None: ...
+
+    def document_highlights(self, location: SourceLocation) -> list[SourceRange]:
+        """Occurrences of the symbol at ``location`` in the same file ([] if none)."""
+        ...
+
+    def document_symbols(self, path: Path) -> list[DocumentSymbol]:
+        """Declarations of an open document, nested (for the Outline). [] if unknown."""
+        ...
 
     def shutdown(self) -> None: ...
 

@@ -104,9 +104,8 @@ class EditorSession(QObject):
         return cursor_location(self.editor, cursor or self.editor.textCursor())
 
     def refresh_highlights(self) -> None:
-        query = getattr(self.server, "document_highlights", None)
         location = self.location()
-        if query is None or location is None or not self.is_analyzed:
+        if location is None or not self.is_analyzed:
             return
         self.flush()
-        show_occurrences(self.editor, query(location))
+        show_occurrences(self.editor, self.server.document_highlights(location))

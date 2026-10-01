@@ -4,9 +4,8 @@ Design decision: the port's queries (completion, hover…) are synchronous. They
 are answered by waiting for gopls on the calling (UI) thread for at most
 ``request_timeout_ms`` (1.5 s by default; usually gopls answers in a few ms).
 On timeout, error or a missing/crashed gopls they return an empty result, so the
-UI degrades to the static completion instead of failing. After a timeout (gopls
-is typically still loading packages) the next queries wait only
-``BUSY_TIMEOUT_MS`` until one is answered again, so the UI never stutters for long.
+UI degrades to the static completion instead of failing. After a timeout (gopls is
+usually still loading packages) the next queries wait only ``BUSY_TIMEOUT_MS``.
 """
 
 import logging
@@ -16,16 +15,17 @@ from lsprotocol import types
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
 
 from vizcacha.application.errors import LanguageServerError
+from vizcacha.domain.code_structure import DocumentSymbol, SourceRange
 from vizcacha.domain.completion import CompletionItem, SignatureHelp
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.infrastructure.go_toolchain import GoEnvironment
 from vizcacha.infrastructure.gopls_lsp import client_messages as messages
 from vizcacha.infrastructure.gopls_lsp import domain_mapping as mapping
+from vizcacha.infrastructure.gopls_lsp import symbols
 from vizcacha.infrastructure.gopls_lsp.connection import GoplsConnection
 from vizcacha.infrastructure.gopls_lsp.documents import OpenDocuments
 from vizcacha.infrastructure.gopls_lsp.jsonrpc import LanguageServerTimeoutError
 from vizcacha.infrastructure.gopls_lsp.positions import module_root, path_to_uri, to_lsp_position
-from vizcacha.infrastructure.gopls_lsp.symbols import OutlineSymbol, TextRange
 
 LOG = logging.getLogger(__name__)
 REQUEST_TIMEOUT_MS = 1500
@@ -90,16 +90,16 @@ class GoplsLanguageServer(QObject):
     def signature_help(self, location: SourceLocation) -> SignatureHelp | None:
         return mapping.to_signature_help(self._at(types.TEXT_DOCUMENT_SIGNATURE_HELP, location))
 
-    def document_highlights(self, location: SourceLocation) -> list[TextRange]:
+    def document_highlights(self, location: SourceLocation) -> list[SourceRange]:
         result = self._at(types.TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT, location)
-        return mapping.to_ranges(result, location.file, self._documents.text_of(location.file))
+        return symbols.to_ranges(result, location.file, self._documents.text_of(location.file))
 
-    def document_symbols(self, path: Path) -> list[OutlineSymbol]:
+    def document_symbols(self, path: Path) -> list[DocumentSymbol]:
         uri = path_to_uri(path)
         if self._documents.get(uri) is None:
             return []
         result = self._request(types.TEXT_DOCUMENT_DOCUMENT_SYMBOL, messages.document_params(uri))
-        return mapping.to_outline(result, path, self._documents.text_of(path))
+        return symbols.to_document_symbols(result, path, self._documents.text_of(path))
 
     def shutdown(self) -> None:
         connection, self._connection = self._connection, None
