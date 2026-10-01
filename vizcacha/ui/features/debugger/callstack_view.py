@@ -1,10 +1,10 @@
-"""Call stack panel."""
+"""Call stack panel. A click on a frame asks the IDE to show its source line."""
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 
 from vizcacha.domain.debugging import StackFrame
+from vizcacha.ui.features.debugger.variables_view import monospace_font
 
 
 def describe_frame(frame: StackFrame) -> str:
@@ -18,12 +18,10 @@ class CallStackView(QListWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        font = QFont("Consolas", 9)
-        if not font.exactMatch():
-            font = QFont("Courier New", 9)
-        self.setFont(font)
+        self.setFont(monospace_font())
         self.setAlternatingRowColors(True)
         self.itemActivated.connect(self._on_activated)
+        self.itemClicked.connect(self._on_activated)
 
     def show_frames(self, frames: tuple[StackFrame, ...] | list[StackFrame]) -> None:
         self.clear()

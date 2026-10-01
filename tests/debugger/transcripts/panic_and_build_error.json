@@ -1,0 +1,17 @@
+{
+  "description": "dlv dap 1.27.2 (Windows). 'panic': index out of range in main.main (panic.go:8). 'build_error': unused variable. {SRC} = program folder, {GOROOT} = Go installation.",
+  "panic": {
+    "stopped": {"seq": 10, "type": "event", "event": "stopped", "body": {"reason": "exception", "description": "panic", "threadId": 1, "text": "\"runtime error: index out of range [3] with length 0\"", "allThreadsStopped": true, "hitBreakpointIds": [-1]}},
+    "threads": {"seq": 11, "type": "response", "request_seq": 5, "success": true, "command": "threads", "body": {"threads": [{"id": 1, "name": "* [Go 1] main.main (Thread 41084)"}, {"id": 2, "name": "[Go 2] runtime.gopark"}, {"id": 18, "name": "[Go 18] runtime.gopark"}]}},
+    "stackTrace": {"seq": 12, "type": "response", "request_seq": 6, "success": true, "command": "stackTrace", "body": {"stackFrames": [{"id": 1000, "name": "runtime.fatalpanic", "source": {"name": "panic.go", "path": "{GOROOT}/src/runtime/panic.go"}, "line": 1298, "column": 0, "presentationHint": "subtle"}, {"id": 1001, "name": "runtime.gopanic", "source": {"name": "panic.go", "path": "{GOROOT}/src/runtime/panic.go"}, "line": 802, "column": 0, "presentationHint": "subtle"}, {"id": 1002, "name": "runtime.goPanicIndex", "source": {"name": "panic.go", "path": "{GOROOT}/src/runtime/panic.go"}, "line": 115, "column": 0, "presentationHint": "subtle"}, {"id": 1003, "name": "main.main", "source": {"name": "panic.go", "path": "{SRC}/panic.go"}, "line": 8, "column": 0}, {"id": 1004, "name": "runtime.main", "source": {"name": "proc.go", "path": "{GOROOT}/src/runtime/proc.go"}, "line": 285, "column": 0, "presentationHint": "subtle"}]}},
+    "scopes": {"seq": 13, "type": "response", "request_seq": 7, "success": true, "command": "scopes", "body": {"scopes": [{"name": "Locals", "variablesReference": 1000, "expensive": false}]}},
+    "variables": {"seq": 14, "type": "response", "request_seq": 8, "success": true, "command": "variables", "body": {"variables": [{"name": "s", "value": "[]int len: 0, cap: 0, nil", "type": "[]int", "evaluateName": "s", "variablesReference": 0}]}},
+    "optimized_scopes": {"seq": 13, "type": "response", "request_seq": 7, "success": true, "command": "scopes", "body": {"scopes": [{"name": "Locals (warning: optimized function)", "variablesReference": 1000, "expensive": false}]}},
+    "long_variable": {"seq": 14, "type": "response", "request_seq": 8, "success": true, "command": "variables", "body": {"variables": [{"name": "msgs", "value": "*runtime._panic {argp: unsafe.Pointer(0xc000031de8), arg: interface {}(string) \"runtime error: index out of range [3] with length 0\", link: *runtime._panic nil, startPC: 140695504956652, startSP: unsafe.Pointer(0xc000031de8), sp: unsafe.Pointer(0xc000031f7...", "type": "*runtime._panic", "evaluateName": "msgs", "variablesReference": 1001}]}}
+  },
+  "build_error": [
+    {"seq": 2, "type": "event", "event": "output", "body": {"category": "stdout", "output": "Building {SRC}/bad.go\n"}},
+    {"seq": 3, "type": "event", "event": "output", "body": {"category": "stderr", "output": "Build Error: go build -o {SRC}/__debug_bin.exe -gcflags all=-N -l {SRC}/bad.go\n# command-line-arguments\n.\\bad.go:4:2: declared and not used: x (exit status 1)\n"}},
+    {"seq": 4, "type": "response", "request_seq": 2, "success": false, "command": "launch", "message": "Failed to launch", "body": {"error": {"id": 3000, "format": "Failed to launch: Build error: Check the debug console for details.", "showUser": false}}}
+  ]
+}
