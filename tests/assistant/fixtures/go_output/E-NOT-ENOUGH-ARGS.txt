@@ -1,0 +1,4 @@
+# command-line-arguments
+.\E-NOT-ENOUGH-ARGS.go:11:18: not enough arguments in call to add
+	have (number)
+	want (int, int)

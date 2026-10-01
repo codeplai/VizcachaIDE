@@ -15,6 +15,7 @@ from vizcacha.i18n import install_language, resolve_language
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
 from vizcacha.infrastructure.null_debugger import NullDebugger
 from vizcacha.infrastructure.settings import QSettingsRepository
+from vizcacha.ui.features.assistant import register as register_assistant
 from vizcacha.ui.features.debugger import register as register_debugger
 from vizcacha.ui.features.editor import register as register_editor
 from vizcacha.ui.features.files import register as register_files
@@ -33,6 +34,7 @@ FEATURES = (
     register_editor,
     register_run,
     register_debugger,
+    register_assistant,
     register_settings,
     register_help,
 )

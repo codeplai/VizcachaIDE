@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-NO-NEW-VARS.go:8:8: no new variables on left side of :=

@@ -16,7 +16,7 @@ def test_features_register_menus_toolbar_and_panels(workbench):
     assert "&Undo" in _menu_texts(workbench, "edit")
     assert "▶ Run" in _menu_texts(workbench, "run")
     assert "Toggle &Breakpoint" in _menu_texts(workbench, "debug")
-    assert _menu_texts(workbench, "view") == ["Variables", "Call Stack"]
+    assert _menu_texts(workbench, "view") == ["Variables", "Call Stack", "Assistant"]
     assert "&Options..." in _menu_texts(workbench, "tools")
     assert workbench.editor.count() == 1
 

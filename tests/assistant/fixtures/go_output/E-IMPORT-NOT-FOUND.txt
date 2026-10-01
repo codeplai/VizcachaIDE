@@ -1,0 +1,1 @@
+E-IMPORT-NOT-FOUND.go:6:2: package maths is not in std (C:\Program Files\Go\src\maths)

@@ -1,0 +1,6 @@
+panic: runtime error: integer divide by zero
+
+goroutine 1 [running]:
+main.main()
+	$WORKDIR/P-DIVIDE-ZERO.go:9 +0x9
+exit status 2

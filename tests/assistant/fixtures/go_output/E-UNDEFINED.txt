@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-UNDEFINED.go:7:14: undefined: total
