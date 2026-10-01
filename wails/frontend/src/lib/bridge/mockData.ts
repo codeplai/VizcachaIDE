@@ -7,7 +7,8 @@ import type {
   ErrorExplanation,
   FileNode,
   Settings,
-  SourceLocation
+  SourceLocation,
+  Variable
 } from '../domain'
 
 export const SAMPLE_DIR = 'hola-go'
@@ -84,6 +85,23 @@ const EXPLANATIONS: Record<'en' | 'es', ErrorExplanation> = {
 
 export const sampleExplanation = (language: 'en' | 'es'): ErrorExplanation => EXPLANATIONS[language]
 
+/** A struct whose fields load on demand (`debug:variables` answers `requestVariables`). */
+export const SAMPLE_STRUCT_REFERENCE = 11
+
+const sampleStructVariable: Variable = {
+  name: 'punto',
+  typeName: 'main.Punto',
+  value: '{X: 3, Y: 4}',
+  reference: SAMPLE_STRUCT_REFERENCE,
+  changed: false,
+  children: []
+}
+
+export const sampleStructFields = (): Variable[] => [
+  { name: 'X', typeName: 'int', value: '3', reference: 0, changed: false, children: [] },
+  { name: 'Y', typeName: 'int', value: '4', reference: 0, changed: true, children: [] }
+]
+
 export const sampleDebugState = (line = 6): DebugState => ({
   reason: line === 6 ? 'breakpoint' : 'step',
   frames: [
@@ -93,9 +111,20 @@ export const sampleDebugState = (line = 6): DebugState => ({
   variables: [
     { name: 'a', typeName: 'int', value: '5', reference: 0, changed: false, children: [] },
     { name: 'b', typeName: 'int', value: '7', reference: 0, changed: false, children: [] },
-    { name: 'total', typeName: 'int', value: '12', reference: 0, changed: line === 6, children: [] }
+    {
+      name: 'total',
+      typeName: 'int',
+      value: '12',
+      reference: 0,
+      changed: line === 6,
+      children: []
+    },
+    ...(line > 6 ? [sampleStructVariable] : [])
   ],
-  goroutines: [{ goroutineId: 1, name: 'main.main', location: sampleLocation(11, 1) }],
+  goroutines: [
+    { goroutineId: 1, name: 'main.main', location: sampleLocation(11, 1) },
+    { goroutineId: 2, name: 'runtime.gopark', location: null }
+  ],
   currentGoroutine: 1,
   description: ''
 })

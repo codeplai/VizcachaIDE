@@ -1,0 +1,62 @@
+/* Shared look of the side panels. Imported once by the layout. */
+.side {
+  height: 100%;
+  background: var(--chrome);
+  padding: 10px 0;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+}
+
+.side-h {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 2px 14px 6px;
+}
+
+.block .side-h,
+.guide .side-h {
+  padding: 0;
+}
+
+.empty {
+  margin: 0;
+  padding: 4px 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mini {
+  font: 600 12.5px var(--ui);
+  border: 1px solid var(--line);
+  background: var(--win);
+  color: var(--ink);
+  border-radius: 7px;
+  padding: 5px 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mini:hover {
+  border-color: var(--go);
+}
+
+.mini.go {
+  background: var(--go);
+  color: var(--win);
+  border-color: var(--go);
+}
+
+.plain-button {
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}

@@ -7,7 +7,9 @@ import {
   SAMPLE_SOURCES,
   defaultSettings,
   sampleDebugState,
+  SAMPLE_STRUCT_REFERENCE,
   sampleLocation,
+  sampleStructFields,
   sampleSymbols,
   sampleTree
 } from './mockData'
@@ -40,6 +42,7 @@ interface MockState {
 
 const TOOLCHAIN = { goVersion: '1.25.5', delveVersion: '1.27.2', goplsVersion: '0.21.1' }
 const LAST_LINE = 7
+const FIELDS_DELAY_MS = 250
 
 const configurationFor = (path: string): RunConfiguration => ({
   target: path,
@@ -64,7 +67,7 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
     modInit: async () => {},
     modGet: async () => {},
     modTidy: async () => {},
-    stop: async () => {},
+    stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
     format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
     toolchain: async () => TOOLCHAIN
@@ -92,7 +95,10 @@ const mockDebug = (state: MockState, emit: Emit): DebugApi => {
     stepOut: () => stepTo(LAST_LINE),
     resume: async () => finish(0),
     runTo: (location) => stepTo(location.line),
-    requestVariables: async (reference) => emit('debug:variables', { reference, variables: [] }),
+    requestVariables: async (reference) => {
+      const variables = reference === SAMPLE_STRUCT_REFERENCE ? sampleStructFields() : []
+      setTimeout(() => emit('debug:variables', { reference, variables }), FIELDS_DELAY_MS)
+    },
     stop: async () => finish(TERMINATED_BY_USER)
   }
 }
@@ -166,6 +172,7 @@ export const createMockBridge = (): MockBridge => {
       saveFile: async () => {}
     },
     settings: mockSettings(state, emit),
+    system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },
     on
   }
   const play = async (next: Scenario): Promise<void> => {

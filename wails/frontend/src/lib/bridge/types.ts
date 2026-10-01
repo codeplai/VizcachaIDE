@@ -78,6 +78,12 @@ export interface SettingsApi {
   save: (settings: Settings) => Promise<void>
 }
 
+/** Things only the desktop shell can do (the Wails runtime in the app, the browser in the mock). */
+export interface SystemApi {
+  /** Opens a web page in the default browser (Wails BrowserOpenURL). */
+  openUrl: (url: string) => void
+}
+
 /**
  * Everything the UI can ask of the backend, plus the event subscription.
  * The Wails implementation and the mock implementation both satisfy it.
@@ -91,5 +97,6 @@ export interface Bridge {
   assistant: AssistantApi
   files: FilesApi
   settings: SettingsApi
+  system: SystemApi
   on: <E extends EventName>(name: E, handler: (payload: EventPayloads[E]) => void) => Unsubscribe
 }

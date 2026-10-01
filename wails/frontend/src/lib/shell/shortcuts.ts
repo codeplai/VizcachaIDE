@@ -3,7 +3,9 @@ import type { Bridge } from '../bridge'
 import {
   debugActive,
   resumeDebugging,
+  activePath,
   runActiveFile,
+  saveFile,
   startDebugging,
   stepInto,
   stepOut,
@@ -14,8 +16,14 @@ import {
 
 type Action = (bridge: Bridge) => Promise<void>
 
+const saveActiveFile: Action = async (bridge) => {
+  const path = get(activePath)
+  if (path) await saveFile(bridge, path)
+}
+
 const actionFor = (event: KeyboardEvent): Action | null => {
   const debugging = get(debugActive)
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') return saveActiveFile
   switch (event.key) {
     case 'F5':
       return event.shiftKey ? (debugging ? stopDebugging : stopProgram) : runActiveFile
@@ -32,7 +40,7 @@ const actionFor = (event: KeyboardEvent): Action | null => {
   }
 }
 
-/** Registers F5, F6, F7, F8, F9, Shift+F5 and Shift+F6. Returns a function that removes them. */
+/** Registers F5, F6, F7, F8, F9, Shift+F5, Shift+F6 and Ctrl+S. Returns a function that removes them. */
 export const registerShortcuts = (bridge: Bridge): (() => void) => {
   const handler = (event: KeyboardEvent): void => {
     const action = actionFor(event)

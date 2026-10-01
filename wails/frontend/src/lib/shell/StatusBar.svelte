@@ -19,7 +19,13 @@
   {#if $debugActive}
     <span>{$t('status.debugging')}</span>
   {:else}
-    <span class="live" data-status={$lspStatus}>{$t(lspKey[$lspStatus])}</span>
+    <span
+      class="live"
+      data-status={$lspStatus}
+      title={$lspStatus === 'unavailable' ? $t('errors.goplsNotFound') : undefined}
+    >
+      {$t(lspKey[$lspStatus])}
+    </span>
   {/if}
   {#if goVersion}<span>{$t('status.goVersion', { values: { version: goVersion } })}</span>{/if}
   <span class="sp">

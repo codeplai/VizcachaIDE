@@ -1,0 +1,121 @@
+/* Look of dialogs, menus and notices (bits-ui renders them in a portal, so the rules are global). */
+.dlg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(8, 18, 28, 0.45);
+}
+
+.dlg {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--win);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 24px 60px -20px rgba(8, 18, 28, 0.6);
+  display: grid;
+  gap: 14px;
+}
+
+.dlg [data-dialog-title] {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.dlg p,
+.dlg [data-dialog-description] {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.dlg-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.dlg-button {
+  border: 1px solid var(--line);
+  background: var(--win);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: 700 14px var(--ui);
+  cursor: pointer;
+}
+
+.dlg-button:hover {
+  border-color: var(--go);
+}
+
+.dlg-button.primary {
+  background: var(--go);
+  border-color: var(--go);
+  color: var(--win);
+}
+
+.dlg-button.danger {
+  color: var(--err);
+}
+
+.menu {
+  z-index: 50;
+  min-width: 220px;
+  background: var(--win);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: 0 16px 40px -18px rgba(8, 18, 28, 0.6);
+}
+
+.menu-item {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.menu-item[data-highlighted] {
+  background: var(--go-soft);
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.field > label,
+.field > .label {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.field .hint {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.field input[type='text'],
+.field input[type='number'],
+.field select {
+  font: 400 14px var(--ui);
+  color: var(--ink);
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 10px;
+  min-width: 0;
+}
