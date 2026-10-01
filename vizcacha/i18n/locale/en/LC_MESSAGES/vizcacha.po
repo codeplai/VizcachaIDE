@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VizcachaIDE 0.2.0\n"
 "Report-Msgid-Bugs-To: hola@codeplai.pe\n"
-"POT-Creation-Date: 2026-09-30 19:35-0500\n"
+"POT-Creation-Date: 2026-10-01 07:52-0500\n"
 "PO-Revision-Date: 2026-09-30 19:35-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,7 +19,388 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "The program arguments have an unclosed quote."
+msgstr ""
+
 msgid "The debugger is not available yet. It will use Delve in a future version."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Delve (dlv) was not found: {executable}\n"
+"Install it with:\n"
+"    {command}\n"
+"or set its path in Tools > Options > Environment."
+msgstr ""
+
+msgid "Delve stopped unexpectedly."
+msgstr ""
+
+#, python-brace-format
+msgid "Variable \"{name}\" is never used"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You created the variable \"{name}\" but never read it. Go refuses to "
+"compile code with unused variables, because they are usually a mistake or"
+" leftover code."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Use \"{name}\" somewhere (for example, print it), delete it, or replace "
+"it with _ if you must receive a value you do not need."
+msgstr ""
+
+#, python-brace-format
+msgid "Package \"{package}\" is imported but never used"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The file imports the package \"{package}\", but no code uses it. Go does "
+"not allow unused imports, to keep programs clean and fast to compile."
+msgstr ""
+
+#, python-brace-format
+msgid "Delete the line that imports \"{package}\", or use something from it."
+msgstr ""
+
+msgid "The function can end without returning a value"
+msgstr ""
+
+msgid ""
+"This function says it returns a value, but there is a way to reach its "
+"closing brace without a return statement. For example, an if returns a "
+"value but the case where the condition is false does not."
+msgstr ""
+
+msgid ""
+"Add a return statement at the end of the function, or an else branch that"
+" also returns a value."
+msgstr ""
+
+#, python-brace-format
+msgid "\"{name}\" is private to package {package}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"In Go, only names that start with a capital letter can be used from "
+"another package. \"{name}\" starts with a lowercase letter, so package "
+"{package} keeps it private, or the real name has different capital "
+"letters."
+msgstr ""
+
+msgid ""
+"Write the name exactly as the package documents it, starting with a "
+"capital letter (for example strings.ToUpper, not strings.toUpper)."
+msgstr ""
+
+#, python-brace-format
+msgid "Unknown name: {name}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Go does not know anything called \"{name}\". It was never declared, it is"
+" declared in a place this code cannot see (such as inside another "
+"function or block), or it is misspelled."
+msgstr ""
+
+msgid ""
+"Check the spelling and the capital letters, declare the variable before "
+"you use it (for example with :=), or import the package it belongs to."
+msgstr ""
+
+msgid "The variable already exists: use = instead of :="
+msgstr ""
+
+msgid ""
+":= creates new variables. Every variable on its left side already exists "
+"in this block, so there is nothing new to create."
+msgstr ""
+
+msgid ""
+"Use = to change the value of an existing variable. Use := only the first "
+"time."
+msgstr ""
+
+msgid "The program has no main function"
+msgstr ""
+
+msgid ""
+"A Go program starts running in the function main of package main. This "
+"package is called main, but it does not contain a function named main."
+msgstr ""
+
+msgid "Add a function with exactly this header: func main() {{ ... }}"
+msgstr ""
+
+msgid "This file is not a runnable program"
+msgstr ""
+
+msgid ""
+"Only code in package main can be run. The first line of this file "
+"declares a different package, which Go treats as a library."
+msgstr ""
+
+msgid ""
+"Change the first line to: package main (and make sure there is a func "
+"main)."
+msgstr ""
+
+#, python-brace-format
+msgid "Package \"{package}\" was not found"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Go cannot find the package \"{package}\". Standard packages have fixed "
+"names (fmt, math, strings, os...), and packages from the internet must be"
+" added to your module before you can import them."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Check the spelling of the import path. For an external package, run go "
+"get {package} in a folder that has a go.mod file."
+msgstr ""
+
+#, python-brace-format
+msgid "Index {index} is out of range"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The program tried to use position {index}, but the slice, array or string"
+" only has {length} element(s). Valid positions go from 0 to {length} - 1."
+msgstr ""
+
+msgid ""
+"Check the index before using it (for example: if i < len(items)) and "
+"remember that counting starts at 0."
+msgstr ""
+
+msgid "Writing to a map that was never created"
+msgstr ""
+
+msgid ""
+"The map variable was declared but never created, so it is nil. You can "
+"read from a nil map, but writing to it stops the program."
+msgstr ""
+
+msgid ""
+"Create the map before writing to it: ages := make(map[string]int) or ages"
+" := map[string]int{{}}."
+msgstr ""
+
+msgid "Using a pointer that is nil"
+msgstr ""
+
+msgid ""
+"The program read or wrote through a pointer (or an interface, map or "
+"slice element holding one) whose value is nil, so it points to nothing."
+msgstr ""
+
+msgid ""
+"Make sure the pointer gets a value before you use it, for example p := "
+"&Person{{}} or p := new(Person), or check if p != nil first."
+msgstr ""
+
+msgid "Deadlock: every goroutine is waiting forever"
+msgstr ""
+
+msgid ""
+"All goroutines are blocked waiting for each other, so nothing can "
+"continue. Usually a channel is sent to with nobody receiving, or received"
+" from with nobody sending, or a WaitGroup or Mutex is never released."
+msgstr ""
+
+msgid ""
+"Make sure another goroutine receives what you send (go func() {{ ... "
+"}}()), use a buffered channel, close the channel when you are done, or "
+"call wg.Done()."
+msgstr ""
+
+msgid "Division by zero"
+msgstr ""
+
+msgid ""
+"The program divided an integer by zero (with / or %). That has no result,"
+" so Go stops the program."
+msgstr ""
+
+msgid ""
+"Check that the divisor is not 0 before dividing, for example: if people "
+"!= 0 {{ ... }}."
+msgstr ""
+
+#, python-brace-format
+msgid "Slice limits [{bounds}] are out of range"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The program tried to take the part [{bounds}] of a slice or string, but "
+"those limits go past its end, or the start is bigger than the end."
+msgstr ""
+
+msgid ""
+"Make sure that 0 <= start <= end <= len(s) before slicing, for example "
+"with min(end, len(s))."
+msgstr ""
+
+#, python-brace-format
+msgid "Type assertion failed: {actual} is not {type}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The program asserted that a value holds a {type}, but it actually holds a"
+" {actual}. A failed assertion with a single result stops the program."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Use the two-result form to check safely: n, ok := value.({type}). Or use "
+"a type switch."
+msgstr ""
+
+msgid "A curly brace {{ }} is missing"
+msgstr ""
+
+msgid ""
+"Every {{ needs a matching }}. Go reached the end of the file, or of a "
+"block, while it was still waiting for one. Go also needs the opening {{ "
+"on the same line as func, if, for or else."
+msgstr ""
+
+msgid ""
+"Count your {{ and }} and add the missing one. Keep each opening {{ at the"
+" end of the line that starts the block."
+msgstr ""
+
+#, python-brace-format
+msgid "Syntax error: unexpected {token}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Go could not understand this line. It found {token} in a place where Go's"
+" grammar does not allow it. The real mistake is often just before that "
+"point."
+msgstr ""
+
+msgid ""
+"Look right before the marked position for a missing comma, parenthesis, "
+"quote or operator."
+msgstr ""
+
+#, python-brace-format
+msgid "Wrong type: a {type} was expected"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The value {value} does not have the type {type}, which is what Go expects"
+" here. Go never converts between types such as int and string "
+"automatically."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Use a value of type {type}, or convert it explicitly, for example with "
+"int(x), float64(x) or strconv.Itoa(n)."
+msgstr ""
+
+#, python-brace-format
+msgid "Cannot combine {left_type} and {right_type}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"In {expression} the two sides have different types ({left_type} and "
+"{right_type}). Operators such as +, - or == only work between values of "
+"the same type."
+msgstr ""
+
+msgid ""
+"Convert one side so both have the same type, for example strconv.Itoa(n) "
+"to turn an int into a string, or float64(n) to mix it with decimals."
+msgstr ""
+
+msgid "The number of variables and values does not match"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The left side of = or := has {left} variable(s), but the right side gives"
+" {right} value(s). Both numbers must be equal. Many functions, such as "
+"strconv.Atoi, return two values: a result and an error."
+msgstr ""
+
+msgid ""
+"Add or remove variables until both sides match, for example: number, err "
+":= strconv.Atoi(text). Use _ for a value you do not need."
+msgstr ""
+
+#, python-brace-format
+msgid "Not enough arguments for {function}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The function {function} needs more values than you passed. In the "
+"original message, \"have\" lists what you passed and \"want\" lists what "
+"it expects."
+msgstr ""
+
+msgid ""
+"Pass one value for each parameter, in the same order and with the right "
+"types."
+msgstr ""
+
+#, python-brace-format
+msgid "Too many arguments for {function}"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"The function {function} receives fewer values than you passed. In the "
+"original message, \"have\" lists what you passed and \"want\" lists what "
+"it expects."
+msgstr ""
+
+msgid "Remove the extra values so there is exactly one for each parameter."
+msgstr ""
+
+#, python-brace-format
+msgid "The format of {function} does not match its values"
+msgstr ""
+
+#, python-brace-format, python-format
+msgid ""
+"The format text given to {function} does not match the values after it. "
+"Each verb such as %d, %s or %v needs exactly one value, of a suitable "
+"type."
+msgstr ""
+
+msgid ""
+"Add or remove values so there is one per verb, or use fmt.Println if you "
+"do not need formatting."
+msgstr ""
+
+msgid "This code can never run"
+msgstr ""
+
+msgid ""
+"These statements come after a return, panic, break or infinite loop, so "
+"the program can never reach them."
+msgstr ""
+
+msgid "Delete the unreachable lines, or move them before the return."
 msgstr ""
 
 #, python-brace-format
@@ -27,6 +408,16 @@ msgid "gofmt was not found: {path}"
 msgstr ""
 
 msgid "gofmt took too long and was stopped."
+msgstr ""
+
+#, python-brace-format
+msgid "'{value}' is not a valid name."
+msgstr ""
+
+msgid "Please enter a module path, for example example.com/hello."
+msgstr ""
+
+msgid "Please enter a package, for example github.com/google/uuid."
 msgstr ""
 
 msgid "Failed to start Go. Make sure Go is installed and in your PATH."
@@ -48,14 +439,25 @@ msgid "Unknown process error."
 msgstr ""
 
 #, python-brace-format
-msgid "Running: {target}"
+msgid "Could not save file: {error}"
+msgstr ""
+
+msgid "Untitled"
 msgstr ""
 
 #, python-brace-format
 msgid "Building: {target}"
 msgstr ""
 
+#, python-brace-format
+msgid "Running: {command}"
+msgstr ""
+
 msgid "[Process terminated]"
+msgstr ""
+
+#, python-brace-format
+msgid "Running: {target}"
 msgstr ""
 
 msgid "A process is already running."
@@ -63,6 +465,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Error: {message}"
+msgstr ""
+
+msgid "declared in this file"
 msgstr ""
 
 msgid "VizcachaIDE - Beginner-friendly Go IDE"
@@ -95,11 +500,16 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-msgid "Error"
+msgid "Console"
 msgstr ""
 
-#, python-brace-format
-msgid "Could not open file: {error}"
+msgid "Reset &Layout"
+msgstr ""
+
+msgid "Save Go File"
+msgstr ""
+
+msgid "Go Files (*.go);;All Files (*)"
 msgstr ""
 
 msgid "Unsaved Changes"
@@ -109,24 +519,94 @@ msgstr ""
 msgid "Do you want to save changes to '{name}'?"
 msgstr ""
 
-msgid "Save Go File"
+msgid "Error"
 msgstr ""
 
-msgid "Go Files (*.go);;All Files (*)"
+msgid "Find"
+msgstr ""
+
+msgid "Replace"
+msgstr ""
+
+msgid "Match case"
+msgstr ""
+
+msgid "Whole word"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Replace All"
 msgstr ""
 
 #, python-brace-format
-msgid "Could not save file: {error}"
+msgid "{count} replacement"
+msgid_plural "{count} replacements"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No matches"
 msgstr ""
 
-msgid "Untitled"
+#, python-brace-format
+msgid "{count} match"
+msgid_plural "{count} matches"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "Could not open file: {error}"
 msgstr ""
 
 #, python-brace-format
 msgid "Untitled {number}"
 msgstr ""
 
+#, python-brace-format
+msgid "Try this: {hint}"
+msgstr ""
+
+msgid "Original message from Go:"
+msgstr ""
+
+msgid "Go to line"
+msgstr ""
+
+msgid "Search this error"
+msgstr ""
+
+msgid "Assistant"
+msgstr ""
+
+msgid "Nothing to explain. When Go reports an error, I will explain it here."
+msgstr ""
+
+#, python-brace-format
+msgid "Go reported {count} problem:"
+msgid_plural "Go reported {count} problems:"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{file}, line {line}"
+msgstr ""
+
+msgid "Go reported a problem"
+msgstr ""
+
+msgid ""
+"There is no beginner explanation for this message yet. The text below is "
+"exactly what Go printed: searching for it on the web usually helps."
+msgstr ""
+
 msgid "🐛 Debug"
+msgstr ""
+
+msgid "⏩ Continue"
 msgstr ""
 
 msgid "↷ Step Over"
@@ -136,6 +616,9 @@ msgid "↓ Step Into"
 msgstr ""
 
 msgid "↑ Step Out"
+msgstr ""
+
+msgid "Run to &Cursor"
 msgstr ""
 
 msgid "Stop Debugging"
@@ -150,10 +633,26 @@ msgstr ""
 msgid "Call Stack"
 msgstr ""
 
+msgid "Goroutines"
+msgstr ""
+
 msgid "No File"
 msgstr ""
 
 msgid "Please save your file before debugging."
+msgstr ""
+
+msgid "Note: the program cannot read keyboard input (stdin) while debugging."
+msgstr ""
+
+msgid "[Debugging stopped]"
+msgstr ""
+
+#, python-brace-format
+msgid "[Debugging finished with code {code}]"
+msgstr ""
+
+msgid "Loading..."
 msgstr ""
 
 msgid "Name"
@@ -183,6 +682,9 @@ msgstr ""
 msgid "Appearance"
 msgstr ""
 
+msgid "Use custom colors instead of the theme colors"
+msgstr ""
+
 msgid "Show toolbar"
 msgstr ""
 
@@ -210,6 +712,43 @@ msgstr ""
 msgid "UI Elements"
 msgstr ""
 
+msgid "&Find..."
+msgstr ""
+
+msgid "&Replace..."
+msgstr ""
+
+msgid "Find &Next"
+msgstr ""
+
+msgid "Find &Previous"
+msgstr ""
+
+msgid "&Go to Line..."
+msgstr ""
+
+msgid "Toggle &Comment"
+msgstr ""
+
+msgid "F&ormat Code"
+msgstr ""
+
+msgid "Zoom &In"
+msgstr ""
+
+msgid "Zoom &Out"
+msgstr ""
+
+msgid "&Reset Zoom"
+msgstr ""
+
+msgid "Go to Line"
+msgstr ""
+
+#, python-brace-format
+msgid "Line number (1 - {count}):"
+msgstr ""
+
 msgid "Editor"
 msgstr ""
 
@@ -220,6 +759,12 @@ msgid "Show line numbers"
 msgstr ""
 
 msgid "Enable word wrap"
+msgstr ""
+
+msgid "Format code on save"
+msgstr ""
+
+msgid "Runs gofmt every time a .go file is saved."
 msgstr ""
 
 msgid "Font family:"
@@ -255,6 +800,26 @@ msgstr ""
 msgid "&Paste"
 msgstr ""
 
+msgid "Code formatted."
+msgstr ""
+
+#, python-brace-format
+msgid "The code was not formatted (gofmt): {details}"
+msgstr ""
+
+#, python-brace-format
+msgid "gofmt is not available, so the code is saved without formatting. {details}"
+msgstr ""
+
+msgid "File Changed on Disk"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"'{name}' was changed outside VizcachaIDE and you have unsaved changes.\n"
+"Reload it and lose your changes?"
+msgstr ""
+
 msgid "&New"
 msgstr ""
 
@@ -267,6 +832,9 @@ msgstr ""
 msgid "Save &As..."
 msgstr ""
 
+msgid "Save A&ll"
+msgstr ""
+
 msgid "E&xit"
 msgstr ""
 
@@ -275,6 +843,15 @@ msgstr ""
 
 #, python-brace-format
 msgid "VizcachaIDE - {name}"
+msgstr ""
+
+msgid "Open &Recent"
+msgstr ""
+
+msgid "No recent files"
+msgstr ""
+
+msgid "&Clear Recent Files"
 msgstr ""
 
 msgid "About VizcachaIDE"
@@ -296,7 +873,129 @@ msgstr ""
 msgid "License:"
 msgstr ""
 
+msgid ""
+"The installable package bundles PyQt5 (GPLv3), Go, Delve and gopls, so "
+"the distributed program is licensed under GPLv3. See NOTICE.md."
+msgstr ""
+
 msgid "&About"
+msgstr ""
+
+msgid "gopls not found: using basic completion"
+msgstr ""
+
+msgid "gopls stopped: using basic completion"
+msgstr ""
+
+msgid "Outline"
+msgstr ""
+
+msgid "function"
+msgstr ""
+
+msgid "method"
+msgstr ""
+
+msgid "struct"
+msgstr ""
+
+msgid "interface"
+msgstr ""
+
+msgid "type"
+msgstr ""
+
+msgid "variable"
+msgstr ""
+
+msgid "constant"
+msgstr ""
+
+msgid "field"
+msgstr ""
+
+msgid "package"
+msgstr ""
+
+msgid "symbol"
+msgstr ""
+
+msgid "Kind"
+msgstr ""
+
+msgid "Open &Folder..."
+msgstr ""
+
+msgid "Go &Modules..."
+msgstr ""
+
+msgid "Files"
+msgstr ""
+
+msgid "Open Folder"
+msgstr ""
+
+msgid "Go Modules"
+msgstr ""
+
+msgid "Open a folder or save your file first."
+msgstr ""
+
+msgid "[Command finished successfully]"
+msgstr ""
+
+#, python-brace-format
+msgid "[Process exited with code {code}]"
+msgstr ""
+
+msgid "Open a folder to see its files."
+msgstr ""
+
+msgid "Open Folder..."
+msgstr ""
+
+msgid "Create go.mod (go mod init)"
+msgstr ""
+
+msgid "Add package (go get)"
+msgstr ""
+
+msgid "Clean up dependencies (go mod tidy)"
+msgstr ""
+
+msgid "Module path:"
+msgstr ""
+
+msgid "New module"
+msgstr ""
+
+msgid "Package[@version]:"
+msgstr ""
+
+msgid "Dependencies"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Folder: {folder}\n"
+"No go.mod found. Create one to start a module."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Module: {module}\n"
+"go.mod in: {root}"
+msgstr ""
+
+msgid "Program arguments"
+msgstr ""
+
+msgid ""
+"Arguments passed to your program (os.Args), separated by spaces. Use "
+"quotes to keep words together."
+msgstr ""
+
+msgid "Arguments:"
 msgstr ""
 
 msgid "Browse..."
@@ -347,9 +1046,6 @@ msgstr ""
 msgid "🔨 Build"
 msgstr ""
 
-msgid "Please save your file before running."
-msgstr ""
-
 msgid "Please save your file before building."
 msgstr ""
 
@@ -359,13 +1055,68 @@ msgstr ""
 msgid "[Build successful]"
 msgstr ""
 
+msgid "configured in Options"
+msgstr ""
+
+msgid "bundled with VizcachaIDE"
+msgstr ""
+
+msgid "found on PATH"
+msgstr ""
+
+msgid "not found"
+msgstr ""
+
 #, python-brace-format
-msgid "[Process exited with code {code}]"
+msgid "{origin}: {path}"
+msgstr ""
+
+msgid "Detected Tools"
+msgstr ""
+
+msgid "Detect again"
 msgstr ""
 
 msgid "&Options..."
 msgstr ""
 
+msgid "Restart VizcachaIDE to apply the new language."
+msgstr ""
+
+msgid "Automatic (system language)"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Language:"
+msgstr ""
+
+msgid "Interface language. Change it in Tools > Options > General."
+msgstr ""
+
+msgid "Go: detecting..."
+msgstr ""
+
+msgid "Go not found"
+msgstr ""
+
+msgid "Install Go or set its path in Tools > Options > Environment."
+msgstr ""
+
+#, python-brace-format
+msgid "Go {version}"
+msgstr ""
+
+msgid "Go version used to run and build your programs."
+msgstr ""
+
 msgid "VizcachaIDE Console - Ready"
 msgstr ""
+
+msgid "Click to go to this line"
+msgstr ""
+
+#~ msgid "Please save your file before running."
+#~ msgstr ""
 

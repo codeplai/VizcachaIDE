@@ -50,13 +50,23 @@ def _spanish_messages():
         return [message for message in read_po(handle) if message.id]
 
 
+def _as_tuple(text: str | tuple[str, ...]) -> tuple[str, ...]:
+    return text if isinstance(text, tuple) else (text,)
+
+
 def test_spanish_translations_keep_placeholders():
     for message in _spanish_messages():
-        if not message.string:
-            continue
-        assert set(PLACEHOLDER.findall(message.id)) == set(PLACEHOLDER.findall(message.string)), (
-            message.id
-        )
+        expected = set(PLACEHOLDER.findall(_as_tuple(message.id)[0]))
+        for translation in _as_tuple(message.string):
+            if translation:
+                assert set(PLACEHOLDER.findall(translation)) == expected, message.id
+
+
+def test_spanish_catalog_is_complete():
+    untranslated = [
+        message.id for message in _spanish_messages() if not all(_as_tuple(message.string))
+    ]
+    assert untranslated == []
 
 
 def test_menu_accelerators_are_unique_in_spanish():

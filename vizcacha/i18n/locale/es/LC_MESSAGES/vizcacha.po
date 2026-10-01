@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VizcachaIDE 0.2.0\n"
 "Report-Msgid-Bugs-To: hola@codeplai.pe\n"
-"POT-Creation-Date: 2026-09-30 19:35-0500\n"
+"POT-Creation-Date: 2026-10-01 07:52-0500\n"
 "PO-Revision-Date: 2026-09-30 19:35-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,8 +19,440 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "The program arguments have an unclosed quote."
+msgstr "Los argumentos del programa tienen una comilla sin cerrar."
+
 msgid "The debugger is not available yet. It will use Delve in a future version."
 msgstr "El depurador aún no está disponible. Usará Delve en una próxima versión."
+
+#, python-brace-format
+msgid ""
+"Delve (dlv) was not found: {executable}\n"
+"Install it with:\n"
+"    {command}\n"
+"or set its path in Tools > Options > Environment."
+msgstr ""
+"No se encontró Delve (dlv): {executable}\n"
+"Instálalo con:\n"
+"    {command}\n"
+"o indica su ruta en Herramientas > Opciones > Entorno."
+
+msgid "Delve stopped unexpectedly."
+msgstr "Delve se detuvo inesperadamente."
+
+#, python-brace-format
+msgid "Variable \"{name}\" is never used"
+msgstr "La variable \"{name}\" nunca se usa"
+
+#, python-brace-format
+msgid ""
+"You created the variable \"{name}\" but never read it. Go refuses to compile code with unused "
+"variables, because they are usually a mistake or leftover code."
+msgstr ""
+"Creaste la variable \"{name}\", pero nunca lees su valor. Go no compila código con variables sin "
+"usar, porque casi siempre son un error o restos de código viejo."
+
+#, python-brace-format
+msgid ""
+"Use \"{name}\" somewhere (for example, print it), delete it, or replace it with _ if you must "
+"receive a value you do not need."
+msgstr ""
+"Usa \"{name}\" en algún lugar (por ejemplo, imprímela), bórrala o cámbiala por _ si tienes que "
+"recibir un valor que no necesitas."
+
+#, python-brace-format
+msgid "Package \"{package}\" is imported but never used"
+msgstr "El paquete \"{package}\" se importa, pero nunca se usa"
+
+#, python-brace-format
+msgid ""
+"The file imports the package \"{package}\", but no code uses it. Go does not allow unused "
+"imports, to keep programs clean and fast to compile."
+msgstr ""
+"El archivo importa el paquete \"{package}\", pero ningún código lo usa. Go no permite "
+"importaciones sin usar, para que los programas sean limpios y compilen rápido."
+
+#, python-brace-format
+msgid "Delete the line that imports \"{package}\", or use something from it."
+msgstr "Borra la línea que importa \"{package}\" o usa algo de ese paquete."
+
+msgid "The function can end without returning a value"
+msgstr "La función puede terminar sin devolver un valor"
+
+msgid ""
+"This function says it returns a value, but there is a way to reach its closing brace without a "
+"return statement. For example, an if returns a value but the case where the condition is false "
+"does not."
+msgstr ""
+"Esta función dice que devuelve un valor, pero hay un camino que llega a su llave de cierre sin "
+"pasar por un return. Por ejemplo, un if devuelve un valor, pero el caso en que la condición es "
+"falsa no lo hace."
+
+msgid "Add a return statement at the end of the function, or an else branch that also returns a value."
+msgstr "Agrega un return al final de la función, o una rama else que también devuelva un valor."
+
+#, python-brace-format
+msgid "\"{name}\" is private to package {package}"
+msgstr "\"{name}\" es privado del paquete {package}"
+
+#, python-brace-format
+msgid ""
+"In Go, only names that start with a capital letter can be used from another package. \"{name}\" "
+"starts with a lowercase letter, so package {package} keeps it private, or the real name has "
+"different capital letters."
+msgstr ""
+"En Go, solo los nombres que empiezan con mayúscula se pueden usar desde otro paquete. \"{name}\" "
+"empieza con minúscula, así que el paquete {package} lo mantiene privado, o el nombre real lleva "
+"otras mayúsculas."
+
+msgid ""
+"Write the name exactly as the package documents it, starting with a capital letter (for example "
+"strings.ToUpper, not strings.toUpper)."
+msgstr ""
+"Escribe el nombre tal como aparece en la documentación del paquete, empezando con mayúscula (por "
+"ejemplo strings.ToUpper, no strings.toUpper)."
+
+#, python-brace-format
+msgid "Unknown name: {name}"
+msgstr "Nombre desconocido: {name}"
+
+#, python-brace-format
+msgid ""
+"Go does not know anything called \"{name}\". It was never declared, it is declared in a place "
+"this code cannot see (such as inside another function or block), or it is misspelled."
+msgstr ""
+"Go no conoce nada llamado \"{name}\". Nunca se declaró, se declaró en un lugar que este código no"
+" puede ver (por ejemplo, dentro de otra función o bloque) o está mal escrito."
+
+msgid ""
+"Check the spelling and the capital letters, declare the variable before you use it (for example "
+"with :=), or import the package it belongs to."
+msgstr ""
+"Revisa la ortografía y las mayúsculas, declara la variable antes de usarla (por ejemplo con :=) o"
+" importa el paquete al que pertenece."
+
+msgid "The variable already exists: use = instead of :="
+msgstr "La variable ya existe: usa = en lugar de :="
+
+msgid ""
+":= creates new variables. Every variable on its left side already exists in this block, so there "
+"is nothing new to create."
+msgstr ""
+":= crea variables nuevas. Todas las variables a su izquierda ya existen en este bloque, así que "
+"no hay nada nuevo que crear."
+
+msgid "Use = to change the value of an existing variable. Use := only the first time."
+msgstr "Usa = para cambiar el valor de una variable que ya existe. Usa := solo la primera vez."
+
+msgid "The program has no main function"
+msgstr "El programa no tiene función main"
+
+msgid ""
+"A Go program starts running in the function main of package main. This package is called main, "
+"but it does not contain a function named main."
+msgstr ""
+"Un programa en Go empieza a ejecutarse en la función main del paquete main. Este paquete se llama"
+" main, pero no tiene ninguna función llamada main."
+
+msgid "Add a function with exactly this header: func main() {{ ... }}"
+msgstr "Agrega una función con exactamente esta cabecera: func main() {{ ... }}"
+
+msgid "This file is not a runnable program"
+msgstr "Este archivo no es un programa ejecutable"
+
+msgid ""
+"Only code in package main can be run. The first line of this file declares a different package, "
+"which Go treats as a library."
+msgstr ""
+"Solo se puede ejecutar el código del paquete main. La primera línea de este archivo declara otro "
+"paquete, y Go lo trata como una biblioteca."
+
+msgid "Change the first line to: package main (and make sure there is a func main)."
+msgstr "Cambia la primera línea por: package main (y asegúrate de que haya una func main)."
+
+#, python-brace-format
+msgid "Package \"{package}\" was not found"
+msgstr "No se encontró el paquete \"{package}\""
+
+#, python-brace-format
+msgid ""
+"Go cannot find the package \"{package}\". Standard packages have fixed names (fmt, math, strings,"
+" os...), and packages from the internet must be added to your module before you can import them."
+msgstr ""
+"Go no encuentra el paquete \"{package}\". Los paquetes estándar tienen nombres fijos (fmt, math, "
+"strings, os...), y los paquetes de internet hay que agregarlos a tu módulo antes de poder "
+"importarlos."
+
+#, python-brace-format
+msgid ""
+"Check the spelling of the import path. For an external package, run go get {package} in a folder "
+"that has a go.mod file."
+msgstr ""
+"Revisa cómo está escrita la ruta del import. Para un paquete externo, ejecuta go get {package} en"
+" una carpeta que tenga un archivo go.mod."
+
+#, python-brace-format
+msgid "Index {index} is out of range"
+msgstr "El índice {index} está fuera de rango"
+
+#, python-brace-format
+msgid ""
+"The program tried to use position {index}, but the slice, array or string only has {length} "
+"element(s). Valid positions go from 0 to {length} - 1."
+msgstr ""
+"El programa intentó usar la posición {index}, pero el slice, arreglo o string solo tiene {length}"
+" elemento(s). Las posiciones válidas van de 0 a {length} - 1."
+
+msgid ""
+"Check the index before using it (for example: if i < len(items)) and remember that counting "
+"starts at 0."
+msgstr ""
+"Comprueba el índice antes de usarlo (por ejemplo: if i < len(items)) y recuerda que se empieza a "
+"contar desde 0."
+
+msgid "Writing to a map that was never created"
+msgstr "Escritura en un map que nunca se creó"
+
+msgid ""
+"The map variable was declared but never created, so it is nil. You can read from a nil map, but "
+"writing to it stops the program."
+msgstr ""
+"La variable del map se declaró, pero nunca se creó, así que vale nil. Puedes leer de un map nil, "
+"pero escribir en él detiene el programa."
+
+msgid "Create the map before writing to it: ages := make(map[string]int) or ages := map[string]int{{}}."
+msgstr "Crea el map antes de escribir en él: ages := make(map[string]int) o ages := map[string]int{{}}."
+
+msgid "Using a pointer that is nil"
+msgstr "Uso de un puntero que vale nil"
+
+msgid ""
+"The program read or wrote through a pointer (or an interface, map or slice element holding one) "
+"whose value is nil, so it points to nothing."
+msgstr ""
+"El programa leyó o escribió a través de un puntero (o de una interfaz, map o elemento de slice "
+"que lo contiene) cuyo valor es nil, es decir, que no apunta a nada."
+
+msgid ""
+"Make sure the pointer gets a value before you use it, for example p := &Person{{}} or p := "
+"new(Person), or check if p != nil first."
+msgstr ""
+"Asegúrate de que el puntero tenga un valor antes de usarlo, por ejemplo p := &Person{{}} o p := "
+"new(Person), o comprueba primero if p != nil."
+
+msgid "Deadlock: every goroutine is waiting forever"
+msgstr "Deadlock: todas las goroutines esperan para siempre"
+
+msgid ""
+"All goroutines are blocked waiting for each other, so nothing can continue. Usually a channel is "
+"sent to with nobody receiving, or received from with nobody sending, or a WaitGroup or Mutex is "
+"never released."
+msgstr ""
+"Todas las goroutines están bloqueadas esperándose entre sí, así que nada puede continuar. "
+"Normalmente se envía por un canal que nadie recibe, se recibe de un canal al que nadie envía, o "
+"nunca se libera un WaitGroup o un Mutex."
+
+msgid ""
+"Make sure another goroutine receives what you send (go func() {{ ... }}()), use a buffered "
+"channel, close the channel when you are done, or call wg.Done()."
+msgstr ""
+"Asegúrate de que otra goroutine reciba lo que envías (go func() {{ ... }}()), usa un canal con "
+"buffer, cierra el canal cuando termines o llama a wg.Done()."
+
+msgid "Division by zero"
+msgstr "División entre cero"
+
+msgid "The program divided an integer by zero (with / or %). That has no result, so Go stops the program."
+msgstr ""
+"El programa dividió un entero entre cero (con / o %). Eso no tiene resultado, así que Go detiene "
+"el programa."
+
+msgid "Check that the divisor is not 0 before dividing, for example: if people != 0 {{ ... }}."
+msgstr "Comprueba que el divisor no sea 0 antes de dividir, por ejemplo: if people != 0 {{ ... }}."
+
+#, python-brace-format
+msgid "Slice limits [{bounds}] are out of range"
+msgstr "Los límites [{bounds}] del slice están fuera de rango"
+
+#, python-brace-format
+msgid ""
+"The program tried to take the part [{bounds}] of a slice or string, but those limits go past its "
+"end, or the start is bigger than the end."
+msgstr ""
+"El programa intentó tomar la parte [{bounds}] de un slice o string, pero esos límites pasan del "
+"final, o el inicio es mayor que el fin."
+
+msgid "Make sure that 0 <= start <= end <= len(s) before slicing, for example with min(end, len(s))."
+msgstr "Asegúrate de que 0 <= inicio <= fin <= len(s) antes de cortar, por ejemplo con min(end, len(s))."
+
+#, python-brace-format
+msgid "Type assertion failed: {actual} is not {type}"
+msgstr "Falló la aserción de tipo: {actual} no es {type}"
+
+#, python-brace-format
+msgid ""
+"The program asserted that a value holds a {type}, but it actually holds a {actual}. A failed "
+"assertion with a single result stops the program."
+msgstr ""
+"El programa afirmó que un valor contiene un {type}, pero en realidad contiene un {actual}. Una "
+"aserción fallida con un solo resultado detiene el programa."
+
+#, python-brace-format
+msgid "Use the two-result form to check safely: n, ok := value.({type}). Or use a type switch."
+msgstr ""
+"Usa la forma con dos resultados para comprobarlo sin riesgo: n, ok := value.({type}). O usa un "
+"type switch."
+
+msgid "A curly brace {{ }} is missing"
+msgstr "Falta una llave {{ }}"
+
+msgid ""
+"Every {{ needs a matching }}. Go reached the end of the file, or of a block, while it was still "
+"waiting for one. Go also needs the opening {{ on the same line as func, if, for or else."
+msgstr ""
+"Cada {{ necesita su }}. Go llegó al final del archivo, o de un bloque, mientras todavía esperaba "
+"una. Go también exige que la {{ de apertura esté en la misma línea que func, if, for o else."
+
+msgid ""
+"Count your {{ and }} and add the missing one. Keep each opening {{ at the end of the line that "
+"starts the block."
+msgstr ""
+"Cuenta tus {{ y }} y agrega la que falta. Deja cada {{ de apertura al final de la línea que "
+"empieza el bloque."
+
+#, python-brace-format
+msgid "Syntax error: unexpected {token}"
+msgstr "Error de sintaxis: {token} inesperado"
+
+#, python-brace-format
+msgid ""
+"Go could not understand this line. It found {token} in a place where Go's grammar does not allow "
+"it. The real mistake is often just before that point."
+msgstr ""
+"Go no pudo entender esta línea. Encontró {token} en un lugar donde la gramática de Go no lo "
+"permite. A menudo el error real está justo antes de ese punto."
+
+msgid "Look right before the marked position for a missing comma, parenthesis, quote or operator."
+msgstr ""
+"Busca justo antes de la posición marcada una coma, un paréntesis, unas comillas o un operador que"
+" falte."
+
+#, python-brace-format
+msgid "Wrong type: a {type} was expected"
+msgstr "Tipo incorrecto: se esperaba un {type}"
+
+#, python-brace-format
+msgid ""
+"The value {value} does not have the type {type}, which is what Go expects here. Go never converts"
+" between types such as int and string automatically."
+msgstr ""
+"El valor {value} no es del tipo {type}, que es lo que Go espera aquí. Go nunca convierte "
+"automáticamente entre tipos como int y string."
+
+#, python-brace-format
+msgid ""
+"Use a value of type {type}, or convert it explicitly, for example with int(x), float64(x) or "
+"strconv.Itoa(n)."
+msgstr ""
+"Usa un valor de tipo {type} o conviértelo de forma explícita, por ejemplo con int(x), float64(x) "
+"o strconv.Itoa(n)."
+
+#, python-brace-format
+msgid "Cannot combine {left_type} and {right_type}"
+msgstr "No se puede combinar {left_type} con {right_type}"
+
+#, python-brace-format
+msgid ""
+"In {expression} the two sides have different types ({left_type} and {right_type}). Operators such"
+" as +, - or == only work between values of the same type."
+msgstr ""
+"En {expression} los dos lados tienen tipos distintos ({left_type} y {right_type}). Operadores "
+"como +, - o == solo funcionan entre valores del mismo tipo."
+
+msgid ""
+"Convert one side so both have the same type, for example strconv.Itoa(n) to turn an int into a "
+"string, or float64(n) to mix it with decimals."
+msgstr ""
+"Convierte uno de los lados para que ambos tengan el mismo tipo, por ejemplo strconv.Itoa(n) para "
+"pasar un int a string, o float64(n) para mezclarlo con decimales."
+
+msgid "The number of variables and values does not match"
+msgstr "La cantidad de variables y de valores no coincide"
+
+#, python-brace-format
+msgid ""
+"The left side of = or := has {left} variable(s), but the right side gives {right} value(s). Both "
+"numbers must be equal. Many functions, such as strconv.Atoi, return two values: a result and an "
+"error."
+msgstr ""
+"El lado izquierdo de = o := tiene {left} variable(s), pero el lado derecho da {right} valor(es). "
+"Ambos números deben ser iguales. Muchas funciones, como strconv.Atoi, devuelven dos valores: un "
+"resultado y un error."
+
+msgid ""
+"Add or remove variables until both sides match, for example: number, err := strconv.Atoi(text). "
+"Use _ for a value you do not need."
+msgstr ""
+"Agrega o quita variables hasta que ambos lados coincidan, por ejemplo: number, err := "
+"strconv.Atoi(text). Usa _ para un valor que no necesites."
+
+#, python-brace-format
+msgid "Not enough arguments for {function}"
+msgstr "Faltan argumentos para {function}"
+
+#, python-brace-format
+msgid ""
+"The function {function} needs more values than you passed. In the original message, \"have\" "
+"lists what you passed and \"want\" lists what it expects."
+msgstr ""
+"La función {function} necesita más valores de los que le pasaste. En el mensaje original, "
+"\"have\" muestra lo que pasaste y \"want\" lo que espera."
+
+msgid "Pass one value for each parameter, in the same order and with the right types."
+msgstr "Pasa un valor por cada parámetro, en el mismo orden y con los tipos correctos."
+
+#, python-brace-format
+msgid "Too many arguments for {function}"
+msgstr "Sobran argumentos para {function}"
+
+#, python-brace-format
+msgid ""
+"The function {function} receives fewer values than you passed. In the original message, \"have\" "
+"lists what you passed and \"want\" lists what it expects."
+msgstr ""
+"La función {function} recibe menos valores de los que le pasaste. En el mensaje original, "
+"\"have\" muestra lo que pasaste y \"want\" lo que espera."
+
+msgid "Remove the extra values so there is exactly one for each parameter."
+msgstr "Quita los valores que sobran para que haya exactamente uno por cada parámetro."
+
+#, python-brace-format
+msgid "The format of {function} does not match its values"
+msgstr "El formato de {function} no coincide con sus valores"
+
+#, python-brace-format, python-format
+msgid ""
+"The format text given to {function} does not match the values after it. Each verb such as %d, %s "
+"or %v needs exactly one value, of a suitable type."
+msgstr ""
+"El texto de formato que recibe {function} no coincide con los valores que van después. Cada verbo"
+" como %d, %s o %v necesita exactamente un valor, de un tipo adecuado."
+
+msgid "Add or remove values so there is one per verb, or use fmt.Println if you do not need formatting."
+msgstr "Agrega o quita valores para que haya uno por verbo, o usa fmt.Println si no necesitas formato."
+
+msgid "This code can never run"
+msgstr "Este código nunca se puede ejecutar"
+
+msgid ""
+"These statements come after a return, panic, break or infinite loop, so the program can never "
+"reach them."
+msgstr ""
+"Estas instrucciones están después de un return, panic, break o bucle infinito, así que el "
+"programa nunca puede llegar a ellas."
+
+msgid "Delete the unreachable lines, or move them before the return."
+msgstr "Borra las líneas inalcanzables o muévelas antes del return."
 
 #, python-brace-format
 msgid "gofmt was not found: {path}"
@@ -28,6 +460,16 @@ msgstr "No se encontró gofmt: {path}"
 
 msgid "gofmt took too long and was stopped."
 msgstr "gofmt tardó demasiado y se detuvo."
+
+#, python-brace-format
+msgid "'{value}' is not a valid name."
+msgstr "'{value}' no es un nombre válido."
+
+msgid "Please enter a module path, for example example.com/hello."
+msgstr "Escribe la ruta del módulo, por ejemplo example.com/hola."
+
+msgid "Please enter a package, for example github.com/google/uuid."
+msgstr "Escribe un paquete, por ejemplo github.com/google/uuid."
 
 msgid "Failed to start Go. Make sure Go is installed and in your PATH."
 msgstr "No se pudo iniciar Go. Verifica que Go esté instalado y en tu PATH."
@@ -48,15 +490,26 @@ msgid "Unknown process error."
 msgstr "Error desconocido del proceso."
 
 #, python-brace-format
-msgid "Running: {target}"
-msgstr "Ejecutando: {target}"
+msgid "Could not save file: {error}"
+msgstr "No se pudo guardar el archivo: {error}"
+
+msgid "Untitled"
+msgstr "Sin título"
 
 #, python-brace-format
 msgid "Building: {target}"
 msgstr "Compilando: {target}"
 
+#, python-brace-format
+msgid "Running: {command}"
+msgstr "Ejecutando: {command}"
+
 msgid "[Process terminated]"
 msgstr "[Proceso detenido]"
+
+#, python-brace-format
+msgid "Running: {target}"
+msgstr "Ejecutando: {target}"
 
 msgid "A process is already running."
 msgstr "Ya hay un proceso en ejecución."
@@ -64,6 +517,9 @@ msgstr "Ya hay un proceso en ejecución."
 #, python-brace-format
 msgid "Error: {message}"
 msgstr "Error: {message}"
+
+msgid "declared in this file"
+msgstr "declarado en este archivo"
 
 msgid "VizcachaIDE - Beginner-friendly Go IDE"
 msgstr "VizcachaIDE - IDE de Go para principiantes"
@@ -95,12 +551,17 @@ msgstr "&Herramientas"
 msgid "&Help"
 msgstr "A&yuda"
 
-msgid "Error"
-msgstr "Error"
+msgid "Console"
+msgstr "Consola"
 
-#, python-brace-format
-msgid "Could not open file: {error}"
-msgstr "No se pudo abrir el archivo: {error}"
+msgid "Reset &Layout"
+msgstr "Restablecer &disposición"
+
+msgid "Save Go File"
+msgstr "Guardar archivo Go"
+
+msgid "Go Files (*.go);;All Files (*)"
+msgstr "Archivos Go (*.go);;Todos los archivos (*)"
 
 msgid "Unsaved Changes"
 msgstr "Cambios sin guardar"
@@ -109,25 +570,97 @@ msgstr "Cambios sin guardar"
 msgid "Do you want to save changes to '{name}'?"
 msgstr "¿Quieres guardar los cambios en '{name}'?"
 
-msgid "Save Go File"
-msgstr "Guardar archivo Go"
+msgid "Error"
+msgstr "Error"
 
-msgid "Go Files (*.go);;All Files (*)"
-msgstr "Archivos Go (*.go);;Todos los archivos (*)"
+msgid "Find"
+msgstr "Buscar"
+
+msgid "Replace"
+msgstr "Reemplazar"
+
+msgid "Match case"
+msgstr "Coincidir mayúsculas"
+
+msgid "Whole word"
+msgstr "Palabra completa"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "Replace All"
+msgstr "Reemplazar todo"
 
 #, python-brace-format
-msgid "Could not save file: {error}"
-msgstr "No se pudo guardar el archivo: {error}"
+msgid "{count} replacement"
+msgid_plural "{count} replacements"
+msgstr[0] "{count} reemplazo"
+msgstr[1] "{count} reemplazos"
 
-msgid "Untitled"
-msgstr "Sin título"
+msgid "No matches"
+msgstr "Sin coincidencias"
+
+#, python-brace-format
+msgid "{count} match"
+msgid_plural "{count} matches"
+msgstr[0] "{count} coincidencia"
+msgstr[1] "{count} coincidencias"
+
+#, python-brace-format
+msgid "Could not open file: {error}"
+msgstr "No se pudo abrir el archivo: {error}"
 
 #, python-brace-format
 msgid "Untitled {number}"
 msgstr "Sin título {number}"
 
+#, python-brace-format
+msgid "Try this: {hint}"
+msgstr "Prueba esto: {hint}"
+
+msgid "Original message from Go:"
+msgstr "Mensaje original de Go:"
+
+msgid "Go to line"
+msgstr "Ir a la línea"
+
+msgid "Search this error"
+msgstr "Buscar este error"
+
+msgid "Assistant"
+msgstr "Asistente"
+
+msgid "Nothing to explain. When Go reports an error, I will explain it here."
+msgstr "Nada que explicar. Cuando Go informe de un error, te lo explicaré aquí."
+
+#, python-brace-format
+msgid "Go reported {count} problem:"
+msgid_plural "Go reported {count} problems:"
+msgstr[0] "Go informó de {count} problema:"
+msgstr[1] "Go informó de {count} problemas:"
+
+#, python-brace-format
+msgid "{file}, line {line}"
+msgstr "{file}, línea {line}"
+
+msgid "Go reported a problem"
+msgstr "Go informó de un problema"
+
+msgid ""
+"There is no beginner explanation for this message yet. The text below is exactly what Go printed:"
+" searching for it on the web usually helps."
+msgstr ""
+"Todavía no hay una explicación para principiantes de este mensaje. El texto de abajo es "
+"exactamente lo que imprimió Go: buscarlo en la web suele ayudar."
+
 msgid "🐛 Debug"
 msgstr "🐛 Depurar"
+
+msgid "⏩ Continue"
+msgstr "⏩ Continuar"
 
 msgid "↷ Step Over"
 msgstr "↷ Paso sobre"
@@ -137,6 +670,9 @@ msgstr "↓ Paso adentro"
 
 msgid "↑ Step Out"
 msgstr "↑ Paso afuera"
+
+msgid "Run to &Cursor"
+msgstr "Ejecutar hasta el &cursor"
 
 msgid "Stop Debugging"
 msgstr "Detener depuración"
@@ -150,11 +686,27 @@ msgstr "Variables"
 msgid "Call Stack"
 msgstr "Pila de llamadas"
 
+msgid "Goroutines"
+msgstr "Goroutines"
+
 msgid "No File"
 msgstr "Sin archivo"
 
 msgid "Please save your file before debugging."
 msgstr "Guarda tu archivo antes de depurar."
+
+msgid "Note: the program cannot read keyboard input (stdin) while debugging."
+msgstr "Nota: el programa no puede leer del teclado (stdin) mientras se depura."
+
+msgid "[Debugging stopped]"
+msgstr "[Depuración detenida]"
+
+#, python-brace-format
+msgid "[Debugging finished with code {code}]"
+msgstr "[La depuración terminó con código {code}]"
+
+msgid "Loading..."
+msgstr "Cargando..."
 
 msgid "Name"
 msgstr "Nombre"
@@ -183,6 +735,9 @@ msgstr "Elegir color"
 msgid "Appearance"
 msgstr "Apariencia"
 
+msgid "Use custom colors instead of the theme colors"
+msgstr "Usar colores personalizados en lugar de los del tema"
+
 msgid "Show toolbar"
 msgstr "Mostrar barra de herramientas"
 
@@ -210,6 +765,43 @@ msgstr "Texto:"
 msgid "UI Elements"
 msgstr "Elementos de la interfaz"
 
+msgid "&Find..."
+msgstr "&Buscar..."
+
+msgid "&Replace..."
+msgstr "Reemp&lazar..."
+
+msgid "Find &Next"
+msgstr "Buscar &siguiente"
+
+msgid "Find &Previous"
+msgstr "Buscar &anterior"
+
+msgid "&Go to Line..."
+msgstr "&Ir a la línea..."
+
+msgid "Toggle &Comment"
+msgstr "Co&mentar/descomentar"
+
+msgid "F&ormat Code"
+msgstr "F&ormatear código"
+
+msgid "Zoom &In"
+msgstr "&Acercar"
+
+msgid "Zoom &Out"
+msgstr "A&lejar"
+
+msgid "&Reset Zoom"
+msgstr "&Restablecer zoom"
+
+msgid "Go to Line"
+msgstr "Ir a la línea"
+
+#, python-brace-format
+msgid "Line number (1 - {count}):"
+msgstr "Número de línea (1 - {count}):"
+
 msgid "Editor"
 msgstr "Editor"
 
@@ -221,6 +813,12 @@ msgstr "Mostrar números de línea"
 
 msgid "Enable word wrap"
 msgstr "Ajustar líneas largas"
+
+msgid "Format code on save"
+msgstr "Formatear el código al guardar"
+
+msgid "Runs gofmt every time a .go file is saved."
+msgstr "Ejecuta gofmt cada vez que se guarda un archivo .go."
 
 msgid "Font family:"
 msgstr "Fuente:"
@@ -255,6 +853,28 @@ msgstr "&Copiar"
 msgid "&Paste"
 msgstr "&Pegar"
 
+msgid "Code formatted."
+msgstr "Código formateado."
+
+#, python-brace-format
+msgid "The code was not formatted (gofmt): {details}"
+msgstr "El código no se formateó (gofmt): {details}"
+
+#, python-brace-format
+msgid "gofmt is not available, so the code is saved without formatting. {details}"
+msgstr "gofmt no está disponible, así que el código se guarda sin formatear. {details}"
+
+msgid "File Changed on Disk"
+msgstr "El archivo cambió en el disco"
+
+#, python-brace-format
+msgid ""
+"'{name}' was changed outside VizcachaIDE and you have unsaved changes.\n"
+"Reload it and lose your changes?"
+msgstr ""
+"'{name}' se modificó fuera de VizcachaIDE y tienes cambios sin guardar.\n"
+"¿Recargarlo y perder tus cambios?"
+
 msgid "&New"
 msgstr "&Nuevo"
 
@@ -267,6 +887,9 @@ msgstr "&Guardar"
 msgid "Save &As..."
 msgstr "Guardar &como..."
 
+msgid "Save A&ll"
+msgstr "Guardar &todo"
+
 msgid "E&xit"
 msgstr "&Salir"
 
@@ -276,6 +899,15 @@ msgstr "Abrir archivo Go"
 #, python-brace-format
 msgid "VizcachaIDE - {name}"
 msgstr "VizcachaIDE - {name}"
+
+msgid "Open &Recent"
+msgstr "Abrir &recientes"
+
+msgid "No recent files"
+msgstr "No hay archivos recientes"
+
+msgid "&Clear Recent Files"
+msgstr "&Borrar la lista de recientes"
 
 msgid "About VizcachaIDE"
 msgstr "Acerca de VizcachaIDE"
@@ -296,8 +928,138 @@ msgstr "Contacto:"
 msgid "License:"
 msgstr "Licencia:"
 
+msgid ""
+"The installable package bundles PyQt5 (GPLv3), Go, Delve and gopls, so the distributed program is"
+" licensed under GPLv3. See NOTICE.md."
+msgstr ""
+"El paquete instalable incluye PyQt5 (GPLv3), Go, Delve y gopls, por lo que el programa "
+"distribuido se licencia bajo GPLv3. Consulta NOTICE.md."
+
 msgid "&About"
 msgstr "&Acerca de"
+
+msgid "gopls not found: using basic completion"
+msgstr "No se encontró gopls: se usa el autocompletado básico"
+
+msgid "gopls stopped: using basic completion"
+msgstr "gopls se detuvo: se usa el autocompletado básico"
+
+msgid "Outline"
+msgstr "Estructura"
+
+msgid "function"
+msgstr "función"
+
+msgid "method"
+msgstr "método"
+
+msgid "struct"
+msgstr "struct"
+
+msgid "interface"
+msgstr "interfaz"
+
+msgid "type"
+msgstr "tipo"
+
+msgid "variable"
+msgstr "variable"
+
+msgid "constant"
+msgstr "constante"
+
+msgid "field"
+msgstr "campo"
+
+msgid "package"
+msgstr "paquete"
+
+msgid "symbol"
+msgstr "símbolo"
+
+msgid "Kind"
+msgstr "Clase"
+
+msgid "Open &Folder..."
+msgstr "Abrir car&peta..."
+
+msgid "Go &Modules..."
+msgstr "&Módulos de Go..."
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Open Folder"
+msgstr "Abrir carpeta"
+
+msgid "Go Modules"
+msgstr "Módulos de Go"
+
+msgid "Open a folder or save your file first."
+msgstr "Primero abre una carpeta o guarda tu archivo."
+
+msgid "[Command finished successfully]"
+msgstr "[El comando terminó correctamente]"
+
+#, python-brace-format
+msgid "[Process exited with code {code}]"
+msgstr "[El proceso terminó con código {code}]"
+
+msgid "Open a folder to see its files."
+msgstr "Abre una carpeta para ver sus archivos."
+
+msgid "Open Folder..."
+msgstr "Abrir carpeta..."
+
+msgid "Create go.mod (go mod init)"
+msgstr "Crear go.mod (go mod init)"
+
+msgid "Add package (go get)"
+msgstr "Añadir paquete (go get)"
+
+msgid "Clean up dependencies (go mod tidy)"
+msgstr "Ordenar dependencias (go mod tidy)"
+
+msgid "Module path:"
+msgstr "Ruta del módulo:"
+
+msgid "New module"
+msgstr "Nuevo módulo"
+
+msgid "Package[@version]:"
+msgstr "Paquete[@versión]:"
+
+msgid "Dependencies"
+msgstr "Dependencias"
+
+#, python-brace-format
+msgid ""
+"Folder: {folder}\n"
+"No go.mod found. Create one to start a module."
+msgstr ""
+"Carpeta: {folder}\n"
+"No hay go.mod. Crea uno para empezar un módulo."
+
+#, python-brace-format
+msgid ""
+"Module: {module}\n"
+"go.mod in: {root}"
+msgstr ""
+"Módulo: {module}\n"
+"go.mod en: {root}"
+
+msgid "Program arguments"
+msgstr "Argumentos del programa"
+
+msgid ""
+"Arguments passed to your program (os.Args), separated by spaces. Use quotes to keep words "
+"together."
+msgstr ""
+"Argumentos que recibe tu programa (os.Args), separados por espacios. Usa comillas para mantener "
+"palabras juntas."
+
+msgid "Arguments:"
+msgstr "Argumentos:"
 
 msgid "Browse..."
 msgstr "Examinar..."
@@ -347,9 +1109,6 @@ msgstr "⬛ Detener"
 msgid "🔨 Build"
 msgstr "🔨 Compilar"
 
-msgid "Please save your file before running."
-msgstr "Guarda tu archivo antes de ejecutarlo."
-
 msgid "Please save your file before building."
 msgstr "Guarda tu archivo antes de compilarlo."
 
@@ -359,13 +1118,68 @@ msgstr "[El proceso terminó correctamente]"
 msgid "[Build successful]"
 msgstr "[Compilación exitosa]"
 
+msgid "configured in Options"
+msgstr "configurado en Opciones"
+
+msgid "bundled with VizcachaIDE"
+msgstr "incluido con VizcachaIDE"
+
+msgid "found on PATH"
+msgstr "encontrado en el PATH"
+
+msgid "not found"
+msgstr "no encontrado"
+
 #, python-brace-format
-msgid "[Process exited with code {code}]"
-msgstr "[El proceso terminó con código {code}]"
+msgid "{origin}: {path}"
+msgstr "{origin}: {path}"
+
+msgid "Detected Tools"
+msgstr "Herramientas detectadas"
+
+msgid "Detect again"
+msgstr "Detectar de nuevo"
 
 msgid "&Options..."
 msgstr "&Opciones..."
 
+msgid "Restart VizcachaIDE to apply the new language."
+msgstr "Reinicia VizcachaIDE para aplicar el nuevo idioma."
+
+msgid "Automatic (system language)"
+msgstr "Automático (idioma del sistema)"
+
+msgid "General"
+msgstr "General"
+
+msgid "Language:"
+msgstr "Idioma:"
+
+msgid "Interface language. Change it in Tools > Options > General."
+msgstr "Idioma de la interfaz. Cámbialo en Herramientas > Opciones > General."
+
+msgid "Go: detecting..."
+msgstr "Go: detectando..."
+
+msgid "Go not found"
+msgstr "Go no encontrado"
+
+msgid "Install Go or set its path in Tools > Options > Environment."
+msgstr "Instala Go o indica su ruta en Herramientas > Opciones > Entorno."
+
+#, python-brace-format
+msgid "Go {version}"
+msgstr "Go {version}"
+
+msgid "Go version used to run and build your programs."
+msgstr "Versión de Go que se usa para ejecutar y compilar tus programas."
+
 msgid "VizcachaIDE Console - Ready"
 msgstr "Consola de VizcachaIDE - Lista"
+
+msgid "Click to go to this line"
+msgstr "Haz clic para ir a esta línea"
+
+#~ msgid "Please save your file before running."
+#~ msgstr "Guarda tu archivo antes de ejecutarlo."
 
