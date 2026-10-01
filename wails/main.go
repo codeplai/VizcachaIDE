@@ -9,6 +9,7 @@ import (
 	"embed"
 	"log"
 
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -29,11 +30,16 @@ func run() error {
 	sink := bridge.NewWailsEventSink()
 	settingsStore := bridge.NewMemorySettingsStore() // W1: adapters/settings
 
+	explainer, err := errorcatalog.NewExplainer()
+	if err != nil {
+		return err
+	}
+
 	services := []any{
 		bridge.NewRunService(sink),
 		bridge.NewDebugService(sink),
 		bridge.NewLanguageService(sink),
-		bridge.NewAssistantService(sink, settingsStore),
+		bridge.NewAssistantService(sink, explainer, settingsStore),
 		bridge.NewFilesService(),
 		bridge.NewSettingsService(sink, settingsStore),
 	}

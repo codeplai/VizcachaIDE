@@ -1,0 +1,2 @@
+# command-line-arguments
+.\E-MISMATCHED-TYPES-OP.go:9:14: invalid operation: apples + label (mismatched types int and string)

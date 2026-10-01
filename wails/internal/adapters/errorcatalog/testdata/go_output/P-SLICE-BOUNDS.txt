@@ -1,0 +1,6 @@
+panic: runtime error: slice bounds out of range [:5] with capacity 3
+
+goroutine 1 [running]:
+main.main()
+	$WORKDIR/P-SLICE-BOUNDS.go:9 +0x65
+exit status 2

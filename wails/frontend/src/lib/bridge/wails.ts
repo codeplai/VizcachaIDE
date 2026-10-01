@@ -49,7 +49,9 @@ export const createWailsBridge = (): Bridge => ({
     documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path))
   },
   assistant: {
-    explain: async (raw, dir) => fromWire(await AssistantService.Explain(raw, dir))
+    explain: async (raw, dir) => fromWire(await AssistantService.Explain(raw, dir)),
+    explainDiagnostics: async (diagnostics) =>
+      fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
   files: {
     openFolder: async () => fromWire(await FilesService.OpenFolder()),

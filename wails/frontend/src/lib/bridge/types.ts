@@ -1,6 +1,7 @@
 import type {
   Breakpoint,
   CompletionItem,
+  Diagnostic,
   DocumentSymbol,
   ExplainedDiagnostic,
   FileNode,
@@ -54,6 +55,7 @@ export interface LanguageApi {
 /** Mirrors bridge.AssistantService (Go). */
 export interface AssistantApi {
   explain: (rawOutput: string, workingDir: string) => Promise<ExplainedDiagnostic[]>
+  explainDiagnostics: (diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
 }
 
 /** Mirrors bridge.FilesService (Go). */

@@ -134,7 +134,7 @@ export const createMockBridge = (): MockBridge => {
     run: mockRun(state, emit),
     debug,
     language: mockLanguage(emit),
-    assistant: { explain: async () => [] },
+    assistant: { explain: async () => [], explainDiagnostics: async () => [] },
     files: {
       openFolder: async () => sampleTree(),
       listTree: async () => sampleTree(),

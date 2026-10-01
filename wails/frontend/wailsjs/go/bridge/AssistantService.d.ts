@@ -3,3 +3,5 @@
 import {domain} from '../models';
 
 export function Explain(arg1:string,arg2:string):Promise<Array<domain.ExplainedDiagnostic>>;
+
+export function ExplainDiagnostics(arg1:Array<domain.Diagnostic>):Promise<Array<domain.ExplainedDiagnostic>>;
