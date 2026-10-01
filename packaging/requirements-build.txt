@@ -1,0 +1,5 @@
+# Build-time dependencies for packaging/build.py (pinned for reproducible releases).
+PyQt5==5.15.11
+pyinstaller==6.22.3
+# Pillow lets PyInstaller convert logo.png into the macOS .icns icon.
+Pillow>=10; sys_platform == "darwin"

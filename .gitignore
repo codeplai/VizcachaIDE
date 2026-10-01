@@ -67,3 +67,7 @@ settings.ini
 
 # Agent worktrees (local only)
 .claude/worktrees/
+
+# Packaging: downloaded toolchains; the PyInstaller spec IS versioned
+/packaging/cache/
+!packaging/*.spec
