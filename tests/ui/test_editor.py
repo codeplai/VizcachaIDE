@@ -58,7 +58,7 @@ def test_enter_keeps_indentation_and_indents_after_brace(qtbot):
 
     qtbot.keyClick(editor, Qt.Key_Return)
 
-    assert editor.toPlainText() == "func main() {\n    "
+    assert editor.toPlainText() == "func main() {\n\t"  # Go indents with real TABs
 
 
 def test_tabbed_editor_save_and_reopen(qtbot, tmp_path: Path):

@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 
 from vizcacha.application.settings_keys import SettingsKeys as Keys
 from vizcacha.i18n import _
+from vizcacha.ui.features.editor.editor_preferences import FORMAT_ON_SAVE_KEY, setting
 
 MONOSPACE_FONTS = (
     "Consolas",
@@ -42,6 +43,8 @@ class EditorPage(QWidget):
         self.auto_indent = QCheckBox(_("Enable auto-indentation"))
         self.show_line_numbers = QCheckBox(_("Show line numbers"))
         self.word_wrap = QCheckBox(_("Enable word wrap"))
+        self.format_on_save = QCheckBox(_("Format code on save"))
+        self.format_on_save.setToolTip(_("Runs gofmt every time a .go file is saved."))
         self.font_family.currentTextChanged.connect(self._update_preview)
         self.font_size.valueChanged.connect(self._update_preview)
         self._build_layout()
@@ -53,7 +56,8 @@ class EditorPage(QWidget):
         font_form.addRow(_("Preview:"), self.preview)
         behaviour_form = QFormLayout()
         behaviour_form.addRow(_("Tab size:"), self.tab_size)
-        for checkbox in (self.auto_indent, self.show_line_numbers, self.word_wrap):
+        checkboxes = (self.auto_indent, self.show_line_numbers, self.word_wrap, self.format_on_save)
+        for checkbox in checkboxes:
             behaviour_form.addRow("", checkbox)
         layout = QVBoxLayout(self)
         for title, form in ((_("Editor Font"), font_form), (_("Editor Behavior"), behaviour_form)):
@@ -69,6 +73,7 @@ class EditorPage(QWidget):
         self.auto_indent.setChecked(settings.get(Keys.AUTO_INDENT, True))
         self.show_line_numbers.setChecked(settings.get(Keys.SHOW_LINE_NUMBERS, True))
         self.word_wrap.setChecked(settings.get(Keys.WORD_WRAP, False))
+        self.format_on_save.setChecked(setting(settings, FORMAT_ON_SAVE_KEY))
         self._update_preview()
 
     def save(self, settings) -> None:
@@ -78,6 +83,7 @@ class EditorPage(QWidget):
         settings.set(Keys.AUTO_INDENT, self.auto_indent.isChecked())
         settings.set(Keys.SHOW_LINE_NUMBERS, self.show_line_numbers.isChecked())
         settings.set(Keys.WORD_WRAP, self.word_wrap.isChecked())
+        settings.set(FORMAT_ON_SAVE_KEY, self.format_on_save.isChecked())
 
     def _update_preview(self) -> None:
         self.preview.setFont(QFont(self.font_family.currentText(), self.font_size.value()))
