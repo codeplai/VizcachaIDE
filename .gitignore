@@ -64,3 +64,4 @@ settings.ini
 
 # Other agents' scratch worktrees
 .kilo/
+/packaging/cache/

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=VizcachaIDE
+GenericName=Go IDE
+GenericName[es]=IDE para Go
+Comment=Beginner-friendly IDE for Go
+Comment[es]=IDE de Go para principiantes
+Exec=VizcachaIDE %F
+Icon=vizcacha
+Terminal=false
+Categories=Development;IDE;Education;
+MimeType=text/x-go;
+Keywords=go;golang;ide;editor;learning;
+Keywords[es]=go;golang;ide;editor;aprendizaje;
+StartupWMClass=VizcachaIDE

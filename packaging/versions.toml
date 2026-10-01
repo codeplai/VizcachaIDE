@@ -1,0 +1,32 @@
+# Pinned versions of everything bundled in the "full" variant.
+#
+# To bump Go: change go.version and regenerate the hash table with
+#     python packaging/print_go_hashes.py 1.25.x
+# (reads https://go.dev/dl/?mode=json&include=all) and paste its output below.
+# Delve and gopls are built from source through proxy.golang.org; their integrity
+# is guaranteed by the Go checksum database (sum.golang.org), so no hash is stored here.
+
+[go]
+version = "1.25.14"
+url_template = "https://dl.google.com/go/{filename}"
+# Top-level GOROOT directories dropped to save space (not needed to build user programs).
+prune = ["test", "api"]
+
+[go.sha256]
+darwin-amd64 = "b09087a67d5792a8b0fcbf74212d62560c94ac8a8fd750ff920d8cb5f1e20118"
+darwin-arm64 = "5b26c0b6f308240fca2614fb02f622cfcc8c0cc3b69c78bba4845489a4590259"
+linux-amd64 = "a21ae5633a269bcd7e90cf767e48225633795e99d831742cbf3397064fee7712"
+linux-arm64 = "9bf234ea70ffec9347fdf6b22ce4add51717d3386a38a441e8c8743fceb5eaee"
+windows-amd64 = "119044a92b3987c341cd6aebb256676dd4780d292f7b4e72a3e9976677841697"
+windows-arm64 = "96fb31ae26b288b5311bd31d8252d4a62c8a661e4dbb64d504cc646e4d10a57f"
+
+[tools.dlv]
+package = "github.com/go-delve/delve/cmd/dlv"
+module = "github.com/go-delve/delve"
+version = "v1.27.2"
+
+[tools.gopls]
+# gopls >= v0.22 requires Go 1.26 to build; v0.21.1 is the newest that builds with Go 1.25.
+package = "golang.org/x/tools/gopls"
+module = "golang.org/x/tools/gopls"
+version = "v0.21.1"
