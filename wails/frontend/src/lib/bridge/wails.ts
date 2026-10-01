@@ -33,7 +33,8 @@ export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
   debug: {
-    start: (path, breakpoints) => DebugService.Start(path, toWire(breakpoints)),
+    start: (path, breakpoints, argsText) =>
+      DebugService.Start(path, toWire(breakpoints), argsText ?? ''),
     setBreakpoints: (file, lines) => DebugService.SetBreakpoints(file, lines),
     stepOver: () => DebugService.StepOver(),
     stepInto: () => DebugService.StepInto(),

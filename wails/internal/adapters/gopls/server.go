@@ -25,8 +25,9 @@ const (
 
 // Config says where gopls is and how to run it. The zero value searches for gopls.
 type Config struct {
-	// Executable is the path of gopls. Empty means "search for it".
-	Executable string
+	// Executable returns the path of gopls each time the server starts. Nil or an empty
+	// result means "search for it".
+	Executable func() string
 	// Environment returns the variables of the Go toolchain (may be nil).
 	Environment func() map[string]string
 }
@@ -52,7 +53,14 @@ func New(sink app.EventSink, cfg Config) *Server {
 	return &Server{sink: sink, cfg: cfg, docs: newOpenDocuments(), folders: map[string]bool{}}
 }
 
-func (s *Server) environment() map[string]string {
+func (s *Server) configuredExecutable() string {
+	if s.cfg.Executable == nil {
+		return ""
+	}
+	return s.cfg.Executable()
+}
+
+func (s *Server) environment()map[string]string {
 	if s.cfg.Environment == nil {
 		return nil
 	}

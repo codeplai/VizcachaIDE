@@ -6,6 +6,18 @@ export function Get() {
   return window['go']['bridge']['SettingsService']['Get']();
 }
 
+export function PickExecutable(arg1) {
+  return window['go']['bridge']['SettingsService']['PickExecutable'](arg1);
+}
+
+export function ResolvedLanguage() {
+  return window['go']['bridge']['SettingsService']['ResolvedLanguage']();
+}
+
 export function Save(arg1) {
   return window['go']['bridge']['SettingsService']['Save'](arg1);
+}
+
+export function UseTools(arg1, arg2) {
+  return window['go']['bridge']['SettingsService']['UseTools'](arg1, arg2);
 }

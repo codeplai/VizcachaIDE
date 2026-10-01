@@ -15,7 +15,7 @@ func (s *Server) ensureStartedLocked(path string) {
 		return
 	}
 	env := s.environment()
-	executable, err := locateGopls(s.cfg.Executable, env)
+	executable, err := locateGopls(s.configuredExecutable(), env)
 	if err != nil {
 		s.makeUnavailableLocked(nil)
 		return

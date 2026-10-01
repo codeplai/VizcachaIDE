@@ -1,3 +1,20 @@
+export namespace bridge {
+	
+	export class SettingsService {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new SettingsService(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+
+}
+
 export namespace domain {
 	
 	export class SourceLocation {

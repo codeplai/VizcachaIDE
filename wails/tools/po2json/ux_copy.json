@@ -150,6 +150,7 @@
   "settings.general": { "en": "General", "es": "General" },
   "settings.editor": { "en": "Editor", "es": "Editor" },
   "settings.tools": { "en": "Tools", "es": "Herramientas" },
+  "dialogs.pickTool": { "en": "Choose the {tool} program", "es": "Elige el programa {tool}" },
   "settings.language": { "en": "Language", "es": "Idioma" },
   "settings.languageAuto": { "en": "Automatic", "es": "Automático" },
   "settings.theme": { "en": "Theme", "es": "Tema" },

@@ -18,8 +18,8 @@ export function SetBreakpoints(arg1, arg2) {
   return window['go']['bridge']['DebugService']['SetBreakpoints'](arg1, arg2);
 }
 
-export function Start(arg1, arg2) {
-  return window['go']['bridge']['DebugService']['Start'](arg1, arg2);
+export function Start(arg1, arg2, arg3) {
+  return window['go']['bridge']['DebugService']['Start'](arg1, arg2, arg3);
 }
 
 export function StepInto() {

@@ -34,7 +34,7 @@ export interface RunApi {
 
 /** Mirrors bridge.DebugService (Go). */
 export interface DebugApi {
-  start: (path: string, breakpoints: Breakpoint[]) => Promise<void>
+  start: (path: string, breakpoints: Breakpoint[], argsText?: string) => Promise<void>
   setBreakpoints: (file: string, lines: number[]) => Promise<void>
   stepOver: () => Promise<void>
   stepInto: () => Promise<void>

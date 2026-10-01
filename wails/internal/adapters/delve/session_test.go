@@ -159,7 +159,7 @@ func TestControlsWithoutSessionReturnErrNoSession(t *testing.T) {
 }
 
 func TestDelveNotFoundIsToolNotFound(t *testing.T) {
-	debugger := New(newEventSink(), Options{DelvePath: filepath.Join(t.TempDir(), "no-dlv")})
+	debugger := New(newEventSink(), Options{DelvePath: func() string { return filepath.Join(t.TempDir(), "no-dlv") }})
 
 	err := debugger.Start(t.Context(), domain.NewFileRunConfiguration("x/main.go", nil), nil)
 

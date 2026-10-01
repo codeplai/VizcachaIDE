@@ -53,7 +53,7 @@ func (r *recordingSink) diagnosticsOf(path string) []domain.Diagnostic {
 
 func TestMissingGoplsIsUnavailableAndQueriesAreEmpty(t *testing.T) {
 	sink := newRecordingSink()
-	server := New(sink, Config{Executable: filepath.Join(t.TempDir(), "no-gopls")})
+	server := New(sink, Config{Executable: func() string { return filepath.Join(t.TempDir(), "no-gopls") }})
 	ctx := context.Background()
 	file := filepath.Join(t.TempDir(), "main.go")
 

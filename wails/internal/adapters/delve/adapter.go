@@ -15,8 +15,9 @@ import (
 
 // Options configures the adapter. Every field is optional.
 type Options struct {
-	// DelvePath is the dlv executable; empty means "dlv" from PATH.
-	DelvePath string
+	// DelvePath returns the dlv executable each time a session starts, so a change in the
+	// settings needs no restart. Nil or an empty result means "dlv" from PATH.
+	DelvePath func() string
 	// Environment returns the variables the program runs with (Toolchain.Environment).
 	Environment func() map[string]string
 	// Translate returns the user-facing text of an i18n key; nil means English.
@@ -55,7 +56,10 @@ func (d *Debugger) text(key string) string {
 }
 
 func (d *Debugger) delveExecutable() (string, error) {
-	name := d.options.DelvePath
+	name := ""
+	if d.options.DelvePath != nil {
+		name = d.options.DelvePath()
+	}
 	if name == "" {
 		name = "dlv"
 	}

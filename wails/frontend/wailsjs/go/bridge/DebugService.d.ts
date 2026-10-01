@@ -10,7 +10,7 @@ export function RunTo(arg1:domain.SourceLocation):Promise<void>;
 
 export function SetBreakpoints(arg1:string,arg2:Array<number>):Promise<void>;
 
-export function Start(arg1:string,arg2:Array<domain.Breakpoint>):Promise<void>;
+export function Start(arg1:string,arg2:Array<domain.Breakpoint>,arg3:string):Promise<void>;
 
 export function StepInto():Promise<void>;
 

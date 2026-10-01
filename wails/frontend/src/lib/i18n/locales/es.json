@@ -41,6 +41,7 @@
   "dev.themeDark": "Oscuro",
   "dev.themeLight": "Claro",
   "dev.themeSystem": "Sistema",
+  "dialogs.pickTool": "Elige el programa {tool}",
   "editor.completions": "Sugerencias",
   "editor.hover.loading": "Cargando…",
   "editor.search.all": "Todas",

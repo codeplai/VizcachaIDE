@@ -54,7 +54,7 @@ func TestDebugServiceStopIsTerminatedByUser(t *testing.T) {
 
 func TestSettingsServiceNotifiesOnSave(t *testing.T) {
 	sink := &recordingSink{}
-	service := NewSettingsService(sink, NewMemorySettingsStore())
+	service := NewSettingsService(sink, NewMemorySettingsStore(), NewLanguageResolver(NewMemorySettingsStore(), nil))
 	if err := service.Save(domain.DefaultSettings()); err != nil {
 		t.Fatal(err)
 	}

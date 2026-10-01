@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/go-dap v0.12.0
+	github.com/jeandeaual/go-locale v0.0.0-20250612000132-0ef82f21eade
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/wailsapp/wails/v2 v2.16.0
 	go.lsp.dev/jsonrpc2 v0.10.0

@@ -34,7 +34,7 @@ func TestAssistantExplainsInTheSettingsLanguage(t *testing.T) {
 		t.Fatal(err)
 	}
 	sink := &explainedSink{}
-	items, err := NewAssistantService(sink, fakeExplainer{}, store).Explain("boom", "")
+	items, err := NewAssistantService(sink, fakeExplainer{}, NewLanguageResolver(store, nil)).Explain("boom", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,11 @@ func TestAssistantExplainsInTheSettingsLanguage(t *testing.T) {
 
 func TestAssistantExplainsParsedDiagnostics(t *testing.T) {
 	sink := &explainedSink{}
-	service := NewAssistantService(sink, fakeExplainer{}, NewMemorySettingsStore())
+	store := NewMemorySettingsStore()
+	if err := store.Save(domain.Settings{Language: domain.LanguageEN}); err != nil {
+		t.Fatal(err)
+	}
+	service := NewAssistantService(sink, fakeExplainer{}, NewLanguageResolver(store, nil))
 	items, err := service.ExplainDiagnostics([]domain.Diagnostic{
 		{Severity: domain.SeverityWarning, Message: "w"},
 		{Severity: domain.SeverityInfo, Message: "i"},

@@ -1,23 +1,45 @@
 package bridge
 
 import (
+	"context"
 	"fmt"
-	"sync"
+	"strings"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
+// Tool names accepted by PickExecutable.
+const (
+	toolGo    = "go"
+	toolDelve = "dlv"
+	toolGopls = "gopls"
+)
+
+// ExecutablePicker asks the user for the executable of a tool and returns its path,
+// or "" when the user cancels.
+type ExecutablePicker func(tool string) (string, error)
+
 // SettingsService reads and saves the user preferences. Emits settings:changed
-// after every successful Save. Owned by track F2 on the frontend side.
+// after every successful Save.
 type SettingsService struct {
-	sink  app.EventSink
-	store app.SettingsStore
+	sink      app.EventSink
+	store     app.SettingsStore
+	language  *LanguageResolver
+	toolchain app.Toolchain
+	pick      ExecutablePicker
 }
 
-// NewSettingsService creates the service.
-func NewSettingsService(sink app.EventSink, store app.SettingsStore) *SettingsService {
-	return &SettingsService{sink: sink, store: store}
+// NewSettingsService creates the service. Without UseTools, PickExecutable is unavailable.
+func NewSettingsService(sink app.EventSink, store app.SettingsStore, language *LanguageResolver) *SettingsService {
+	return &SettingsService{sink: sink, store: store, language: language}
+}
+
+// UseTools gives the service what PickExecutable needs: the toolchain that detects the
+// tools and the dialog that asks for a file. It returns the service for chaining.
+func (s *SettingsService) UseTools(toolchain app.Toolchain, pick ExecutablePicker) *SettingsService {
+	s.toolchain, s.pick = toolchain, pick
+	return s
 }
 
 // Get returns the current settings.
@@ -38,31 +60,45 @@ func (s *SettingsService) Save(settings domain.Settings) error {
 	return nil
 }
 
-// MemorySettingsStore keeps the settings in memory. W0 STUB: the real adapter
-// (JSON in the user's config folder) goes in internal/adapters/settings.
-type MemorySettingsStore struct {
-	mu       sync.Mutex
-	settings domain.Settings
+// ResolvedLanguage is "en" or "es": the language of the settings, or the system's when
+// the setting is "auto".
+func (s *SettingsService) ResolvedLanguage() string { return s.language.Current() }
+
+// PickExecutable asks the user for the executable of a tool ("go", "dlv" or "gopls"),
+// saves it in the settings (emitting settings:changed) and returns the tools detected
+// again. If the user cancels, nothing changes.
+func (s *SettingsService) PickExecutable(tool string) (domain.ToolchainInfo, error) {
+	if s.toolchain == nil || s.pick == nil {
+		return domain.ToolchainInfo{}, fmt.Errorf("pick %s: %w", tool, app.ErrToolNotFound)
+	}
+	if err := s.chooseAndSave(tool); err != nil {
+		return domain.ToolchainInfo{}, err
+	}
+	return s.toolchain.Info(context.Background()), nil
 }
 
-var _ app.SettingsStore = (*MemorySettingsStore)(nil)
-
-// NewMemorySettingsStore starts with the default settings.
-func NewMemorySettingsStore() *MemorySettingsStore {
-	return &MemorySettingsStore{settings: domain.DefaultSettings()}
-}
-
-// Load implements app.SettingsStore.
-func (m *MemorySettingsStore) Load() (domain.Settings, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.settings, nil
-}
-
-// Save implements app.SettingsStore.
-func (m *MemorySettingsStore) Save(settings domain.Settings) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.settings = settings
-	return nil
+func (s *SettingsService) chooseAndSave(tool string) error {
+	if tool != toolGo && tool != toolDelve && tool != toolGopls {
+		return fmt.Errorf("unknown tool %q", tool)
+	}
+	path, err := s.pick(tool)
+	if err != nil {
+		return fmt.Errorf("choose %s: %w", tool, err)
+	}
+	if strings.TrimSpace(path) == "" {
+		return nil
+	}
+	current, err := s.Get()
+	if err != nil {
+		return err
+	}
+	switch tool {
+	case toolGo:
+		current.GoPath = path
+	case toolDelve:
+		current.DelvePath = path
+	case toolGopls:
+		current.GoplsPath = path
+	}
+	return s.Save(current)
 }

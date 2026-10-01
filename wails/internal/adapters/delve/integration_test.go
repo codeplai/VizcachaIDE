@@ -47,7 +47,7 @@ func TestRealDelveDebugsFunctionsExample(t *testing.T) {
 	dlv := findDelve(t)
 	path := copyExample(t)
 	sink := newEventSink()
-	debugger := New(sink, Options{DelvePath: dlv})
+	debugger := New(sink, Options{DelvePath: func() string { return dlv }})
 	breakpoint := domain.Breakpoint{Location: domain.SourceLocation{File: path, Line: 13, Column: 1}}
 
 	err := debugger.Start(t.Context(), domain.NewFileRunConfiguration(path, nil), []domain.Breakpoint{breakpoint})
@@ -91,7 +91,7 @@ func TestRealDelveRunsToTheEnd(t *testing.T) {
 	dlv := findDelve(t)
 	path := copyExample(t)
 	sink := newEventSink()
-	debugger := New(sink, Options{DelvePath: dlv})
+	debugger := New(sink, Options{DelvePath: func() string { return dlv }})
 
 	if err := debugger.Start(t.Context(), domain.NewFileRunConfiguration(path, nil), nil); err != nil {
 		t.Fatal(err)
