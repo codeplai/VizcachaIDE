@@ -5,7 +5,7 @@ import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
-import { EventsOn } from '../../../wailsjs/runtime/runtime'
+import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
 import type { Bridge } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
@@ -61,5 +61,6 @@ export const createWailsBridge = (): Bridge => ({
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings))
   },
+  system: { openUrl: (url) => BrowserOpenURL(url) },
   on: (name, handler) => EventsOn(name, handler)
 })

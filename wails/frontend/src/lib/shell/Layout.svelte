@@ -7,8 +7,16 @@
   import OutlinePanel from '../panels/OutlinePanel.svelte'
   import SearchPanel from '../panels/SearchPanel.svelte'
   import { sidebarView } from '../stores'
+  import '../panels/panel.css'
+  import './dialog.css'
+  import AboutDialog from './AboutDialog.svelte'
+  import ConfirmHost from './ConfirmHost.svelte'
   import DevControls from './DevControls.svelte'
+  import FirstRunWizard from './FirstRunWizard.svelte'
+  import ModulesDialog from './ModulesDialog.svelte'
+  import NoticeBar from './NoticeBar.svelte'
   import Rail from './Rail.svelte'
+  import SettingsDialog from './SettingsDialog.svelte'
   import StatusBar from './StatusBar.svelte'
   import TitleBar from './TitleBar.svelte'
 </script>
@@ -40,7 +48,13 @@
       <Pane defaultSize={23} minSize={16} maxSize={40}><AssistantPanel /></Pane>
     </PaneGroup>
   </div>
+  <NoticeBar />
   <StatusBar />
+  <SettingsDialog />
+  <AboutDialog />
+  <ModulesDialog />
+  <ConfirmHost />
+  <FirstRunWizard />
 </div>
 
 <style>

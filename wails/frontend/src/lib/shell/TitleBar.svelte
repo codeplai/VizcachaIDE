@@ -13,6 +13,7 @@
     stopDebugging,
     stopProgram
   } from '../stores'
+  import MoreMenu from './MoreMenu.svelte'
 </script>
 
 <header class="titlebar">
@@ -37,6 +38,7 @@
         class="btn primary"
         type="button"
         title={$t('tooltips.run')}
+        disabled={!$activePath}
         onclick={() => runActiveFile(bridge)}
       >
         <span class="tri"></span><span>{$t('actions.run')}</span><span class="k">F5</span>
@@ -45,6 +47,7 @@
         class="btn"
         type="button"
         title={$t('tooltips.debug')}
+        disabled={!$activePath}
         onclick={() => startDebugging(bridge)}
       >
         <span class="bug"></span><span>{$t('actions.debug')}</span><span class="k">F6</span>
@@ -60,7 +63,7 @@
         </button>
       {/if}
     {/if}
-    <button class="btn ghost" type="button">{$t('actions.more')}</button>
+    <MoreMenu />
   </div>
 </header>
 
@@ -128,6 +131,10 @@
     font: 600 11px var(--mono);
     color: var(--muted);
   }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   .btn.primary {
     background: var(--go);
     border-color: var(--go);
@@ -139,13 +146,6 @@
   }
   .btn.stop {
     color: var(--err);
-  }
-  .btn.ghost {
-    border-color: transparent;
-    background: none;
-    color: var(--muted);
-    font-weight: 600;
-    padding: 7px 8px;
   }
   .tri {
     width: 0;

@@ -1,10 +1,17 @@
 import type { Scenario } from './bridge'
 import type { LanguageSetting, ThemeSetting } from './domain'
+import type { DialogName } from './stores/layout'
 
 export interface DevQuery {
   scenario: Scenario
   language: LanguageSetting | null
   theme: ThemeSetting | null
+  /** `folder=none` starts with no folder open (the empty state of the Files panel). */
+  noFolder: boolean
+  /** `firstrun=1` shows the first-start wizard. */
+  firstRun: boolean
+  /** `dialog=settings|about|modules` opens that dialog. */
+  dialog: DialogName | null
 }
 
 const pick = <T extends string>(value: string | null, allowed: readonly T[]): T | null =>
@@ -12,13 +19,16 @@ const pick = <T extends string>(value: string | null, allowed: readonly T[]): T 
 
 /**
  * Browser-only options for the mock backend, for example `?scenario=error&lang=es&theme=dark`.
- * They make the three states reachable without clicking (screenshots, demos).
+ * They make the states reachable without clicking (screenshots, demos).
  */
 export const parseDevQuery = (search: string): DevQuery => {
   const params = new URLSearchParams(search)
   return {
     scenario: pick(params.get('scenario'), ['write', 'error', 'debug'] as const) ?? 'write',
     language: pick(params.get('lang'), ['en', 'es'] as const),
-    theme: pick(params.get('theme'), ['light', 'dark'] as const)
+    theme: pick(params.get('theme'), ['light', 'dark'] as const),
+    noFolder: params.get('folder') === 'none',
+    firstRun: params.get('firstrun') === '1',
+    dialog: pick(params.get('dialog'), ['settings', 'about', 'modules'] as const)
   }
 }

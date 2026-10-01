@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { selectBridge } from '.'
 import type { EventName, EventPayloads } from '../events'
+import { Events } from '../events'
 import { createMockBridge } from './mock'
 
 const record = () => {
@@ -73,5 +74,20 @@ describe('mock bridge', () => {
     const current = await bridge.settings.get()
     await bridge.settings.save({ ...current, language: 'es' })
     expect(language).toBe('es')
+  })
+
+  it('emits every event of the contract in some scenario', async () => {
+    const { bridge, controls } = createMockBridge()
+    const seen = new Set<string>()
+    Object.values(Events).forEach((name) => bridge.on(name, () => seen.add(name)))
+    await controls.play('write')
+    await controls.play('error')
+    await controls.play('debug')
+    await bridge.debug.requestVariables(11)
+    await bridge.language.openDocument('a.go', '')
+    await bridge.settings.save(await bridge.settings.get())
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    await bridge.debug.stop()
+    expect([...seen].sort()).toEqual(Object.values(Events).sort())
   })
 })

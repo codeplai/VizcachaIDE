@@ -16,6 +16,7 @@
     if ($settings) {
       applyLanguage($settings.language)
       applyTheme($settings.theme)
+      document.documentElement.style.setProperty('--editor-font-size', `${$settings.fontSize}px`)
     }
   })
 

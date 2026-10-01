@@ -1,6 +1,8 @@
 import { derived, get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { FileNode } from '../domain'
+import { problems } from './diagnostics'
+import { updateSettings } from './settings'
 
 export const fileTree = writable<FileNode | null>(null)
 export const openTabs = writable<string[]>([])
@@ -20,8 +22,17 @@ export const activeText = derived([activePath, buffers], ([path, all]) =>
   path ? (all[path] ?? '') : ''
 )
 
+/** Names of the files that have at least one problem (for the dot in the file tree). */
+export const filesWithProblems = derived(problems, (items) =>
+  items.flatMap((item) => (item.diagnostic.location ? [item.diagnostic.location.file] : []))
+)
+
+/** Asks for a folder, shows its files and remembers it for the next start. */
 export const openFolder = async (bridge: Bridge): Promise<void> => {
-  fileTree.set(await bridge.files.openFolder())
+  const tree = await bridge.files.openFolder()
+  if (!tree?.path) return
+  fileTree.set(tree)
+  await updateSettings(bridge, { lastFolder: tree.path })
 }
 
 export const openFile = async (bridge: Bridge, path: string): Promise<void> => {

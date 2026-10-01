@@ -1,9 +1,9 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { currentLine, firstProblem, problemCount, uiMode } from '../stores'
-  import CallStackPanel from './CallStackPanel.svelte'
+  import { currentLine, problemCount, problems, uiMode } from '../stores'
   import ErrorCard from './ErrorCard.svelte'
   import TipsCard from './TipsCard.svelte'
+  import TraceSection from './TraceSection.svelte'
   import VariablesPanel from './VariablesPanel.svelte'
 </script>
 
@@ -25,11 +25,13 @@
 
   {#if $uiMode === 'write'}
     <TipsCard />
-  {:else if $uiMode === 'error' && $firstProblem}
-    <ErrorCard item={$firstProblem} />
-  {:else if $uiMode === 'debug'}
+  {:else if $uiMode === 'error'}
+    {#each $problems as item (item.diagnostic.rawText)}
+      <ErrorCard {item} />
+    {/each}
+  {:else}
     <VariablesPanel />
-    <CallStackPanel />
+    <TraceSection />
   {/if}
 </aside>
 
