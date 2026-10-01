@@ -20,6 +20,8 @@ VizcachaIDE se inspira en [Thonny](https://thonny.org), el IDE con el que miles 
 
 ## Qué puedes hacer
 
+![El Asistente explica un error en español](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/assistant.es.png)
+
 ### Escribir y ejecutar
 - Pulsa **Ejecutar (F5)** y mira la salida de tu programa al instante.
 - Escribe en la consola cuando tu programa te pida datos por teclado.
@@ -33,6 +35,9 @@ VizcachaIDE se inspira en [Thonny](https://thonny.org), el IDE con el que miles 
 - Los errores se subrayan **mientras escribes**, antes de ejecutar.
 
 ### Ver tu programa paso a paso
+
+![Depurando paso a paso: variables, la que acaba de cambiar y cómo llegaste ahí](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/debugger.es.png)
+
 - Haz clic junto a un número de línea para poner un **punto de interrupción** y pulsa **Depurar (F6)**.
 - Avanza con botones que hablan claro: **Siguiente línea**, **Entrar en la función**, **Salir de la función**.
 - Mira el valor de tus variables en cada paso. La que acaba de cambiar se resalta, para que veas qué hizo la última línea.

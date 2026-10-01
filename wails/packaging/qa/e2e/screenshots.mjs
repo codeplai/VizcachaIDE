@@ -14,7 +14,7 @@ const SHOTS = path.join(L.WQ, 'shots')
 
 const prepare = () => {
   fs.rmSync(SHOTS, { recursive: true, force: true })
-  for (const [folder, file] of [['hello', 'hello.go'], ['unused', 'errors/E-UNUSED-VAR/E-UNUSED-VAR.go'], ['functions', 'functions.go']]) {
+  for (const [folder, file] of [['hello', 'hello/hello.go'], ['unused', 'errors/E-UNUSED-VAR/E-UNUSED-VAR.go'], ['functions', 'functions/functions.go']]) {
     fs.mkdirSync(path.join(SHOTS, folder), { recursive: true })
     fs.copyFileSync(path.join(L.REPO, 'examples', file), path.join(SHOTS, folder, path.basename(file)))
   }

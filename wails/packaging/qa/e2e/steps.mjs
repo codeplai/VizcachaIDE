@@ -48,7 +48,7 @@ export const steps = (ctx, lang) => {
   add('open-folder', 'Open folder: the Files panel lists the project (ListTree on the saved folder)', async () => {
     const tree = await L.go(page, 'FilesService', 'ListTree', L.PROJECT)
     const names = tree.children.map((c) => c.name)
-    must(names.includes('hello.go') && names.includes('errors'), `tree = ${names.join(',')}`)
+    must(names.includes('hello') && names.includes('errors'), `tree = ${names.join(',')}`)
     await U.reload(page, url)
     const shown = await page.$$eval('button.file', (els) => els.map((e) => e.textContent.trim()))
     must(shown.includes('hello.go') && shown.includes('functions.go'), 'Files panel does not show hello.go')
@@ -153,6 +153,9 @@ export const steps = (ctx, lang) => {
   })
 
   add('debug', 'functions.go: breakpoint on 13, Debug, a=5/b=7/result=35, Next line, just changed, call stack, goroutines, Run to here, Stop debugging', async () => {
+    // editor-extras leaves the Files panel on qa/complete: go back to the project first.
+    await L.go(page, 'FilesService', 'ListTree', L.PROJECT)
+    await U.reload(page, url)
     await U.openByName(page, 'functions.go')
     const where = await lineOf(page, 13)
     await page.mouse.click(where.x, where.y)
