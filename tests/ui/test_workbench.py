@@ -98,7 +98,12 @@ def test_settings_pages_round_trip(workbench, settings):
 
     dialog.apply()
 
-    assert [page.title for page in dialog.pages] == ["Editor", "Appearance", "Environment"]
+    assert [page.title for page in dialog.pages] == [
+        "General",
+        "Editor",
+        "Appearance",
+        "Environment",
+    ]
     assert settings.get(SettingsKeys.FONT_SIZE, 0) == 14
     assert settings.get(SettingsKeys.EDITOR_THEME, "") == "Dark"
     assert workbench.editor.current_editor().font().pointSize() == 14

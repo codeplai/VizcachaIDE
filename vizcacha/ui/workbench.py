@@ -8,13 +8,15 @@ through ``workbench.events``.
 
 from collections.abc import Callable
 
-from PyQt5.QtCore import QObject, Qt, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QDockWidget, QMenu, QWidget
 
 from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.i18n import N_, _
 from vizcacha.ui.main_window import MainWindow
+from vizcacha.ui.panel_layout import PanelLayout
 from vizcacha.ui.services import Services
+from vizcacha.ui.window_state import restore_window_state, save_window_state
 
 MENU_TITLES = {
     "file": N_("&File"),
@@ -25,11 +27,7 @@ MENU_TITLES = {
     "tools": N_("&Tools"),
     "help": N_("&Help"),
 }
-PANEL_AREAS = {
-    "right": Qt.RightDockWidgetArea,
-    "bottom": Qt.BottomDockWidgetArea,
-    "left": Qt.LeftDockWidgetArea,
-}
+CONSOLE_PANEL_ID = "console"
 
 
 class WorkbenchEvents(QObject):
@@ -57,7 +55,14 @@ class Workbench:
         self._settings_pages: list[SettingsPageFactory] = []
         self._close_guards: list[Callable[[], bool]] = []
         self._menus = {key: self._create_menu(title) for key, title in MENU_TITLES.items()}
+        self.panel_layout = PanelLayout(window)
+        self._started = False
+        self._layout_restored = False
         window.close_guard = self._can_close
+        self.console_dock = self.add_panel(CONSOLE_PANEL_ID, _("Console"), self.console, "bottom")
+        self.console_dock.setFeatures(
+            QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable
+        )
         self.events.settings_changed.connect(self.apply_window_settings)
 
     # --- menus, toolbar, panels ------------------------------------------
@@ -80,12 +85,24 @@ class Workbench:
         self.toolbar.addSeparator()
 
     def add_panel(
-        self, panel_id: str, title: str, widget: QWidget, area: str = "right"
+        self,
+        panel_id: str,
+        title: str,
+        widget: QWidget,
+        area: str = "right",
+        group: str | None = None,
     ) -> QDockWidget:
+        """Dock ``widget`` in ``area`` ("left", "right" or "bottom").
+
+        Left panels are tabs of one group, right panels are stacked from top to
+        bottom and bottom panels sit side by side (see ``panel_layout``). Panels
+        with the same ``group`` become tabs of each other.
+        """
         dock = QDockWidget(title, self.window)
         dock.setObjectName(panel_id)
         dock.setWidget(widget)
-        self.window.addDockWidget(PANEL_AREAS[area], dock)
+        restored = self._started and self._layout_restored and self.window.restoreDockWidget(dock)
+        self.panel_layout.place(dock, area, group, dock_now=not restored)
         self.add_action("view", dock.toggleViewAction())
         return dock
 
@@ -100,9 +117,15 @@ class Workbench:
         self.window.statusBar().showMessage(text, timeout_ms)
 
     # --- settings and lifecycle -------------------------------------------
-    def add_settings_page(self, factory: SettingsPageFactory) -> None:
-        """``factory()`` -> QWidget with ``title``, ``load(settings)`` and ``save(settings)``."""
-        self._settings_pages.append(factory)
+    def add_settings_page(self, factory: SettingsPageFactory, first: bool = False) -> None:
+        """``factory()`` -> QWidget with ``title``, ``load(settings)`` and ``save(settings)``.
+
+        ``first=True`` puts the page before the others (used by "General").
+        """
+        if first:
+            self._settings_pages.insert(0, factory)
+        else:
+            self._settings_pages.append(factory)
 
     def settings_page_factories(self) -> list[SettingsPageFactory]:
         return list(self._settings_pages)
@@ -116,11 +139,28 @@ class Workbench:
         if self.editor.count() == 0:
             self.editor.new_tab()
         self.apply_window_settings()
+        self.panel_layout.remember_visibility()
+        self._add_reset_layout_action()
+        self._layout_restored = restore_window_state(self.window, self.services.settings)
+        if not self._layout_restored:
+            self.panel_layout.apply_sizes()
+            self.window.first_shown.connect(self.panel_layout.apply_sizes)  # real size known
+        self._started = True
+
+    def reset_layout(self) -> None:
+        """View > Reset Layout: every panel back to its default place, size and visibility."""
+        self.panel_layout.reset()
 
     def apply_window_settings(self) -> None:
         settings = self.services.settings
         self.toolbar.setVisible(settings.get(SettingsKeys.SHOW_TOOLBAR, True))
-        self.window.statusBar().setVisible(settings.get(SettingsKeys.SHOW_STATUS_BAR, False))
+        self.window.statusBar().setVisible(settings.get(SettingsKeys.SHOW_STATUS_BAR, True))
+
+    def _add_reset_layout_action(self) -> None:
+        action = QAction(_("Reset &Layout"), self.window)
+        action.setObjectName("reset_layout")
+        action.triggered.connect(lambda _checked=False: self.reset_layout())
+        self.add_action("view", action, separator=True)
 
     def _create_menu(self, title: str) -> QMenu:
         menu = self.window.menuBar().addMenu(_(title))
@@ -128,4 +168,7 @@ class Workbench:
         return menu
 
     def _can_close(self) -> bool:
-        return all(guard() for guard in self._close_guards)
+        if not all(guard() for guard in self._close_guards):
+            return False
+        save_window_state(self.window, self.services.settings)
+        return True

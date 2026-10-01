@@ -38,8 +38,7 @@ class AssistantFeature(QObject):
         self._live_file: Path | None = None
 
     def register(self) -> None:
-        self.dock = self.workbench.add_panel("assistant", _("Assistant"), self.panel, "right")
-        self.dock.hide()
+        self.dock = self.workbench.add_panel("assistant", _("Assistant"), self.panel, "bottom")
         events = self.workbench.events
         events.program_started.connect(self._on_program_started)
         events.process_output.connect(self._on_process_output)

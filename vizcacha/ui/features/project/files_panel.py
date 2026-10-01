@@ -1,9 +1,22 @@
-"""Files panel: the open folder as a tree, without .git, binaries and Delve leftovers."""
+"""Files panel: the open folder as a tree, without .git, binaries and Delve leftovers.
+
+Before a folder is open it shows a friendly empty state with an "Open Folder" button.
+"""
 
 from pathlib import Path
 
-from PyQt5.QtCore import QModelIndex, QSortFilterProxyModel, pyqtSignal
-from PyQt5.QtWidgets import QFileSystemModel, QLabel, QTreeView, QVBoxLayout, QWidget
+from PyQt5.QtCore import QModelIndex, QSortFilterProxyModel, Qt, pyqtSignal
+from PyQt5.QtWidgets import (
+    QFileSystemModel,
+    QLabel,
+    QPushButton,
+    QStackedWidget,
+    QTreeView,
+    QVBoxLayout,
+    QWidget,
+)
+
+from vizcacha.i18n import _
 
 HIDDEN_NAMES = frozenset({".git"})
 HIDDEN_PREFIXES = ("__debug_bin",)
@@ -37,11 +50,30 @@ class ProjectFilesFilter(QSortFilterProxyModel):
         return not is_hidden_entry(info.fileName(), info.isDir(), executable)
 
 
+class EmptyFolderView(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+        self.message = QLabel(_("Open a folder to see its files."))
+        self.message.setObjectName("files_empty_message")
+        self.message.setWordWrap(True)
+        self.message.setAlignment(Qt.AlignCenter)
+        self.open_button = QPushButton(_("Open Folder..."))
+        self.open_button.setObjectName("files_open_folder")
+        layout = QVBoxLayout(self)
+        layout.addStretch(1)
+        layout.addWidget(self.message)
+        layout.addWidget(self.open_button, 0, Qt.AlignHCenter)
+        layout.addStretch(2)
+
+
 class FilesPanel(QWidget):
     file_activated = pyqtSignal(object)  # Path of a double-clicked text file
+    open_folder_requested = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
+        self.empty_view = EmptyFolderView()
+        self.empty_view.open_button.clicked.connect(self.open_folder_requested)
         self.model = QFileSystemModel(self)
         self.proxy = ProjectFilesFilter(self)
         self.proxy.setSourceModel(self.model)
@@ -53,11 +85,22 @@ class FilesPanel(QWidget):
             self.tree.hideColumn(column)
         self.tree.doubleClicked.connect(self._on_double_clicked)
         self.folder_label = QLabel()
+        self.folder_label.setContentsMargins(4, 2, 4, 2)
+        folder_view = QWidget()
+        folder_layout = QVBoxLayout(folder_view)
+        folder_layout.setContentsMargins(0, 0, 0, 0)
+        folder_layout.addWidget(self.folder_label)
+        folder_layout.addWidget(self.tree)
+        self.pages = QStackedWidget()
+        self.pages.addWidget(self.empty_view)
+        self.pages.addWidget(folder_view)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.folder_label)
-        layout.addWidget(self.tree)
+        layout.addWidget(self.pages)
         self.folder: Path | None = None
+
+    def is_empty(self) -> bool:
+        return self.pages.currentWidget() is self.empty_view
 
     def set_folder(self, folder: Path) -> None:
         self.folder = Path(folder)
@@ -65,6 +108,7 @@ class FilesPanel(QWidget):
         self.folder_label.setToolTip(str(self.folder))
         source_root = self.model.setRootPath(str(self.folder))
         self.tree.setRootIndex(self.proxy.mapFromSource(source_root))
+        self.pages.setCurrentIndex(1)
 
     def path_at(self, proxy_index: QModelIndex) -> Path:
         return Path(self.model.filePath(self.proxy.mapToSource(proxy_index)))

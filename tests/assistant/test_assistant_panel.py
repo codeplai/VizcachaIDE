@@ -26,8 +26,9 @@ def _run_failing_program(workbench, tmp_path: Path, stderr: str) -> None:
     events.program_finished.emit(1)
 
 
-def test_panel_is_hidden_until_an_error_happens(workbench):
-    assert _dock(workbench).isHidden()
+def test_panel_is_visible_from_start_up(workbench):
+    assert _dock(workbench).isVisibleTo(workbench.window)
+    assert _texts(workbench, "assistant_summary")[0].startswith("Nothing to explain")
     assert "Assistant" in [action.text() for action in workbench.menu("view").actions()]
 
 
@@ -91,7 +92,6 @@ def test_successful_run_shows_nothing_to_explain(workbench, tmp_path: Path):
     workbench.events.program_started.emit(RunConfiguration.for_file(tmp_path / "main.go"))
     workbench.events.program_finished.emit(0)
 
-    assert _dock(workbench).isHidden()
     assert _texts(workbench, "assistant_title") == []
     assert _texts(workbench, "assistant_summary")[0].startswith("Nothing to explain")
 
@@ -105,7 +105,7 @@ def test_live_diagnostics_are_explained(workbench, tmp_path: Path):
     )
 
     workbench.events.diagnostics_changed.emit(tmp_path / "other.go", [diagnostic])
-    assert _dock(workbench).isHidden()  # files in the background do not take over the panel
+    assert _texts(workbench, "assistant_title") == []  # background files do not take over
     workbench.events.diagnostics_changed.emit(source, [diagnostic])
 
     assert not _dock(workbench).isHidden()

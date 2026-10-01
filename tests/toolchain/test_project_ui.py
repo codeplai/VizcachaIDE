@@ -82,6 +82,21 @@ def _open_folder(workbench, folder: Path, monkeypatch) -> FilesPanel:
     return workbench.window.findChild(FilesPanel)
 
 
+def test_files_panel_exists_from_start_up_with_empty_state(workbench, tmp_path: Path, monkeypatch):
+    panel = workbench.window.findChild(FilesPanel)
+    assert panel.is_empty()
+    assert panel.empty_view.message.text() == "Open a folder to see its files."
+    assert "Files" in [action.text() for action in workbench.menu("view").actions()]
+    monkeypatch.setattr(
+        project_feature.QFileDialog, "getExistingDirectory", lambda *args: str(tmp_path)
+    )
+
+    panel.empty_view.open_button.click()
+
+    assert not panel.is_empty()
+    assert panel.folder == tmp_path
+
+
 def test_last_folder_is_restored(qtbot, settings, tmp_path: Path):
     from vizcacha.ui.app import build_services, build_workbench
 

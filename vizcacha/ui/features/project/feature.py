@@ -1,7 +1,7 @@
 """Project: File > Open Folder..., Files panel and Tools > Go Modules...
 
-The Files panel is created the first time a folder is opened (or restored), so
-the View menu only lists it when there is something to show.
+The Files panel exists from start-up; until a folder is open it invites the
+user to open one.
 """
 
 from pathlib import Path
@@ -34,7 +34,7 @@ class ProjectFeature:
         self.toolchain = workbench.services.toolchain
         self.console = workbench.console
         self.folder: Path | None = None
-        self.panel: FilesPanel | None = None
+        self.panel = FilesPanel()
         self.dock: QDockWidget | None = None
         self.dialog: GoModulesDialog | None = None
         self._owns_process = False
@@ -47,6 +47,9 @@ class ProjectFeature:
         self.toolchain.output_received.connect(self._on_stdout)
         self.toolchain.error_received.connect(self._on_stderr)
         self.toolchain.execution_finished.connect(self._on_finished)
+        self.panel.file_activated.connect(self._open_file)
+        self.panel.open_folder_requested.connect(self.open_folder)
+        self.dock = self.workbench.add_panel(FILES_PANEL_ID, _("Files"), self.panel, "left")
         self._restore_last_folder()
 
     # --- folder and Files panel -------------------------------------------------
@@ -59,17 +62,11 @@ class ProjectFeature:
     def set_folder(self, folder: Path) -> None:
         self.folder = Path(folder)
         self.settings.set(LAST_FOLDER_KEY, str(self.folder))
-        self._ensure_panel().set_folder(self.folder)
+        self.panel.set_folder(self.folder)
         self.dock.show()
+        self.dock.raise_()
         if self.dialog is not None:
             self.dialog.set_folder(self.folder)
-
-    def _ensure_panel(self) -> FilesPanel:
-        if self.panel is None:
-            self.panel = FilesPanel()
-            self.panel.file_activated.connect(self._open_file)
-            self.dock = self.workbench.add_panel(FILES_PANEL_ID, _("Files"), self.panel, "left")
-        return self.panel
 
     def _open_file(self, path: Path) -> None:
         self.workbench.events.navigate_to.emit(SourceLocation(path, 1))

@@ -7,7 +7,7 @@ in ``build_services`` (track A: debugger). Nothing else.
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import QLibraryInfo, QLocale, QTranslator
+from PyQt5.QtCore import QEvent, QLibraryInfo, QLocale, QObject, QTranslator
 from PyQt5.QtWidgets import QApplication
 
 from vizcacha.application.ports import SettingsRepository
@@ -88,6 +88,30 @@ def open_files_from_arguments(workbench: Workbench, arguments: list[str]) -> Non
             workbench.editor.open_file(path.resolve())
 
 
+class FileOpenHandler(QObject):
+    """macOS sends a QFileOpenEvent (not argv) for a double-click on a .go file or a drop
+    on the Dock icon, also while the IDE is already running."""
+
+    def __init__(self, workbench: Workbench, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self._workbench = workbench
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:  # noqa: N802 - Qt override
+        if event.type() != QEvent.FileOpen:
+            return False
+        path = event.file() or event.url().toLocalFile()
+        open_files_from_arguments(self._workbench, [path])
+        self._workbench.window.raise_()
+        self._workbench.window.activateWindow()
+        return True
+
+
+def install_file_open_handler(app: QApplication, workbench: Workbench) -> FileOpenHandler:
+    handler = FileOpenHandler(workbench, app)
+    app.installEventFilter(handler)
+    return handler
+
+
 def main(argv: list[str] | None = None) -> int:
     arguments = argv if argv is not None else sys.argv
     app = QApplication(arguments)
@@ -97,5 +121,6 @@ def main(argv: list[str] | None = None) -> int:
     install_qt_translations(app, configure_language(settings_repository))
     workbench = build_workbench(build_services(settings_repository))
     open_files_from_arguments(workbench, arguments[1:])
+    install_file_open_handler(app, workbench)
     workbench.window.show()
     return app.exec_()

@@ -34,3 +34,6 @@ class SettingsKeys:
     LAST_FILE = "last_file"
     LAST_FOLDER = "project/last_folder"
     RECENT_FILES = "files/recent"  # newline-separated paths
+
+    WINDOW_GEOMETRY = "window/geometry"  # base64 of QMainWindow.saveGeometry()
+    WINDOW_STATE = "window/state"  # base64 of QMainWindow.saveState(): docks and toolbars
