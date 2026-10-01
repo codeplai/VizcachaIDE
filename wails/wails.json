@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "VizcachaIDE",
+  "outputfilename": "vizcacha",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Marks Calderon - Codeplai Games",
+    "email": "hola@codeplai.pe"
+  },
+  "info": {
+    "companyName": "Codeplai Games",
+    "productName": "VizcachaIDE",
+    "productVersion": "2.0.0",
+    "copyright": "Copyright © 2026 Codeplai Games",
+    "comments": "A Go IDE for beginners"
+  }
+}

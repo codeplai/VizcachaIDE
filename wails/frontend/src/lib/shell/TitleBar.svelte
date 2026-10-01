@@ -1,0 +1,163 @@
+<script lang="ts">
+  import { bridge } from '../bridge'
+  import { t } from '../i18n'
+  import {
+    activeFileName,
+    activePath,
+    debugActive,
+    fileTree,
+    parentName,
+    runActiveFile,
+    running,
+    startDebugging,
+    stopDebugging,
+    stopProgram
+  } from '../stores'
+</script>
+
+<header class="titlebar">
+  <div class="brand"><span class="brand-mark">V</span>{$t('app.name')}</div>
+  <div class="crumbs">
+    {#if $activePath}
+      {$fileTree?.name ?? parentName($activePath)} / <b>{$activeFileName}</b>
+    {/if}
+  </div>
+  <div class="actions">
+    {#if $debugActive}
+      <button
+        class="btn stop"
+        type="button"
+        title={$t('tooltips.stopDebugging')}
+        onclick={() => stopDebugging(bridge)}
+      >
+        <span>{$t('actions.stopDebugging')}</span><span class="k">Shift+F5</span>
+      </button>
+    {:else}
+      <button
+        class="btn primary"
+        type="button"
+        title={$t('tooltips.run')}
+        onclick={() => runActiveFile(bridge)}
+      >
+        <span class="tri"></span><span>{$t('actions.run')}</span><span class="k">F5</span>
+      </button>
+      <button
+        class="btn"
+        type="button"
+        title={$t('tooltips.debug')}
+        onclick={() => startDebugging(bridge)}
+      >
+        <span class="bug"></span><span>{$t('actions.debug')}</span><span class="k">F6</span>
+      </button>
+      {#if $running}
+        <button
+          class="btn"
+          type="button"
+          title={$t('tooltips.stop')}
+          onclick={() => stopProgram(bridge)}
+        >
+          <span>{$t('actions.stop')}</span>
+        </button>
+      {/if}
+    {/if}
+    <button class="btn ghost" type="button">{$t('actions.more')}</button>
+  </div>
+</header>
+
+<style>
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 52px;
+    flex: none;
+    padding: 0 14px;
+    background: var(--chrome);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--sand);
+    display: grid;
+    place-items: center;
+    color: var(--win);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .crumbs {
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .crumbs b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-weight: 700;
+    font-size: 14px;
+    border: 1px solid var(--line);
+    background: var(--win);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn .k {
+    font: 600 11px var(--mono);
+    color: var(--muted);
+  }
+  .btn.primary {
+    background: var(--go);
+    border-color: var(--go);
+    color: var(--win);
+  }
+  .btn.primary .k {
+    color: var(--win);
+    opacity: 0.8;
+  }
+  .btn.stop {
+    color: var(--err);
+  }
+  .btn.ghost {
+    border-color: transparent;
+    background: none;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 7px 8px;
+  }
+  .tri {
+    width: 0;
+    height: 0;
+    border-left: 9px solid currentColor;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
+  .bug {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+</style>

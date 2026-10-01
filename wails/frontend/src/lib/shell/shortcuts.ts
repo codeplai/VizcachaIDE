@@ -1,0 +1,45 @@
+import { get } from 'svelte/store'
+import type { Bridge } from '../bridge'
+import {
+  debugActive,
+  resumeDebugging,
+  runActiveFile,
+  startDebugging,
+  stepInto,
+  stepOut,
+  stepOver,
+  stopDebugging,
+  stopProgram
+} from '../stores'
+
+type Action = (bridge: Bridge) => Promise<void>
+
+const actionFor = (event: KeyboardEvent): Action | null => {
+  const debugging = get(debugActive)
+  switch (event.key) {
+    case 'F5':
+      return event.shiftKey ? (debugging ? stopDebugging : stopProgram) : runActiveFile
+    case 'F6':
+      return event.shiftKey ? resumeDebugging : startDebugging
+    case 'F7':
+      return stepOver
+    case 'F8':
+      return stepInto
+    case 'F9':
+      return stepOut
+    default:
+      return null
+  }
+}
+
+/** Registers F5, F6, F7, F8, F9, Shift+F5 and Shift+F6. Returns a function that removes them. */
+export const registerShortcuts = (bridge: Bridge): (() => void) => {
+  const handler = (event: KeyboardEvent): void => {
+    const action = actionFor(event)
+    if (!action) return
+    event.preventDefault()
+    void action(bridge)
+  }
+  window.addEventListener('keydown', handler)
+  return () => window.removeEventListener('keydown', handler)
+}

@@ -1,0 +1,23 @@
+# The root .gitignore (Python) ignores build/, dist/ and lib/. Here they are real folders.
+!build/
+!dist/
+!lib/
+
+# Build output
+build/bin/
+frontend/dist/*
+!frontend/dist/gitkeep
+
+# Dependencies
+frontend/node_modules/
+frontend/package.json.md5
+
+# Editor and OS
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Test output
+coverage/

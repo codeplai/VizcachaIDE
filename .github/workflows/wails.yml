@@ -1,0 +1,99 @@
+name: wails
+
+# Only runs when the Wails variant changes.
+on:
+  push:
+    paths:
+      - "wails/**"
+      - ".github/workflows/wails.yml"
+  pull_request:
+    paths:
+      - "wails/**"
+      - ".github/workflows/wails.yml"
+
+permissions:
+  contents: read
+
+env:
+  WAILS_VERSION: v2.16.0
+  GOLANGCI_LINT_VERSION: v2.14.0
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-14, macos-15-intel, ubuntu-22.04]
+    defaults:
+      run:
+        shell: bash
+        working-directory: wails
+    env:
+      # Linux builds need the WebKitGTK 4.1 binding of Wails.
+      GO_TAGS: ${{ startsWith(matrix.os, 'ubuntu') && 'webkit2_41' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Linux system libraries
+        if: startsWith(matrix.os, 'ubuntu')
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: wails/go.mod
+          cache-dependency-path: wails/go.sum
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: wails/frontend/package-lock.json
+
+      - name: Install the Wails CLI
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@${WAILS_VERSION}
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Go vet and tests
+        run: |
+          go vet -tags "$GO_TAGS" ./...
+          go test -tags "$GO_TAGS" ./...
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
+          working-directory: wails
+
+      - name: Frontend dependencies
+        run: npm ci
+        working-directory: wails/frontend
+
+      - name: Frontend check (svelte-check, eslint, prettier)
+        run: npm run check
+        working-directory: wails/frontend
+
+      - name: Frontend tests
+        run: npm run test
+        working-directory: wails/frontend
+
+      - name: wails build
+        run: |
+          if [ -n "$GO_TAGS" ]; then
+            wails build -tags "$GO_TAGS"
+          else
+            wails build
+          fi
+
+      - name: Upload the app
+        uses: actions/upload-artifact@v4
+        with:
+          name: vizcacha-wails-${{ matrix.os }}
+          path: wails/build/bin
+          retention-days: 7

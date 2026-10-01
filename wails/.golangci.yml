@@ -1,0 +1,139 @@
+version: "2"
+
+run:
+  timeout: 5m
+  build-tags:
+    - webkit2_41
+
+linters:
+  default: none
+  enable:
+    - depguard
+    - errcheck
+    - errorlint
+    - funlen
+    - govet
+    - ineffassign
+    - nestif
+    - staticcheck
+    - unused
+  settings:
+    funlen:
+      lines: 50
+      statements: 40
+    nestif:
+      min-complexity: 5
+    depguard:
+      rules:
+        # PLAN_WAILS.md section 2.1: dependency rules, checked in CI.
+        domain-is-pure:
+          files:
+            - "**/internal/domain/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal
+              desc: domain must not import anything else of the project
+            - pkg: github.com/wailsapp
+              desc: domain must not know about Wails
+        app-only-domain:
+          list-mode: strict
+          files:
+            - "**/internal/app/**"
+          allow:
+            - $gostd
+            - github.com/codeplai/VizcachaIDE/wails/internal/domain
+          deny:
+            - pkg: github.com/wailsapp
+              desc: app (use cases and ports) must not know about Wails
+        bridge-is-thin:
+          list-mode: strict
+          files:
+            - "**/internal/bridge/**"
+          allow:
+            - $gostd
+            - github.com/codeplai/VizcachaIDE/wails/internal/domain
+            - github.com/codeplai/VizcachaIDE/wails/internal/app
+            - github.com/wailsapp/wails/v2/pkg/runtime
+        only-bridge-uses-the-wails-runtime:
+          files:
+            - $all
+            - "!**/internal/bridge/**"
+          deny:
+            - pkg: github.com/wailsapp/wails/v2/pkg/runtime
+              desc: only internal/bridge may import the Wails runtime
+        adapter-toolchain:
+          files:
+            - "**/internal/adapters/toolchain/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: adapters never import other adapters
+        adapter-delve:
+          files:
+            - "**/internal/adapters/delve/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: adapters never import other adapters
+        adapter-gopls:
+          files:
+            - "**/internal/adapters/gopls/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: adapters never import other adapters
+        adapter-errorcatalog:
+          files:
+            - "**/internal/adapters/errorcatalog/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: adapters never import other adapters
+        adapter-settings:
+          files:
+            - "**/internal/adapters/settings/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+              desc: adapters never import other adapters
+  exclusions:
+    paths:
+      - frontend
+    rules:
+      - path: _test\.go
+        linters:
+          - funlen

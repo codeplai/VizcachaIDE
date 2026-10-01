@@ -1,0 +1,73 @@
+/* Design tokens of the approved prototype (docs/wails/prototype.html), light and dark. */
+:root {
+  --page: #eef1f4;
+  --win: #ffffff;
+  --chrome: #f5f7f9;
+  --rail: #e7ecf0;
+  --ink: #18222c;
+  --muted: #5b6876;
+  --line: #d5dde4;
+  --go: #007d9c;
+  --go-soft: #dff2f7;
+  --sand: #c9a46c;
+  --sand-soft: #f7ecd9;
+  --err: #c2412d;
+  --err-soft: #fbe6e1;
+  --ok: #1f7a4a;
+  --code-kw: #8a3ffc;
+  --code-str: #1f7a4a;
+  --code-num: #b5541b;
+  --code-com: #7a8794;
+  --code-fn: #005f77;
+  --ui: 'Atkinson Hyperlegible Next', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Atkinson Hyperlegible Mono', 'Cascadia Mono', Consolas, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --page: #0c1116;
+    --win: #131a21;
+    --chrome: #18212a;
+    --rail: #1d2731;
+    --ink: #e3e9ee;
+    --muted: #93a2b0;
+    --line: #2a3641;
+    --go: #36c3e3;
+    --go-soft: #10303a;
+    --sand: #e0bf86;
+    --sand-soft: #3a3020;
+    --err: #ff8a73;
+    --err-soft: #3d1f19;
+    --ok: #6fd39b;
+    --code-kw: #c4a2ff;
+    --code-str: #8fdcae;
+    --code-num: #f1a273;
+    --code-com: #7b8a97;
+    --code-fn: #6fd8f0;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --page: #0c1116;
+  --win: #131a21;
+  --chrome: #18212a;
+  --rail: #1d2731;
+  --ink: #e3e9ee;
+  --muted: #93a2b0;
+  --line: #2a3641;
+  --go: #36c3e3;
+  --go-soft: #10303a;
+  --sand: #e0bf86;
+  --sand-soft: #3a3020;
+  --err: #ff8a73;
+  --err-soft: #3d1f19;
+  --ok: #6fd39b;
+  --code-kw: #c4a2ff;
+  --code-str: #8fdcae;
+  --code-num: #f1a273;
+  --code-com: #7b8a97;
+  --code-fn: #6fd8f0;
+  color-scheme: dark;
+}
