@@ -92,7 +92,7 @@ class AppearancePage(QWidget):
         self.use_custom_colors.setChecked(setting(settings, USE_CUSTOM_COLORS_KEY))
         self._enable_pickers(self.use_custom_colors.isChecked())
         self.show_toolbar.setChecked(settings.get(Keys.SHOW_TOOLBAR, True))
-        self.show_status_bar.setChecked(settings.get(Keys.SHOW_STATUS_BAR, False))
+        self.show_status_bar.setChecked(settings.get(Keys.SHOW_STATUS_BAR, True))
 
     def save(self, settings) -> None:
         settings.set(Keys.EDITOR_THEME, self.editor_theme.currentData())
