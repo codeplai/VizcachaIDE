@@ -215,6 +215,31 @@ La única excepción es `ui/app.py`: cada track puede añadir **una línea** de 
 
 **Orden de merge**: E → A → C → B → D → F. Tras cada merge se ejecuta el CI completo y se rebasan los worktrees restantes.
 
+#### Resultado de la fase 1 (integrada en `main`, solo local)
+
+Los 6 tracks se integraron en `main` en este orden: E → D → B → A → F → C (`1a3be66`).
+- **Calidad:** 334 tests pasan, incluidos los de integración real con Go, Delve y gopls. ruff y los 4 contratos de import-linter están limpios.
+- **Prueba de punta a punta:** ejecutar un ejemplo con error muestra el subrayado de gopls, el Outline, el enlace clicable en la consola y la explicación del Assistant.
+
+| Track | Entregado |
+|---|---|
+| A | Depurador real con `dlv dap`: breakpoints (también en vivo), pasos, continuar, run to cursor, variables perezosas, pila y goroutines |
+| B | Catálogo de 25 errores con `examples/errors/<ID>/`, panel Assistant, enlaces en la consola y borrador `docs/i18n/assistant.es.po` |
+| C | gopls: completado con fallback estático, diagnostics ondulados, hover, Ctrl+clic, call-tips, apariciones y Outline |
+| D | 4 temas de editor y 2 de consola, tabs de Go, gofmt al guardar, buscar/reemplazar, ir a línea, comentar, zoom, archivos recientes y recarga externa |
+| E | Toolchain incluida → PATH, módulos `go.mod`, argumentos del programa, ejecución de Untitled, Stop real, panel Files y diálogo Go Modules |
+| F | PyInstaller lite (69 MB) y full (307 MB con Go 1.25.14, dlv 1.27.2 y gopls 0.21.1) verificados en Windows; Inno Setup, dmg, AppImage y `release.yml` |
+
+**Pendiente después de la fase 1** (se reparte en la fase 2):
+- **Traducción (G):** de 287 textos, 112 están traducidos, 86 están en el borrador del track B y 89 siguen pendientes.
+- **Contratos propuestos y aplazados:**
+  - `LanguageServerPort.document_highlights` y `document_symbols` con tipos en `domain`, y `Diagnostic.end` para subrayar rangos.
+  - `DebuggerPort.variables` asíncrono y ubicación de las goroutines.
+  - `QFileOpenEvent` en macOS.
+  - Registrar desde el arranque los paneles Files y Outline.
+- **UX (H):** el panel Assistant es pequeño en la esquina inferior derecha. Hay que revisar la disposición de los paneles por defecto, sobre todo en el modo simple.
+- **Sin probar por falta de red o de sistema operativo:** CI y `release.yml` de GitHub, dmg en macOS, AppImage en Linux y el instalador de Inno Setup (`iscc` no está instalado).
+
 ### Fase 2: integración y segunda ola (paralelo)
 
 | Track | Entrega |
