@@ -94,6 +94,9 @@ describe('About and Go modules dialogs', () => {
     render(AboutDialog)
     expect(await screen.findByText(/1.25.5/)).toBeTruthy()
     expect(screen.getAllByText('Included with VizcachaIDE')).toHaveLength(2)
+    expect(screen.getByText('Marks Calderon')).toBeTruthy()
+    expect(screen.getByText('CEO Codeplai')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'hola@codeplai.pe' })).toBeTruthy()
   })
 
   it('explains that there is no go.mod, then shows the module of the last run', async () => {

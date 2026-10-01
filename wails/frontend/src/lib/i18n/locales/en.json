@@ -458,6 +458,8 @@
   "settings.tools": "Tools",
   "settings.version": "Version {version}",
   "shell.about": "About VizcachaIDE",
+  "shell.aboutContact": "Contact",
+  "shell.aboutCreatedBy": "Created by",
   "shell.aboutNotFound": "not found",
   "shell.aboutTagline": "A Go IDE made for people who are learning.",
   "shell.aboutTools": "Tools",
