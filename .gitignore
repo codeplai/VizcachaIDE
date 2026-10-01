@@ -64,3 +64,6 @@ settings.ini
 
 # Other agents' scratch worktrees
 .kilo/
+
+# Agent worktrees (local only)
+.claude/worktrees/
