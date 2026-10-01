@@ -1,4 +1,4 @@
-"""Options > Environment: Go, GOPATH, GOROOT, Delve and extra variables."""
+"""Options > Environment: Go, GOPATH, GOROOT, Delve, extra variables and detected tools."""
 
 from PyQt5.QtWidgets import (
     QFileDialog,
@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import (
 
 from vizcacha.application.settings_keys import SettingsKeys as Keys
 from vizcacha.i18n import _
+from vizcacha.infrastructure.go_toolchain import GoEnvironment
+from vizcacha.ui.features.run.tool_origins_box import ToolOriginsBox
 
 
 class PathField(QWidget):
@@ -40,7 +42,7 @@ class PathField(QWidget):
 
 
 class EnvironmentPage(QWidget):
-    def __init__(self) -> None:
+    def __init__(self, environment: GoEnvironment) -> None:
         super().__init__()
         self.title = _("Environment")
         self.fields = {
@@ -71,6 +73,8 @@ class EnvironmentPage(QWidget):
         layout.addWidget(tools_group)
         layout.addWidget(info)
         layout.addWidget(self.extra_vars)
+        self.tool_origins = ToolOriginsBox(environment)
+        layout.addWidget(self.tool_origins)
         layout.addStretch()
 
     def load(self, settings) -> None:
@@ -82,3 +86,4 @@ class EnvironmentPage(QWidget):
         for key, field in self.fields.items():
             settings.set(key, field.edit.text().strip())
         settings.set(Keys.EXTRA_VARS, self.extra_vars.toPlainText())
+        self.tool_origins.detect_again()

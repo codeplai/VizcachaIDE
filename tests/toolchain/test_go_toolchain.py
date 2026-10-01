@@ -8,6 +8,8 @@ from vizcacha.application.errors import GoFormatError
 from vizcacha.domain.project import RunConfiguration
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
 
+# Generous: linking is slow on Windows machines with antivirus scanning.
+GO_TIMEOUT_MS = 240_000
 HELLO = 'package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("hola")\n}\n'
 
 
@@ -23,7 +25,7 @@ def test_run_streams_output_and_exit_code(qtbot, toolchain, tmp_path: Path):
     output: list[str] = []
     toolchain.output_received.connect(output.append)
 
-    with qtbot.waitSignal(toolchain.execution_finished, timeout=60_000) as finished:
+    with qtbot.waitSignal(toolchain.execution_finished, timeout=GO_TIMEOUT_MS) as finished:
         toolchain.run(RunConfiguration.for_file(source))
 
     assert finished.args == [0]
@@ -37,7 +39,7 @@ def test_compile_error_goes_to_stderr(qtbot, toolchain, tmp_path: Path):
     errors: list[str] = []
     toolchain.error_received.connect(errors.append)
 
-    with qtbot.waitSignal(toolchain.execution_finished, timeout=60_000) as finished:
+    with qtbot.waitSignal(toolchain.execution_finished, timeout=GO_TIMEOUT_MS) as finished:
         toolchain.run(RunConfiguration.for_file(source))
 
     assert finished.args[0] != 0
@@ -55,7 +57,7 @@ def test_program_reads_stdin(qtbot, toolchain, tmp_path: Path):
     output: list[str] = []
     toolchain.output_received.connect(output.append)
 
-    with qtbot.waitSignal(toolchain.execution_finished, timeout=60_000):
+    with qtbot.waitSignal(toolchain.execution_finished, timeout=GO_TIMEOUT_MS):
         toolchain.run(RunConfiguration.for_file(source))
         toolchain.write_input("vizcacha")  # QProcess buffers it until the program reads
 
