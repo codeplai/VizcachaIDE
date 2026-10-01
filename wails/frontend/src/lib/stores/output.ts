@@ -2,7 +2,7 @@ import { derived } from 'svelte/store'
 import { TERMINATED_BY_USER } from '../events'
 import { debugActive, debugOutput, debugStarting, currentLine } from './debug'
 import { activeFileName } from './files'
-import { problemCount } from './diagnostics'
+import { compileProblemCount } from './assistant'
 import { splitOutputLinks, type OutputSegment } from './outputLinks'
 import { runLines, runResult, stoppedByUser } from './run'
 
@@ -37,7 +37,7 @@ const verdictOf = (
 }
 
 const programLines = derived(
-  [runLines, runResult, problemCount, stoppedByUser],
+  [runLines, runResult, compileProblemCount, stoppedByUser],
   ([lines, result, problems, stopped]) => {
     const view: OutputLine[] = lines.map((line) => {
       if (line.kind === 'start') {

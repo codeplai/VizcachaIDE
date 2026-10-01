@@ -7,6 +7,7 @@
     debugActive,
     fileTree,
     parentName,
+    programArguments,
     runActiveFile,
     running,
     startDebugging,
@@ -24,6 +25,18 @@
     {/if}
   </div>
   <div class="actions">
+    <input
+      class="args"
+      type="text"
+      spellcheck="false"
+      autocomplete="off"
+      placeholder={$t('settings.programArgs')}
+      aria-label={$t('settings.programArgs')}
+      title={$t('settings.programArgsHint')}
+      disabled={$debugActive || $running}
+      bind:value={$programArguments}
+      onkeydown={(event) => event.key === 'Enter' && $activePath && runActiveFile(bridge)}
+    />
     {#if $debugActive}
       <button
         class="btn stop"
@@ -112,6 +125,19 @@
     display: flex;
     gap: 8px;
     align-items: center;
+  }
+  .args {
+    width: clamp(110px, 16vw, 200px);
+    min-width: 0;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--win);
+    color: var(--ink);
+    font: 500 13px var(--mono);
+  }
+  .args:disabled {
+    opacity: 0.55;
   }
   .btn {
     display: inline-flex;

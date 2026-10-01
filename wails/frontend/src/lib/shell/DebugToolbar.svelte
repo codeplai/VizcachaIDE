@@ -1,13 +1,14 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { resumeDebugging, stepInto, stepOut, stepOver } from '../stores'
+  import { resumeDebugging, runToCursor, stepInto, stepOut, stepOver } from '../stores'
 
   const buttons = [
     { label: 'actions.nextLine', tip: 'tooltips.nextLine', key: 'F7', run: stepOver, main: true },
     { label: 'actions.goIntoFunction', tip: 'tooltips.goIntoFunction', key: 'F8', run: stepInto },
     { label: 'actions.leaveFunction', tip: 'tooltips.leaveFunction', key: 'F9', run: stepOut },
-    { label: 'actions.continue', tip: 'tooltips.continue', key: 'Shift+F6', run: resumeDebugging }
+    { label: 'actions.continue', tip: 'tooltips.continue', key: 'Shift+F6', run: resumeDebugging },
+    { label: 'actions.runToHere', tip: 'tooltips.runToHere', key: 'Ctrl+F10', run: runToCursor }
   ]
 </script>
 
@@ -32,6 +33,9 @@
     right: 16px;
     z-index: 5;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100% - 32px);
     gap: 4px;
     align-items: center;
     background: var(--win);

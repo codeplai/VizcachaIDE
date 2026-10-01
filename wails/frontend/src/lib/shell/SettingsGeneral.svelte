@@ -2,7 +2,7 @@
   import { bridge } from '../bridge'
   import type { LanguageSetting, ThemeSetting } from '../domain'
   import { t } from '../i18n'
-  import { programArguments, settings, updateSettings } from '../stores'
+  import { settings, updateSettings } from '../stores'
 
   const languages: { id: LanguageSetting; label: string }[] = [
     { id: 'auto', label: 'settings.languageAuto' },
@@ -42,15 +42,4 @@
       <option value={option.id}>{$t(option.label)}</option>
     {/each}
   </select>
-</div>
-
-<div class="field">
-  <label for="setting-program-args">{$t('settings.programArgs')}</label>
-  <input
-    id="setting-program-args"
-    type="text"
-    bind:value={$programArguments}
-    aria-describedby="setting-program-args-hint"
-  />
-  <span class="hint" id="setting-program-args-hint">{$t('settings.programArgsHint')}</span>
 </div>

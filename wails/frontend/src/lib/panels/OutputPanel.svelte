@@ -2,7 +2,8 @@
   import { tick } from 'svelte'
   import { bridge } from '../bridge'
   import { formatSeconds, locale, t } from '../i18n'
-  import { goToLocation, outputLines, type OutputLine } from '../stores'
+  import { goToLocation, outputLines, running, type OutputLine } from '../stores'
+  import StdinInput from './StdinInput.svelte'
 
   let terminal: HTMLDivElement | undefined = $state()
 
@@ -21,40 +22,55 @@
   })
 </script>
 
-<div class="term" role="log" aria-live="polite" aria-label={$t('a11y.output')} bind:this={terminal}>
-  {#each $outputLines as line, index (index)}
-    <div class={line.tone}>
-      {#if line.key}
-        {$t(line.key, { values: valuesOf(line, $locale) })}
-      {:else}
-        {#each line.segments ?? [] as segment, position (position)}
-          {#if segment.location}
-            {@const location = segment.location}
-            <button
-              type="button"
-              class="place"
-              title={$t('a11y.goToPlace', { values: { place: segment.text } })}
-              onclick={() => goToLocation(bridge, location)}
-            >
+<div class="pane">
+  <div
+    class="term"
+    role="log"
+    aria-live="polite"
+    aria-label={$t('a11y.output')}
+    bind:this={terminal}
+  >
+    {#each $outputLines as line, index (index)}
+      <div class={line.tone}>
+        {#if line.key}
+          {$t(line.key, { values: valuesOf(line, $locale) })}
+        {:else}
+          {#each line.segments ?? [] as segment, position (position)}
+            {#if segment.location}
+              {@const location = segment.location}
+              <button
+                type="button"
+                class="place"
+                title={$t('a11y.goToPlace', { values: { place: segment.text } })}
+                onclick={() => goToLocation(bridge, location)}
+              >
+                {segment.text}
+              </button>
+            {:else}
               {segment.text}
-            </button>
-          {:else}
-            {segment.text}
-          {/if}
-        {/each}
-      {/if}
-    </div>
-  {:else}
-    <div class="system">{$t('empty.output')}</div>
-  {/each}
+            {/if}
+          {/each}
+        {/if}
+      </div>
+    {:else}
+      <div class="system">{$t('empty.output')}</div>
+    {/each}
+  </div>
+  {#if $running}<StdinInput />{/if}
 </div>
 
 <style>
+  .pane {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
   .term {
+    flex: 1;
+    min-height: 0;
     font: 400 13px/1.6 var(--mono);
     padding: 8px 14px;
     overflow: auto;
-    height: 100%;
     white-space: pre-wrap;
   }
   .system {

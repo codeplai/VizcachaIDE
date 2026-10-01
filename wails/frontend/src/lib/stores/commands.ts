@@ -4,10 +4,10 @@ import type { Bridge } from '../bridge'
 import type { Breakpoint } from '../domain'
 import { breakpoints, debugActive, debugStarting } from './debug'
 import { activePath, buffers } from './files'
-import { openDialog } from './layout'
+import { cursor, openDialog } from './layout'
 import { showNotice } from './notice'
 import { programArguments } from './programArguments'
-import { resetRun, stoppedByUser } from './run'
+import { pushRunText, resetRun, stoppedByUser } from './run'
 import { isUntitled } from './untitled'
 
 export const GO_DOWNLOAD_URL = 'https://go.dev/dl/'
@@ -110,3 +110,17 @@ export const stepOver = (bridge: Bridge): Promise<void> => bridge.debug.stepOver
 export const stepInto = (bridge: Bridge): Promise<void> => bridge.debug.stepInto()
 export const stepOut = (bridge: Bridge): Promise<void> => bridge.debug.stepOut()
 export const resumeDebugging = (bridge: Bridge): Promise<void> => bridge.debug.resume()
+
+/** Sends one typed line to the running program and shows it in the Output (a pipe does not echo). */
+export const sendProgramInput = async (bridge: Bridge, text: string): Promise<void> => {
+  pushRunText('stdout', `${text}\n`)
+  await bridge.run.writeInput(text)
+}
+
+/** Runs the paused program until the line with the cursor (Ctrl+F10). */
+export const runToCursor = async (bridge: Bridge): Promise<void> => {
+  const file = get(activePath)
+  if (!file || !get(debugActive)) return
+  const { line, column } = get(cursor)
+  await bridge.debug.runTo({ file, line, column })
+}

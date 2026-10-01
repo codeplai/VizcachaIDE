@@ -122,6 +122,7 @@ func (b *BreakpointBook) For(file string) []domain.Breakpoint {
 type ChangeTracker struct {
 	mu       sync.Mutex
 	previous map[string]string
+	frames   map[string]bool
 }
 
 // NewChangeTracker creates a tracker with no history.
@@ -132,10 +133,12 @@ func (t *ChangeTracker) Reset() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	t.previous = nil
+	t.frames = nil
 }
 
 // Mark sets Changed on the variables of the top frame and remembers their values.
-// The first stop of a frame never marks anything.
+// The first stop of a frame never marks anything. After that, a variable that was not there
+// before (the one a line has just declared) counts as changed, like a new value does.
 func (t *ChangeTracker) Mark(frames []domain.StackFrame, variables []domain.Variable) []domain.Variable {
 	if len(frames) == 0 {
 		return variables
@@ -143,14 +146,19 @@ func (t *ChangeTracker) Mark(frames []domain.StackFrame, variables []domain.Vari
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	frameKey := frames[0].Function + "#" + strconv.Itoa(len(frames))
+	frameKnown := t.frames[frameKey]
 	current := make(map[string]string, len(variables))
 	for index, variable := range variables {
 		key := frameKey + "/" + variable.Name
 		old, seen := t.previous[key]
-		variables[index].Changed = seen && old != variable.Value
+		variables[index].Changed = (seen && old != variable.Value) || (!seen && frameKnown)
 		current[key] = variable.Value
 	}
 	t.previous = mergeValues(t.previous, current)
+	if t.frames == nil {
+		t.frames = map[string]bool{}
+	}
+	t.frames[frameKey] = true
 	return variables
 }
 

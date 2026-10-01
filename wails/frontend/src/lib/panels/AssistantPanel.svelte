@@ -1,6 +1,12 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { currentLine, problemCount, problems, uiMode } from '../stores'
+  import {
+    assistantProblemCount,
+    assistantProblems,
+    currentLine,
+    problemKey,
+    uiMode
+  } from '../stores'
   import ErrorCard from './ErrorCard.svelte'
   import TipsCard from './TipsCard.svelte'
   import TraceSection from './TraceSection.svelte'
@@ -14,7 +20,7 @@
       <span class="chip idle">{$t('assistant.chipReady')}</span>
     {:else if $uiMode === 'error'}
       <span class="chip err">
-        {$t('assistant.chipProblems', { values: { count: $problemCount } })}
+        {$t('assistant.chipProblems', { values: { count: $assistantProblemCount } })}
       </span>
     {:else}
       <span class="chip run">
@@ -26,7 +32,7 @@
   {#if $uiMode === 'write'}
     <TipsCard />
   {:else if $uiMode === 'error'}
-    {#each $problems as item (item.diagnostic.rawText)}
+    {#each $assistantProblems as item (problemKey(item.diagnostic))}
       <ErrorCard {item} />
     {/each}
   {:else}

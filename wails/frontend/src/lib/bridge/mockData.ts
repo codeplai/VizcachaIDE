@@ -61,7 +61,7 @@ export const sampleDiagnostic = (): Diagnostic => ({
   severity: 'error',
   message: 'declared and not used: resultado',
   rawText: './main.go:11:5: declared and not used: resultado',
-  source: 'go',
+  source: 'compiler',
   code: ''
 })
 

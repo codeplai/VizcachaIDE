@@ -4,6 +4,7 @@ import {
   debugActive,
   resumeDebugging,
   runActiveFile,
+  runToCursor,
   saveActiveFile,
   startDebugging,
   stepInto,
@@ -23,6 +24,8 @@ const actionFor = (event: KeyboardEvent): Action | null => {
       return event.shiftKey ? (debugging ? stopDebugging : stopProgram) : runActiveFile
     case 'F6':
       return event.shiftKey ? resumeDebugging : startDebugging
+    case 'F10':
+      return event.ctrlKey || event.metaKey ? runToCursor : null
     case 'F7':
       return stepOver
     case 'F8':

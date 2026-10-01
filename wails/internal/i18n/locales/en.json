@@ -443,6 +443,7 @@
   "run.exitCode": "✗ Your program ended with code {{.code}}.",
   "run.finished": "✓ Finished in {{.seconds}} s",
   "run.firstBuild": "Preparing Go for the first time. This takes about a minute and only happens once.",
+  "run.inputPlaceholder": "Type here and press Enter to answer your program",
   "run.starting": "▶ Running {{.file}}…",
   "run.stopped": "■ Stopped.",
   "settings.chooseTool": "Choose…",

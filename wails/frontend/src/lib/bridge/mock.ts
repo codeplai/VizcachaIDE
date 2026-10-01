@@ -3,6 +3,7 @@ import type { RunConfiguration, Settings } from '../domain'
 import { TERMINATED_BY_USER } from '../events'
 import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
+import { mockAssistant } from './mockAssistant'
 import {
   SAMPLE_SOURCES,
   defaultSettings,
@@ -156,7 +157,11 @@ export const createMockBridge = (): MockBridge => {
     run: mockRun(state, emit),
     debug,
     language: mockLanguage(emit),
-    assistant: { explain: async () => [], explainDiagnostics: async () => [] },
+    assistant: mockAssistant(
+      () => state.scenario,
+      () => resolveLanguage(state.settings.language, systemLanguage()),
+      emit
+    ),
     files: {
       openFolder: async () => sampleTree(),
       listTree: async () => sampleTree(),
