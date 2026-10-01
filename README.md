@@ -2,6 +2,12 @@
 
 A simple, beginner-friendly IDE for Go programming, inspired by Thonny. VizcachaIDE provides an intuitive interface for learning and writing Go code with integrated debugging capabilities.
 
+> **Project status (v0.2 in development).** The code base is being restructured for a
+> public, bilingual (English / Español) 1.0 release on Windows, macOS and Linux. Editing,
+> running programs and the console work today. **The debugger is being rebuilt on top of
+> Delve**: in 0.1 it was only a simulation, so it is disabled until the real one lands.
+> See [docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md) (Spanish) for the roadmap.
+
 ![VizcachaIDE](screenshot.png)
 
 ## Features
@@ -254,22 +260,37 @@ Click **Apply** to save settings without closing, or **OK** to save and close.
 
 ## Project Structure
 
+VizcachaIDE follows Clean Architecture. Details and diagrams: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md)
+and [docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md).
+
 ```
-VizcachaIDE/
-├── main.py                 # Application entry point
-├── requirements.txt        # Python dependencies
-├── README.md              # This file
-├── gui/                   # GUI components
-│   ├── __init__.py
-│   ├── main_window.py     # Main application window
-│   ├── editor.py          # Code editor with syntax highlighting
-│   ├── console.py         # Output console widget
-│   ├── variables.py       # Variables inspector widget
-│   └── callstack.py       # Call stack viewer widget
-└── core/                  # Core functionality
-    ├── __init__.py
-    ├── runner.py          # Go code runner
-    └── debugger.py        # Delve debugger integration
+vizcacha/
+├── domain/          # Pure Python model (no Qt): debugging, diagnostics, project...
+├── application/     # Ports (interfaces) and use cases
+├── infrastructure/  # Adapters: Go toolchain, settings, static completion...
+├── i18n/            # English / Spanish catalogs (gettext + Babel)
+└── ui/              # Qt widgets; features plug in through the Workbench
+tests/               # pytest + pytest-qt
+```
+
+## Development
+
+```bash
+python -m venv .venv
+.venv/Scripts/activate            # Windows  (Linux/macOS: source .venv/bin/activate)
+pip install -r requirements-dev.txt
+
+python -m vizcacha                 # run the IDE (python main.py also works)
+python -m pytest                   # tests (Go integration tests run if `go` is on PATH)
+ruff check . && lint-imports       # style + architecture contracts
+```
+
+Translations: write UI text in English inside `_()`, then
+
+```bash
+pybabel extract -F babel.cfg -o vizcacha/i18n/locale/vizcacha.pot .
+pybabel update -i vizcacha/i18n/locale/vizcacha.pot -d vizcacha/i18n/locale -D vizcacha
+pybabel compile -d vizcacha/i18n/locale -D vizcacha
 ```
 
 ## How It Works

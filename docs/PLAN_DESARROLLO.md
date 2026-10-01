@@ -65,48 +65,25 @@ vizcacha/
 
 - Archivos de menos de 200 líneas y funciones de menos de 50; anidamiento máximo de 3; *early return*.
 - Nombres de dominio. Prohibidos `utils.py`, `helpers.py` y `common.py`.
-- Excepciones tipadas (`GoToolchainNotFound`, `DebugAdapterError`…), nunca `except Exception:` mudo.
+- Excepciones tipadas (`GoToolchainNotFoundError`, `DebugAdapterError`…), nunca `except Exception:` mudo.
 - Library-first: antes de escribir infraestructura propia, buscar un paquete mantenido.
 
-### 1.1 Contratos (`application/ports.py`), congelados en la fase 0
+### 1.1 Contratos, congelados en la fase 0
 
-```python
-class DebuggerPort(Protocol):
-    def start(self, config: RunConfiguration, breakpoints: list[Breakpoint]) -> None: ...
-    def set_breakpoints(self, file: Path, lines: list[int]) -> None: ...
-    def step_over(self) -> None: ...
-    def step_into(self) -> None: ...
-    def step_out(self) -> None: ...
-    def resume(self) -> None: ...
-    def run_to(self, location: SourceLocation) -> None: ...
-    def variables(self, frame_id: int, reference: int = 0) -> list[Variable]: ...
-    def stop(self) -> None: ...
-    # Eventos (señales Qt en el adaptador): stopped(DebugState), output(str, stream), terminated(int)
+La **fuente de verdad** es el código: [`vizcacha/application/ports.py`](../vizcacha/application/ports.py)
+(puertos y señales Qt obligatorias), [`vizcacha/domain/`](../vizcacha/domain/) (objetos de dominio),
+[`vizcacha/application/errors.py`](../vizcacha/application/errors.py) (excepciones tipadas) y
+[`vizcacha/ui/workbench.py`](../vizcacha/ui/workbench.py) (API para features). Resumen:
 
-class LanguageServerPort(Protocol):
-    def open_document(self, path: Path, text: str) -> None: ...
-    def change_document(self, path: Path, text: str, version: int) -> None: ...
-    def completion(self, loc: SourceLocation) -> list[CompletionItem]: ...
-    def hover(self, loc: SourceLocation) -> str | None: ...
-    def definition(self, loc: SourceLocation) -> SourceLocation | None: ...
-    def signature_help(self, loc: SourceLocation) -> SignatureHelp | None: ...
-    # Evento: diagnostics_published(Path, list[Diagnostic])
+| Puerto | Métodos | Señales Qt obligatorias |
+|---|---|---|
+| `GoToolchainPort` | `environment`, `run`, `build`, `stop`, `is_running`, `write_input`, `format_source` | `output_received(str)`, `error_received(str)`, `execution_finished(int)` |
+| `DebuggerPort` | `start(config, breakpoints)`, `set_breakpoints`, `step_over/into/out`, `resume`, `run_to`, `variables(reference)`, `stop`, `is_active` | `stopped(DebugState)`, `output(str, category)`, `terminated(int)` |
+| `LanguageServerPort` | `open/change/close_document`, `completion`, `hover`, `definition`, `signature_help`, `shutdown` | `diagnostics_published(Path, list[Diagnostic])` |
+| `ErrorExplainerPort` | `parse(raw_output, working_dir)`, `explain(diagnostic)` | — |
+| `SettingsRepository` | `get(key, default)`, `set(key, value)` | — |
 
-class GoToolchainPort(Protocol):
-    def environment(self) -> Mapping[str, str]: ...
-    def run(self, config: RunConfiguration) -> None: ...      # async; eventos output/finished
-    def build(self, config: RunConfiguration) -> None: ...
-    def format_source(self, text: str) -> str: ...             # gofmt; lanza GoFormatError
-    def vet(self, config: RunConfiguration) -> list[Diagnostic]: ...
-
-class ErrorExplainerPort(Protocol):
-    def parse(self, raw_output: str, workdir: Path) -> list[Diagnostic]: ...
-    def explain(self, diagnostic: Diagnostic) -> ErrorExplanation | None: ...
-
-class SettingsRepository(Protocol):
-    def get(self, key: str, default: T) -> T: ...
-    def set(self, key: str, value: object) -> None: ...
-```
+`tests/test_contracts.py` verifica que cada adaptador registrado cumple su puerto y expone esas señales.
 
 ## 2. Decisiones *library-first*
 
@@ -191,6 +168,36 @@ cimientos              A B C D E F                         G H I                
 
 **Terminado cuando**: `python -m vizcacha` abre la app y Run funciona igual que hoy; CI está en verde en los 3 SO; `import-linter` pasa; los contratos están documentados.
 
+#### Resultado de la fase 0 (fuente de verdad para los tracks)
+
+**Hecho** (rama `fase-0-cimientos`):
+- Paquete `vizcacha/` en capas. `core/` y `gui/` eliminados. `python -m vizcacha` y `python main.py` funcionan.
+- Depurador simulado eliminado: `NullDebugger` avisa que aún no está disponible.
+- `GoToolchain` asíncrono para run **y build** (el build ya no congela la UI). `GoEnvironment` es único y `format_source` usa gofmt.
+- Interfaz bilingüe: 113 textos con `_()`, catálogo **español 100 % traducido** y detección automática del idioma.
+- 43 tests (pytest + pytest-qt, con integración real con Go). `ruff` y 4 contratos de `import-linter` en verde. CI para 3 SO escrito, pero aún no ejecutado: hace falta red hacia GitHub.
+
+**Propiedad de archivos** (reemplaza la tabla de abajo donde difieran):
+
+| Track | Puede editar |
+|---|---|
+| A · Depurador | `infrastructure/delve_dap/` (nuevo), `application/debug_session.py` (nuevo), `ui/features/debugger/`, `tests/debugger/` |
+| B · Assistant | `infrastructure/error_catalog/` (nuevo), `application/explain_error.py` (nuevo), `ui/features/assistant/` (nuevo), **`ui/widgets/console.py`** (enlaces clicables), `examples/errors/`, `tests/assistant/` |
+| C · gopls | `infrastructure/gopls_lsp/` (nuevo), `infrastructure/static_completion/`, `ui/features/language/` (nuevo), `tests/language/` |
+| D · Editor | `ui/editor/`, `ui/features/editor/` (incluye las páginas Editor y Apariencia), `ui/features/files/`, `tests/editor/` |
+| E · Proyecto/toolchain | `infrastructure/go_toolchain/`, `application/run_program.py` (nuevo), `ui/features/run/` (incluye la página Entorno), `ui/features/project/` (nuevo), `tests/toolchain/` |
+| F · Empaquetado | `packaging/` (nuevo), `.github/workflows/release.yml` (nuevo) |
+| Integrador (yo) | `domain/`, `application/ports.py`, `application/errors.py`, `application/settings_keys.py`, `ui/workbench.py`, `ui/services.py`, `ui/main_window.py`, `ui/settings_dialog.py`, `i18n/`, `pyproject.toml`, `tests/conftest.py`, `tests/test_contracts.py` |
+
+En `ui/app.py`, cada track sólo puede añadir **su línea de import y su línea en `FEATURES`**. A y C también pueden cambiar **su servicio** en `build_services`: A el `debugger` y C el `language_server`, un campo opcional que ya existe en `Services`.
+
+**Puntos de extensión**, para no tener que editar código ajeno:
+- `CodeEditor.set_selection_layer(nombre, selecciones)`: capas de resaltado independientes, por ejemplo `debug_line`, `diagnostics`, `search` o `brackets`.
+- `CodeEditor.completion_provider`: lo reemplaza C con gopls.
+- `TabbedEditor.editor_created(CodeEditor)`: para enganchar *event filters*, tooltips, Ctrl+clic o teclas extra.
+- `workbench.events`: `navigate_to`, `process_output`, `program_started`, `program_finished`, `diagnostics_changed` y `settings_changed`.
+- `workbench.add_action / add_panel / add_status_widget / add_settings_page / add_close_guard`.
+
 ### Fase 1: seis tracks en paralelo
 
 | Track | Posee (sólo puede editar esto) | Entrega |
@@ -260,7 +267,7 @@ Implementa DelveDapDebugger (infrastructure/delve_dap/), que cumple DebuggerPort
   añade una vista de goroutines y un clic en un frame que emita workbench.events.navigate_to.
   La salida del programa (stdout/stderr) va a la consola existente.
 - Ruta de dlv: SettingsRepository "env/delve_path" o, si está vacía, el PATH. Si no existe, lanza
-  DebugAdapterNotFound y muestra un mensaje traducible con la instrucción de instalación.
+  DebugAdapterNotFoundError y muestra un mensaje traducible con la instrucción de instalación.
 - Tests: framing y parsing DAP con transcripciones grabadas (sin dlv); un test de integración marcado
   @pytest.mark.requires_dlv que depure examples/functions.go.
 ```

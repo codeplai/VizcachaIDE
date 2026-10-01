@@ -1,0 +1,104 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vizcacha-ide"
+dynamic = ["version"]
+description = "Beginner-friendly IDE for Go, inspired by Thonny (English / Español)"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = ["PyQt5>=5.15"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-qt>=4.4",
+    "ruff>=0.6",
+    "import-linter>=2.1",
+    "Babel>=2.14",
+]
+lsp = ["lsprotocol>=2023.0", "cattrs>=23.1"]
+
+[project.gui-scripts]
+vizcacha = "vizcacha.ui.app:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "vizcacha.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["vizcacha*"]
+
+[tool.setuptools.package-data]
+"vizcacha.i18n" = ["locale/*/LC_MESSAGES/*.mo", "locale/*/LC_MESSAGES/*.po"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [".kilo", ".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C90"]
+# _() and N_() are the gettext convention, not real naming problems.
+ignore = ["N802"]
+
+[tool.ruff.lint.per-file-ignores]
+# data tables of Go builtins/stdlib docs
+"vizcacha/infrastructure/static_completion/go_analyzer.py" = ["E501"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 8
+
+[tool.ruff.lint.isort]
+known-first-party = ["vizcacha"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+qt_api = "pyqt5"
+markers = [
+    "requires_go: needs the go toolchain on PATH",
+    "requires_dlv: needs Delve (dlv) on PATH",
+    "requires_gopls: needs gopls on PATH",
+]
+
+# ---------------------------------------------------------------- architecture
+[tool.importlinter]
+root_package = "vizcacha"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Clean Architecture layers"
+type = "layers"
+layers = [
+    "vizcacha.ui",
+    "vizcacha.infrastructure",
+    "vizcacha.application",
+    "vizcacha.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain and application do not depend on Qt"
+type = "forbidden"
+source_modules = ["vizcacha.domain", "vizcacha.application"]
+forbidden_modules = ["PyQt5"]
+
+[[tool.importlinter.contracts]]
+name = "i18n is a leaf module"
+type = "forbidden"
+source_modules = ["vizcacha.i18n"]
+forbidden_modules = [
+    "vizcacha.domain",
+    "vizcacha.application",
+    "vizcacha.infrastructure",
+    "vizcacha.ui",
+    "PyQt5",
+]
+
+[[tool.importlinter.contracts]]
+name = "Features do not import each other"
+type = "independence"
+modules = ["vizcacha.ui.features.*"]

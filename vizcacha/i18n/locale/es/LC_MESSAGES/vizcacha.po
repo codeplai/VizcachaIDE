@@ -1,0 +1,371 @@
+# Spanish translations for VizcachaIDE.
+# Copyright (C) 2026 Marks Calderon - Codeplai Games
+# This file is distributed under the same license as the VizcachaIDE
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VizcachaIDE 0.2.0\n"
+"Report-Msgid-Bugs-To: hola@codeplai.pe\n"
+"POT-Creation-Date: 2026-09-30 19:35-0500\n"
+"PO-Revision-Date: 2026-09-30 19:35-0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: Español\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "The debugger is not available yet. It will use Delve in a future version."
+msgstr "El depurador aún no está disponible. Usará Delve en una próxima versión."
+
+#, python-brace-format
+msgid "gofmt was not found: {path}"
+msgstr "No se encontró gofmt: {path}"
+
+msgid "gofmt took too long and was stopped."
+msgstr "gofmt tardó demasiado y se detuvo."
+
+msgid "Failed to start Go. Make sure Go is installed and in your PATH."
+msgstr "No se pudo iniciar Go. Verifica que Go esté instalado y en tu PATH."
+
+msgid "The process crashed."
+msgstr "El proceso se cerró inesperadamente."
+
+msgid "The process timed out."
+msgstr "El proceso excedió el tiempo de espera."
+
+msgid "Could not write to the process."
+msgstr "No se pudo escribir en el proceso."
+
+msgid "Could not read from the process."
+msgstr "No se pudo leer del proceso."
+
+msgid "Unknown process error."
+msgstr "Error desconocido del proceso."
+
+#, python-brace-format
+msgid "Running: {target}"
+msgstr "Ejecutando: {target}"
+
+#, python-brace-format
+msgid "Building: {target}"
+msgstr "Compilando: {target}"
+
+msgid "[Process terminated]"
+msgstr "[Proceso detenido]"
+
+msgid "A process is already running."
+msgstr "Ya hay un proceso en ejecución."
+
+#, python-brace-format
+msgid "Error: {message}"
+msgstr "Error: {message}"
+
+msgid "VizcachaIDE - Beginner-friendly Go IDE"
+msgstr "VizcachaIDE - IDE de Go para principiantes"
+
+msgid "Main Toolbar"
+msgstr "Barra principal"
+
+msgid "VizcachaIDE - Options"
+msgstr "VizcachaIDE - Opciones"
+
+msgid "&File"
+msgstr "&Archivo"
+
+msgid "&Edit"
+msgstr "&Editar"
+
+msgid "&View"
+msgstr "&Ver"
+
+msgid "&Run"
+msgstr "E&jecutar"
+
+msgid "&Debug"
+msgstr "&Depurar"
+
+msgid "&Tools"
+msgstr "&Herramientas"
+
+msgid "&Help"
+msgstr "A&yuda"
+
+msgid "Error"
+msgstr "Error"
+
+#, python-brace-format
+msgid "Could not open file: {error}"
+msgstr "No se pudo abrir el archivo: {error}"
+
+msgid "Unsaved Changes"
+msgstr "Cambios sin guardar"
+
+#, python-brace-format
+msgid "Do you want to save changes to '{name}'?"
+msgstr "¿Quieres guardar los cambios en '{name}'?"
+
+msgid "Save Go File"
+msgstr "Guardar archivo Go"
+
+msgid "Go Files (*.go);;All Files (*)"
+msgstr "Archivos Go (*.go);;Todos los archivos (*)"
+
+#, python-brace-format
+msgid "Could not save file: {error}"
+msgstr "No se pudo guardar el archivo: {error}"
+
+msgid "Untitled"
+msgstr "Sin título"
+
+#, python-brace-format
+msgid "Untitled {number}"
+msgstr "Sin título {number}"
+
+msgid "🐛 Debug"
+msgstr "🐛 Depurar"
+
+msgid "↷ Step Over"
+msgstr "↷ Paso sobre"
+
+msgid "↓ Step Into"
+msgstr "↓ Paso adentro"
+
+msgid "↑ Step Out"
+msgstr "↑ Paso afuera"
+
+msgid "Stop Debugging"
+msgstr "Detener depuración"
+
+msgid "Toggle &Breakpoint"
+msgstr "Activar/desactivar &punto de interrupción"
+
+msgid "Variables"
+msgstr "Variables"
+
+msgid "Call Stack"
+msgstr "Pila de llamadas"
+
+msgid "No File"
+msgstr "Sin archivo"
+
+msgid "Please save your file before debugging."
+msgstr "Guarda tu archivo antes de depurar."
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Value"
+msgstr "Valor"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Solarized Light"
+msgstr "Solarized claro"
+
+msgid "Solarized Dark"
+msgstr "Solarized oscuro"
+
+msgid "Choose Color"
+msgstr "Elegir color"
+
+msgid "Appearance"
+msgstr "Apariencia"
+
+msgid "Show toolbar"
+msgstr "Mostrar barra de herramientas"
+
+msgid "Show status bar"
+msgstr "Mostrar barra de estado"
+
+msgid "Color Theme"
+msgstr "Tema de colores"
+
+msgid "Editor theme:"
+msgstr "Tema del editor:"
+
+msgid "Console theme:"
+msgstr "Tema de la consola:"
+
+msgid "Custom Colors"
+msgstr "Colores personalizados"
+
+msgid "Background:"
+msgstr "Fondo:"
+
+msgid "Text:"
+msgstr "Texto:"
+
+msgid "UI Elements"
+msgstr "Elementos de la interfaz"
+
+msgid "Editor"
+msgstr "Editor"
+
+msgid "Enable auto-indentation"
+msgstr "Activar sangría automática"
+
+msgid "Show line numbers"
+msgstr "Mostrar números de línea"
+
+msgid "Enable word wrap"
+msgstr "Ajustar líneas largas"
+
+msgid "Font family:"
+msgstr "Fuente:"
+
+msgid "Font size:"
+msgstr "Tamaño de fuente:"
+
+msgid "Preview:"
+msgstr "Vista previa:"
+
+msgid "Tab size:"
+msgstr "Ancho del tabulador:"
+
+msgid "Editor Font"
+msgstr "Fuente del editor"
+
+msgid "Editor Behavior"
+msgstr "Comportamiento del editor"
+
+msgid "&Undo"
+msgstr "&Deshacer"
+
+msgid "&Redo"
+msgstr "&Rehacer"
+
+msgid "Cu&t"
+msgstr "Cor&tar"
+
+msgid "&Copy"
+msgstr "&Copiar"
+
+msgid "&Paste"
+msgstr "&Pegar"
+
+msgid "&New"
+msgstr "&Nuevo"
+
+msgid "&Open..."
+msgstr "&Abrir..."
+
+msgid "&Save"
+msgstr "&Guardar"
+
+msgid "Save &As..."
+msgstr "Guardar &como..."
+
+msgid "E&xit"
+msgstr "&Salir"
+
+msgid "Open Go File"
+msgstr "Abrir archivo Go"
+
+#, python-brace-format
+msgid "VizcachaIDE - {name}"
+msgstr "VizcachaIDE - {name}"
+
+msgid "About VizcachaIDE"
+msgstr "Acerca de VizcachaIDE"
+
+msgid "Beginner-friendly Go IDE"
+msgstr "IDE de Go para principiantes"
+
+#, python-brace-format
+msgid "Version {version}"
+msgstr "Versión {version}"
+
+msgid "Author:"
+msgstr "Autor:"
+
+msgid "Contact:"
+msgstr "Contacto:"
+
+msgid "License:"
+msgstr "Licencia:"
+
+msgid "&About"
+msgstr "&Acerca de"
+
+msgid "Browse..."
+msgstr "Examinar..."
+
+msgid "Select Directory"
+msgstr "Seleccionar carpeta"
+
+msgid "Select Executable"
+msgstr "Seleccionar ejecutable"
+
+msgid "Environment"
+msgstr "Entorno"
+
+msgid "Path to the go executable (empty = PATH)"
+msgstr "Ruta del ejecutable go (vacío = PATH)"
+
+msgid "GOPATH (empty = default)"
+msgstr "GOPATH (vacío = por defecto)"
+
+msgid "GOROOT (empty = default)"
+msgstr "GOROOT (vacío = por defecto)"
+
+msgid "Path to dlv (empty = PATH)"
+msgstr "Ruta de dlv (vacío = PATH)"
+
+msgid "Path to gopls (empty = PATH)"
+msgstr "Ruta de gopls (vacío = PATH)"
+
+msgid "Go:"
+msgstr "Go:"
+
+msgid "Delve:"
+msgstr "Delve:"
+
+msgid "Additional environment variables, one per line: NAME=VALUE"
+msgstr "Variables de entorno adicionales, una por línea: NOMBRE=VALOR"
+
+msgid "Go Tools"
+msgstr "Herramientas de Go"
+
+msgid "▶ Run"
+msgstr "▶ Ejecutar"
+
+msgid "⬛ Stop"
+msgstr "⬛ Detener"
+
+msgid "🔨 Build"
+msgstr "🔨 Compilar"
+
+msgid "Please save your file before running."
+msgstr "Guarda tu archivo antes de ejecutarlo."
+
+msgid "Please save your file before building."
+msgstr "Guarda tu archivo antes de compilarlo."
+
+msgid "[Process finished successfully]"
+msgstr "[El proceso terminó correctamente]"
+
+msgid "[Build successful]"
+msgstr "[Compilación exitosa]"
+
+#, python-brace-format
+msgid "[Process exited with code {code}]"
+msgstr "[El proceso terminó con código {code}]"
+
+msgid "&Options..."
+msgstr "&Opciones..."
+
+msgid "VizcachaIDE Console - Ready"
+msgstr "Consola de VizcachaIDE - Lista"
+

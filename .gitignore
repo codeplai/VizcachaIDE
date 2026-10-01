@@ -56,3 +56,11 @@ dist/
 # Application specific
 *.ini
 settings.ini
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.import_linter_cache/
+
+# Other agents' scratch worktrees
+.kilo/
