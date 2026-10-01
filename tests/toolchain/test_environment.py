@@ -9,14 +9,19 @@ def test_parse_extra_variables_ignores_noise():
     assert parse_extra_variables(text) == {"GOOS": "linux", "GOARCH": "amd64", "A": "b=c"}
 
 
-def test_defaults_use_tools_from_path():
-    env = GoEnvironment(InMemorySettingsRepository(), base_environment={"PATH": "/bin"})
+def test_missing_tools_fall_back_to_their_bare_names(tmp_path):
+    empty_path = str(tmp_path)  # no tools here, whatever is installed on the machine
+    env = GoEnvironment(
+        InMemorySettingsRepository(),
+        base_environment={"PATH": empty_path},
+        app_directory=tmp_path,
+    )
 
     assert env.go_executable() == "go"
     assert env.gofmt_executable() == "gofmt"
     assert env.delve_executable() == "dlv"
     assert env.gopls_executable() == "gopls"
-    assert env.variables() == {"PATH": "/bin"}
+    assert env.variables() == {"PATH": empty_path}
 
 
 def test_configured_values_override_base_environment():

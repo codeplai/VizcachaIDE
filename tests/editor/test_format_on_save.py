@@ -61,15 +61,26 @@ def test_formatting_is_one_undo_step(workbench, fake, tmp_path: Path):
     assert editor.toPlainText() == MESSY
 
 
-def test_syntax_error_saves_unformatted_and_reports_it(workbench, fake, tmp_path: Path):
+def test_syntax_error_saves_unformatted_and_reports_it(
+    workbench, fake, tmp_path: Path, monkeypatch
+):
     fake.error = GoFormatError("<standard input>:2:13: expected '('")
     editor = _editor_with(workbench, "package main\nfunc main{\n")
     target = tmp_path / "main.go"
+    # Other features (e.g. "gopls not found" on machines without gopls) may write to the
+    # status bar right after us, so record what was shown instead of reading it back.
+    shown: list[str] = []
+    original = workbench.show_status_message
+    monkeypatch.setattr(
+        workbench,
+        "show_status_message",
+        lambda text, timeout_ms=5000: (shown.append(text), original(text, timeout_ms)),
+    )
 
     assert workbench.editor.save_to_file(editor, target)
 
     assert target.read_text(encoding="utf-8") == "package main\nfunc main{\n"
-    assert "expected '('" in workbench.window.statusBar().currentMessage()
+    assert any("expected '('" in message for message in shown)
 
 
 def test_missing_gofmt_saves_unformatted_and_warns_once(workbench, fake, tmp_path: Path):
