@@ -12,12 +12,14 @@
     { id: 'es', label: 'language.es' }
   ]
   const goVersion = $derived($toolchain?.goVersion ?? '')
+  import logo from '../../assets/brand/logo.png'
 </script>
 
 <Dialog.Root open={$settings?.firstRun === true}>
   <Dialog.Portal>
     <Dialog.Overlay class="dlg-overlay" />
     <Dialog.Content class="dlg" interactOutsideBehavior="ignore" escapeKeydownBehavior="ignore">
+      {#if step === 1}<img class="welcome-logo" src={logo} alt="" />{/if}
       <Dialog.Title>{$t('firstRun.welcome')}</Dialog.Title>
       <Dialog.Description class="step">
         {$t('firstRun.step', { values: { current: step, total: FIRST_RUN_STEPS } })}
@@ -84,6 +86,13 @@
 </Dialog.Root>
 
 <style>
+  .welcome-logo {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 4px;
+  }
   h3 {
     margin: 0;
     font-size: 15px;

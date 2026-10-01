@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../i18n'
   import { openDialog, toolSourceKey, toolchain } from '../stores'
+  import logo from '../../assets/brand/logo.png'
   import Modal from './Modal.svelte'
 
   const tools = [
@@ -16,6 +17,7 @@
   description={$t('shell.aboutTagline')}
   onClose={() => openDialog.set(null)}
 >
+  <img class="about-logo" src={logo} alt={$t('app.name')} />
   <div class="field">
     <span class="label">{$t('shell.aboutTools')}</span>
     <dl>
@@ -31,6 +33,13 @@
 </Modal>
 
 <style>
+  .about-logo {
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 8px;
+  }
   dl {
     display: grid;
     grid-template-columns: max-content 1fr;

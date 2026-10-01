@@ -14,11 +14,14 @@
     stopDebugging,
     stopProgram
   } from '../stores'
+  import mascot from '../../assets/brand/mark.png'
   import MoreMenu from './MoreMenu.svelte'
 </script>
 
 <header class="titlebar">
-  <div class="brand"><span class="brand-mark">V</span>{$t('app.name')}</div>
+  <div class="brand">
+    <img class="brand-mark" src={mascot} alt="" width="28" height="28" />{$t('app.name')}
+  </div>
   <div class="crumbs">
     {#if $activePath}
       {$fileTree?.name ?? parentName($activePath)} / <b>{$activeFileName}</b>
@@ -99,15 +102,10 @@
     white-space: nowrap;
   }
   .brand-mark {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    background: var(--sand);
-    display: grid;
-    place-items: center;
-    color: var(--win);
-    font-size: 12px;
-    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    display: block;
+    object-fit: contain;
   }
   .crumbs {
     color: var(--muted);
