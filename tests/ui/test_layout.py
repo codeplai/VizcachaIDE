@@ -70,12 +70,21 @@ def test_right_panels_are_stacked_and_bottom_panels_side_by_side(workbench, qtbo
     qtbot.waitUntil(lambda: assistant.height() >= window.height() * 0.28)  # sizes applied
 
 
-def test_left_panels_share_tabs_and_files_stays_in_front(workbench, qtbot):
+def test_files_and_outline_are_tabs_with_files_first(workbench, qtbot):
     _show(workbench, qtbot)
-    outline = workbench.add_panel("outline_like", "Outline", QLabel("symbols"), "left")
+    files, outline = _dock(workbench, "project_files"), _dock(workbench, "outline")
+
+    assert _area(workbench, "outline") == Qt.LeftDockWidgetArea
+    assert workbench.window.tabifiedDockWidgets(files) == [outline]
+    qtbot.waitUntil(lambda: _current_tab(workbench, "Outline") == "Files")
+
+
+def test_late_left_panels_join_the_tabs_and_files_stays_in_front(workbench, qtbot):
+    _show(workbench, qtbot)
+    outline = workbench.add_panel("outline_like", "Symbols", QLabel("symbols"), "left")
     files = _dock(workbench, "project_files")
 
-    assert workbench.window.tabifiedDockWidgets(files) == [outline]
+    assert outline in workbench.window.tabifiedDockWidgets(files)
     qtbot.waitUntil(lambda: _current_tab(workbench, "Outline") == "Files")
 
 

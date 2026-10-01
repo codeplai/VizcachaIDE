@@ -33,13 +33,14 @@ from vizcacha.ui.workbench import Workbench
 
 APPLICATION_NAME = "VizcachaIDE"
 
-# Order = order of menus' entries and toolbar buttons.
+# Order = order of menus' entries, toolbar buttons and of the tabs of a panel group
+# (project before language: Files is the first tab on the left, Outline the second).
 FEATURES = (
     register_files,
     register_editor,
+    register_project,
     register_language,
     register_run,
-    register_project,
     register_debugger,
     register_assistant,
     register_settings,
