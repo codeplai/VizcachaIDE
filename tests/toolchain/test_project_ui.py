@@ -177,3 +177,28 @@ def test_go_modules_dialog_sends_commands(workbench, tmp_path: Path, monkeypatch
     ]
     assert "[Command finished successfully]" in workbench.console.toPlainText()
     dialog.close()
+
+
+def test_slow_start_hint_appears_when_go_is_silent(qtbot, settings, monkeypatch, tmp_path: Path):
+    from vizcacha.domain.project import RunConfiguration
+    from vizcacha.ui.app import build_services, build_workbench
+    from vizcacha.ui.features.run import feature as run_feature
+
+    monkeypatch.setattr(run_feature, "SLOW_START_HINT_MS", 50)
+    services = build_services(settings)
+    config = RunConfiguration.for_file(tmp_path / "main.go")
+    monkeypatch.setattr(services.toolchain, "run_untitled", lambda source, args: config)
+    workbench = build_workbench(services)
+    qtbot.addWidget(workbench.window)
+    workbench.editor.current_editor().setPlainText("package main\nfunc main() {}\n")
+    run = next(a for a in workbench.menu("run").actions() if "Run" in a.text())
+
+    run.trigger()
+
+    qtbot.waitUntil(
+        lambda: "first run after installing" in workbench.console.toPlainText(), timeout=5000
+    )
+    assert not run.isEnabled()
+    services.toolchain.execution_finished.emit(0)
+    assert run.isEnabled()
+    workbench.editor.current_editor().document().setModified(False)

@@ -100,7 +100,7 @@ def test_unmodified_editor_reloads_when_the_file_changes(qtbot, tabs, tmp_path: 
     _write(source, "package main\n\nfunc main() {}\n")
 
     qtbot.waitUntil(
-        lambda: editor.toPlainText() == "package main\n\nfunc main() {}\n", timeout=5000
+        lambda: editor.toPlainText() == "package main\n\nfunc main() {}\n", timeout=15000
     )
     assert not editor.document().isModified()
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VizcachaIDE 0.2.0\n"
 "Report-Msgid-Bugs-To: hola@codeplai.pe\n"
-"POT-Creation-Date: 2026-10-01 07:52-0500\n"
+"POT-Creation-Date: 2026-10-01 09:42-0500\n"
 "PO-Revision-Date: 2026-09-30 19:35-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -1111,6 +1111,9 @@ msgstr "🔨 Compilar"
 
 msgid "Please save your file before building."
 msgstr "Guarda tu archivo antes de compilarlo."
+
+msgid "Compiling your program... The first run after installing can take a minute."
+msgstr "Compilando tu programa... La primera ejecución después de instalar puede tardar un minuto."
 
 msgid "[Process finished successfully]"
 msgstr "[El proceso terminó correctamente]"

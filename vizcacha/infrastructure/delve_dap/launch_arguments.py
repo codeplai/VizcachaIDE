@@ -32,6 +32,26 @@ def debug_binary_path(process_id: int, windows: bool = os.name == "nt") -> str:
     return str(Path(tempfile.gettempdir()) / f"{DEBUG_BINARY_NAME}_{process_id}{suffix}")
 
 
+def remove_stale_debug_binaries(current_pid: int, directory: Path | None = None) -> list[Path]:
+    """Delete debug builds left by earlier sessions that crashed or were killed.
+
+    A binary still used by another running VizcachaIDE is locked (Windows) or harmless
+    to unlink (POSIX), so failures are skipped.
+    """
+    folder = directory or Path(tempfile.gettempdir())
+    own_stem = f"{DEBUG_BINARY_NAME}_{current_pid}"
+    removed: list[Path] = []
+    for path in folder.glob(f"{DEBUG_BINARY_NAME}_*"):
+        if path.stem == own_stem:
+            continue
+        try:
+            path.unlink()
+        except OSError:
+            continue
+        removed.append(path)
+    return removed
+
+
 def launch_arguments(config: RunConfiguration, environment: Mapping[str, str], output: str) -> dict:
     return {
         "request": "launch",

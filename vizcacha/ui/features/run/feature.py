@@ -4,6 +4,7 @@ The toolchain is shared with other features (e.g. ``go mod`` commands from the
 project feature), so this feature only reacts to output of processes it started.
 """
 
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QAction, QMessageBox
 
 from vizcacha.application.run_program import ProgramArgumentsError, configuration_for_file
@@ -13,6 +14,10 @@ from vizcacha.ui.features.run.arguments_field import ProgramArgumentsField
 from vizcacha.ui.features.run.environment_page import EnvironmentPage
 from vizcacha.ui.workbench import Workbench
 
+# Without output after this long, tell beginners Go is still compiling (the first build
+# with a fresh toolchain can take a minute and looks like a hang).
+SLOW_START_HINT_MS = 5000
+
 
 class RunFeature:
     def __init__(self, workbench: Workbench) -> None:
@@ -21,6 +26,10 @@ class RunFeature:
         self.console = workbench.console
         self._interactive = False
         self._owns_process = False
+        self._slow_start_hint = QTimer()
+        self._slow_start_hint.setSingleShot(True)
+        self._slow_start_hint.setInterval(SLOW_START_HINT_MS)
+        self._slow_start_hint.timeout.connect(self._show_slow_start_hint)
 
     def register(self) -> None:
         self.run_action = self._action(_("▶ Run"), "F5", self.run)
@@ -50,6 +59,7 @@ class RunFeature:
         if config is None:
             self._end()
             return
+        self._slow_start_hint.start()  # after the toolchain printed its "Running:" header
         self.workbench.events.program_started.emit(config)
 
     def build(self) -> None:
@@ -66,6 +76,7 @@ class RunFeature:
         config = configuration_for_file(path)
         self.workbench.events.program_started.emit(config)  # the Assistant explains build errors
         self.toolchain.build(config)
+        self._slow_start_hint.start()
 
     def _start_run(self, editor, program_args: tuple[str, ...]) -> RunConfiguration | None:
         if editor.file_path is None:
@@ -94,20 +105,28 @@ class RunFeature:
         self._set_running(True)
 
     def _end(self) -> None:
+        self._slow_start_hint.stop()
         self._owns_process = False
         self.console.set_waiting_for_input(False)
         self.console.disable_input()
         self._set_running(False)
 
+    def _show_slow_start_hint(self) -> None:
+        self.console.append_output(
+            _("Compiling your program... The first run after installing can take a minute.") + "\n"
+        )
+
     def _on_stdout(self, text: str) -> None:
         if not self._owns_process:
             return
+        self._slow_start_hint.stop()
         self.console.append_output(text)
         self.workbench.events.process_output.emit(text, "stdout")
 
     def _on_stderr(self, text: str) -> None:
         if not self._owns_process:
             return
+        self._slow_start_hint.stop()
         self.console.append_error(text)
         self.workbench.events.process_output.emit(text, "stderr")
 

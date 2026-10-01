@@ -4,7 +4,7 @@ import "fmt"
 
 func main() {
 	// Basic types
-	var name string = "GoIDE"
+	var name string = "VizcachaIDE"
 	var version float64 = 1.0
 	var isReady bool = true
 	count := 42
@@ -21,8 +21,8 @@ func main() {
 	// Map
 	features := map[string]bool{
 		"syntax_highlighting": true,
-		"debugging":          true,
-		"auto_complete":      false,
+		"debugging":           true,
+		"auto_complete":       false,
 	}
 	fmt.Println("Features:", features)
 

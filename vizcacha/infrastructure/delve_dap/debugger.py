@@ -54,6 +54,7 @@ class DelveDapDebugger(QObject):
         self._active, self._configured = True, False
         self._thread_id, self._exit_code, self._config = 0, 0, config
         self._registry.reset(breakpoints)
+        requests.remove_stale_debug_binaries(os.getpid())
         self._session = self._create_session()
         try:
             self._session.process.start(

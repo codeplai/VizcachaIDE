@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -12,7 +12,7 @@ func main() {
 	// 1. Type "fm" then Ctrl+Space to see fmt package
 	// 2. Type "fmt." then Ctrl+Space to see all fmt methods
 
-	name := "GoIDE"
+	name := "VizcachaIDE"
 	fmt.Println("Welcome to", name)
 
 	// Try typing "str" then Ctrl+Space to see string functions and strconv
@@ -25,7 +25,7 @@ func main() {
 	// Type "ap" then Ctrl+Space to see append function
 	numbers := []int{1, 2, 3}
 	numbers = append(numbers, 4, 5)
-    
+
 	fmt.Println(numbers)
 
 	// Type "le" then Ctrl+Space to see len function

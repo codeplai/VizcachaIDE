@@ -169,6 +169,17 @@ B1 to B4 are not fixed here: QA does not touch `vizcacha/`.
 - B4: start a debug session, kill VizcachaIDE from Task Manager while it is stopped at a
   breakpoint, then `dir %TEMP%\vizcacha_debug_bin_*`.
 
+### Status after the fixes (2026-10-01, version 1.0.0rc1)
+
+| # | Status | Fix |
+|---|---|---|
+| B1 | **Fixed** | The Spanish catalog is complete (303/303 messages, Assistant included); `tests/i18n` fails if a Spanish string is missing. |
+| B2 | **Fixed** | Examples say "VizcachaIDE" and are gofmt-clean. |
+| B3 | **Mitigated** | If Go prints nothing for 5 s after Run/Build, the console says "Compiling your program... The first run after installing can take a minute." (EN/ES). Warming the build cache in the background stays as a future idea. |
+| B4 | **Fixed** | Each debug session first deletes `vizcacha_debug_bin_*` left by earlier sessions (binaries still used by another running IDE are skipped). |
+
+The packages in §2 were built from `bd5b9e3` (0.2.0.dev0) and must be rebuilt for 1.0.0rc1.
+
 ## 6. Code signing status
 
 **There is no code-signing certificate.** Nothing is signed: not the PyInstaller exe, not the
