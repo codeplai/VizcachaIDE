@@ -35,6 +35,10 @@ def artifact_name(target: Target, variant: str, version: str) -> str:
 
 
 def find_iscc() -> Path | None:
+    """ISCC.exe from $ISCC, PATH, or the usual all-users / per-user Inno Setup 6 folders."""
+    explicit = os.environ.get("ISCC", "").strip()
+    if explicit and Path(explicit).is_file():
+        return Path(explicit)
     on_path = shutil.which("iscc")
     if on_path:
         return Path(on_path)
@@ -69,7 +73,8 @@ def inno_installer(app_dir: Path, name: str, variant: str, version: str) -> Path
     if iscc is None:
         print(
             "[warn] Inno Setup (ISCC.exe) not found: skipping the installer. "
-            "Install it from https://jrsoftware.org/isdl.php or `choco install innosetup`."
+            "Set ISCC=<path to ISCC.exe>, "
+            "or install it from https://jrsoftware.org/isdl.php or `choco install innosetup`."
         )
         return None
     command = [
