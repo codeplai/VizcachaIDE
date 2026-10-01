@@ -19,6 +19,12 @@ export type Unsubscribe = () => void
 export interface RunApi {
   run: (path: string, programArgs: string[]) => Promise<RunConfiguration>
   runUntitled: (source: string, programArgs: string[]) => Promise<RunConfiguration>
+  build: (path: string, programArgs: string[]) => Promise<RunConfiguration>
+  /** Splits the "program arguments" text like a shell (quotes group words). */
+  splitArguments: (text: string) => Promise<string[]>
+  modInit: (workingDir: string, modulePath: string) => Promise<void>
+  modGet: (workingDir: string, pkg: string) => Promise<void>
+  modTidy: (workingDir: string) => Promise<void>
   stop: () => Promise<void>
   writeInput: (text: string) => Promise<void>
   format: (text: string) => Promise<string>

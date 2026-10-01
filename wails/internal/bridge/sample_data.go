@@ -11,39 +11,6 @@ const (
 	sampleCalc = "hola-go/calculadora.go"
 )
 
-const sampleMainSource = `package main
-
-import "fmt"
-
-func sumar(a, b int) int {
-    total := a + b
-    return total
-}
-
-func main() {
-    resultado := sumar(5, 7)
-    fmt.Println("Hola, Go")
-}
-`
-
-const sampleCalcSource = `package main
-
-func restar(a, b int) int {
-    return a - b
-}
-`
-
-func sampleTree() domain.FileNode {
-	return domain.FileNode{
-		Name: sampleDir, Path: sampleDir, IsDir: true,
-		Children: []domain.FileNode{
-			{Name: "go.mod", Path: sampleDir + "/go.mod"},
-			{Name: "main.go", Path: sampleMain},
-			{Name: "calculadora.go", Path: sampleCalc},
-		},
-	}
-}
-
 func sampleLocation(line, column int) domain.SourceLocation {
 	return domain.SourceLocation{File: sampleMain, Line: line, Column: column}
 }
