@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Protocol, TypeVar, runtime_checkable
 
 from vizcacha.domain.completion import CompletionItem, SignatureHelp
-from vizcacha.domain.debugging import Breakpoint, Variable
+from vizcacha.domain.debugging import Breakpoint
 from vizcacha.domain.diagnostics import Diagnostic, SourceLocation
 from vizcacha.domain.explanations import ErrorExplanation
 from vizcacha.domain.project import RunConfiguration
@@ -31,8 +31,12 @@ TOOLCHAIN_SIGNALS = {
 DEBUGGER_SIGNALS = {
     "stopped": (object,),  # DebugState
     "output": (str, str),  # text, category: "stdout" | "stderr" | "console"
-    "terminated": (int,),  # exit code
+    "terminated": (int,),  # exit code, or TERMINATED_BY_USER
+    "variables_loaded": (int, object),  # reference, list[Variable] (answer to request_variables)
 }
+# ``terminated`` exit code when the user stopped the session (Stop Debugging) before the
+# program ended on its own. Real exit codes are never negative, so -1 cannot be confused.
+TERMINATED_BY_USER = -1
 LANGUAGE_SERVER_SIGNALS = {
     "diagnostics_published": (object, object),  # Path, list[Diagnostic]
     "server_unavailable": (str,),  # "not_found" | "crashed"
@@ -95,8 +99,14 @@ class DebuggerPort(Protocol):
 
     def run_to(self, location: SourceLocation) -> None: ...
 
-    def variables(self, reference: int) -> list[Variable]:
-        """Children of a variable with a non-zero ``reference`` (lazy expansion)."""
+    def request_variables(self, reference: int) -> None:
+        """Ask for the children of a variable with a non-zero ``reference`` (lazy expansion).
+
+        Never blocks: the answer arrives as ``variables_loaded(reference, children)``. It is
+        always emitted (with an empty list when there is no session or the request fails),
+        except when the program resumes first: then the old reference is meaningless and the
+        next ``stopped`` replaces every variable anyway. It may be emitted before this returns.
+        """
         ...
 
     def stop(self) -> None: ...

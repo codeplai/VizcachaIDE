@@ -2,11 +2,11 @@ from pathlib import Path
 
 from PyQt5.QtWidgets import QTabWidget
 
+from vizcacha.application.ports import TERMINATED_BY_USER
 from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.domain.debugging import DebugState, Goroutine, StackFrame, StopReason, Variable
 from vizcacha.domain.diagnostics import SourceLocation
 from vizcacha.ui.features.debugger.goroutines_view import GoroutinesView
-from vizcacha.ui.features.debugger.variables_view import VariablesView
 
 
 def _debug_action(workbench, text: str):
@@ -18,23 +18,6 @@ def _open(workbench, tmp_path: Path, name: str = "main.go") -> Path:
     source.write_text("package main\n\nfunc main() {\n\tx := 1\n\t_ = x\n}\n", encoding="utf-8")
     workbench.editor.open_file(source)
     return source
-
-
-def test_variables_view_expands_lazily(qtbot):
-    requested = []
-    view = VariablesView(lambda ref: requested.append(ref) or [Variable("len", "int", "3")])
-    qtbot.addWidget(view)
-    view.show_variables([Variable("s", "[]int", "[1 2 3]", reference=7), Variable("n", "int", "1")])
-    item = view.topLevelItem(0)
-
-    assert requested == [] and item.childCount() == 0
-    item.setExpanded(True)
-    item.setExpanded(False)
-    item.setExpanded(True)
-
-    assert requested == [7]
-    assert item.child(0).text(0) == "len"
-    assert view.topLevelItem(1).childIndicatorPolicy() != item.ShowIndicator
 
 
 def test_goroutines_view_marks_the_current_one(qtbot):
@@ -71,6 +54,43 @@ def test_stopped_state_fills_goroutines_and_frame_click_navigates(workbench, tmp
 
     assert goroutines.count() == 1
     assert targets == [SourceLocation(source, 4), SourceLocation(source, 4)]
+
+
+def test_goroutine_click_navigates_to_its_location(workbench, tmp_path: Path):
+    source = _open(workbench, tmp_path)
+    parked = Goroutine(2, "[Go 2] main.worker", SourceLocation(source, 5))
+    unknown = Goroutine(3, "[Go 3] runtime.gopark")
+    state = DebugState(StopReason.PAUSE, (), goroutines=(parked, unknown))
+    targets = []
+    workbench.events.navigate_to.connect(targets.append)
+
+    workbench.services.debugger.stopped.emit(state)
+    goroutines = workbench.window.findChild(object, "callstack").widget().widget(1)
+    goroutines.itemClicked.emit(goroutines.item(0))
+    goroutines.itemClicked.emit(goroutines.item(1))
+
+    assert goroutines.item(0).text().endswith("main.go:5")
+    assert targets == [SourceLocation(source, 5)]
+
+
+def test_variables_panel_is_fed_by_variables_loaded(workbench, monkeypatch):
+    debugger = workbench.services.debugger
+    monkeypatch.setattr(debugger, "is_active", lambda: True)
+    view = workbench.window.findChild(object, "variables").widget()
+    view.request_children = lambda reference: debugger.variables_loaded.emit(
+        reference, [Variable("x", "int", "1")]
+    )
+    view.show_variables([Variable("p", "main.Point", "{...}", reference=3)])
+
+    view.topLevelItem(0).setExpanded(True)
+
+    assert view.topLevelItem(0).child(0).text(0) == "x"
+
+
+def test_user_stop_is_reported_as_stopped(workbench):
+    workbench.services.debugger.terminated.emit(TERMINATED_BY_USER)
+
+    assert "[Debugging stopped]" in workbench.console.toPlainText()
 
 
 def test_missing_dlv_is_reported_in_the_console(workbench, settings, tmp_path: Path):

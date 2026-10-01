@@ -10,6 +10,7 @@ from PyQt5.QtCore import pyqtBoundSignal
 from vizcacha.application.ports import (
     DEBUGGER_SIGNALS,
     LANGUAGE_SERVER_SIGNALS,
+    TERMINATED_BY_USER,
     TOOLCHAIN_SIGNALS,
     DebuggerPort,
     ErrorExplainerPort,
@@ -47,6 +48,14 @@ def test_debugger_adapters_follow_contract(factory, settings):
     adapter = factory(settings)
     assert isinstance(adapter, DebuggerPort)
     _assert_signals(adapter, DEBUGGER_SIGNALS)
+    assert not hasattr(adapter, "variables")  # replaced by request_variables (non-blocking)
+    loaded = []
+    adapter.variables_loaded.connect(
+        lambda reference, children: loaded.append((reference, children))
+    )
+    adapter.request_variables(5)  # without a session the answer is empty, never missing
+    assert loaded == [(5, [])]
+    assert TERMINATED_BY_USER < 0  # never a real exit code
 
 
 def test_language_server_follows_contract(settings):
