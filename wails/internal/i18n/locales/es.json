@@ -395,6 +395,7 @@
     "one": "✗ No se pudo ejecutar: Go encontró {{.count}} problema. Mira la explicación a la derecha.",
     "other": "✗ No se pudo ejecutar: Go encontró {{.count}} problemas. Mira la explicación a la derecha."
   },
+  "run.debugAdapterStopped": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo.",
   "run.debugStarting": "Iniciando el depurador…",
   "run.debugStdin": "Mientras depuras, tu programa no puede leer el teclado.",
   "run.debugging": "● Depurando {{.file}} · en pausa en la línea {{.line}}",

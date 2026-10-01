@@ -395,6 +395,7 @@
     "one": "✗ Your program didn't run: Go found {{.count}} problem. See the explanation on the right.",
     "other": "✗ Your program didn't run: Go found {{.count}} problems. See the explanation on the right."
   },
+  "run.debugAdapterStopped": "The debugger stopped unexpectedly. Try starting it again.",
   "run.debugStarting": "Starting the debugger…",
   "run.debugStdin": "While debugging, your program can't read the keyboard.",
   "run.debugging": "● Debugging {{.file}} · paused at line {{.line}}",

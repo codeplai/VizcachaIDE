@@ -3,6 +3,7 @@ package bridge
 import (
 	"testing"
 
+	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
@@ -46,9 +47,20 @@ func TestRunServiceEmitsStartOutputFinish(t *testing.T) {
 	}
 }
 
+// stoppingDebugger is an app.Debugger whose Stop reports the user's stop, like the real one.
+type stoppingDebugger struct {
+	app.Debugger
+	sink app.EventSink
+}
+
+func (d stoppingDebugger) Stop() error {
+	d.sink.DebugTerminated(domain.TerminatedByUser)
+	return nil
+}
+
 func TestDebugServiceStopIsTerminatedByUser(t *testing.T) {
 	sink := &recordingSink{}
-	if err := NewDebugService(sink).Stop(); err != nil {
+	if err := NewDebugService(stoppingDebugger{sink: sink}).Stop(); err != nil {
 		t.Fatal(err)
 	}
 	if len(sink.calls) != 1 || sink.calls[0] != "terminated" {

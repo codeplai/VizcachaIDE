@@ -80,25 +80,6 @@ func sampleExplanation(language string) *domain.ErrorExplanation {
 	}
 }
 
-func sampleDebugState() domain.DebugState {
-	top, caller := sampleLocation(6, 1), sampleLocation(11, 1)
-	goroutine := 1
-	return domain.DebugState{
-		Reason: domain.StopBreakpoint,
-		Frames: []domain.StackFrame{
-			{FrameID: 1, Function: "sumar", Location: &top},
-			{FrameID: 2, Function: "main", Location: &caller},
-		},
-		Variables: []domain.Variable{
-			{Name: "a", TypeName: "int", Value: "5"},
-			{Name: "b", TypeName: "int", Value: "7"},
-			{Name: "total", TypeName: "int", Value: "12", Changed: true},
-		},
-		Goroutines:       []domain.Goroutine{{GoroutineID: 1, Name: "main.main", Location: &caller}},
-		CurrentGoroutine: &goroutine,
-	}
-}
-
 func sampleSymbols() []domain.DocumentSymbol {
 	return []domain.DocumentSymbol{
 		{Name: "sumar", Kind: domain.SymbolFunction, Location: sampleLocation(5, 6), Detail: "func(a, b int) int"},

@@ -1,0 +1,30 @@
+{
+  "description": "dlv dap 1.27.2 (Windows), examples/functions.go, breakpoint at line 13, then next, then continue. Server-to-client messages in arrival order. {SRC} = folder of the program, {GOROOT} = Go installation.",
+  "messages": [
+    {"seq": 1, "type": "response", "request_seq": 1, "success": true, "command": "initialize", "body": {"supportsConfigurationDoneRequest": true, "supportsFunctionBreakpoints": true, "supportsConditionalBreakpoints": true, "exceptionBreakpointFilters": [{"filter": "unrecovered-panic", "label": "Unrecovered Panics", "default": true}], "supportsSetVariable": true}},
+    {"seq": 2, "type": "event", "event": "output", "body": {"category": "stdout", "output": "Building {SRC}/functions.go\n"}},
+    {"seq": 3, "type": "event", "event": "process", "body": {"name": "{SRC}/__debug_bin.exe", "systemProcessId": 15020, "isLocalProcess": true, "startMethod": "launch"}},
+    {"seq": 4, "type": "event", "event": "initialized"},
+    {"seq": 5, "type": "response", "request_seq": 2, "success": true, "command": "launch"},
+    {"seq": 6, "type": "response", "request_seq": 3, "success": true, "command": "setBreakpoints", "body": {"breakpoints": [{"id": 1, "verified": true, "source": {"name": "functions.go", "path": "{SRC}/functions.go"}, "line": 13}]}},
+    {"seq": 7, "type": "event", "event": "output", "body": {"category": "console", "output": "Type 'dlv help' for list of commands.\n"}},
+    {"seq": 8, "type": "response", "request_seq": 4, "success": true, "command": "configurationDone"},
+    {"seq": 9, "type": "event", "event": "output", "body": {"category": "stdout", "output": "10 + 20 = 30\n"}},
+    {"seq": 10, "type": "event", "event": "stopped", "body": {"reason": "breakpoint", "threadId": 1, "allThreadsStopped": true, "hitBreakpointIds": [1]}},
+    {"seq": 11, "type": "response", "request_seq": 5, "success": true, "command": "threads", "body": {"threads": [{"id": 1, "name": "* [Go 1] main.multiply (Thread 41936)"}, {"id": 2, "name": "[Go 2] runtime.gopark"}, {"id": 3, "name": "[Go 3] runtime.gopark"}, {"id": 4, "name": "[Go 4] runtime.gopark"}, {"id": 5, "name": "[Go 5] runtime.gopark"}, {"id": 6, "name": "[Go 6] runtime.gopark"}]}},
+    {"seq": 12, "type": "response", "request_seq": 6, "success": true, "command": "stackTrace", "body": {"stackFrames": [{"id": 1000, "name": "main.multiply", "source": {"name": "functions.go", "path": "{SRC}/functions.go"}, "line": 13, "column": 0, "instructionPointerReference": "0x7ff662a22843"}, {"id": 1001, "name": "main.main", "source": {"name": "functions.go", "path": "{SRC}/functions.go"}, "line": 36, "column": 0, "instructionPointerReference": "0x7ff662a22a0e"}, {"id": 1002, "name": "runtime.main", "source": {"name": "proc.go", "path": "{GOROOT}/src/runtime/proc.go"}, "line": 285, "column": 0, "instructionPointerReference": "0x7ff6629ea6d5", "presentationHint": "subtle"}], "totalFrames": 3}},
+    {"seq": 13, "type": "response", "request_seq": 7, "success": true, "command": "scopes", "body": {"scopes": [{"name": "Locals", "variablesReference": 1000, "expensive": false}]}},
+    {"seq": 14, "type": "response", "request_seq": 8, "success": true, "command": "variables", "body": {"variables": [{"name": "a", "value": "5", "type": "int", "evaluateName": "a", "variablesReference": 0}, {"name": "b", "value": "7", "type": "int", "evaluateName": "b", "variablesReference": 0}, {"name": "~r0", "value": "0", "type": "int", "variablesReference": 0}, {"name": "result", "value": "35", "type": "int", "evaluateName": "result", "variablesReference": 0}]}},
+    {"seq": 16, "type": "event", "event": "continued", "body": {"threadId": 1, "allThreadsContinued": true}},
+    {"seq": 15, "type": "response", "request_seq": 9, "success": true, "command": "next"},
+    {"seq": 17, "type": "event", "event": "stopped", "body": {"reason": "step", "threadId": 1, "allThreadsStopped": true}},
+    {"seq": 18, "type": "response", "request_seq": 10, "success": true, "command": "continue", "body": {"allThreadsContinued": true}},
+    {"seq": 19, "type": "event", "event": "output", "body": {"category": "stdout", "output": "5 * 7 = 35\n"}},
+    {"seq": 20, "type": "event", "event": "output", "body": {"category": "stdout", "output": "Hello, Developer! Welcome to VizcachaIDE.\n5! = 120\n"}},
+    {"seq": 21, "type": "event", "event": "exited", "body": {"exitCode": 0}},
+    {"seq": 22, "type": "event", "event": "terminated", "body": {}},
+    {"seq": 23, "type": "event", "event": "output", "body": {"category": "console", "output": "Process 15020 has exited with status 0\n"}},
+    {"seq": 24, "type": "event", "event": "output", "body": {"category": "console", "output": "Detaching\n"}},
+    {"seq": 25, "type": "response", "request_seq": 11, "success": true, "command": "disconnect"}
+  ]
+}

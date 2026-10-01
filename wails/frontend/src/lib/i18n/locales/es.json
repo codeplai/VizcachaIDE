@@ -380,6 +380,7 @@
   "panels.settings": "Configuración",
   "panels.variables": "Variables en {function}()",
   "run.compileFailed": "✗ No se pudo ejecutar: Go encontró {count, plural, one {# problema} other {# problemas}}. Mira la explicación a la derecha.",
+  "run.debugAdapterStopped": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo.",
   "run.debugStarting": "Iniciando el depurador…",
   "run.debugStdin": "Mientras depuras, tu programa no puede leer el teclado.",
   "run.debugging": "● Depurando {file} · en pausa en la línea {line}",

@@ -3,6 +3,7 @@ module github.com/codeplai/VizcachaIDE/wails
 go 1.25.0
 
 require (
+	github.com/google/go-dap v0.12.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/wailsapp/wails/v2 v2.16.0
 	golang.org/x/text v0.39.0

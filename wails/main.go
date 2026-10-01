@@ -9,6 +9,7 @@ import (
 	"embed"
 	"log"
 
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -31,7 +32,7 @@ func run() error {
 
 	services := []any{
 		bridge.NewRunService(sink),
-		bridge.NewDebugService(sink),
+		bridge.NewDebugService(delve.New(sink, delve.Options{})),
 		bridge.NewLanguageService(sink),
 		bridge.NewAssistantService(sink, settingsStore),
 		bridge.NewFilesService(),
