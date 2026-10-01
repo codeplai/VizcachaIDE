@@ -4,8 +4,8 @@
     python packaging/qa/functional_qa.py --language es --bundle dist/full/VizcachaIDE
 
 Builds ``vizcacha.ui.app.build_workbench`` with QT_QPA_PLATFORM=offscreen and drives it like a
-user would: Run on examples/hello.go and variables.go, five catalogued errors explained by the
-Assistant, a real Delve session on examples/functions.go and gofmt on save. Every file is a copy
+user would: Run on examples/hello and examples/variables, five catalogued errors explained by the
+Assistant, a real Delve session on examples/functions and gofmt on save. Every file is a copy
 in a temporary folder. With ``--bundle`` the tools are taken from ``<bundle>/toolchain`` and Go
 is removed from PATH, so the run proves the bundled toolchain is the one being used.
 Exit code 0 = every check passed.

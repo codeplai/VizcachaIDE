@@ -1,7 +1,8 @@
 """Start a packaged VizcachaIDE (Wails) for a few seconds; it must still be running.
 
     python wails/packaging/smoke_test.py path/to/VizcachaIDE.exe --seconds 8
-    python wails/packaging/smoke_test.py VizcachaIDE.app/Contents/MacOS/vizcacha --go VizcachaIDE.app/Contents/MacOS/toolchain/go/bin/go
+    python wails/packaging/smoke_test.py VizcachaIDE.app/Contents/MacOS/vizcacha \
+        --go VizcachaIDE.app/Contents/MacOS/toolchain/go/bin/go
     xvfb-run -a python wails/packaging/smoke_test.py ./VizcachaIDE/VizcachaIDE --seconds 8
 
 Pass criteria: the process is alive after --seconds; with --go, ``go version`` of the bundled

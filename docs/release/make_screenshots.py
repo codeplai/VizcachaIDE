@@ -60,8 +60,8 @@ LANGUAGES = ("en", "es")
 DEBUGGER_PANELS = ("variables", "callstack")
 ASSISTANT_WIDTH = 430
 EXAMPLES = {  # folder in the temporary project -> file in the repository
-    "loop": "examples/simple_loop.go",
-    "functions": "examples/functions.go",
+    "loop": "examples/simple_loop/simple_loop.go",
+    "functions": "examples/functions/functions.go",
     "errors": "examples/errors/E-UNUSED-VAR/E-UNUSED-VAR.go",
 }
 

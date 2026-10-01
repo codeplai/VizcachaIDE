@@ -5,7 +5,8 @@
 
 Installer: silent per-user install into a temporary folder, Start-menu shortcut present, no
 desktop shortcut and no .go association by default (then again with /TASKS=associatego), headless
-launch (packaging/smoke_test.py), bundled ``go version`` + ``go run examples/hello.go`` with the
+launch (packaging/smoke_test.py), bundled ``go version`` + ``go run examples/hello/hello.go`` with
+the
 app's environment, silent uninstall, and nothing left behind. Zip: extract, launch, toolchain.
 Exit code 0 = every check passed.
 """
@@ -80,7 +81,7 @@ def check_app(app_dir: Path, variant: str) -> None:
         check(f"bundled {tool}", (app_dir / "toolchain" / "bin" / tool).is_file())
     with tempfile.TemporaryDirectory() as work:
         hello = Path(work) / "hello.go"
-        hello.write_bytes((REPO_ROOT / "examples" / "hello.go").read_bytes())
+        hello.write_bytes((REPO_ROOT / "examples" / "hello" / "hello.go").read_bytes())
         result = subprocess.run(
             [str(go), "run", "hello.go"], cwd=work, capture_output=True, text=True, env=env
         )

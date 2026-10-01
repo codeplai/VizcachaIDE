@@ -126,7 +126,7 @@ class QaSession:
 
     def run_example(self, name: str, expected: str) -> None:
         started = time.monotonic()
-        done, console = self.run_file(self.copy_example(EXAMPLES / name))
+        done, console = self.run_file(self.copy_example(EXAMPLES / Path(name).stem / name))
         ok = done and self.finished == [0] and expected in console
         self.record(f"run {name}", started, ok, f"exit={self.finished} expected={expected!r}")
 
@@ -148,7 +148,7 @@ class QaSession:
 
     def debug_functions(self, breakpoint_line: int, variable: str, value: str) -> None:
         started = time.monotonic()
-        path = self.copy_example(EXAMPLES / "functions.go")
+        path = self.copy_example(EXAMPLES / "functions" / "functions.go")
         self.workbench.editor.open_file(path)
         self.workbench.editor.current_editor().toggle_breakpoint_at_line(breakpoint_line)
         terminated: list[int] = []

@@ -59,7 +59,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     host_arch = _ARCH.get(platform.machine().lower(), "amd64")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--variant", choices=["lite", "full", "both"], default="both")
-    parser.add_argument("--target", default=f"{host_os}/{host_arch}", help="os/arch (default: host)")
+    parser.add_argument(
+        "--target", default=f"{host_os}/{host_arch}", help="os/arch (default: host)"
+    )
     parser.add_argument(
         "--cache-dir",
         type=Path,
@@ -69,7 +71,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--go", default="go", help="host go used to build dlv/gopls")
     parser.add_argument("--skip-app-build", action="store_true", help="reuse build/bin")
     parser.add_argument("--skip-fetch", action="store_true", help="reuse dist/stage/<os-arch>")
-    parser.add_argument("--no-installer", action="store_true", help="only the .app/exe/zip, no nsis/dmg")
+    parser.add_argument(
+        "--no-installer", action="store_true", help="only the .app/exe/zip, no nsis/dmg"
+    )
     return parser.parse_args(argv)
 
 
@@ -191,7 +195,9 @@ def build_app(target: str, args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------- Windows
 
 
-def package_windows(target: str, variants: list[str], args, version: str, stage: Path | None) -> list[Path]:
+def package_windows(
+    target: str, variants: list[str], args, version: str, stage: Path | None
+) -> list[Path]:
     arch = target.split("/")[1]
     exe = BIN_DIR / f"{output_filename()}.exe"  # "outputfilename" in wails.json
     outputs: list[Path] = []
@@ -241,7 +247,9 @@ def adhoc_sign(app: Path) -> None:
     run(["codesign", "--force", "--deep", "--sign", "-", app])
 
 
-def package_macos(target: str, variants: list[str], args, version: str, stage: Path | None) -> list[Path]:
+def package_macos(
+    target: str, variants: list[str], args, version: str, stage: Path | None
+) -> list[Path]:
     arch = target.split("/")[1]
     built = next(BIN_DIR.glob("*.app"))
     outputs: list[Path] = []
@@ -256,7 +264,8 @@ def package_macos(target: str, variants: list[str], args, version: str, stage: P
         if variant == "full":
             resources = app / "Contents" / "Resources"
             copy_tree(stage / "toolchain", resources / "toolchain")
-            # os.Executable() is Contents/MacOS/<exe>, so the locator looks in Contents/MacOS/toolchain.
+            # os.Executable() is Contents/MacOS/<exe>, so the locator looks in
+            # Contents/MacOS/toolchain.
             link = app / "Contents" / "MacOS" / "toolchain"
             link.symlink_to(Path("..") / "Resources" / "toolchain")
         adhoc_sign(app)
@@ -271,7 +280,9 @@ def package_macos(target: str, variants: list[str], args, version: str, stage: P
 # ---------------------------------------------------------------- Linux
 
 
-def package_linux(target: str, variants: list[str], args, version: str, stage: Path | None) -> list[Path]:
+def package_linux(
+    target: str, variants: list[str], args, version: str, stage: Path | None
+) -> list[Path]:
     arch = target.split("/")[1]
     built = BIN_DIR / output_filename()
     outputs: list[Path] = []

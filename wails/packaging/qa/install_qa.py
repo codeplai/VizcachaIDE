@@ -1,7 +1,9 @@
 """QA of the Windows downloads of the Wails variant: NSIS installer and portable zip.
 
-    python wails/packaging/qa/install_qa.py --setup wails/dist/release/VizcachaIDE-...-full-setup.exe
-    python wails/packaging/qa/install_qa.py --zip   wails/dist/release/VizcachaIDE-...-full-portable.zip
+    python wails/packaging/qa/install_qa.py --setup wails/dist/release/VizcachaIDE-...-full-
+    setup.exe
+    python wails/packaging/qa/install_qa.py --zip   wails/dist/release/VizcachaIDE-...-full-
+    portable.zip
 
 Installer: silent per-user install (no admin) into a temporary folder, Start-menu shortcut and
 uninstall entry (HKCU), the app stays alive ~8 s, bundled ``go version`` (full) and ``go run``,
@@ -62,7 +64,11 @@ def check_app(app_dir: Path, variant: str) -> None:
     check("executable present", exe.is_file())
     started = time.monotonic()
     running, output = smoke_test.run_for(exe, 8)
-    check("app alive after 8 s", running, f"({time.monotonic() - started:.1f} s) {output.strip()[:200]}")
+    check(
+        "app alive after 8 s",
+        running,
+        f"({time.monotonic() - started:.1f} s) {output.strip()[:200]}",
+    )
     toolchain = app_dir / "toolchain"
     if variant == "lite":
         check("lite has no toolchain/", not toolchain.exists())
@@ -83,7 +89,9 @@ def check_app(app_dir: Path, variant: str) -> None:
         result = subprocess.run(
             [str(go), "run", "hello.go"], cwd=work, capture_output=True, text=True, env=env
         )
-        check("go run hello.go with bundled go", "Hello" in result.stdout, result.stderr.strip()[:200])
+        check(
+            "go run hello.go with bundled go", "Hello" in result.stdout, result.stderr.strip()[:200]
+        )
 
 
 def leftovers(folder: Path) -> list[str]:
@@ -96,7 +104,9 @@ def installer_qa(setup: Path, variant: str) -> None:
     started = time.monotonic()
     # NSIS: /S silent; /D must be the last argument and unquoted. Per-user installer: no admin.
     code = subprocess.run([str(setup), "/S", f"/D={app_dir}"]).returncode
-    check("silent per-user install", code == 0, f"(exit {code}, {time.monotonic() - started:.1f} s)")
+    check(
+        "silent per-user install", code == 0, f"(exit {code}, {time.monotonic() - started:.1f} s)"
+    )
     check("uninstaller written", (app_dir / "uninstall.exe").is_file())
     check("uninstall entry in HKCU", has_registry_key(UNINSTALL_KEY))
     check("start menu shortcut", (START_MENU / "VizcachaIDE.lnk").is_file())
@@ -110,10 +120,18 @@ def installer_qa(setup: Path, variant: str) -> None:
         time.sleep(1)
     time.sleep(2)
     remaining = leftovers(app_dir)
-    check("silent uninstall", code == 0 and not app_dir.exists(), f"(exit {code}) leftovers={remaining[:10]}")
+    check(
+        "silent uninstall",
+        code == 0 and not app_dir.exists(),
+        f"(exit {code}) leftovers={remaining[:10]}",
+    )
     check("shortcut removed", not (START_MENU / "VizcachaIDE.lnk").exists())
     check("uninstall entry removed", not has_registry_key(UNINSTALL_KEY))
-    check("WebView2 data removed", not any(p.exists() for p in WEBVIEW_DATA), str([str(p) for p in WEBVIEW_DATA if p.exists()]))
+    check(
+        "WebView2 data removed",
+        not any(p.exists() for p in WEBVIEW_DATA),
+        str([str(p) for p in WEBVIEW_DATA if p.exists()]),
+    )
     shutil.rmtree(root, ignore_errors=True)
 
 

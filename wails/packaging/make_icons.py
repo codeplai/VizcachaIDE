@@ -1,8 +1,10 @@
 """Build every VizcachaIDE icon from the brand logo (vizcachaidelogo.png at the repo root).
 
 Outputs (all regenerated, commit the results):
-  wails/build/appicon.png                    1024 px, mascot only (Wails derives the macOS icon from it)
-  wails/build/windows/icon.ico               16-256 px; 256 px shows the full logo, smaller sizes the mascot
+  wails/build/appicon.png                    1024 px, mascot only (Wails derives the macOS icon from
+  it)
+  wails/build/windows/icon.ico               16-256 px; 256 px shows the full logo, smaller sizes
+  the mascot
   wails/frontend/src/assets/brand/mark.png   128 px mascot for the title bar
   wails/frontend/src/assets/brand/logo.png   full logo for About and the first-run screen
 
@@ -17,7 +19,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE = REPO_ROOT / "vizcachaidelogo.png"
 WAILS = REPO_ROOT / "wails"
 
-# The mascot badge, above the "VizcachaIDE by codeplai." wordmark (measured on the 1536x1024 source).
+# The mascot badge, above the "VizcachaIDE by codeplai." wordmark (measured on the 1536x1024
+# source).
 MASCOT_BOX = (334, 36, 1203, 700)
 ICO_MASCOT_SIZES = (16, 24, 32, 48, 64, 128)
 FULL_LOGO_WIDTH = 480

@@ -29,12 +29,12 @@ func findDelve(t *testing.T) string {
 	return ""
 }
 
-// copyExample puts examples/functions.go in a temporary folder and returns its path.
+// copyExample puts examples/functions/functions.go in a temporary folder and returns its path.
 func copyExample(t *testing.T) string {
 	t.Helper()
-	source, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "examples", "functions.go"))
+	source, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "examples", "functions", "functions.go"))
 	if err != nil {
-		t.Skipf("examples/functions.go not found: %v", err)
+		t.Skipf("examples/functions/functions.go not found: %v", err)
 	}
 	path := filepath.Join(t.TempDir(), "functions.go")
 	if err := os.WriteFile(path, source, 0o600); err != nil {

@@ -1,4 +1,4 @@
-"""Real ``dlv dap`` session on examples/functions.go.
+"""Real ``dlv dap`` session on examples/functions/functions.go.
 
 The first debug build compiles the standard library with ``-gcflags all=-N -l``;
 on Windows with an antivirus this can take more than a minute, hence the long timeout.
@@ -16,7 +16,7 @@ from vizcacha.infrastructure.delve_dap import DelveDapDebugger
 from vizcacha.infrastructure.delve_dap.session import KILL_DELAY_MS
 from vizcacha.infrastructure.go_toolchain import GoEnvironment
 
-EXAMPLE = Path(__file__).resolve().parents[2] / "examples" / "functions.go"
+EXAMPLE = Path(__file__).resolve().parents[2] / "examples" / "functions" / "functions.go"
 BUILD_TIMEOUT_MS = 300_000
 STEP_TIMEOUT_MS = 120_000  # generous: CI machines and antivirus scans are slow
 BREAKPOINT_LINE = 13  # "return result" inside multiply(5, 7)
