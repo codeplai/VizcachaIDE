@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import QApplication
 from vizcacha.application.ports import SettingsRepository
 from vizcacha.application.settings_keys import SettingsKeys
 from vizcacha.i18n import install_language, resolve_language
+from vizcacha.infrastructure.delve_dap import DelveDapDebugger
 from vizcacha.infrastructure.go_toolchain import GoEnvironment, GoToolchain
-from vizcacha.infrastructure.null_debugger import NullDebugger
 from vizcacha.infrastructure.settings import QSettingsRepository
 from vizcacha.ui.features.debugger import register as register_debugger
 from vizcacha.ui.features.editor import register as register_editor
@@ -44,7 +44,7 @@ def build_services(settings_repository: SettingsRepository) -> Services:
         settings=settings_repository,
         environment=environment,
         toolchain=GoToolchain(environment),
-        debugger=NullDebugger(),
+        debugger=DelveDapDebugger(environment),
     )
 
 

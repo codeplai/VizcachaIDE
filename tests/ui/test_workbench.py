@@ -60,7 +60,14 @@ def test_debugger_panels_render_debug_state(workbench, tmp_path: Path):
     assert variables.topLevelItem(0).text(2) == "1"
 
 
-def test_null_debugger_explains_it_is_not_available(workbench, tmp_path: Path):
+def test_null_debugger_explains_it_is_not_available(qtbot, settings, tmp_path: Path):
+    from vizcacha.infrastructure.null_debugger import NullDebugger
+    from vizcacha.ui.app import build_services, build_workbench
+
+    services = build_services(settings)
+    services.debugger = NullDebugger()
+    workbench = build_workbench(services)
+    qtbot.addWidget(workbench.window)
     source = tmp_path / "main.go"
     source.write_text("package main\n", encoding="utf-8")
     workbench.editor.open_file(source)
