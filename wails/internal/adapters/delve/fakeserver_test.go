@@ -139,7 +139,8 @@ func receive[T any](t *testing.T, channel <-chan T) T {
 	select {
 	case value := <-channel:
 		return value
-	case <-time.After(5 * time.Second):
+	// Generous: the real-Delve tests compile a program first, which is slow on a busy machine.
+	case <-time.After(30 * time.Second):
 		t.Fatal("timed out waiting for an event")
 		var zero T
 		return zero
