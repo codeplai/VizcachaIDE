@@ -77,12 +77,20 @@
   .files {
     align-content: stretch;
     grid-template-rows: auto 1fr;
+    /* Long file names must not widen the column and push the header buttons out of view. */
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 0;
   }
   .head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-right: 8px;
+    padding: 10px 8px 4px 0;
+    /* The buttons stay reachable while the tree scrolls. */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--chrome);
   }
   .tools {
     display: flex;
