@@ -42,6 +42,10 @@ export function Toolchain() {
   return window['go']['bridge']['RunService']['Toolchain']();
 }
 
+export function Vet(arg1) {
+  return window['go']['bridge']['RunService']['Vet'](arg1);
+}
+
 export function WriteInput(arg1) {
   return window['go']['bridge']['RunService']['WriteInput'](arg1);
 }

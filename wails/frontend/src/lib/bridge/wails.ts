@@ -23,6 +23,7 @@ const createRunApi = (): RunApi => ({
   modInit: (dir, modulePath) => RunService.ModInit(dir, modulePath),
   modGet: (dir, pkg) => RunService.ModGet(dir, pkg),
   modTidy: (dir) => RunService.ModTidy(dir),
+  vet: (config) => RunService.Vet(toWire(config)),
   stop: () => RunService.Stop(),
   writeInput: (text) => RunService.WriteInput(text),
   format: (text) => RunService.Format(text),

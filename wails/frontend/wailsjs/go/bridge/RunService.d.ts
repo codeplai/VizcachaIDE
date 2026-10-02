@@ -22,4 +22,6 @@ export function Stop():Promise<void>;
 
 export function Toolchain():Promise<domain.ToolchainInfo>;
 
+export function Vet(arg1:domain.RunConfiguration):Promise<string>;
+
 export function WriteInput(arg1:string):Promise<void>;

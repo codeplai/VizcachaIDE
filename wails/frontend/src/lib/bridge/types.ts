@@ -26,6 +26,8 @@ export interface RunApi {
   modInit: (workingDir: string, modulePath: string) => Promise<void>
   modGet: (workingDir: string, pkg: string) => Promise<void>
   modTidy: (workingDir: string) => Promise<void>
+  /** Runs `go vet` on the target of a finished run and returns Go's output ("" if nothing). */
+  vet: (config: RunConfiguration) => Promise<string>
   stop: () => Promise<void>
   writeInput: (text: string) => Promise<void>
   format: (text: string) => Promise<string>

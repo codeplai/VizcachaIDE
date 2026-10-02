@@ -71,6 +71,10 @@ type Toolchain interface {
 	RunUntitled(ctx context.Context, source string, programArgs []string) (domain.RunConfiguration, error)
 	// RunGoCommand runs "go <args>" (for example "mod tidy") emitting the same events.
 	RunGoCommand(ctx context.Context, workingDir string, args []string) error
+	// Vet runs "go vet" on the configuration's target without events and without
+	// using the single run slot, so it can work in the background. It returns Go's
+	// output ("" when vet found nothing or the target no longer exists).
+	Vet(ctx context.Context, config domain.RunConfiguration) (string, error)
 	// FormatSource returns gofmt-formatted text. Errors wrap ErrFormat or ErrToolNotFound.
 	FormatSource(text string) (string, error)
 }
