@@ -1,7 +1,9 @@
-import { derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import type { Bridge, Unsubscribe } from '../bridge'
 import type { FrameVariables, SourceLocation, StackFrame } from '../domain'
+import { parameterNames, splitArguments } from './callArguments'
 import { debugState } from './debug'
+import { buffers } from './files'
 
 /** The Calls view draws this many of the innermost calls; the rest become a "+N more" row. */
 export const MAX_VISIBLE_CALLS = 8
@@ -63,6 +65,15 @@ const forgetDetails = (): void => {
   frameDetails.set({})
 }
 
+/** Parameter names of the frame's function, from the open buffer or the file on disk. */
+const parametersOf = async (bridge: Bridge, frameId: number): Promise<string[]> => {
+  const frame = get(debugState)?.frames.find((item) => item.frameId === frameId)
+  const file = frame?.location?.file
+  if (!frame || !file) return []
+  const source = get(buffers)[file] ?? (await bridge.files.readFile(file).catch(() => ''))
+  return parameterNames(source, frame.function)
+}
+
 /** Asks the debugger for one frame, once per stop. */
 export const loadFrameDetails = async (bridge: Bridge, frameId: number): Promise<void> => {
   if (requested.has(frameId)) return
@@ -70,7 +81,9 @@ export const loadFrameDetails = async (bridge: Bridge, frameId: number): Promise
   const stop = generation
   const details = await bridge.debug.frameVariables(frameId)
   if (stop !== generation) return // the program moved while we waited
-  frameDetails.update((all) => ({ ...all, [frameId]: details }))
+  const parameters = await parametersOf(bridge, frameId)
+  if (stop !== generation) return
+  frameDetails.update((all) => ({ ...all, [frameId]: splitArguments(details, parameters) }))
 }
 
 /** "n=3, a=5": the arguments a call received, as shown in the box title. */

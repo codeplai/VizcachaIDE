@@ -1,15 +1,17 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { currentFrame, debugState } from '../stores'
+  import { currentFrame, debugState, isHiddenVariable, shortFunctionName } from '../stores'
   import VariableCard from './VariableCard.svelte'
 </script>
 
 <section class="block">
   <h3 class="side-h">
-    {$t('panels.variables', { values: { function: $currentFrame?.function ?? '' } })}
+    {$t('panels.variables', {
+      values: { function: shortFunctionName($currentFrame?.function ?? '') }
+    })}
   </h3>
   <div class="vars">
-    {#each $debugState?.variables ?? [] as variable, position (position)}
+    {#each ($debugState?.variables ?? []).filter((item) => !isHiddenVariable(item)) as variable, position (position)}
       <VariableCard {variable} />
     {:else}
       <p class="empty">{$t('empty.variables')}</p>

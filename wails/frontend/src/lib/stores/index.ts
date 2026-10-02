@@ -10,6 +10,7 @@ import { connectSettings } from './settings'
 
 export * from './ansi'
 export * from './assistant'
+export * from './callArguments'
 export * from './commands'
 export * from './confirm'
 export * from './console'
