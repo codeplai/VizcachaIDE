@@ -157,5 +157,6 @@ export const defaultSettings = (): Settings => ({
   goplsPath: '',
   firstRun: false,
   lastFolder: '',
-  formatOnSave: true
+  formatOnSave: true,
+  recentFiles: []
 })

@@ -167,4 +167,6 @@ export interface Settings {
   firstRun: boolean
   lastFolder: string
   formatOnSave: boolean
+  /** Last opened files, newest first (at most 10). */
+  recentFiles: string[]
 }

@@ -3,6 +3,7 @@ package settings
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -26,22 +27,31 @@ func writeRaw(t *testing.T, path, text string) {
 	}
 }
 
+func TestNullRecentFilesLoadsAsEmptyList(t *testing.T) {
+	store, path := newTestStore(t)
+	writeRaw(t, path, `{"recentFiles": null}`)
+	got, err := store.Load()
+	if err != nil || got.RecentFiles == nil || len(got.RecentFiles) != 0 {
+		t.Fatalf("RecentFiles = %#v, %v", got.RecentFiles, err)
+	}
+}
+
 func TestMissingFileGivesDefaults(t *testing.T) {
 	store, _ := newTestStore(t)
 	got, err := store.Load()
-	if err != nil || got != domain.DefaultSettings() {
+	if err != nil || !reflect.DeepEqual(got, domain.DefaultSettings()) {
 		t.Fatalf("Load = %+v, %v", got, err)
 	}
 }
 
 func TestSaveThenLoadRoundTrips(t *testing.T) {
 	store, _ := newTestStore(t)
-	want := domain.Settings{Language: "es", Theme: "dark", FontSize: 18, GoPath: "C:/go/bin/go.exe", LastFolder: "C:/x"}
+	want := domain.Settings{Language: "es", Theme: "dark", FontSize: 18, GoPath: "C:/go/bin/go.exe", LastFolder: "C:/x", RecentFiles: []string{"C:/x/main.go"}}
 	if err := store.Save(want); err != nil {
 		t.Fatal(err)
 	}
 	got, err := store.Load()
-	if err != nil || got != want {
+	if err != nil || !reflect.DeepEqual(got, want) {
 		t.Fatalf("Load = %+v, %v; want %+v", got, err, want)
 	}
 }
@@ -62,7 +72,7 @@ func TestCorruptFileIsMovedToBackup(t *testing.T) {
 	store, path := newTestStore(t)
 	writeRaw(t, path, `{not json`)
 	got, err := store.Load()
-	if err != nil || got != domain.DefaultSettings() {
+	if err != nil || !reflect.DeepEqual(got, domain.DefaultSettings()) {
 		t.Fatalf("Load = %+v, %v", got, err)
 	}
 	backup, err := os.ReadFile(path + ".bak")
@@ -109,7 +119,7 @@ func TestFailedSaveKeepsTheOldFile(t *testing.T) {
 		t.Error("Save into an impossible folder must fail")
 	}
 	got, err := store.Load()
-	if err != nil || got != first {
+	if err != nil || !reflect.DeepEqual(got, first) {
 		t.Errorf("Load = %+v, %v (file %s)", got, err, path)
 	}
 }

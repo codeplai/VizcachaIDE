@@ -67,6 +67,9 @@ func (s *Store) Load() (domain.Settings, error) {
 		s.quarantine()
 		return domain.DefaultSettings(), nil
 	}
+	if loaded.RecentFiles == nil { // "recentFiles": null must reach the UI as a list
+		loaded.RecentFiles = []string{}
+	}
 	return loaded, nil
 }
 

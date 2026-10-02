@@ -36,9 +36,14 @@ type Settings struct {
 	LastFolder string `json:"lastFolder"`
 	// FormatOnSave runs gofmt (go/format) every time a .go file is saved.
 	FormatOnSave bool `json:"formatOnSave"`
+	// RecentFiles are the last opened files, newest first (at most MaxRecentFiles).
+	RecentFiles []string `json:"recentFiles"`
 }
+
+// MaxRecentFiles is how many entries Settings.RecentFiles keeps.
+const MaxRecentFiles = 10
 
 // DefaultSettings returns the settings of a fresh installation.
 func DefaultSettings() Settings {
-	return Settings{Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, FirstRun: true, FormatOnSave: true}
+	return Settings{Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, FirstRun: true, FormatOnSave: true, RecentFiles: []string{}}
 }

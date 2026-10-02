@@ -349,6 +349,7 @@ export namespace domain {
 	    firstRun: boolean;
 	    lastFolder: string;
 	    formatOnSave: boolean;
+	    recentFiles: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Settings(source);
@@ -365,6 +366,7 @@ export namespace domain {
 	        this.firstRun = source["firstRun"];
 	        this.lastFolder = source["lastFolder"];
 	        this.formatOnSave = source["formatOnSave"];
+	        this.recentFiles = source["recentFiles"];
 	    }
 	}
 	export class SignatureHelp {
