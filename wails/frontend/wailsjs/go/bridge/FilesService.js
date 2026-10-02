@@ -6,6 +6,10 @@ export function ListTree(arg1) {
   return window['go']['bridge']['FilesService']['ListTree'](arg1);
 }
 
+export function OpenFileDialog() {
+  return window['go']['bridge']['FilesService']['OpenFileDialog']();
+}
+
 export function OpenFolder() {
   return window['go']['bridge']['FilesService']['OpenFolder']();
 }
@@ -16,6 +20,10 @@ export function ReadFile(arg1) {
 
 export function SaveFile(arg1, arg2) {
   return window['go']['bridge']['FilesService']['SaveFile'](arg1, arg2);
+}
+
+export function SaveFileDialog(arg1, arg2) {
+  return window['go']['bridge']['FilesService']['SaveFileDialog'](arg1, arg2);
 }
 
 export function WatchFiles(arg1) {

@@ -6,7 +6,7 @@ import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, RunApi } from './types'
+import type { Bridge, FilesApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -27,6 +27,16 @@ const createRunApi = (): RunApi => ({
   writeInput: (text) => RunService.WriteInput(text),
   format: (text) => RunService.Format(text),
   toolchain: async () => fromWire(await RunService.Toolchain())
+})
+
+const createFilesApi = (): FilesApi => ({
+  openFolder: async () => fromWire(await FilesService.OpenFolder()),
+  listTree: async (root) => fromWire(await FilesService.ListTree(root)),
+  readFile: (path) => FilesService.ReadFile(path),
+  saveFile: (path, text) => FilesService.SaveFile(path, text),
+  watchFiles: (paths) => FilesService.WatchFiles(paths),
+  openFileDialog: () => FilesService.OpenFileDialog(),
+  saveFileDialog: (suggestedName, folder) => FilesService.SaveFileDialog(suggestedName, folder)
 })
 
 export const createWailsBridge = (): Bridge => ({
@@ -62,13 +72,7 @@ export const createWailsBridge = (): Bridge => ({
     explainDiagnostics: async (diagnostics) =>
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
-  files: {
-    openFolder: async () => fromWire(await FilesService.OpenFolder()),
-    listTree: async (root) => fromWire(await FilesService.ListTree(root)),
-    readFile: (path) => FilesService.ReadFile(path),
-    saveFile: (path, text) => FilesService.SaveFile(path, text),
-    watchFiles: (paths) => FilesService.WatchFiles(paths)
-  },
+  files: createFilesApi(),
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),

@@ -5,6 +5,7 @@ import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
 import { mockAssistant } from './mockAssistant'
 import {
+  SAMPLE_DIR,
   SAMPLE_SOURCES,
   defaultSettings,
   sampleDebugState,
@@ -169,7 +170,9 @@ export const createMockBridge = (): MockBridge => {
       listTree: async () => sampleTree(),
       readFile: async (path) => SAMPLE_SOURCES[path] ?? '',
       saveFile: async () => {},
-      watchFiles: async () => {}
+      watchFiles: async () => {},
+      openFileDialog: async () => `${SAMPLE_DIR}/saludo.go`,
+      saveFileDialog: async (name, folder) => `${folder || SAMPLE_DIR}/${name}`
     },
     settings: mockSettings(state, emit),
     system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },

@@ -4,10 +4,14 @@ import {domain} from '../models';
 
 export function ListTree(arg1:string):Promise<domain.FileNode>;
 
+export function OpenFileDialog():Promise<string>;
+
 export function OpenFolder():Promise<domain.FileNode>;
 
 export function ReadFile(arg1:string):Promise<string>;
 
 export function SaveFile(arg1:string,arg2:string):Promise<void>;
+
+export function SaveFileDialog(arg1:string,arg2:string):Promise<string>;
 
 export function WatchFiles(arg1:Array<string>):Promise<void>;

@@ -128,7 +128,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),
-			bridge.NewFilesService(sink, store, watcher),
+			bridge.NewFilesServiceWithTexts(sink, store, watcher, texts.withData),
 			bridge.NewSettingsService(sink, store, language).
 				UseTools(goToolchain, bridge.NewExecutableDialog(sink, texts.withData)),
 		},

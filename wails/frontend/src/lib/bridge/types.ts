@@ -75,6 +75,10 @@ export interface FilesApi {
   saveFile: (path: string, text: string) => Promise<void>
   /** Files (the open tabs) to watch; changes made elsewhere arrive as `file:changed`. */
   watchFiles: (paths: string[]) => Promise<void>
+  /** Native "open file" dialog; "" when the user cancels. */
+  openFileDialog: () => Promise<string>
+  /** Native "save as" dialog (adds .go when the name has no extension); "" when cancelled. */
+  saveFileDialog: (suggestedName: string, folder: string) => Promise<string>
 }
 
 /** Mirrors bridge.SettingsService (Go). */
