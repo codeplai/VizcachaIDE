@@ -1,12 +1,9 @@
 <script lang="ts">
   import { DropdownMenu } from 'bits-ui'
-  import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { openDialog, openFolder } from '../stores'
-  import RecentMenu from './RecentMenu.svelte'
+  import { openDialog } from '../stores'
 
   const entries = [
-    { label: 'shell.openFolder', run: () => void openFolder(bridge) },
     { label: 'shell.goModules', run: () => openDialog.set('modules') },
     { label: 'panels.settings', run: () => openDialog.set('settings') },
     { label: 'shell.about', run: () => openDialog.set('about') }
@@ -19,13 +16,10 @@
   </DropdownMenu.Trigger>
   <DropdownMenu.Portal>
     <DropdownMenu.Content class="menu" align="end" sideOffset={6}>
-      {#each entries as entry, index (entry.label)}
+      {#each entries as entry (entry.label)}
         <DropdownMenu.Item class="menu-item" onSelect={entry.run}>
           {$t(entry.label)}
         </DropdownMenu.Item>
-        {#if index === 0}
-          <RecentMenu />
-        {/if}
       {/each}
     </DropdownMenu.Content>
   </DropdownMenu.Portal>

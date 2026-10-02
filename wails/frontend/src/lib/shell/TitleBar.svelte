@@ -15,6 +15,8 @@
     stopProgram
   } from '../stores'
   import mascot from '../../assets/brand/mark.png'
+  import FileButtons from './FileButtons.svelte'
+  import FileMenu from './FileMenu.svelte'
   import MoreMenu from './MoreMenu.svelte'
 </script>
 
@@ -22,12 +24,14 @@
   <div class="brand">
     <img class="brand-mark" src={mascot} alt="" width="28" height="28" />{$t('app.name')}
   </div>
+  <FileMenu />
   <div class="crumbs">
     {#if $activePath}
       {$fileTree?.name ?? parentName($activePath)} / <b>{$activeFileName}</b>
     {/if}
   </div>
   <div class="actions">
+    <FileButtons />
     <input
       class="args"
       type="text"
@@ -87,7 +91,7 @@
   .titlebar {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     height: 52px;
     flex: none;
     padding: 0 14px;
@@ -125,7 +129,7 @@
     align-items: center;
   }
   .args {
-    width: clamp(110px, 16vw, 200px);
+    width: clamp(80px, 11vw, 200px);
     min-width: 0;
     padding: 7px 10px;
     border-radius: 8px;

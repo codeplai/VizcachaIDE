@@ -7,7 +7,7 @@ import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, ConsoleApi, DebugApi, RunApi } from './types'
+import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -50,6 +50,16 @@ const createDebugApi = (): DebugApi => ({
   stop: () => DebugService.Stop()
 })
 
+const createFilesApi = (): FilesApi => ({
+  openFolder: async () => fromWire(await FilesService.OpenFolder()),
+  listTree: async (root) => fromWire(await FilesService.ListTree(root)),
+  readFile: (path) => FilesService.ReadFile(path),
+  saveFile: (path, text) => FilesService.SaveFile(path, text),
+  watchFiles: (paths) => FilesService.WatchFiles(paths),
+  openFileDialog: () => FilesService.OpenFileDialog(),
+  saveFileDialog: (suggestedName, folder) => FilesService.SaveFileDialog(suggestedName, folder)
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
@@ -72,13 +82,7 @@ export const createWailsBridge = (): Bridge => ({
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
   console: createConsoleApi(),
-  files: {
-    openFolder: async () => fromWire(await FilesService.OpenFolder()),
-    listTree: async (root) => fromWire(await FilesService.ListTree(root)),
-    readFile: (path) => FilesService.ReadFile(path),
-    saveFile: (path, text) => FilesService.SaveFile(path, text),
-    watchFiles: (paths) => FilesService.WatchFiles(paths)
-  },
+  files: createFilesApi(),
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),

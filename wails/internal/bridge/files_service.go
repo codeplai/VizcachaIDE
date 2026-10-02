@@ -17,9 +17,10 @@ type ContextSource interface {
 
 // FilesService reads and writes the user's files and remembers the last folder.
 type FilesService struct {
-	context  ContextSource
-	settings app.SettingsStore
-	watcher  app.FileWatcher
+	context   ContextSource
+	settings  app.SettingsStore
+	watcher   app.FileWatcher
+	translate Translator
 }
 
 // NewFilesService creates the service. settings may be nil (the last folder is then not remembered)
