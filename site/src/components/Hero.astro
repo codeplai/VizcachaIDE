@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { screenshots } from '../assets/screenshots.js';
+import { t, project } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang).hero;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__inner">
+    <div>
+      <p class="hero__badge"><span class="pulse" aria-hidden="true"></span>{c.badge}</p>
+      <h1 class="hero__h1" id="hero-title">{c.h1}</h1>
+      <p class="hero__sub">{c.sub}</p>
+      <div class="hero__ctas">
+        <a class="btn" href="#descargar">{c.ctaPrimary}</a>
+        <a class="btn btn--ghost" href={project.repoUrl} rel="noopener">{c.ctaSecondary}</a>
+      </div>
+      <p class="hero__note">{c.note}</p>
+    </div>
+    <div class="hero__logo">
+      <Image src={logo} alt={c.logoAlt} width={640} loading="eager" fetchpriority="high" sizes="(max-width: 900px) 90vw, 560px" />
+    </div>
+  </div>
+
+  <figure class="hero__shot">
+    <Image
+      src={screenshots[lang].editor}
+      alt={c.shotAlt}
+      width={1280}
+      loading="eager"
+      sizes="(max-width: 1100px) 94vw, 1100px"
+    />
+    <figcaption>{c.shotCaption}</figcaption>
+  </figure>
+</section>

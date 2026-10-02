@@ -1,0 +1,17 @@
+# VizcachaIDE
+
+> El IDE de Go para quien recién empieza / The Go IDE for people just starting out. Gratis y de código abierto (MIT), bilingüe ES/EN, hecho en Perú por Codeplai Games. Versión candidata 2.0.0-rc1 para Windows 10/11 x64 (macOS y Linux: versión preliminar).
+
+VizcachaIDE se inspira en Thonny: escribir y ejecutar Go con un botón, un Asistente que explica 25 errores comunes en español e inglés, y un depurador paso a paso. La versión completa incluye Go 1.25, Delve y gopls; la ligera (unos 6 MB) requiere Go instalado. Los instaladores aún no tienen firma digital, por lo que Windows SmartScreen puede avisar; el código fuente es público y cada versión incluye SHA256SUMS.
+
+## Páginas
+- [Inicio (español)](https://vizcacha.codeplai.pe/): qué es, para quién, funciones, descarga y aviso de seguridad.
+- [Manual (español)](https://vizcacha.codeplai.pe/manual): instalar, primera vez, ejecutar, errores, depurar, atajos y solución de problemas.
+- [Home (English)](https://vizcacha.codeplai.pe/en): what it is, who it is for, features, download and the Windows warning.
+- [Manual (English)](https://vizcacha.codeplai.pe/en/manual): install, first run, run, errors, debugging, shortcuts and troubleshooting.
+
+## Enlaces
+- [Descargas / Releases](https://github.com/codeplai/VizcachaIDE/releases)
+- [Código fuente / Source code](https://github.com/codeplai/VizcachaIDE)
+- [Codeplai](https://codeplai.pe)
+- Contacto: hola@codeplai.pe

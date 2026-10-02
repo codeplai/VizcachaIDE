@@ -1,0 +1,28 @@
+---
+import { inlineMarkdown } from '../i18n/inlineMarkdown.js';
+
+// Sección con encabezado y una rejilla de tarjetas {t, d}. Se usa en «para quién»,
+// «pensado para aprender» y «estado del proyecto».
+const { id = undefined, eyebrow, title, lead = null, items, alt = false, cols = 3 } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+
+<section class={alt ? 'section section--alt' : 'section'} id={id} aria-labelledby={headingId}>
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 class="h2" id={headingId}>{title}</h2>
+      {lead && <p class="lead" set:html={inlineMarkdown(lead)} />}
+    </div>
+    <ul class={`cards cards--${cols}`}>
+      {
+        items.map((it) => (
+          <li class="card">
+            <h3 class="h3">{it.t}</h3>
+            <p set:html={inlineMarkdown(it.d)} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

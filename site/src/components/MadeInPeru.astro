@@ -1,0 +1,26 @@
+---
+import { inlineMarkdown } from '../i18n/inlineMarkdown.js';
+import { t, project } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang).peru;
+---
+
+<section class="section section--ink" id="contacto" aria-labelledby="peru-title">
+  <div class="wrap peru">
+    <div>
+      <p class="eyebrow">{c.eyebrow}</p>
+      <h2 class="h2" id="peru-title">{c.title}</h2>
+      <p class="lead" set:html={inlineMarkdown(c.p1)} />
+    </div>
+    <div>
+      <h3 class="h3">{c.contactTitle}</h3>
+      <p class="lead" set:html={inlineMarkdown(c.p2)} />
+      <div class="hero__ctas peru__ctas">
+        <a class="btn" href={`mailto:${project.email}`}>{project.email}</a>
+        <a class="btn btn--ghost" href={project.issuesUrl} rel="noopener">{c.issue}</a>
+        <a class="link" href={project.parentUrl} rel="noopener">{c.visit}</a>
+      </div>
+    </div>
+  </div>
+</section>

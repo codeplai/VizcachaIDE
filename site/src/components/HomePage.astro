@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import CardGrid from './CardGrid.astro';
+import Features from './Features.astro';
+import Download from './Download.astro';
+import MadeInPeru from './MadeInPeru.astro';
+import { t } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang);
+---
+
+{/* Narrativa: promesa → para quién → qué puedes hacer → pensado para aprender →
+    descarga y seguridad → estado → hecho en Perú y contacto. */}
+<Base lang={lang} routeKey="home">
+  <Hero lang={lang} />
+  <CardGrid id="para-quien" eyebrow={c.audience.eyebrow} title={c.audience.title} items={c.audience.items} cols={3} />
+  <Features lang={lang} />
+  <CardGrid id="aprender" eyebrow={c.learning.eyebrow} title={c.learning.title} items={c.learning.items} cols={4} alt={true} />
+  <Download lang={lang} />
+  <CardGrid id="estado" eyebrow={c.status.eyebrow} title={c.status.title} lead={c.status.lead} items={c.status.items} cols={2} />
+  <MadeInPeru lang={lang} />
+</Base>

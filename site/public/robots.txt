@@ -1,0 +1,34 @@
+# Buscadores y asistentes de IA que leen el sitio para responder a un usuario: permitidos.
+# Entrenamiento de modelos: no (ver Content-Signal). Misma política que codeplai.pe.
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+Sitemap: https://vizcacha.codeplai.pe/sitemap-index.xml

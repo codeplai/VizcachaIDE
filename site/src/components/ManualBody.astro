@@ -1,0 +1,62 @@
+---
+import { inlineMarkdown } from '../i18n/inlineMarkdown.js';
+import { t } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang).manual;
+---
+
+<div class="manual wrap">
+  <header class="manual__head">
+    <p class="eyebrow">{c.eyebrow}</p>
+    <h1 class="h1 manual__title">{c.title}</h1>
+    <p class="lead">{c.lead}</p>
+  </header>
+
+  <div class="manual__layout">
+    <nav class="toc" aria-label={c.tocTitle}>
+      <p class="toc__title">{c.tocTitle}</p>
+      <ol>
+        {c.sections.map((s) => <li><a href={`#${s.id}`}>{s.t}</a></li>)}
+      </ol>
+    </nav>
+
+    <div class="manual__content">
+      {
+        c.sections.map((s) => (
+          <section id={s.id} aria-labelledby={`${s.id}-t`}>
+            <h2 class="h2 manual__h2" id={`${s.id}-t`}>{s.t}</h2>
+            {s.blocks.map((b) => {
+              if (b.h) return <h3 class="h3">{b.h}</h3>;
+              if (b.p) return <p set:html={inlineMarkdown(b.p)} />;
+              if (b.ul) return <ul class="ticks">{b.ul.map((i) => <li set:html={inlineMarkdown(i)} />)}</ul>;
+              if (b.ol) return <ol class="steps">{b.ol.map((i) => <li set:html={inlineMarkdown(i)} />)}</ol>;
+              if (b.code) return <pre class="codeblock" tabindex="0"><code>{b.code}</code></pre>;
+              if (b.table) {
+                return (
+                  <div class="tablewrap" tabindex="0" role="region" aria-label={s.t}>
+                    <table class="table">
+                      <thead>
+                        <tr>{b.head.map((h) => <th scope="col">{h}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {b.table.map(([a, k]) => (
+                          <tr>
+                            <th scope="row">{a}</th>
+                            <td><kbd>{k}</kbd></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {b.note && <p class="muted">{b.note}</p>}
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</div>
