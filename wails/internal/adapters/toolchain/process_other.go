@@ -20,10 +20,10 @@ func killTree(pid int) {
 	_ = syscall.Kill(-pid, syscall.SIGKILL)
 }
 
-// terminateTree asks the group to stop (TERM) and kills it if it is still alive
+// terminateTree asks the group to stop (INT, as Ctrl+C does, so defers and signal handlers run) and kills it if it is still alive
 // after two seconds. done is closed when the process has ended.
 func terminateTree(pid int, done <-chan struct{}) {
-	_ = syscall.Kill(-pid, syscall.SIGTERM)
+	_ = syscall.Kill(-pid, syscall.SIGINT)
 	time.AfterFunc(killGrace, func() {
 		select {
 		case <-done:

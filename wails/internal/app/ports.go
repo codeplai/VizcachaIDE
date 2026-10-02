@@ -60,7 +60,8 @@ type Toolchain interface {
 	Run(ctx context.Context, config domain.RunConfiguration) error
 	// Build compiles without running. Emits the same events as Run.
 	Build(ctx context.Context, config domain.RunConfiguration) error
-	// Stop kills the running program, if any.
+	// Stop interrupts the running program, if any (Ctrl+C semantics: defers and signal
+	// handlers run) and kills its whole process tree if it is still alive after ~2 s.
 	Stop() error
 	// IsRunning reports whether a process started by Run, Build or RunGoCommand is alive.
 	IsRunning() bool

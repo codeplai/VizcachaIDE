@@ -63,7 +63,8 @@ func (s *RunService) SplitArguments(text string) ([]string, error) {
 	return app.SplitProgramArguments(text)
 }
 
-// Stop kills the running program and everything it started.
+// Stop asks the running program to finish (so its defers and signal handlers run) and
+// kills it and everything it started if it does not within about two seconds.
 func (s *RunService) Stop() error { return s.toolchain.Stop() }
 
 // WriteInput sends text, followed by Enter, to the stdin of the running program.

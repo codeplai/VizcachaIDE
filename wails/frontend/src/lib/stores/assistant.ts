@@ -4,7 +4,7 @@ import type { Diagnostic, RunConfiguration } from '../domain'
 import { TERMINATED_BY_USER } from '../events'
 import { diagnosticsByFile, problemKey, problems, sameFile } from './diagnostics'
 import { activePath } from './files'
-import { lastRunConfiguration, runLines } from './run'
+import { lastRunConfiguration, runLines, stoppedByUser } from './run'
 
 /** The problems Go printed in the last run, as the backend parsed them (compiler, vet or panic). */
 export const runDiagnostics = writable<Diagnostic[]>([])
@@ -79,7 +79,7 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
     : []
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)
-  if (exitCode === 0 && config && !isGoCommand(config)) {
+  if (exitCode === 0 && config && !isGoCommand(config) && !get(stoppedByUser)) {
     void vetInBackground(bridge, config).catch(() => undefined)
   }
 }
