@@ -37,3 +37,8 @@ type DiagnosticsPayload struct {
 	Path        string              `json:"path"`
 	Diagnostics []domain.Diagnostic `json:"diagnostics"`
 }
+
+// FileChangedPayload is the payload of EventFileChanged.
+type FileChangedPayload struct {
+	Path string `json:"path"`
+}

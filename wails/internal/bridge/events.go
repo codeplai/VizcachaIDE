@@ -28,6 +28,8 @@ const (
 	EventAssistantExplained = "assistant:explained"
 	// EventSettingsChanged carries a domain.Settings.
 	EventSettingsChanged = "settings:changed"
+	// EventFileChanged carries FileChangedPayload: an open file changed outside the IDE.
+	EventFileChanged = "file:changed"
 )
 
 // AllEvents lists every event name, in declaration order.
@@ -43,4 +45,5 @@ var AllEvents = []string{
 	EventLspStatus,
 	EventAssistantExplained,
 	EventSettingsChanged,
+	EventFileChanged,
 }

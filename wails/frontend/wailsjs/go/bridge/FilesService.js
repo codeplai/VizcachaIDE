@@ -17,3 +17,7 @@ export function ReadFile(arg1) {
 export function SaveFile(arg1, arg2) {
   return window['go']['bridge']['FilesService']['SaveFile'](arg1, arg2);
 }
+
+export function WatchFiles(arg1) {
+  return window['go']['bridge']['FilesService']['WatchFiles'](arg1);
+}

@@ -74,6 +74,14 @@ linters:
               desc: adapters never import other adapters
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
               desc: adapters never import other adapters
+        adapter-filewatch:
+          files:
+            - "**/internal/adapters/filewatch/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters
+              desc: adapters never import other adapters
         adapter-delve:
           files:
             - "**/internal/adapters/delve/**"

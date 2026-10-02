@@ -65,7 +65,8 @@ export const createWailsBridge = (): Bridge => ({
     openFolder: async () => fromWire(await FilesService.OpenFolder()),
     listTree: async (root) => fromWire(await FilesService.ListTree(root)),
     readFile: (path) => FilesService.ReadFile(path),
-    saveFile: (path, text) => FilesService.SaveFile(path, text)
+    saveFile: (path, text) => FilesService.SaveFile(path, text),
+    watchFiles: (paths) => FilesService.WatchFiles(paths)
   },
   settings: {
     get: async () => fromWire(await SettingsService.Get()),

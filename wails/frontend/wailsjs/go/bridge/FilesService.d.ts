@@ -9,3 +9,5 @@ export function OpenFolder():Promise<domain.FileNode>;
 export function ReadFile(arg1:string):Promise<string>;
 
 export function SaveFile(arg1:string,arg2:string):Promise<void>;
+
+export function WatchFiles(arg1:Array<string>):Promise<void>;
