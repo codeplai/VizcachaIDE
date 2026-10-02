@@ -90,6 +90,12 @@ export interface StackFrame {
   location: SourceLocation | null
 }
 
+/** Arguments and locals of one stack frame (Go: domain.FrameVariables). */
+export interface FrameVariables {
+  arguments: Variable[]
+  locals: Variable[]
+}
+
 export interface Goroutine {
   goroutineId: number
   name: string

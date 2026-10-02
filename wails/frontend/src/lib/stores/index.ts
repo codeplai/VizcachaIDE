@@ -2,6 +2,7 @@ import type { Bridge, Unsubscribe } from '../bridge'
 import { connectAssistant } from './assistant'
 import { connectDebug } from './debug'
 import { connectDiagnostics } from './diagnostics'
+import { connectFrames } from './frames'
 import { connectOutline } from './outline'
 import { connectRun } from './run'
 import { connectSettings } from './settings'
@@ -13,6 +14,7 @@ export * from './debug'
 export * from './diagnostics'
 export * from './files'
 export * from './firstRun'
+export * from './frames'
 export * from './layout'
 export * from './mode'
 export * from './navigation'
@@ -34,6 +36,7 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
   const offs = [
     connectRun(bridge),
     connectDebug(bridge),
+    connectFrames(bridge),
     connectDiagnostics(bridge),
     connectAssistant(bridge),
     connectOutline(bridge),

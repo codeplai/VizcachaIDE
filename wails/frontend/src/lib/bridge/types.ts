@@ -5,6 +5,7 @@ import type {
   DocumentSymbol,
   ExplainedDiagnostic,
   FileNode,
+  FrameVariables,
   RunConfiguration,
   Settings,
   SignatureHelp,
@@ -42,6 +43,8 @@ export interface DebugApi {
   resume: () => Promise<void>
   runTo: (location: SourceLocation) => Promise<void>
   requestVariables: (reference: number) => Promise<void>
+  /** Arguments and locals of any frame of the paused stack (the Calls view). */
+  frameVariables: (frameId: number) => Promise<FrameVariables>
   stop: () => Promise<void>
 }
 

@@ -21,6 +21,7 @@ import {
   type Emit,
   type Scenario
 } from './mockScenarios'
+import { sampleFrameVariables } from './mockFrames'
 import { mockSettings, toolchainFor } from './mockSettings'
 import type { Bridge, DebugApi, LanguageApi, RunApi } from './types'
 
@@ -100,6 +101,7 @@ const mockDebug = (state: MockState, emit: Emit): DebugApi => {
       const variables = reference === SAMPLE_STRUCT_REFERENCE ? sampleStructFields() : []
       setTimeout(() => emit('debug:variables', { reference, variables }), FIELDS_DELAY_MS)
     },
+    frameVariables: async (frameId) => sampleFrameVariables(frameId),
     stop: async () => finish(TERMINATED_BY_USER)
   }
 }

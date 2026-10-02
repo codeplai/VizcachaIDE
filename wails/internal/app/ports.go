@@ -97,6 +97,9 @@ type Debugger interface {
 	// empty list when there is no session or the request fails), except when the
 	// program resumes first.
 	RequestVariables(reference int) error
+	// FrameVariables returns the arguments and locals of one frame of the paused
+	// stack (the Calls view). Empty lists when there is no session or it is running.
+	FrameVariables(frameID int) (domain.FrameVariables, error)
 	// Stop ends the session. debug:terminated carries domain.TerminatedByUser.
 	Stop() error
 	// IsActive reports whether a session is alive.

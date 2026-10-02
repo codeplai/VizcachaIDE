@@ -2,10 +2,12 @@
   import { t } from '../i18n'
   import { debugTab, type DebugTab } from '../stores'
   import CallStackPanel from './CallStackPanel.svelte'
+  import CallsPanel from './CallsPanel.svelte'
   import GoroutinesPanel from './GoroutinesPanel.svelte'
 
   const tabs: { id: DebugTab; label: string }[] = [
     { id: 'stack', label: 'panels.callStack' },
+    { id: 'calls', label: 'panels.calls' },
     { id: 'goroutines', label: 'panels.goroutines' }
   ]
 </script>
@@ -26,7 +28,8 @@
     {/each}
   </div>
   <div role="tabpanel">
-    {#if $debugTab === 'stack'}<CallStackPanel />{:else}<GoroutinesPanel />{/if}
+    {#if $debugTab === 'stack'}<CallStackPanel />{:else if $debugTab === 'calls'}<CallsPanel
+      />{:else}<GoroutinesPanel />{/if}
   </div>
 </section>
 
