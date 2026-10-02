@@ -154,7 +154,7 @@ público y las sumas de verificación son la forma de comprobar lo que instalas.
 
 ## Compilar desde el código fuente (edición 2.0)
 
-Requisitos: Go 1.25 o superior, Node 22 y la CLI de Wails v2.16
+Requisitos: Go 1.25 o superior, Node 24 y la CLI de Wails v2.16
 (`go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0`).
 
 ```bash

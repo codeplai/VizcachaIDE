@@ -150,7 +150,7 @@ checksums are how you can verify what you install.
 
 ## Build from source (edition 2.0)
 
-Requirements: Go 1.25 or newer, Node 22, and the Wails CLI v2.16
+Requirements: Go 1.25 or newer, Node 24, and the Wails CLI v2.16
 (`go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0`).
 
 ```bash
@@ -197,9 +197,9 @@ Edition 2.0 has a Go backend (domain, use cases, adapters and a thin bridge for 
 Svelte 5 + CodeMirror 6 frontend that talks to it through a typed bridge. The Delve and gopls
 integrations are adapters, and the dependency rules are checked in CI.
 
-- [Architecture](docs/ARCHITECTURE.md) (in Spanish)
-- [Comparison with Thonny](docs/THONNY_COMPARISON.md) (in Spanish)
-- [Development plan](docs/DEVELOPMENT_PLAN.md) (in Spanish)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Comparison with Thonny](docs/THONNY_COMPARISON.md)
+- [Development plan](docs/DEVELOPMENT_PLAN.md)
 - [Wails plan](docs/wails/PLAN_WAILS.md)
 - [Wails README](wails/README.md) and [contributor guide](CONTRIBUTING.md)
 
