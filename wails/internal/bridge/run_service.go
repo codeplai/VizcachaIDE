@@ -48,12 +48,23 @@ func (s *RunService) RunUntitled(source string, programArgs []string) (domain.Ru
 	return config, nil
 }
 
+// Vet runs "go vet" on the target of a finished run and returns its output. It works
+// in the background: it neither blocks Run nor emits run events.
+func (s *RunService) Vet(config domain.RunConfiguration) (string, error) {
+	output, err := s.toolchain.Vet(context.Background(), config)
+	if err != nil {
+		return "", fmt.Errorf("vet %s: %w", config.Target, err)
+	}
+	return output, nil
+}
+
 // SplitArguments splits the "program arguments" text like a shell (quotes group).
 func (s *RunService) SplitArguments(text string) ([]string, error) {
 	return app.SplitProgramArguments(text)
 }
 
-// Stop kills the running program and everything it started.
+// Stop asks the running program to finish (so its defers and signal handlers run) and
+// kills it and everything it started if it does not within about two seconds.
 func (s *RunService) Stop() error { return s.toolchain.Stop() }
 
 // WriteInput sends text, followed by Enter, to the stdin of the running program.

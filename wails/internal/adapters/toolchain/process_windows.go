@@ -12,15 +12,22 @@ import (
 
 const createNoWindow = 0x08000000
 
-const taskkillTimeout = 5 * time.Second
+const (
+	taskkillTimeout = 5 * time.Second
+	killGrace       = 2 * time.Second
+)
 
 // hideConsole keeps a console window from flashing when the IDE starts a process.
 func hideConsole(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CreationFlags: createNoWindow}
 }
 
-// prepareTree is a no-op on Windows: taskkill /T follows the process tree by itself.
-func prepareTree(cmd *exec.Cmd) { hideConsole(cmd) }
+// prepareTree hides the console and starts a new process group, the target of CTRL_BREAK
+// when the program is stopped gracefully. taskkill /T follows the tree by itself.
+func prepareTree(cmd *exec.Cmd) {
+	hideConsole(cmd)
+	newProcessGroup(cmd.SysProcAttr)
+}
 
 // killTree ends pid and all its descendants at once (taskkill /T /F).
 func killTree(pid int) {
@@ -31,6 +38,19 @@ func killTree(pid int) {
 	_ = cmd.Run() // best effort: the caller also kills the direct child
 }
 
-// terminateTree stops the process tree. Windows has no graceful signal for console
-// programs, so it is the same as killTree.
-func terminateTree(pid int, _ <-chan struct{}) { killTree(pid) }
+// terminateTree asks the program to stop (CTRL_BREAK, which Go delivers as os.Interrupt, so
+// defers and signal handlers run) and kills the whole tree if it is still alive after two
+// seconds. If the signal cannot be sent it kills at once. done is closed when the process ended.
+func terminateTree(pid int, done <-chan struct{}) {
+	go func() {
+		if err := sendCtrlBreak(pid); err != nil {
+			killTree(pid)
+			return
+		}
+		select {
+		case <-done:
+		case <-time.After(killGrace):
+			killTree(pid)
+		}
+	}()
+}

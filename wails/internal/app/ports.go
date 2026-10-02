@@ -60,7 +60,8 @@ type Toolchain interface {
 	Run(ctx context.Context, config domain.RunConfiguration) error
 	// Build compiles without running. Emits the same events as Run.
 	Build(ctx context.Context, config domain.RunConfiguration) error
-	// Stop kills the running program, if any.
+	// Stop interrupts the running program, if any (Ctrl+C semantics: defers and signal
+	// handlers run) and kills its whole process tree if it is still alive after ~2 s.
 	Stop() error
 	// IsRunning reports whether a process started by Run, Build or RunGoCommand is alive.
 	IsRunning() bool
@@ -71,6 +72,10 @@ type Toolchain interface {
 	RunUntitled(ctx context.Context, source string, programArgs []string) (domain.RunConfiguration, error)
 	// RunGoCommand runs "go <args>" (for example "mod tidy") emitting the same events.
 	RunGoCommand(ctx context.Context, workingDir string, args []string) error
+	// Vet runs "go vet" on the configuration's target without events and without
+	// using the single run slot, so it can work in the background. It returns Go's
+	// output ("" when vet found nothing or the target no longer exists).
+	Vet(ctx context.Context, config domain.RunConfiguration) (string, error)
 	// FormatSource returns gofmt-formatted text. Errors wrap ErrFormat or ErrToolNotFound.
 	FormatSource(text string) (string, error)
 }

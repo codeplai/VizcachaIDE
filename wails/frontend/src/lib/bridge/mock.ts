@@ -70,6 +70,7 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
     modInit: async () => {},
     modGet: async () => {},
     modTidy: async () => {},
+    vet: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
     format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),

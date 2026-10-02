@@ -1,10 +1,10 @@
 import { derived, get, writable } from 'svelte/store'
 import type { Bridge, Unsubscribe } from '../bridge'
-import type { Diagnostic } from '../domain'
+import type { Diagnostic, RunConfiguration } from '../domain'
 import { TERMINATED_BY_USER } from '../events'
 import { diagnosticsByFile, problemKey, problems, sameFile } from './diagnostics'
 import { activePath } from './files'
-import { lastRunConfiguration, runLines } from './run'
+import { lastRunConfiguration, runLines, stoppedByUser } from './run'
 
 /** The problems Go printed in the last run, as the backend parsed them (compiler, vet or panic). */
 export const runDiagnostics = writable<Diagnostic[]>([])
@@ -50,12 +50,38 @@ const stderrOfRun = (): string =>
     .map((line) => line.text)
     .join('\n')
 
-const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
-  const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
-  const dir = get(lastRunConfiguration)?.workingDir ?? ''
-  const items = failed ? await bridge.assistant.explain(stderrOfRun(), dir) : []
+/** Counts runs, so a slow `go vet` of an older run cannot overwrite the newer one. */
+let runNumber = 0
+
+/** A "go mod ..." command also fires run events, but it has no program to vet. */
+const isGoCommand = (config: RunConfiguration): boolean => /^go\s/.test(config.target)
+
+/**
+ * After a run that compiled and finished, `go vet` looks for mistakes the compiler allows (a Printf
+ * with the wrong values, code that can never run). It works in the background: the run is already
+ * over and the UI never waits for it. Its warnings join the run's problems.
+ */
+const vetInBackground = async (bridge: Bridge, config: RunConfiguration): Promise<void> => {
+  const number = runNumber
+  const output = await bridge.run.vet(config)
+  if (!output.trim() || number !== runNumber) return
+  const items = await bridge.assistant.explain(output, config.workingDir)
+  if (number !== runNumber || items.length === 0) return
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)
+}
+
+const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
+  const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
+  const config = get(lastRunConfiguration)
+  const items = failed
+    ? await bridge.assistant.explain(stderrOfRun(), config?.workingDir ?? '')
+    : []
+  runDiagnostics.set(items.map((item) => item.diagnostic))
+  await refreshExplanations(bridge)
+  if (exitCode === 0 && config && !isGoCommand(config) && !get(stoppedByUser)) {
+    void vetInBackground(bridge, config).catch(() => undefined)
+  }
 }
 
 /** Sends Go's output and gopls' diagnostics to the Assistant so the cards are explained. */
@@ -63,7 +89,10 @@ export const connectAssistant = (bridge: Bridge): Unsubscribe => {
   let timer: ReturnType<typeof setTimeout> | undefined
   const quietly = (work: Promise<void>): void => void work.catch(() => undefined)
   const offs = [
-    bridge.on('run:started', () => runDiagnostics.set([])),
+    bridge.on('run:started', () => {
+      runNumber += 1
+      runDiagnostics.set([])
+    }),
     bridge.on('run:finished', ({ exitCode }) => quietly(explainRun(bridge, exitCode))),
     bridge.on('lsp:diagnostics', () => {
       clearTimeout(timer)

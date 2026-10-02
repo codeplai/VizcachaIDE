@@ -46,6 +46,12 @@
               >
                 {segment.text}
               </button>
+            {:else if segment.color || segment.background || segment.decorations}
+              <span
+                class={(segment.decorations ?? []).map((name) => `ansi-${name}`).join(' ')}
+                style:color={segment.color}
+                style:background-color={segment.background}>{segment.text}</span
+              >
             {:else}
               {segment.text}
             {/if}
@@ -81,6 +87,21 @@
   }
   .success {
     color: var(--ok);
+  }
+  .term :global(.ansi-bold) {
+    font-weight: 700;
+  }
+  .term :global(.ansi-dim) {
+    opacity: 0.7;
+  }
+  .term :global(.ansi-italic) {
+    font-style: italic;
+  }
+  .term :global(.ansi-underline) {
+    text-decoration: underline;
+  }
+  .term :global(.ansi-strikethrough) {
+    text-decoration: line-through;
   }
   .place {
     border: 0;

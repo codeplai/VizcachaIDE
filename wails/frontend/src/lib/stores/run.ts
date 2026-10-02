@@ -2,12 +2,15 @@ import { writable } from 'svelte/store'
 import type { Bridge, Unsubscribe } from '../bridge'
 import type { RunConfiguration } from '../domain'
 import type { RunFinishedPayload } from '../events'
+import { writeOver } from './carriageReturn'
 
 /** One raw line of program output, before it is turned into display text. */
 export interface RawRunLine {
   kind: 'start' | 'stdout' | 'stderr'
   /** File name for `start`, program text otherwise. */
   text: string
+  /** True when a carriage return left the cursor at column 0, so the next text rewrites this line. */
+  home?: boolean
 }
 
 export const runLines = writable<RawRunLine[]>([])
@@ -40,16 +43,17 @@ export const addChunk = (
   stream: Stream,
   text: string
 ): { lines: RawRunLine[]; tail: Stream | null } => {
-  const pieces = text.split(/\r?\n/)
+  // "\r\n" is a newline; a lone "\r" rewrites the current line (progress bars).
+  const pieces = text.replace(/\r\n/g, '\n').split('\n')
   const open = pieces[pieces.length - 1] !== ''
   const complete = open ? pieces : pieces.slice(0, -1)
   const next = [...lines]
   complete.forEach((piece, index) => {
     const last = next[next.length - 1]
     if (index === 0 && tail === stream && last && last.kind === stream) {
-      next[next.length - 1] = { ...last, text: last.text + piece }
+      next[next.length - 1] = writeOver(last, piece)
     } else {
-      next.push({ kind: stream, text: piece })
+      next.push(writeOver({ kind: stream, text: '' }, piece))
     }
   })
   return { lines: next, tail: open ? stream : null }
