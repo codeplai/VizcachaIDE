@@ -258,9 +258,9 @@ vizcacha/
 └── ui/              PyQt5; cada función se conecta al Workbench con register(workbench)
 ```
 
-Más detalle: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md),
-[docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md) y
-[docs/COMPARATIVA_THONNY.md](docs/COMPARATIVA_THONNY.md). La guía
+Más detalle: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
+[docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) y
+[docs/THONNY_COMPARISON.md](docs/THONNY_COMPARISON.md). La guía
 [CONTRIBUTING.md](CONTRIBUTING.md) explica las reglas (en inglés, con un resumen en español).
 
 ## Desarrollo

@@ -246,9 +246,9 @@ vizcacha/
 └── ui/              PyQt5; each feature plugs in through the Workbench with register(workbench)
 ```
 
-More detail (in Spanish): [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md),
-[docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md) and
-[docs/COMPARATIVA_THONNY.md](docs/COMPARATIVA_THONNY.md). The contributor guide
+More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
+[docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) and
+[docs/THONNY_COMPARISON.md](docs/THONNY_COMPARISON.md). The contributor guide
 [CONTRIBUTING.md](CONTRIBUTING.md) explains the rules in English.
 
 ## Development
