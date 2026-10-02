@@ -17,6 +17,30 @@ professional IDEs require.
 
 ![VizcachaIDE running a program](docs/images/editor-run.en.png)
 
+## A new project: why Windows may warn you, and why it is safe
+
+VizcachaIDE is a **new, independent project**, made in Peru by
+[Codeplai Games](https://codeplai.pe). Its installers are **not digitally signed yet**, so the
+first time you open one, Windows SmartScreen may show *"Windows protected your PC"* and say the
+publisher is unknown. This warning appears for every new program without a signature. It does
+not mean that a virus was found. To continue, click **More info → Run anyway**. (On macOS the
+app is not notarized yet: right-click it and choose **Open**.)
+
+You don't have to take our word for it:
+
+- **The source code is public:** every line is at
+  **[github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)**, under the MIT
+  license. You can read it, and you can [build it yourself](#from-source).
+- **You can check your download:** each release includes a `SHA256SUMS` file. In PowerShell,
+  `Get-FileHash .\VizcachaIDE-…zip` must print the same value that is in that file.
+- **The bundled tools are the official ones:** Go, Delve and gopls are downloaded from their
+  official sources, and the packaging script checks each download against a fixed SHA-256
+  ([`packaging/versions.toml`](packaging/versions.toml)).
+
+**About the signature:** we plan to acquire a code-signing certificate as the project grows,
+so that Windows recognizes the publisher and the warning goes away. Until then, the public code
+and the checksums are how you can verify what you install.
+
 ## Who is it for?
 
 - Students and self-taught programmers writing their first Go programs.
@@ -246,8 +270,8 @@ to the Assistant.
   release) have not been run yet either.
 - The Windows installer (Inno Setup) has not been compiled yet in the release environment; the
   PyInstaller folders and the portable zip have been verified.
-- No code signing: Windows SmartScreen may warn about an unknown publisher, and the macOS app is
-  not notarized.
+- No code signing yet: Windows SmartScreen may warn about an unknown publisher, and the macOS app
+  is not notarized. See [A new project](#a-new-project-why-windows-may-warn-you-and-why-it-is-safe).
 - The Spanish translation is incomplete, and the language can only be changed through the
   operating system's language (no selector in Options yet).
 - While debugging, the program cannot read keyboard input (stdin).

@@ -17,6 +17,32 @@ con la configuración que piden los IDE profesionales.
 
 ![VizcachaIDE ejecutando un programa](docs/images/editor-run.es.png)
 
+## Un proyecto nuevo: por qué Windows puede avisarte y por qué es seguro
+
+VizcachaIDE es un **proyecto nuevo e independiente**, hecho en Perú por
+[Codeplai Games](https://codeplai.pe). Sus instaladores **todavía no tienen firma digital**, así
+que la primera vez que abras uno, SmartScreen de Windows puede mostrar *«Windows protegió tu
+PC»* y decir que el editor es desconocido. Este aviso aparece con todo programa nuevo que no
+está firmado; no significa que se haya encontrado un virus. Para continuar, haz clic en **Más
+información → Ejecutar de todas formas**. (En macOS la app aún no está notarizada: haz clic
+derecho sobre ella y elige **Abrir**.)
+
+No tienes que creernos sin más:
+
+- **El código fuente es público:** cada línea está en
+  **[github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)**, con licencia
+  MIT. Puedes leerlo y también [compilarlo tú mismo](#desde-el-código-fuente).
+- **Puedes verificar tu descarga:** cada versión publicada incluye un archivo `SHA256SUMS`. En
+  PowerShell, `Get-FileHash .\VizcachaIDE-…zip` debe mostrar el mismo valor que aparece en ese
+  archivo.
+- **Las herramientas incluidas son las oficiales:** Go, Delve y gopls se descargan de sus
+  fuentes oficiales, y el script de empaquetado comprueba cada descarga con un SHA-256 fijo
+  ([`packaging/versions.toml`](packaging/versions.toml)).
+
+**Sobre la firma:** planeamos adquirir un certificado de firma de código a medida que el
+proyecto crezca, para que Windows reconozca al editor y el aviso desaparezca. Mientras tanto, el
+código público y las sumas de verificación son la forma de comprobar lo que instalas.
+
 ## ¿Para quién es?
 
 - Estudiantes y autodidactas que escriben sus primeros programas en Go.
@@ -256,8 +282,8 @@ error nuevo al Asistente.
   (CI y release) tampoco se han ejecutado aún.
 - El instalador de Windows (Inno Setup) todavía no se ha compilado en el entorno de release; sí
   se verificaron las carpetas de PyInstaller y el zip portable.
-- Sin firma de código: SmartScreen de Windows puede avisar de un editor desconocido y la app de
-  macOS no está notarizada.
+- Todavía sin firma de código: SmartScreen de Windows puede avisar de un editor desconocido y la
+  app de macOS no está notarizada. Consulta [Un proyecto nuevo](#un-proyecto-nuevo-por-qué-windows-puede-avisarte-y-por-qué-es-seguro).
 - La traducción al español está incompleta y el idioma sólo se puede cambiar con el idioma del
   sistema operativo (aún no hay selector en Opciones).
 - Mientras depuras, el programa no puede leer del teclado (stdin).
