@@ -1,6 +1,6 @@
 ---
 title: VizcachaIDE
-description: El IDE de Go para quien recién empieza. Escribe, ejecuta, entiende tus errores y depura paso a paso, en español o en inglés.
+description: The Go IDE for people just getting started. Write, run, understand your errors and debug step by step, in English or Spanish.
 image: https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/vizcachaidelogo.png
 ---
 
@@ -8,84 +8,84 @@ image: https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/vizcachaidelo
 
 # VizcachaIDE
 
-**El IDE de Go para quien recién empieza.** Escribe tu programa, ejecútalo con un botón, entiende por qué falla y míralo funcionar paso a paso. Todo en una sola ventana, en español o en inglés.
+**The Go IDE for people just getting started.** Write your program, run it with one button, understand why it fails and watch it work step by step. All in a single window, in English or Spanish.
 
-VizcachaIDE se inspira en [Thonny](https://thonny.org), el IDE con el que miles de personas aprenden Python, y lleva esa misma idea a Go: menos botones, más claridad y explicaciones pensadas para aprender.
+VizcachaIDE is inspired by [Thonny](https://thonny.org), the IDE that thousands of people use to learn Python, and brings that same idea to Go: fewer buttons, more clarity and explanations designed for learning.
 
-## Para quién es
+## Who it is for
 
-- **Estudiantes** que dan sus primeros pasos en programación con Go.
-- **Docentes** que necesitan una herramienta sencilla para el aula, que funcione en español y sin configuraciones complicadas.
-- **Cualquier persona** que quiera aprender Go sin pelearse primero con terminales, variables de entorno y extensiones.
+- **Students** taking their first steps in programming with Go.
+- **Teachers** who need a simple tool for the classroom that works in Spanish and needs no complicated setup.
+- **Anyone** who wants to learn Go without first fighting with terminals, environment variables and extensions.
 
-## Qué puedes hacer
+## What you can do
 
-![El Asistente explica un error en español](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/assistant.es.png)
+![The Assistant explains an error in Spanish](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/assistant.es.png)
 
-### Escribir y ejecutar
-- Pulsa **Ejecutar (F5)** y mira la salida de tu programa al instante.
-- Escribe en la consola cuando tu programa te pida datos por teclado.
-- Pasa argumentos a tu programa y trabaja con proyectos que usan `go.mod`.
-- Tu código se ordena solo al guardar, con el formato estándar de Go (gofmt).
+### Write and run
+- Press **Run (F5)** and see your program's output instantly.
+- Type in the console when your program asks for keyboard input.
+- Pass arguments to your program and work with projects that use `go.mod`.
+- Your code tidies itself on save, using Go's standard format (gofmt).
 
-### Entender tus errores
-- Cuando Go encuentra un problema, el **Asistente** te explica **qué pasó y cómo arreglarlo**, en tu idioma.
-- Reconoce los 25 errores más comunes de quien empieza: variables sin usar, imports de más, tipos que no encajan, índices fuera de rango, mapas sin inicializar, bloqueos entre goroutines y más.
-- El mensaje original de Go siempre está a la vista, con un botón para buscarlo en internet. Así aprendes a leer los errores reales.
-- Los errores se subrayan **mientras escribes**, antes de ejecutar.
+### Understand your errors
+- When Go finds a problem, the **Assistant** explains **what happened and how to fix it**, in your language.
+- It recognizes the 25 most common beginner errors: unused variables, extra imports, mismatched types, indexes out of range, uninitialized maps, deadlocks between goroutines and more.
+- Go's original message is always in view, with a button to search for it online. That way you learn to read real errors.
+- Errors are underlined **as you type**, before you run.
 
-### Ver tu programa paso a paso
+### Watch your program step by step
 
-![Depurando paso a paso: variables, la que acaba de cambiar y cómo llegaste ahí](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/debugger.es.png)
+![Debugging step by step: variables, the one that just changed and how you got here](https://raw.githubusercontent.com/codeplai/VizcachaIDE/main/docs/images/wails/debugger.es.png)
 
-- Haz clic junto a un número de línea para poner un **punto de interrupción** y pulsa **Depurar (F6)**.
-- Avanza con botones que hablan claro: **Siguiente línea**, **Entrar en la función**, **Salir de la función**.
-- Mira el valor de tus variables en cada paso. La que acaba de cambiar se resalta, para que veas qué hizo la última línea.
-- Descubre **cómo llegaste ahí** (la pila de llamadas) y qué hace cada goroutine.
+- Click next to a line number to set a **breakpoint** and press **Debug (F6)**.
+- Move forward with plainly worded buttons: **Next line**, **Go into function**, **Leave function**.
+- See the value of your variables at every step. The one that just changed is highlighted, so you can see what the last line did.
+- Find out **how you got there** (the call stack) and what each goroutine is doing.
 
-### Escribir más rápido
-- Autocompletado inteligente de Go, con la documentación de cada función.
-- Ayuda con los parámetros mientras escribes una llamada.
-- Ctrl+clic para ir a donde se define una función.
-- Buscar y reemplazar, ir a una línea, zoom, tema claro u oscuro.
+### Write faster
+- Smart Go autocompletion, with the documentation for each function.
+- Parameter help while you type a call.
+- Ctrl+click to jump to where a function is defined.
+- Find and replace, go to line, zoom, light or dark theme.
 
-## Pensado para aprender
+## Designed for learning
 
-- **Español e inglés** en toda la interfaz y en las explicaciones de errores. Detecta el idioma de tu sistema y puedes cambiarlo cuando quieras.
-- **Un botón principal.** Ejecutar es lo más visible de la ventana; lo demás aparece cuando lo necesitas.
-- **Letra muy legible.** Usa Atkinson Hyperlegible, una tipografía diseñada para que caracteres como 0 y O, o 1, l e I, no se confundan.
-- **Todo incluido.** La versión completa trae Go, el depurador Delve y gopls: instalas VizcachaIDE y ya puedes programar.
+- **English and Spanish** across the whole interface and in the error explanations. It detects your system language and you can change it whenever you like.
+- **One main button.** Run is the most visible thing in the window; everything else appears when you need it.
+- **Very readable type.** It uses Atkinson Hyperlegible, a typeface designed so that characters like 0 and O, or 1, l and I, are not confused.
+- **Everything included.** The full version ships with Go, the Delve debugger and gopls: install VizcachaIDE and you can start programming.
 
-## Descarga
+## Download
 
-VizcachaIDE es **gratis y de código abierto**.
+VizcachaIDE is **free and open source**.
 
-| Versión | Qué incluye | Para quién |
+| Version | What it includes | Who it is for |
 |---|---|---|
-| **Completa** | VizcachaIDE + Go + Delve + gopls | Si no tienes Go instalado (recomendada para empezar) |
-| **Ligera** | Solo VizcachaIDE | Si ya tienes Go instalado |
+| **Full** | VizcachaIDE + Go + Delve + gopls | If you do not have Go installed (recommended to get started) |
+| **Lite** | VizcachaIDE only | If you already have Go installed |
 
-**Descargas y código fuente:** [github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)
+**Downloads and source code:** [github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)
 
-**Sistemas:**
-- **Windows 10 y 11:** instalador sin permisos de administrador y versión portable.
-- **macOS y Linux:** versión preliminar.
+**Systems:**
+- **Windows 10 and 11:** installer that needs no administrator permissions, and a portable version.
+- **macOS and Linux:** preview version.
 
-> **Primera vez en Windows:** como el instalador todavía no tiene firma digital, Windows puede mostrar "Windows protegió tu PC". Haz clic en **Más información → Ejecutar de todas formas**.
+> **First time on Windows:** because the installer is not digitally signed yet, Windows may show "Windows protected your PC". Click **More info → Run anyway**.
 
-## Estado del proyecto
+## Project status
 
-VizcachaIDE está en **versión candidata (release candidate)**: ya se puede usar y estamos puliendo detalles antes de la versión final.
+VizcachaIDE is a **release candidate**: it is already usable and we are polishing details before the final version.
 
-- **Nueva edición 2.0:** interfaz rediseñada, más ligera y rápida, y con un depurador que explica cada paso.
-- **Edición clásica 1.x:** sigue disponible mientras la 2.0 llega a su versión final.
+- **New 2.0 edition:** redesigned interface, lighter and faster, with a debugger that explains every step.
+- **Classic 1.x edition:** remains available while 2.0 reaches its final version.
 
-## Hecho en Perú
+## Made in Peru
 
-VizcachaIDE es un proyecto de **[Codeplai Games](https://codeplai.pe)**, creado por Marks Calderon. Su nombre viene de la **vizcacha**, el roedor de los Andes que vive entre las rocas de la sierra: pequeño, curioso y siempre atento.
+VizcachaIDE is a project of **[Codeplai Games](https://codeplai.pe)**, created by Marks Calderon. Its name comes from the **vizcacha**, the Andean rodent that lives among the rocks of the highlands: small, curious and always alert.
 
-¿Tienes ideas, encontraste un error o quieres usarlo en tu clase? Escríbenos a **hola@codeplai.pe** o abre un *issue* en GitHub.
+Do you have ideas, did you find a bug, or do you want to use it in your class? Write to us at **hola@codeplai.pe** or open an *issue* on GitHub.
 
 ---
 
-<small>VizcachaIDE se distribuye bajo licencia MIT e incluye Go, Delve y gopls, cada uno con su propia licencia de código abierto.</small>
+<small>VizcachaIDE is distributed under the MIT license and includes Go, Delve and gopls, each with its own open-source license.</small>
