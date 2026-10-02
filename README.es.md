@@ -1,313 +1,236 @@
 # VizcachaIDE
 
-**Un IDE de Go para principiantes, inspirado en [Thonny](https://thonny.org/).**
+**Un IDE de Go amigable para quien recién empieza. Escribe, ejecuta, entiende tus errores y depura paso a paso, en español o en inglés.**
 
-[Read in English](README.md) · [Historial de cambios](CHANGELOG.md) · [Cómo contribuir](CONTRIBUTING.md) · [Notas de la versión 1.0.0-rc1](docs/release/notes-1.0.0-rc1.es.md)
+[Read in English](README.md) · [Historial de cambios](CHANGELOG.md) · [Cómo contribuir](CONTRIBUTING.md) · [Sitio web](https://vizcacha.codeplai.pe) · [Descargar](https://github.com/codeplai/VizcachaIDE/releases)
 
-VizcachaIDE es un IDE pequeño, de una sola ventana, pensado para quienes están aprendiendo Go.
-Ejecuta tu programa con una tecla, te deja ver qué pasa por dentro con un depurador de verdad
-y te explica los mensajes de error de Go en español o en inglés. La idea es la misma que tiene
-Thonny con Python: que un principiante pueda *ver* cómo se ejecuta su programa, sin pelearse
-con la configuración que piden los IDE profesionales.
+![VizcachaIDE 2.0 ejecutando un programa en Go](docs/images/wails/v2/run.es.png)
 
-> **Estado: versión candidata 1.0.0.** Todo lo que se describe abajo está implementado y
-> cubierto por tests automáticos, incluidos tests de integración con Go, Delve y gopls reales.
-> La versión de Windows se probó a mano; los paquetes de macOS y Linux son una **vista previa**
-> (consulta [Limitaciones conocidas](#limitaciones-conocidas)).
+VizcachaIDE es un IDE pequeño, de una sola ventana, para estudiantes, docentes y cualquier
+persona que esté aprendiendo Go. Se inspira en [Thonny](https://thonny.org/), el IDE con el que
+muchas personas aprenden Python: menos botones, más claridad, y la meta de que un principiante
+pueda ver cómo se ejecuta su programa, sin la configuración que piden los IDE profesionales.
 
-![VizcachaIDE ejecutando un programa](docs/images/editor-run.es.png)
+**Por qué existe.** En Codeplai construimos con Go y quisimos compartir una herramienta amable
+para aprenderlo. El nombre viene de la *vizcacha*, el roedor andino del Perú que siempre se ve
+relajado. Ese es el ánimo que queremos para quien escribe su primer programa.
+
+> **Estado: edición 2.0.0-rc1 (versión candidata).** El producto principal es la nueva edición
+> en [`wails/`](wails/) (backend en Go, Svelte 5 y CodeMirror 6). La edición original en PyQt5
+> (1.x, carpeta `vizcacha/`) sigue disponible como [edición clásica](#edición-clásica-1x-pyqt5),
+> en mantenimiento.
+
+## Contenido
+
+- [Capturas](#capturas)
+- [Características](#características)
+- [Descarga e instalación](#descarga-e-instalación)
+- [Un proyecto nuevo: por qué Windows puede avisarte y por qué es seguro](#un-proyecto-nuevo-por-qué-windows-puede-avisarte-y-por-qué-es-seguro)
+- [Atajos de teclado](#atajos-de-teclado)
+- [Compilar desde el código fuente](#compilar-desde-el-código-fuente-edición-20)
+- [Edición clásica 1.x (PyQt5)](#edición-clásica-1x-pyqt5)
+- [Arquitectura](#arquitectura)
+- [Limitaciones conocidas](#limitaciones-conocidas)
+- [Licencia](#licencia), [créditos y contacto](#créditos-y-contacto)
+
+## Capturas
+
+![Ejecutar con F5: la salida aparece abajo](docs/images/wails/v2/run.es.png)
+*Pulsa F5 y mira la salida de tu programa.*
+
+![El Asistente explica un error de Go](docs/images/wails/v2/assistant.es.png)
+*El Asistente explica qué pasó y cómo arreglarlo, y deja a la vista el mensaje original de Go.*
+
+![Vista de llamadas anidadas de una función recursiva](docs/images/wails/v2/calls.es.png)
+*El depurador muestra las llamadas anidadas, como `factorial(n=3)`, para que la recursión deje de ser un misterio.*
+
+![La consola de Go](docs/images/wails/v2/console.es.png)
+*La consola de Go: prueba una expresión o una instrucción sin crear un archivo.*
+
+![El menú Archivo](docs/images/wails/v2/file-menu.es.png)
+*Menú Archivo con Nuevo, Abrir, Guardar, Guardar como y archivos recientes.*
+
+![Tema oscuro](docs/images/wails/v2/dark.es.png)
+*Tema claro y tema oscuro.*
+
+## Características
+
+### Escribir y ejecutar
+- **Ejecuta con F5.** Detén con Shift+F5, o con Ctrl+C para una detención ordenada.
+- Los programas que leen del teclado funcionan: escribe tus datos en el panel de Salida (stdin).
+- Argumentos para el programa y proyectos con `go.mod` (se ejecuta el módulo completo).
+- **gofmt al guardar**, para que tu código siempre tenga el formato estándar.
+- Colores ANSI en la salida.
+
+### Entender tus errores: el Asistente
+- Explica **25 errores comunes de Go** en español e inglés: qué pasó, cómo arreglarlo y el
+  mensaje original de Go (nunca se traduce, para que puedas buscarlo).
+- También explica las advertencias de `go vet`.
+- **Diagnósticos en vivo con gopls**: los problemas se subrayan mientras escribes, antes de ejecutar.
+- Autocompletado (Ctrl+Espacio), documentación al pasar el cursor e ir a la definición (F12 o Ctrl+clic).
+
+### Depurar paso a paso (Delve)
+- Puntos de interrupción, **siguiente línea**, **entrar en la función**, **salir de la función** y
+  **ejecutar hasta aquí**.
+- **Variables** con resaltado de "acaba de cambiar", para ver qué hizo la última línea.
+- **Pila de llamadas** y **goroutines**.
+- **Vista de llamadas anidadas**: las llamadas en forma de árbol con sus argumentos, por ejemplo
+  `factorial(n=3)`.
+
+### Consola de Go
+Una consola (basada en el intérprete [yaegi](https://github.com/traefik/yaegi)) donde puedes
+probar expresiones e instrucciones de Go al instante, como el intérprete de Python en Thonny.
+
+### Archivos y comodidad diaria
+- **Menú Archivo** y botones Nuevo / Abrir / Guardar; **Guardar como**; archivos recientes.
+- **Panel de archivos** con clic derecho: renombrar, mover a la Papelera de reciclaje, mostrar en
+  el explorador.
+- Los archivos modificados fuera del IDE se recargan automáticamente.
+- Clic derecho en Salida, Problemas y Consola: copiar, copiar todo, pegar, seleccionar todo, limpiar.
+- **Gestor de módulos de Go** (init, get, tidy) sin abrir una terminal.
+- **Asistente de primer uso** que revisa tus herramientas.
+- Tema claro y oscuro.
+- **Español e inglés**, detectados automáticamente según tu sistema.
+- La ventana recuerda su tamaño, su posición y si estaba maximizada.
+
+## Descarga e instalación
+
+Descarga los instaladores desde [GitHub Releases](https://github.com/codeplai/VizcachaIDE/releases).
+Hay dos variantes:
+
+| Variante | Qué incluye | Tamaño | Elígela si... |
+|---|---|---|---|
+| **completa** (full) | El IDE + Go 1.25, Delve y gopls | Zip portable de unos 91 MB, instalador de unos 60 MB | Aún no tienes Go, o quieres una configuración para el aula que funcione sin internet. |
+| **ligera** (lite) | Solo el IDE | Unos 10 MB | Ya tienes Go instalado. |
+
+| Plataforma | Estado |
+|---|---|
+| Windows 10/11 x64 | Probada. Instalador (por usuario, sin permisos de administrador) o zip portable. |
+| macOS y Linux | **Vista previa**: las genera la integración continua (CI), aún sin probar en equipos reales. |
+
+La versión portable solo necesita **WebView2**, que ya viene con Windows 11 y con Windows 10
+actualizado. Descomprime el zip y ejecuta `vizcacha.exe`.
 
 ## Un proyecto nuevo: por qué Windows puede avisarte y por qué es seguro
 
 VizcachaIDE es un **proyecto nuevo e independiente**, hecho en Perú por
 [Codeplai Games](https://codeplai.pe). Sus instaladores **todavía no tienen firma digital**, así
-que la primera vez que abras uno, SmartScreen de Windows puede mostrar *«Windows protegió tu
-PC»* y decir que el editor es desconocido. Este aviso aparece con todo programa nuevo que no
-está firmado; no significa que se haya encontrado un virus. Para continuar, haz clic en **Más
-información → Ejecutar de todas formas**. (En macOS la app aún no está notarizada: haz clic
-derecho sobre ella y elige **Abrir**.)
+que la primera vez que abras uno, Windows SmartScreen puede mostrar *"Windows protegió tu PC"* y
+decir que el editor es desconocido. Esto pasa con todo programa nuevo sin firma. No significa que
+se haya encontrado un virus. Para continuar, haz clic en **Más información y luego en Ejecutar de
+todas formas**. (En macOS la app aún no está notarizada: haz clic derecho sobre ella y elige
+**Abrir**.)
 
-No tienes que creernos sin más:
+No tienes que creernos solo de palabra:
 
 - **El código fuente es público:** cada línea está en
-  **[github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)**, con licencia
-  MIT. Puedes leerlo y también [compilarlo tú mismo](#desde-el-código-fuente).
-- **Puedes verificar tu descarga:** cada versión publicada incluye un archivo `SHA256SUMS`. En
-  PowerShell, `Get-FileHash .\VizcachaIDE-…zip` debe mostrar el mismo valor que aparece en ese
-  archivo.
-- **Las herramientas incluidas son las oficiales:** Go, Delve y gopls se descargan de sus
-  fuentes oficiales, y el script de empaquetado comprueba cada descarga con un SHA-256 fijo
-  ([`packaging/versions.toml`](packaging/versions.toml)).
+  **[github.com/codeplai/VizcachaIDE](https://github.com/codeplai/VizcachaIDE)**, con licencia MIT.
+  Puedes leerlo y [compilarlo tú mismo](#compilar-desde-el-código-fuente-edición-20).
+- **Puedes verificar tu descarga:** cada versión incluye un archivo `SHA256SUMS`. En PowerShell,
+  `Get-FileHash .\<archivo descargado>` debe mostrar el mismo valor que aparece en ese archivo.
+- **Las herramientas incluidas son las oficiales:** Go, Delve y gopls vienen de sus fuentes
+  oficiales, y el script de empaquetado comprueba cada descarga contra un SHA-256 fijo.
 
-**Sobre la firma:** planeamos adquirir un certificado de firma de código a medida que el
-proyecto crezca, para que Windows reconozca al editor y el aviso desaparezca. Mientras tanto, el
-código público y las sumas de verificación son la forma de comprobar lo que instalas.
-
-## ¿Para quién es?
-
-- Estudiantes y autodidactas que escriben sus primeros programas en Go.
-- Docentes que quieren una herramienta para el aula con **todo en un solo instalador**
-  (Go incluido).
-- Quienes aprenden en español: la interfaz y las explicaciones de errores son bilingües.
-
-No pretende reemplazar a GoLand o VS Code en el trabajo profesional.
-
-## Funciones
-
-### Editor
-- Resaltado de sintaxis de Go, números de línea, emparejado de llaves y pestañas para varios
-  archivos.
-- Indentación con tabulaciones reales (como hace `gofmt`); el ancho visible se configura.
-  Tab y Shift+Tab indentan o desindentan las líneas seleccionadas.
-- **gofmt al guardar** (se puede desactivar) y *Editar → Format Code* (Ctrl+Shift+F; mientras se completa la traducción, algunos menús aparecen en inglés).
-- Barra de buscar y reemplazar (Ctrl+F, Ctrl+H, F3), ir a línea (Ctrl+G), comentar y
-  descomentar (Ctrl+/) y zoom (Ctrl+=, Ctrl+-, Ctrl+0).
-- Archivos recientes (hasta 10). Si un archivo cambia fuera del IDE, se recarga solo o te
-  pregunta qué hacer.
-- 4 temas de editor (Light, Dark, Solarized Light y Solarized Dark) y 2 de consola (Dark y
-  Light), o tus propios colores de fondo y de texto.
-
-### Ejecutar
-- **Ejecutar** (F5) usa `go run`, **Detener** (Shift+F5) para el programa y **Compilar**
-  (Ctrl+B) lanza `go build`. La ventana no se congela mientras tanto.
-- La consola muestra la salida con colores, acepta **entrada por teclado** para los programas
-  que leen de stdin y convierte las referencias como `file.go:12:5` en enlaces que llevan a
-  esa línea.
-- Campo de **argumentos del programa** en la barra de herramientas (admite comillas).
-- Las pestañas sin guardar ("Untitled") se pueden ejecutar directamente.
-- **Módulos de Go:** si el archivo está en una carpeta con `go.mod`, se ejecuta el módulo
-  completo (`go run .`). *Herramientas → Go Modules…* ejecuta `go mod init`,
-  `go get <paquete>[@versión]` y `go mod tidy` sin abrir una terminal.
-- *Archivo → Open Folder…* muestra el panel **Files** con el contenido de la carpeta.
-
-### Depurador (Delve)
-Un depurador real basado en [Delve](https://github.com/go-delve/delve) (`dlv dap`):
-
-![El depurador detenido en un punto de interrupción](docs/images/debugger.es.png)
-
-- Puntos de interrupción: haz clic en el número de línea o pulsa F10. Puedes ponerlos y
-  quitarlos mientras el programa se ejecuta.
-- Depurar (F6), Continuar (Shift+F6), Paso sobre (F7), Paso adentro (F8), Paso afuera (F9),
-  Ejecutar hasta el cursor (Ctrl+F10) y Detener la depuración (Ctrl+F6).
-- Panel de **Variables** con structs, slices y maps desplegables (el contenido se carga cuando
-  lo abres), **Pila de llamadas** (un clic en un frame te lleva a su línea) y **Goroutines**.
-- La línea actual queda resaltada y la salida del programa aparece en la consola.
-
-### Asistente: los errores de Go explicados en español y en inglés
-Cuando Go informa de un problema, se abre el panel **Asistente** con una explicación breve para
-principiantes, una sugerencia para arreglarlo, el mensaje original de Go (nunca se traduce, para
-que puedas buscarlo en internet) y los botones *Ir a la línea* y *Buscar este error*.
-
-![El Asistente explicando una variable sin usar](docs/images/assistant.es.png)
-
-El catálogo reconoce **25 tipos de mensajes**: 16 errores de compilación (variable o import sin
-usar, falta un return, nombre no definido, tipos que no coinciden, número incorrecto de
-argumentos, `:=` sin variables nuevas, nombres no exportados, falta `main`…), 7 panics en tiempo
-de ejecución (índice fuera de rango, map nil, puntero nil, deadlock, división por cero, límites
-de un slice y aserción de tipo fallida) y 2 avisos de `go vet` (argumentos de Printf y código
-inalcanzable). Cada uno tiene un programa mínimo de ejemplo en
-[`examples/errors/`](examples/errors/).
-
-### Inteligencia de código (gopls)
-Con [gopls](https://pkg.go.dev/golang.org/x/tools/gopls) instalado (viene incluido en el
-paquete *full*):
-
-- Autocompletado con Ctrl+Space, que incluye tus propias funciones y cualquier paquete.
-- Errores subrayados mientras escribes, justo en el tramo del código donde está el problema;
-  el Asistente también los explica.
-- Documentación al pasar el ratón, Ctrl+clic para ir a la definición, ayuda con los parámetros
-  al escribir `(` y resaltado de las demás apariciones de un nombre.
-- Panel **Outline** (disponible desde el arranque) con las funciones y los tipos del archivo
-  actual.
-
-Sin gopls, el editor usa una lista de autocompletado básica (palabras clave, funciones
-integradas y las funciones más comunes de la biblioteca estándar) y lo avisa una vez en la
-barra de estado.
-
-### Configuración
-*Herramientas → Opciones…* tiene tres páginas: **Entorno** (rutas de `go`, `dlv` y `gopls`,
-`GOPATH`, `GOROOT`, variables de entorno adicionales y qué herramientas se detectaron y dónde),
-**Editor** (fuente, tamaño, ancho del tabulador, autoindentado, números de línea, ajuste de línea
-y formato al guardar) y **Apariencia** (temas, colores propios, barra de herramientas y barra
-de estado).
-
-Las herramientas se buscan en este orden: la ruta indicada en Opciones → las herramientas
-incluidas en el paquete *full* → el `PATH`.
-
-## Instalación
-
-### Instaladores
-
-Se descargan desde la página de [Releases](https://github.com/codeplai/VizcachaIDE/releases)
-del proyecto. Hay dos variantes:
-
-| Variante | Incluye | Elígela si… |
-|---|---|---|
-| **full** | El IDE + Go 1.25.14, Delve 1.27.2 y gopls 0.21.1 | Aún no tienes Go, o quieres algo para el aula que funcione sin internet. No hay que instalar nada más. |
-| **lite** | Sólo el IDE | Ya tienes Go instalado (y, si quieres, `dlv` y `gopls`). |
-
-| Plataforma | Archivos | Estado |
-|---|---|---|
-| Windows 10/11 x64 | `…-windows-x64-full-setup.exe`, `…-lite-setup.exe`, `…-portable.zip` | Aplicación probada a mano; el instalador aún no se ha probado |
-| macOS 11+ (Apple Silicon / Intel) | `…-macos-arm64-full.dmg`, `…-macos-x86_64-full.dmg` (y `lite`) | **Vista previa**, sin probar todavía |
-| Linux x86_64 | `…-linux-x86_64-full.AppImage` (y `lite`) | **Vista previa**, sin probar todavía |
-
-- **Windows:** el instalador es por usuario (no necesita permisos de administrador) y permite
-  instalar para todos los usuarios, crear un acceso directo en el escritorio y abrir los
-  archivos `.go` con VizcachaIDE. Está en español y en inglés. El zip no necesita instalación.
-- **macOS:** la app no está notarizada: la primera vez, haz clic derecho sobre ella y elige
-  **Abrir**.
-- **Linux:** `chmod +x VizcachaIDE-*.AppImage` y ejecútalo. Necesita las bibliotecas de Qt/X11
-  habituales (`libxkbcommon-x11-0`, `libxcb-*`, `libegl1`, `libfontconfig1`) y glibc 2.35 o
-  posterior.
-
-La variante *lite* necesita Go en el sistema (se recomienda Go 1.21 o posterior; las pruebas se
-hicieron con la 1.25). Para depurar instala Delve, y para la inteligencia de código, gopls:
-
-```bash
-go install github.com/go-delve/delve/cmd/dlv@latest
-go install golang.org/x/tools/gopls@latest
-```
-
-> **Sobre la licencia de los instaladores.** El código fuente de VizcachaIDE es MIT. Pero los
-> instaladores incluyen también PyQt5, que tiene licencia GPLv3, así que **el programa
-> distribuido, en su conjunto, queda bajo la GPLv3**. El instalador de Windows muestra este
-> aviso, y todos los paquetes incluyen [`NOTICE.md`](packaging/NOTICE.md) y el texto de la GPL.
-> La GPL se aplica al IDE, no a los programas de Go que escribas con él.
-
-### Desde el código fuente
-
-Requisitos: Python 3.10 o posterior, Go (se recomienda 1.21 o posterior) y, si quieres, `dlv`
-y `gopls` en el `PATH`.
-
-```bash
-git clone https://github.com/codeplai/VizcachaIDE.git
-cd VizcachaIDE
-python -m venv .venv
-.venv/Scripts/activate              # Windows  (Linux/macOS: source .venv/bin/activate)
-pip install -r requirements.txt
-python -m vizcacha                  # o bien: python main.py
-```
-
-Para generar tú mismo los instaladores, consulta [`packaging/README.md`](packaging/README.md).
-
-## Primeros pasos
-
-1. Abre VizcachaIDE. Ya hay una pestaña vacía: escribe un programa o abre alguno de los
-   [`examples/`](examples/) con *Archivo → Abrir…* (Ctrl+O).
-   ```go
-   package main
-
-   import "fmt"
-
-   func main() {
-   	fmt.Println("¡Hola, VizcachaIDE!")
-   }
-   ```
-2. Pulsa **F5** para ejecutarlo. La salida aparece en la consola de abajo.
-3. Equivócate a propósito (por ejemplo, declara una variable y no la uses) y vuelve a pulsar
-   F5: el Asistente te explica el error.
-4. Guarda el archivo (Ctrl+S), haz clic en un número de línea para poner un punto de
-   interrupción y pulsa **F6** para depurar. Avanza con F7, F8 y F9 y mira el panel Variables.
+**Sobre la firma:** pensamos comprar un certificado de firma de código a medida que el proyecto
+crezca, para que Windows reconozca al editor y el aviso desaparezca. Mientras tanto, el código
+público y las sumas de verificación son la forma de comprobar lo que instalas.
 
 ## Atajos de teclado
 
 | Acción | Atajo |
 |---|---|
-| Nuevo / Abrir / Guardar / Guardar como | Ctrl+N / Ctrl+O / Ctrl+S / Ctrl+Shift+S |
-| Deshacer / Rehacer | Ctrl+Z / Ctrl+Y (Linux: Ctrl+Shift+Z) |
-| Buscar / Reemplazar | Ctrl+F / Ctrl+H |
-| Buscar siguiente / anterior | F3 / Shift+F3 |
-| Ir a línea | Ctrl+G |
-| Comentar o descomentar | Ctrl+/ |
-| Formatear código (gofmt) | Ctrl+Shift+F |
-| Acercar / alejar / restablecer zoom | Ctrl+= / Ctrl+- / Ctrl+0 |
-| Autocompletar | Ctrl+Space |
-| Ir a la definición | Ctrl+clic |
-| Ejecutar / Detener / Compilar | F5 / Shift+F5 / Ctrl+B |
-| Depurar / Continuar / Detener la depuración | F6 / Shift+F6 / Ctrl+F6 |
-| Paso sobre / Paso adentro / Paso afuera | F7 / F8 / F9 |
-| Poner o quitar un punto de interrupción | F10 (o clic en el número de línea) |
-| Ejecutar hasta el cursor | Ctrl+F10 |
+| Ejecutar / Detener (o detener la depuración) | F5 / Shift+F5 |
+| Depurar / Continuar | F6 / Shift+F6 |
+| Siguiente línea / Entrar / Salir | F7 / F8 / F9 |
+| Ejecutar hasta aquí | Ctrl+F10 |
+| Nuevo / Abrir / Guardar | Ctrl+N / Ctrl+O / Ctrl+S |
+| Guardar como | Ctrl+Shift+S |
+| Cerrar pestaña | Ctrl+W |
+| Buscar | Ctrl+F |
+| Ir a la línea | Ctrl+G |
+| Ir a la definición | F12 o Ctrl+clic |
+| Sugerencias | Ctrl+Espacio |
+| Acercar / Alejar / Restablecer zoom | Ctrl++ / Ctrl+- / Ctrl+0 |
 
-Nuevo, Abrir, Guardar, Deshacer, Rehacer, Cortar, Copiar, Pegar y Salir usan las teclas
-estándar de cada sistema (en macOS, ⌘ en lugar de Ctrl; Salir es Ctrl+Q en Linux y ⌘Q en macOS).
+## Compilar desde el código fuente (edición 2.0)
 
-## Idiomas
+Requisitos: Go 1.25 o superior, Node 22 y la CLI de Wails v2.16
+(`go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0`).
 
-La interfaz, los mensajes de la consola y las explicaciones del Asistente están en **español**
-y en **inglés**. VizcachaIDE usa el idioma del sistema operativo (cualquier configuración
-regional `es*` → español; cualquier otra → inglés). Los mensajes de error originales de Go se
-muestran siempre tal como Go los escribe.
+```bash
+git clone https://github.com/codeplai/VizcachaIDE.git
+cd VizcachaIDE/wails
+wails dev        # app de escritorio con recarga en caliente
+wails build      # compila la app en build/bin/
+```
 
-La traducción al español de esta versión candidata todavía no está completa: algunos textos
-siguen en inglés y aún no hay un selector de idioma dentro de la aplicación (consulta
-[Limitaciones conocidas](#limitaciones-conocidas)).
+Pruebas:
+
+```bash
+cd wails
+go test ./...
+cd frontend && npm run check && npx vitest run
+```
+
+Para generar los paquetes de la versión (completa y ligera):
+
+```bash
+python wails/packaging/build_release.py --variant both
+```
+
+Más detalles (dependencias en Linux, puente simulado, traducciones, reglas de arquitectura) en
+[`wails/README.md`](wails/README.md).
+
+## Edición clásica 1.x (PyQt5)
+
+La primera edición, escrita en Python con PyQt5, sigue en el repositorio (carpeta `vizcacha/`).
+Está en **mantenimiento**: solo recibe correcciones. Para ejecutarla necesitas Python 3.10 o
+superior y Go:
+
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+Los binarios clásicos incluyen PyQt5, que es GPLv3, así que esos paquetes 1.x se distribuyen bajo
+GPLv3 (consulta [`packaging/NOTICE.md`](packaging/NOTICE.md)). La edición 2.0 no incluye PyQt.
 
 ## Arquitectura
 
-VizcachaIDE sigue la Clean Architecture con cuatro capas, que
-[import-linter](https://import-linter.readthedocs.io/) comprueba automáticamente:
+La edición 2.0 tiene un backend en Go (dominio, casos de uso, adaptadores y un puente fino para
+Wails) y un frontend en Svelte 5 + CodeMirror 6 que se comunica con él mediante un puente tipado.
+Las integraciones con Delve y gopls son adaptadores, y las reglas de dependencias se verifican en CI.
 
-```
-vizcacha/
-├── domain/          modelo en Python puro (sin Qt): depuración, diagnósticos, explicaciones, proyecto
-├── application/     puertos (typing.Protocol) y casos de uso
-├── infrastructure/  adaptadores: toolchain de Go, Delve DAP, gopls LSP, catálogo de errores, configuración
-├── i18n/            catálogos gettext (inglés / español), mantenidos con Babel
-└── ui/              PyQt5; cada función se conecta al Workbench con register(workbench)
-```
-
-Más detalle: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md),
-[docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md) y
-[docs/COMPARATIVA_THONNY.md](docs/COMPARATIVA_THONNY.md). La guía
-[CONTRIBUTING.md](CONTRIBUTING.md) explica las reglas (en inglés, con un resumen en español).
-
-## Desarrollo
-
-```bash
-pip install -r requirements-dev.txt
-python -m pytest                    # tests; los de integración con Go/Delve/gopls se ejecutan si están en el PATH
-ruff check . && lint-imports        # estilo + contratos de arquitectura
-python docs/release/make_screenshots.py   # regenera las capturas de docs/images/
-```
-
-En [CONTRIBUTING.md](CONTRIBUTING.md) se explica cómo añadir una función, una traducción o un
-error nuevo al Asistente.
+- [Arquitectura](docs/ARCHITECTURE.md)
+- [Comparativa con Thonny](docs/THONNY_COMPARISON.md)
+- [Plan de desarrollo](docs/DEVELOPMENT_PLAN.md)
+- [Plan de Wails](docs/wails/PLAN_WAILS.md)
+- [README de Wails](wails/README.md) y [guía para contribuir](CONTRIBUTING.md)
 
 ## Limitaciones conocidas
 
-- **Los paquetes de macOS y Linux son una vista previa:** los scripts existen, pero el `.dmg` y
-  el AppImage todavía no se han probado en máquinas reales. Los workflows de GitHub Actions
-  (CI y release) tampoco se han ejecutado aún.
-- El instalador de Windows (Inno Setup) todavía no se ha compilado en el entorno de release; sí
-  se verificaron las carpetas de PyInstaller y el zip portable.
-- Todavía sin firma de código: SmartScreen de Windows puede avisar de un editor desconocido y la
-  app de macOS no está notarizada. Consulta [Un proyecto nuevo](#un-proyecto-nuevo-por-qué-windows-puede-avisarte-y-por-qué-es-seguro).
-- La traducción al español está incompleta y el idioma sólo se puede cambiar con el idioma del
-  sistema operativo (aún no hay selector en Opciones).
-- Mientras depuras, el programa no puede leer del teclado (stdin).
-- Para depurar hay que guardar el archivo; el panel Files sólo aparece después de
-  *Archivo → Open Folder…*.
-- La disposición inicial de los paneles todavía se está mejorando (al principio el Asistente
-  puede verse pequeño: arrastra su borde o despégalo).
-- No está previsto: MicroPython, TinyGo ni microcontroladores.
+- **Los instaladores no están firmados**: Windows SmartScreen puede avisarte, y la app de macOS no
+  está notarizada (ver arriba).
+- **Las compilaciones de macOS y Linux son una vista previa**: la CI las genera, pero no se han
+  probado en equipos reales. Windows 10/11 x64 es la plataforma probada.
+- **Mientras depuras, el programa no puede leer del teclado (stdin).** Para eso, ejecútalo con F5.
+- **La consola de Go usa un intérprete** (yaegi). Funciona la mayor parte de la biblioteca estándar,
+  pero no es exactamente lo mismo que compilar y ejecutar un programa.
+- No planeado: MicroPython, TinyGo y microcontroladores.
 
 ## Licencia
 
-- **Código fuente:** [MIT](LICENSE), © 2025-2026 Marks Calderon – Codeplai Games.
-- **Binarios distribuidos:** incluyen PyQt5 (GPLv3), así que los instaladores y paquetes, en su
-  conjunto, quedan bajo la **GPLv3**. En [`packaging/NOTICE.md`](packaging/NOTICE.md) está la
-  lista completa de componentes incluidos y sus licencias (Qt LGPLv3, Python PSF, Go y gopls
-  BSD de 3 cláusulas, Delve MIT).
+[MIT](LICENSE), © 2025-2026 Marks Calderon – Codeplai Games. Los binarios clásicos 1.x son GPLv3
+porque incluyen PyQt5.
 
-## Créditos
+## Créditos y contacto
 
-- [Thonny](https://thonny.org/), el IDE de Python para principiantes que inspiró este proyecto.
-- [Delve](https://github.com/go-delve/delve), el depurador de Go.
-- [gopls](https://pkg.go.dev/golang.org/x/tools/gopls), el servidor de lenguaje de Go, y
-  [lsprotocol](https://github.com/microsoft/lsprotocol) por sus tipos.
-- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) y [Qt](https://www.qt.io/).
-- [El lenguaje de programación Go](https://go.dev/).
+Creado por **Marks Calderon**, CEO de Codeplai, en **Codeplai Games**. Hecho en Perú.
 
-Creado por Marks Calderon (Codeplai Games, Perú) para todas las personas que están aprendiendo Go.
+- Sitio web: [vizcacha.codeplai.pe](https://vizcacha.codeplai.pe) (código:
+  [codeplai/vizcachaweb](https://github.com/codeplai/vizcachaweb))
+- Contacto: [hola@codeplai.pe](mailto:hola@codeplai.pe)
+- Gracias a [Thonny](https://thonny.org/) (inspiración), [Delve](https://github.com/go-delve/delve),
+  [gopls](https://pkg.go.dev/golang.org/x/tools/gopls), [yaegi](https://github.com/traefik/yaegi),
+  [Wails](https://wails.io/), [Svelte](https://svelte.dev/), [CodeMirror](https://codemirror.net/)
+  y [el lenguaje Go](https://go.dev/).
