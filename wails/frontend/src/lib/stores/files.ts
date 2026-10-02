@@ -2,6 +2,7 @@ import { derived, get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { FileNode } from '../domain'
 import { problems } from './diagnostics'
+import { rememberRecentFile } from './recentFiles'
 import { updateSettings } from './settings'
 
 export const fileTree = writable<FileNode | null>(null)
@@ -40,6 +41,7 @@ export const openFile = async (bridge: Bridge, path: string): Promise<void> => {
     const text = await bridge.files.readFile(path)
     buffers.update((all) => ({ ...all, [path]: text }))
     await bridge.language.openDocument(path, text)
+    await rememberRecentFile(bridge, path)
   }
   openTabs.update((tabs) => (tabs.includes(path) ? tabs : [...tabs, path]))
   activePath.set(path)
