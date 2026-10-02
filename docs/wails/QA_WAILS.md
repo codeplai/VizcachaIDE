@@ -1,19 +1,19 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
-## Resumen (español)
+## Summary
 
-QA de paridad con la 1.0, hecho el **2026-10-01 en Windows 10** con el **backend real**: `wails dev`, Go 1.25.5, Delve 1.27.2 y gopls 0.21.1, recorrido por Edge sin pantalla con CDP.
+Parity QA against 1.0, done on **2026-10-01 on Windows 10** with the **real backend**: `wails dev`, Go 1.25.5, Delve 1.27.2 and gopls 0.21.1, driven through headless Edge with CDP.
 
-- **Funciona igual o mejor que la 1.0:** ejecutar, stdin, argumentos, Stop, errores explicados (compilación y panics), subrayado de gopls, completado, hover, ir a la definición, gofmt al guardar, cerrar con cambios, depurador real, primer arranque, idioma automático y diálogo de módulos.
-- **Corregido durante el QA:**
-  - Faltaba la entrada de teclado (stdin) en la Salida.
-  - Los argumentos del programa estaban escondidos en Configuración; ahora están en la barra de título.
-  - El Asistente no explicaba los diagnósticos en vivo de gopls.
-  - El mensaje de un panic llegaba partido en dos líneas.
-  - Faltaba "Ejecutar hasta aquí".
-  - Había un fallo en los mensajes a gopls.
-  - El Asistente mostraba tarjetas de otros archivos; ahora muestra solo el archivo activo y la última ejecución.
-- **Corregido después del QA:** los ejemplos ahora viven cada uno en su carpeta, así que gopls ya no marca "main redeclared". Ver §3 para lo pendiente.
+- **Works the same as or better than 1.0:** run, stdin, arguments, Stop, explained errors (compilation and panics), gopls underlining, completion, hover, go to definition, gofmt on save, closing with unsaved changes, the real debugger, first run, automatic language and the modules dialog.
+- **Fixed during QA:**
+  - Keyboard input (stdin) was missing in Output.
+  - Program arguments were hidden in Settings; they are now in the title bar.
+  - The Assistant did not explain gopls live diagnostics.
+  - A panic message arrived split across two lines.
+  - "Run to here" was missing.
+  - There was a bug in the messages sent to gopls.
+  - The Assistant showed cards from other files; it now shows only the active file and the last run.
+- **Fixed after QA:** each example now lives in its own folder, so gopls no longer reports "main redeclared". See §3 for what is still pending.
 
 ## 1. Environment
 
