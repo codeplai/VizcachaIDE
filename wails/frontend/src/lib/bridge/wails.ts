@@ -57,7 +57,12 @@ const createFilesApi = (): FilesApi => ({
   saveFile: (path, text) => FilesService.SaveFile(path, text),
   watchFiles: (paths) => FilesService.WatchFiles(paths),
   openFileDialog: () => FilesService.OpenFileDialog(),
-  saveFileDialog: (suggestedName, folder) => FilesService.SaveFileDialog(suggestedName, folder)
+  saveFileDialog: (suggestedName, folder) => FilesService.SaveFileDialog(suggestedName, folder),
+  createFile: (path, text) => FilesService.CreateFile(path, text),
+  createFolder: (path) => FilesService.CreateFolder(path),
+  rename: (from, to) => FilesService.Rename(from, to),
+  moveToTrash: (path) => FilesService.MoveToTrash(path),
+  revealInExplorer: (path) => FilesService.RevealInExplorer(path)
 })
 
 export const createWailsBridge = (): Bridge => ({

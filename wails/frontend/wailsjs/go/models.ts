@@ -1,5 +1,17 @@
 export namespace bridge {
 	
+	export class FilesService {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new FilesService(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
 	export class SettingsService {
 	
 	

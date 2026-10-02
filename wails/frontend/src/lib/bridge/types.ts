@@ -88,6 +88,14 @@ export interface FilesApi {
   openFileDialog: () => Promise<string>
   /** Native "save as" dialog (adds .go when the name has no extension); "" when cancelled. */
   saveFileDialog: (suggestedName: string, folder: string) => Promise<string>
+  // Files panel operations (create, rename, Recycle Bin, Show in Explorer).
+  createFile: (path: string, text: string) => Promise<void>
+  createFolder: (path: string) => Promise<void>
+  /** Fails if the target already exists. */
+  rename: (from: string, to: string) => Promise<void>
+  /** Sends the file or folder to the Recycle Bin; it never deletes permanently. */
+  moveToTrash: (path: string) => Promise<void>
+  revealInExplorer: (path: string) => Promise<void>
 }
 
 /** Mirrors bridge.SettingsService (Go). */

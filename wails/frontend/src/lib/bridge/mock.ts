@@ -5,16 +5,14 @@ import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
 import { mockAssistant } from './mockAssistant'
 import { mockConsole } from './mockConsole'
+import { mockFiles } from './mockFiles'
 import {
-  SAMPLE_DIR,
-  SAMPLE_SOURCES,
   defaultSettings,
   sampleDebugState,
   SAMPLE_STRUCT_REFERENCE,
   sampleLocation,
   sampleStructFields,
-  sampleSymbols,
-  sampleTree
+  sampleSymbols
 } from './mockData'
 import {
   emitDebugStart,
@@ -168,15 +166,7 @@ export const createMockBridge = (): MockBridge => {
       emit
     ),
     console: mockConsole(),
-    files: {
-      openFolder: async () => sampleTree(),
-      listTree: async () => sampleTree(),
-      readFile: async (path) => SAMPLE_SOURCES[path] ?? '',
-      saveFile: async () => {},
-      watchFiles: async () => {},
-      openFileDialog: async () => `${SAMPLE_DIR}/saludo.go`,
-      saveFileDialog: async (name, folder) => `${folder || SAMPLE_DIR}/${name}`
-    },
+    files: mockFiles(),
     settings: mockSettings(state, emit),
     system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },
     on

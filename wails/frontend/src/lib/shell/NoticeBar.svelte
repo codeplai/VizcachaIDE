@@ -5,7 +5,11 @@
 
 {#if $notice}
   {@const current = $notice}
-  <div class="notice" role="alert">
+  <div
+    class="notice"
+    class:info={current.tone === 'info'}
+    role={current.tone === 'info' ? 'status' : 'alert'}
+  >
     <div class="text">
       <span>{$t(current.messageKey, { values: current.values })}</span>
       {#if current.detail}<code>{current.detail}</code>{/if}
@@ -28,6 +32,9 @@
     background: var(--err-soft);
     border-top: 1px solid var(--line);
     font-size: 13.5px;
+  }
+  .notice.info {
+    background: var(--go-soft);
   }
   .text {
     display: grid;
