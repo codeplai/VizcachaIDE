@@ -1,5 +1,6 @@
 import type {
   Breakpoint,
+  ConsoleResult,
   CompletionItem,
   Diagnostic,
   DocumentSymbol,
@@ -64,6 +65,12 @@ export interface AssistantApi {
   explainDiagnostics: (diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
 }
 
+/** Mirrors bridge.ConsoleService (Go). */
+export interface ConsoleApi {
+  eval: (code: string) => Promise<ConsoleResult>
+  reset: () => Promise<void>
+}
+
 /** Mirrors bridge.FilesService (Go). */
 export interface FilesApi {
   openFolder: () => Promise<FileNode>
@@ -101,6 +108,7 @@ export interface Bridge {
   debug: DebugApi
   language: LanguageApi
   assistant: AssistantApi
+  console: ConsoleApi
   files: FilesApi
   settings: SettingsApi
   system: SystemApi

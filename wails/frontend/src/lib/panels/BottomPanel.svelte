@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../i18n'
   import { outputTab, problemCount } from '../stores'
+  import ConsolePanel from './ConsolePanel.svelte'
   import OutputPanel from './OutputPanel.svelte'
   import ProblemsPanel from './ProblemsPanel.svelte'
 </script>
@@ -28,9 +29,20 @@
       {$t('panels.problems')}
       {#if $problemCount > 0}<span class="count">{$problemCount}</span>{/if}
     </button>
+    <button
+      type="button"
+      role="tab"
+      class="otab"
+      class:on={$outputTab === 'console'}
+      aria-selected={$outputTab === 'console'}
+      onclick={() => outputTab.set('console')}
+    >
+      {$t('console.title')}
+    </button>
   </div>
   <div class="body">
-    {#if $outputTab === 'output'}<OutputPanel />{:else}<ProblemsPanel />{/if}
+    {#if $outputTab === 'output'}<OutputPanel />{:else if $outputTab === 'console'}<ConsolePanel
+      />{:else}<ProblemsPanel />{/if}
   </div>
 </section>
 

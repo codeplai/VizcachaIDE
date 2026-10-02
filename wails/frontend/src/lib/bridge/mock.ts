@@ -4,6 +4,7 @@ import { TERMINATED_BY_USER } from '../events'
 import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
 import { mockAssistant } from './mockAssistant'
+import { mockConsole } from './mockConsole'
 import {
   SAMPLE_SOURCES,
   defaultSettings,
@@ -162,6 +163,7 @@ export const createMockBridge = (): MockBridge => {
       () => resolveLanguage(state.settings.language, systemLanguage()),
       emit
     ),
+    console: mockConsole(),
     files: {
       openFolder: async () => sampleTree(),
       listTree: async () => sampleTree(),

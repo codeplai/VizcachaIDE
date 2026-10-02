@@ -9,6 +9,7 @@ import (
 	"embed"
 	"log"
 
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
@@ -119,6 +120,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	return &backend{
 		services: []any{
 			bridge.NewRunService(goToolchain),
+			bridge.NewConsoleService(console.New(0)),
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),

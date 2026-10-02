@@ -144,3 +144,15 @@ type SettingsStore interface {
 	Load() (domain.Settings, error)
 	Save(settings domain.Settings) error
 }
+
+// Console is the interactive Go console (the "Shell"): one interpreter session that
+// remembers the variables and functions defined by earlier snippets.
+//
+// It is synchronous and emits no events.
+type Console interface {
+	// Eval runs a snippet. Failures of the snippet itself (compile errors, panics,
+	// timeouts) are reported inside the result, not as a Go error.
+	Eval(code string) domain.ConsoleResult
+	// Reset throws the session away so the next Eval starts clean.
+	Reset()
+}

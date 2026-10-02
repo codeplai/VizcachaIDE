@@ -1,12 +1,13 @@
 // The only module (with ./mock.ts) that touches the generated wailsjs code.
 import * as AssistantService from '../../../wailsjs/go/bridge/AssistantService'
+import * as ConsoleService from '../../../wailsjs/go/bridge/ConsoleService'
 import * as DebugService from '../../../wailsjs/go/bridge/DebugService'
 import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, RunApi } from './types'
+import type { Bridge, ConsoleApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -27,6 +28,11 @@ const createRunApi = (): RunApi => ({
   writeInput: (text) => RunService.WriteInput(text),
   format: (text) => RunService.Format(text),
   toolchain: async () => fromWire(await RunService.Toolchain())
+})
+
+const createConsoleApi = (): ConsoleApi => ({
+  eval: async (code) => fromWire(await ConsoleService.Eval(code)),
+  reset: () => ConsoleService.Reset()
 })
 
 export const createWailsBridge = (): Bridge => ({
@@ -61,6 +67,7 @@ export const createWailsBridge = (): Bridge => ({
     explainDiagnostics: async (diagnostics) =>
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
+  console: createConsoleApi(),
   files: {
     openFolder: async () => fromWire(await FilesService.OpenFolder()),
     listTree: async (root) => fromWire(await FilesService.ListTree(root)),

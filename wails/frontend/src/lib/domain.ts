@@ -170,3 +170,13 @@ export interface Settings {
   /** Last opened files, newest first (at most 10). */
   recentFiles: string[]
 }
+
+/** What the interactive console answers to one snippet. */
+export interface ConsoleResult {
+  /** Value of an expression, formatted like a REPL (strings quoted). Empty for statements. */
+  result: string
+  /** What the snippet printed. */
+  output: string
+  /** Plain error message, empty when the snippet ran fine. */
+  error: string
+}

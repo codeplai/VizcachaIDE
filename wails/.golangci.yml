@@ -130,6 +130,22 @@ linters:
               desc: adapters never import other adapters
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
               desc: adapters never import other adapters
+        adapter-console:
+          files:
+            - "**/internal/adapters/console/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+              desc: adapters never import other adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: adapters never import other adapters
   exclusions:
     paths:
       - frontend
