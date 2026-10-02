@@ -1,0 +1,25 @@
+---
+import FeatureRow from './FeatureRow.astro';
+import { screenshots } from '../assets/screenshots.js';
+import { t } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang).features;
+const shots = screenshots[lang];
+---
+
+<section class="section" id="que-puedes-hacer" aria-labelledby="features-title">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">{c.eyebrow}</p>
+      <h2 class="h2" id="features-title">{c.title}</h2>
+    </div>
+
+    <div class="features">
+      <FeatureRow title={c.run.t} items={c.run.items} />
+      <FeatureRow title={c.errors.t} items={c.errors.items} image={shots.assistant} alt={c.errors.alt} caption={c.errors.caption} />
+      <FeatureRow title={c.debug.t} items={c.debug.items} image={shots.debugger} alt={c.debug.alt} caption={c.debug.caption} flip={true} />
+      <FeatureRow title={c.fast.t} items={c.fast.items} />
+    </div>
+  </div>
+</section>

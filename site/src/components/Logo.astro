@@ -1,0 +1,8 @@
+---
+// Marca de texto: «Vizcacha» + «IDE» (la parte IDE toma el cian de Go).
+const { ink = false, size = null } = Astro.props;
+---
+
+<span class={ink ? 'logo logo--ink' : 'logo'} style={size ? `font-size:${size}` : undefined}
+  >Vizcacha<b>IDE</b></span
+>

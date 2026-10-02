@@ -1,0 +1,66 @@
+---
+import SafetyNotice from './SafetyNotice.astro';
+import { inlineMarkdown } from '../i18n/inlineMarkdown.js';
+import { t, routes, project } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang).download;
+const r = routes[lang];
+---
+
+<section class="section section--alt" id="descargar" aria-labelledby="download-title">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">{c.eyebrow}</p>
+      <h2 class="h2" id="download-title">{c.title}</h2>
+      <p class="lead">{c.lead}</p>
+    </div>
+
+    <p class="versiontag">{c.version}</p>
+
+    <div class="tablewrap" tabindex="0" role="region" aria-label={c.tableCaption}>
+      <table class="table">
+        <caption class="visually-hidden">{c.tableCaption}</caption>
+        <thead>
+          <tr>{c.cols.map((h) => <th scope="col">{h}</th>)}</tr>
+        </thead>
+        <tbody>
+          {
+            c.rows.map((row) => (
+              <tr>
+                <th scope="row">
+                  {row.name}
+                  {row.tag && <span class="pill">{row.tag}</span>}
+                </th>
+                <td>{row.includes}</td>
+                <td>{row.who}</td>
+                <td>
+                  <ul class="plainlist">
+                    {row.files.map((f) => <li>{f}</li>)}
+                  </ul>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="download__cols">
+      <div>
+        <h3 class="h3">{c.systemsTitle}</h3>
+        <ul class="ticks">
+          {c.systems.map((s) => <li set:html={inlineMarkdown(s)} />)}
+        </ul>
+        <p class="muted">{c.webview}</p>
+      </div>
+      <div class="download__cta">
+        <a class="btn btn--lg" href={project.releasesUrl} rel="noopener">{c.button}</a>
+        <p class="muted">{c.buttonNote}</p>
+        <a class="link" href={r.manual}>{c.manualLink}</a>
+      </div>
+    </div>
+
+    <SafetyNotice lang={lang} />
+  </div>
+</section>

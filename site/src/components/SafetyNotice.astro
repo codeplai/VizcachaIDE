@@ -1,0 +1,34 @@
+---
+import { inlineMarkdown } from '../i18n/inlineMarkdown.js';
+import { t } from '../i18n/index.js';
+
+// Aviso de SmartScreen y razones para confiar en las descargas.
+const { lang = 'es' } = Astro.props;
+const c = t(lang).safety;
+---
+
+<div class="safety" id={c.id} role="group" aria-labelledby="safety-title">
+  <p class="eyebrow">{c.eyebrow}</p>
+  <h3 class="h3 safety__title" id="safety-title">{c.title}</h3>
+  {c.intro.map((p) => <p set:html={inlineMarkdown(p)} />)}
+
+  <h4 class="safety__sub">{c.stepsTitle}</h4>
+  <ol class="steps">
+    {c.steps.map((s) => <li set:html={inlineMarkdown(s)} />)}
+  </ol>
+  <p class="muted" set:html={inlineMarkdown(c.macNote)} />
+
+  <h4 class="safety__sub">{c.proofTitle}</h4>
+  <ul class="proofs">
+    {
+      c.proofs.map((p) => (
+        <li>
+          <strong>{p.t}</strong>
+          <span set:html={inlineMarkdown(p.d)} />
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="safety__sig" set:html={inlineMarkdown(c.signature)} />
+</div>

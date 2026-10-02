@@ -1,0 +1,41 @@
+---
+import Logo from './Logo.astro';
+import { t, routes, project } from '../i18n/index.js';
+
+const { lang = 'es' } = Astro.props;
+const c = t(lang);
+const r = routes[lang];
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <Logo ink={true} size="1.5rem" />
+      <p class="footer__line">{c.footer.line}</p>
+      <p class="footer__line">
+        <a href={project.parentUrl} rel="noopener">{c.footer.parent}</a>
+      </p>
+    </div>
+
+    <div class="footer__col">
+      <span class="footer__coltitle">{c.footer.navTitle}</span>
+      <a href={`${r.home}#que-puedes-hacer`}>{c.nav.features}</a>
+      <a href={`${r.home}#descargar`}>{c.nav.download}</a>
+      <a href={r.manual}>{c.nav.manual}</a>
+      <a href={project.repoUrl} rel="noopener">GitHub</a>
+      <a href={project.releasesUrl} rel="noopener">Releases</a>
+    </div>
+
+    <div class="footer__col">
+      <span class="footer__coltitle">{c.footer.moreTitle}</span>
+      <a href={`mailto:${project.email}`}>{project.email}</a>
+      <a href={project.issuesUrl} rel="noopener">Issues</a>
+      <a href={project.parentUrl} rel="noopener">codeplai.pe</a>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <span>© {project.year} {project.legalName}</span>
+    <span class="footer__license">{c.footer.license}</span>
+  </div>
+</footer>
