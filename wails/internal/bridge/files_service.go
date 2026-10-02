@@ -38,8 +38,8 @@ func (s *FilesService) OpenFolder() (domain.FileNode, error) {
 	if ctx == nil {
 		return s.ListTree("")
 	}
-	chosen, err := runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{
-		DefaultDirectory: s.lastFolder(),
+	chosen, err := withStartFolder(s.lastFolder(), func(start string) (string, error) {
+		return runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{DefaultDirectory: start})
 	})
 	if err != nil {
 		return domain.FileNode{}, fmt.Errorf("choose folder: %w", err)

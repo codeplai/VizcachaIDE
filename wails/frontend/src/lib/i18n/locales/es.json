@@ -107,6 +107,7 @@
   "file.saveAll": "Guardar todo",
   "file.close": "Cerrar",
   "file.closeAll": "Cerrar todo",
+  "files.dialogFailed": "No se pudo abrir la ventana para elegir archivos: {reason}. Vuelve a intentarlo; si sigue fallando, abre el archivo desde el panel Archivos.",
   "files.openFailed": "No se pudo abrir {file}. Revisa que exista y que puedas leerlo.",
   "firstRun.back": "Atrás",
   "firstRun.checking": "Revisando Go…",

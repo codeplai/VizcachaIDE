@@ -2,6 +2,7 @@ import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import { confirmCloseChanges } from './confirm'
 import { activePath, baseName, buffers, closeFile, dirty, fileTree, openTabs } from './files'
+import { askNativeDialog } from './nativeDialogs'
 import { dismissNotice, notice, showNotice } from './notice'
 import { rememberRecentFile } from './recentFiles'
 import { settings } from './settings'
@@ -81,7 +82,10 @@ const moveTab = async (bridge: Bridge, from: string, to: string, text: string): 
  * Returns the new path, or null when the user cancelled or the save failed.
  */
 export const saveAs = async (bridge: Bridge, path: string): Promise<string | null> => {
-  const target = await bridge.files.saveFileDialog(baseName(path), startFolder(path))
+  const target = await askNativeDialog(
+    () => bridge.files.saveFileDialog(baseName(path), startFolder(path)),
+    ''
+  )
   if (!target) return null
   clearSaveNotice()
   const text = await textToSave(bridge, get(buffers)[path] ?? '')

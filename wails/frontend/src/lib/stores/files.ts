@@ -2,6 +2,7 @@ import { derived, get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { FileNode } from '../domain'
 import { problems } from './diagnostics'
+import { askNativeDialog } from './nativeDialogs'
 import { rememberRecentFile } from './recentFiles'
 import { updateSettings } from './settings'
 
@@ -30,7 +31,7 @@ export const filesWithProblems = derived(problems, (items) =>
 
 /** Asks for a folder, shows its files and remembers it for the next start. */
 export const openFolder = async (bridge: Bridge): Promise<void> => {
-  const tree = await bridge.files.openFolder()
+  const tree = await askNativeDialog(() => bridge.files.openFolder(), null)
   if (!tree?.path) return
   fileTree.set(tree)
   await updateSettings(bridge, { lastFolder: tree.path })

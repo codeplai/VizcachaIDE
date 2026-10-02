@@ -25,10 +25,12 @@ func (s *FilesService) OpenFileDialog() (string, error) {
 	if ctx == nil {
 		return "", nil
 	}
-	path, err := runtime.OpenFileDialog(ctx, runtime.OpenDialogOptions{
-		Title:            s.text("dialogs.openFile"),
-		DefaultDirectory: s.lastFolder(),
-		Filters:          s.fileFilters(),
+	path, err := withStartFolder(s.lastFolder(), func(start string) (string, error) {
+		return runtime.OpenFileDialog(ctx, runtime.OpenDialogOptions{
+			Title:            s.text("dialogs.openFile"),
+			DefaultDirectory: start,
+			Filters:          s.fileFilters(),
+		})
 	})
 	if err != nil {
 		return "", fmt.Errorf("open file dialog: %w", err)
@@ -43,11 +45,13 @@ func (s *FilesService) SaveFileDialog(suggestedName, folder string) (string, err
 	if ctx == nil {
 		return "", nil
 	}
-	path, err := runtime.SaveFileDialog(ctx, runtime.SaveDialogOptions{
-		Title:            s.text("dialogs.saveFile"),
-		DefaultDirectory: defaultDialogFolder(folder, s.lastFolder()),
-		DefaultFilename:  suggestedName,
-		Filters:          s.fileFilters(),
+	path, err := withStartFolder(defaultDialogFolder(folder, s.lastFolder()), func(start string) (string, error) {
+		return runtime.SaveFileDialog(ctx, runtime.SaveDialogOptions{
+			Title:            s.text("dialogs.saveFile"),
+			DefaultDirectory: start,
+			DefaultFilename:  suggestedName,
+			Filters:          s.fileFilters(),
+		})
 	})
 	if err != nil {
 		return "", fmt.Errorf("save file dialog: %w", err)
@@ -77,9 +81,9 @@ func withGoExtension(path string) string {
 	return path + ".go"
 }
 
-// defaultDialogFolder prefers the requested folder and falls back to the last one.
+// defaultDialogFolder prefers the requested folder when it exists and falls back to the last one.
 func defaultDialogFolder(folder, last string) string {
-	if folder != "" {
+	if existingFolder(folder) != "" {
 		return folder
 	}
 	return last

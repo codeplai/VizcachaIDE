@@ -4,6 +4,7 @@ import { activePath, dirty, openFile, openTabs } from './files'
 import { showNotice } from './notice'
 import { requestCloseTab, saveAs, saveFile } from './saving'
 import { BLANK_PROGRAM, isUntitled, openUntitled } from './untitled'
+import { askNativeDialog } from './nativeDialogs'
 
 /** True when the open file has changes to save, or is new and not on disk yet. */
 export const activeNeedsSave = derived([activePath, dirty], ([path, marks]) =>
@@ -17,7 +18,7 @@ export const newFile = async (bridge: Bridge): Promise<void> => {
 
 /** Open file (Ctrl+O): asks for a file and opens it in a tab. Cancelling does nothing. */
 export const openFileFromDialog = async (bridge: Bridge): Promise<void> => {
-  const path = await bridge.files.openFileDialog()
+  const path = await askNativeDialog(() => bridge.files.openFileDialog(), '')
   if (!path) return
   try {
     await openFile(bridge, path)

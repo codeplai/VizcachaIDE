@@ -107,6 +107,7 @@
   "file.saveAll": "Save all",
   "file.close": "Close",
   "file.closeAll": "Close all",
+  "files.dialogFailed": "The file window could not open: {reason}. Try again; if it keeps failing, open the file from the Files panel.",
   "files.openFailed": "Could not open {file}. Check that it exists and that you can read it.",
   "firstRun.back": "Back",
   "firstRun.checking": "Checking Go…",
