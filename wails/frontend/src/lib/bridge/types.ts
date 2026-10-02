@@ -70,6 +70,8 @@ export interface FilesApi {
   listTree: (root: string) => Promise<FileNode>
   readFile: (path: string) => Promise<string>
   saveFile: (path: string, text: string) => Promise<void>
+  /** Files (the open tabs) to watch; changes made elsewhere arrive as `file:changed`. */
+  watchFiles: (paths: string[]) => Promise<void>
 }
 
 /** Mirrors bridge.SettingsService (Go). */

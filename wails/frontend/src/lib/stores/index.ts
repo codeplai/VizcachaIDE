@@ -2,6 +2,7 @@ import type { Bridge, Unsubscribe } from '../bridge'
 import { connectAssistant } from './assistant'
 import { connectDebug } from './debug'
 import { connectDiagnostics } from './diagnostics'
+import { connectExternalChanges } from './externalChanges'
 import { connectOutline } from './outline'
 import { connectRun } from './run'
 import { connectSettings } from './settings'
@@ -37,6 +38,7 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
     connectDiagnostics(bridge),
     connectAssistant(bridge),
     connectOutline(bridge),
+    connectExternalChanges(bridge),
     offSettings
   ]
   return () => offs.forEach((off) => off())

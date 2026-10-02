@@ -166,7 +166,8 @@ export const createMockBridge = (): MockBridge => {
       openFolder: async () => sampleTree(),
       listTree: async () => sampleTree(),
       readFile: async (path) => SAMPLE_SOURCES[path] ?? '',
-      saveFile: async () => {}
+      saveFile: async () => {},
+      watchFiles: async () => {}
     },
     settings: mockSettings(state, emit),
     system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },

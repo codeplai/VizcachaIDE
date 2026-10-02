@@ -21,7 +21,8 @@ export const Events = {
   lspDiagnostics: 'lsp:diagnostics',
   lspStatus: 'lsp:status',
   assistantExplained: 'assistant:explained',
-  settingsChanged: 'settings:changed'
+  settingsChanged: 'settings:changed',
+  fileChanged: 'file:changed'
 } as const
 
 export type EventName = (typeof Events)[keyof typeof Events]
@@ -56,6 +57,11 @@ export interface DiagnosticsPayload {
   diagnostics: Diagnostic[]
 }
 
+/** An open file changed on disk outside the IDE. */
+export interface FileChangedPayload {
+  path: string
+}
+
 export const TERMINATED_BY_USER = -1
 
 export interface EventPayloads {
@@ -70,4 +76,5 @@ export interface EventPayloads {
   'lsp:status': ServerStatus
   'assistant:explained': ExplainedDiagnostic[]
   'settings:changed': Settings
+  'file:changed': FileChangedPayload
 }

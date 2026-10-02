@@ -68,7 +68,7 @@ func (noContext) Context() context.Context { return nil }
 
 func TestFilesServiceRemembersTheLastFolder(t *testing.T) {
 	store := NewMemorySettingsStore()
-	service := NewFilesService(noContext{}, store)
+	service := NewFilesService(noContext{}, store, nil)
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "main.go"), []byte("package main"), 0o600); err != nil {
 		t.Fatal(err)
@@ -88,14 +88,14 @@ func TestFilesServiceRemembersTheLastFolder(t *testing.T) {
 }
 
 func TestFilesServiceWithoutFolderReturnsAnEmptyNode(t *testing.T) {
-	tree, err := NewFilesService(noContext{}, NewMemorySettingsStore()).ListTree("")
+	tree, err := NewFilesService(noContext{}, NewMemorySettingsStore(), nil).ListTree("")
 	if err != nil || tree.Path != "" || tree.Children == nil {
 		t.Errorf("tree = %+v, err = %v", tree, err)
 	}
 }
 
 func TestFilesServiceSavesAndReads(t *testing.T) {
-	service := NewFilesService(noContext{}, nil)
+	service := NewFilesService(noContext{}, nil, nil)
 	path := filepath.Join(t.TempDir(), "x.go")
 	if err := service.SaveFile(path, "package x\n"); err != nil {
 		t.Fatal(err)

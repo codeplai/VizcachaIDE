@@ -16,7 +16,10 @@ type WailsEventSink struct {
 	ctx context.Context
 }
 
-var _ app.EventSink = (*WailsEventSink)(nil)
+var (
+	_ app.EventSink      = (*WailsEventSink)(nil)
+	_ app.FileChangeSink = (*WailsEventSink)(nil)
+)
 
 // NewWailsEventSink creates a sink that drops events until SetContext is called.
 func NewWailsEventSink() *WailsEventSink { return &WailsEventSink{} }
@@ -98,4 +101,9 @@ func (s *WailsEventSink) Explained(items []domain.ExplainedDiagnostic) {
 // SettingsChanged implements app.EventSink.
 func (s *WailsEventSink) SettingsChanged(settings domain.Settings) {
 	s.emit(EventSettingsChanged, settings)
+}
+
+// FileChanged implements app.FileChangeSink.
+func (s *WailsEventSink) FileChanged(path string) {
+	s.emit(EventFileChanged, FileChangedPayload{Path: path})
 }

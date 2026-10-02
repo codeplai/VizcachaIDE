@@ -19,11 +19,13 @@ type ContextSource interface {
 type FilesService struct {
 	context  ContextSource
 	settings app.SettingsStore
+	watcher  app.FileWatcher
 }
 
-// NewFilesService creates the service. settings may be nil (the last folder is then not remembered).
-func NewFilesService(source ContextSource, settings app.SettingsStore) *FilesService {
-	return &FilesService{context: source, settings: settings}
+// NewFilesService creates the service. settings may be nil (the last folder is then not remembered)
+// and watcher may be nil (changes made outside the IDE are then not detected).
+func NewFilesService(source ContextSource, settings app.SettingsStore, watcher app.FileWatcher) *FilesService {
+	return &FilesService{context: source, settings: settings, watcher: watcher}
 }
 
 // OpenFolder lets the user pick a folder and returns its tree. When the user
@@ -63,7 +65,25 @@ func (s *FilesService) ListTree(root string) (domain.FileNode, error) {
 func (s *FilesService) ReadFile(path string) (string, error) { return app.ReadSourceFile(path) }
 
 // SaveFile writes the text of a file as UTF-8.
-func (s *FilesService) SaveFile(path, text string) error { return app.WriteSourceFile(path, text) }
+// The watcher is told, so this save is not reported as a change made outside the IDE.
+func (s *FilesService) SaveFile(path, text string) error {
+	if err := app.WriteSourceFile(path, text); err != nil {
+		return err
+	}
+	if s.watcher != nil {
+		s.watcher.Remember(path, text)
+	}
+	return nil
+}
+
+// WatchFiles sets the files (the open tabs) to watch for changes made outside the IDE.
+// Each change is reported with the "file:changed" event.
+func (s *FilesService) WatchFiles(paths []string) error {
+	if s.watcher == nil {
+		return nil
+	}
+	return s.watcher.Watch(paths)
+}
 
 func (s *FilesService) lastFolder() string {
 	if s.settings == nil {

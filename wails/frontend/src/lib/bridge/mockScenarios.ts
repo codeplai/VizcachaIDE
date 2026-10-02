@@ -10,6 +10,7 @@ export type Emit = <E extends EventName>(name: E, payload: EventPayloads[E]) => 
 export const clearProblems = (emit: Emit): void => {
   emit('lsp:diagnostics', { path: SAMPLE_MAIN, diagnostics: [] })
   emit('assistant:explained', [])
+  emit('file:changed', { path: SAMPLE_MAIN }) // the sample is the same on disk: stores ignore it
 }
 
 export const emitSuccessfulRun = (emit: Emit): void => {

@@ -144,3 +144,21 @@ type SettingsStore interface {
 	Load() (domain.Settings, error)
 	Save(settings domain.Settings) error
 }
+
+// FileChangeSink is told when a watched file changed on disk outside the IDE.
+// The bridge turns each call into "file:changed". It must not block.
+type FileChangeSink interface {
+	// FileChanged emits "file:changed" for the path of the file.
+	FileChanged(path string)
+}
+
+// FileWatcher notices changes made to open files by other programs.
+// Changes made by the IDE itself are reported through Remember and ignored.
+type FileWatcher interface {
+	// Watch replaces the set of watched files. Bursts of events are merged.
+	Watch(paths []string) error
+	// Remember tells the watcher the text the IDE just saved, so it is not reported.
+	Remember(path, text string)
+	// Close stops watching.
+	Close() error
+}

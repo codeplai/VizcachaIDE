@@ -11,6 +11,7 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain"
@@ -116,13 +117,18 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 		Environment: goToolchain.Environment,
 	})
 
+	watcher, err := filewatch.New(sink, filewatch.DefaultDebounce)
+	if err != nil {
+		return nil, err
+	}
+
 	return &backend{
 		services: []any{
 			bridge.NewRunService(goToolchain),
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),
-			bridge.NewFilesService(sink, store),
+			bridge.NewFilesService(sink, store, watcher),
 			bridge.NewSettingsService(sink, store, language).
 				UseTools(goToolchain, bridge.NewExecutableDialog(sink, texts.withData)),
 		},
@@ -130,6 +136,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 			_ = goToolchain.Stop() // never leave the user's program running
 			_ = debugger.Stop()
 			_ = languageServer.Shutdown(ctx)
+			_ = watcher.Close()
 		},
 	}, nil
 }
