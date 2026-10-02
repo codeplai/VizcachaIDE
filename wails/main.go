@@ -14,7 +14,9 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -43,21 +45,42 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	window, err := newWindowKeeper()
+	if err != nil {
+		return err
+	}
+	saved := window.State()
+	startState := options.Normal
+	if saved.Maximised {
+		startState = options.Maximised
+	}
 	return wails.Run(&options.App{
-		Title:     "VizcachaIDE",
-		Width:     1280,
-		Height:    800,
-		MinWidth:  1024,
-		MinHeight: 640,
+		Title:            "VizcachaIDE",
+		Width:            saved.Width,
+		Height:           saved.Height,
+		MinWidth:         domain.WindowMinWidth,
+		MinHeight:        domain.WindowMinHeight,
+		WindowStartState: startState,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 245, G: 247, B: 249, A: 1},
 		OnStartup:        func(ctx context.Context) { sink.SetContext(ctx) },
+		OnDomReady:       window.Restore,
+		OnBeforeClose:    window.Save,
 		OnShutdown:       parts.shutdown,
 		Bind:             parts.services,
 		Windows:          &windows.Options{Theme: windows.SystemDefault},
 	})
+}
+
+// newWindowKeeper remembers the window geometry in window.json (not in settings.json).
+func newWindowKeeper() (*bridge.WindowKeeper, error) {
+	store, err := windowstate.NewDefaultStore()
+	if err != nil {
+		return nil, err
+	}
+	return bridge.NewWindowKeeper(store), nil
 }
 
 // newBackend creates the adapters and the services that use them.
