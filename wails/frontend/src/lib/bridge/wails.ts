@@ -6,7 +6,7 @@ import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, RunApi } from './types'
+import type { Bridge, FilesApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -14,6 +14,19 @@ const toWire = (value: unknown): never => value as never
 
 export const hasWailsBackend = (): boolean =>
   typeof window !== 'undefined' && 'go' in window && window.go !== undefined
+
+const createFilesApi = (): FilesApi => ({
+  openFolder: async () => fromWire(await FilesService.OpenFolder()),
+  listTree: async (root) => fromWire(await FilesService.ListTree(root)),
+  readFile: (path) => FilesService.ReadFile(path),
+  saveFile: (path, text) => FilesService.SaveFile(path, text),
+  watchFiles: (paths) => FilesService.WatchFiles(paths),
+  createFile: (path, text) => FilesService.CreateFile(path, text),
+  createFolder: (path) => FilesService.CreateFolder(path),
+  rename: (from, to) => FilesService.Rename(from, to),
+  moveToTrash: (path) => FilesService.MoveToTrash(path),
+  revealInExplorer: (path) => FilesService.RevealInExplorer(path)
+})
 
 const createRunApi = (): RunApi => ({
   run: async (path, args) => fromWire(await RunService.Run(path, args)),
@@ -62,13 +75,7 @@ export const createWailsBridge = (): Bridge => ({
     explainDiagnostics: async (diagnostics) =>
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
-  files: {
-    openFolder: async () => fromWire(await FilesService.OpenFolder()),
-    listTree: async (root) => fromWire(await FilesService.ListTree(root)),
-    readFile: (path) => FilesService.ReadFile(path),
-    saveFile: (path, text) => FilesService.SaveFile(path, text),
-    watchFiles: (paths) => FilesService.WatchFiles(paths)
-  },
+  files: createFilesApi(),
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),

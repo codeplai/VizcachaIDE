@@ -20,6 +20,8 @@ type FilesService struct {
 	context  ContextSource
 	settings app.SettingsStore
 	watcher  app.FileWatcher
+
+	operations *app.FileOperations
 }
 
 // NewFilesService creates the service. settings may be nil (the last folder is then not remembered)

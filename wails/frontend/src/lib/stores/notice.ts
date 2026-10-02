@@ -12,6 +12,8 @@ export interface Notice {
   actions: NoticeAction[]
   /** Monospace text under the message, for example a command to copy. */
   detail?: string
+  /** `info` is a calm confirmation (for example "Path copied."); the default is a problem. */
+  tone?: 'info'
 }
 
 export const notice = writable<Notice | null>(null)

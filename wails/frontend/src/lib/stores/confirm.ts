@@ -67,3 +67,27 @@ export const confirmReplaceAll = (count: number, file: string) =>
     ],
     'cancel'
   )
+
+export interface DeleteDetails {
+  /** Files inside the folder being deleted (undefined for a single file). */
+  files?: number
+  /** Some of the affected files have changes that were not saved. */
+  unsaved?: boolean
+}
+
+const deleteMessageKey = (details: DeleteDetails): string => {
+  if (details.unsaved) return 'confirm.deleteUnsaved'
+  return details.files === undefined ? 'confirm.delete' : 'confirm.deleteFolder'
+}
+
+/** Asks before sending a file or folder to the Recycle Bin. */
+export const confirmDelete = (name: string, details: DeleteDetails = {}) =>
+  ask(
+    deleteMessageKey(details),
+    { name, count: details.files ?? 0 },
+    [
+      { id: 'delete', labelKey: 'confirm.moveToTrash', tone: 'danger' },
+      { id: 'cancel', labelKey: 'confirm.cancel', tone: 'plain' }
+    ],
+    'cancel'
+  )

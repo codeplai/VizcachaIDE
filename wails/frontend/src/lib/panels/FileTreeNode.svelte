@@ -4,12 +4,20 @@
   import { t } from '../i18n'
   import {
     activePath,
+    cancelEdit,
+    clearEditError,
     collapsedFolders,
+    commitEdit,
+    deleteEntry,
     filesWithProblems,
     openFile,
     selectedNode,
-    toggleFolder
+    startRename,
+    toggleFolder,
+    treeEdit
   } from '../stores'
+  import FileTreeEdit from './FileTreeEdit.svelte'
+  import FileTreeMenu from './FileTreeMenu.svelte'
   import FileTreeNode from './FileTreeNode.svelte'
 
   let { node, depth = 0 }: { node: FileNode; depth?: number } = $props()
@@ -17,53 +25,98 @@
   const open = $derived(!$collapsedFolders.has(node.path))
   const indent = $derived(`${14 + depth * 12}px`)
   const hasProblems = $derived(!node.isDir && $filesWithProblems.includes(node.path))
+  const renaming = $derived($treeEdit?.kind === 'rename' && $treeEdit.path === node.path)
+  const creatingHere = $derived(
+    node.isDir && $treeEdit !== null && $treeEdit.kind !== 'rename' && $treeEdit.path === node.path
+  )
+  const showChildren = $derived(open && (node.children.length > 0 || creatingHere))
 
   const onKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Enter' || node.isDir) return
-    event.preventDefault()
-    void openFile(bridge, node.path)
+    if (event.key === 'F2' && depth > 0) {
+      event.preventDefault()
+      startRename(node.path)
+    } else if (event.key === 'Delete' && depth > 0) {
+      event.preventDefault()
+      void deleteEntry(bridge, node.path)
+    } else if (event.key === 'Enter' && !node.isDir) {
+      event.preventDefault()
+      void openFile(bridge, node.path)
+    }
   }
 </script>
 
-<li>
-  {#if node.isDir}
-    <button
-      type="button"
-      class="file dir"
-      style:padding-left={indent}
-      aria-expanded={open}
-      aria-label={$t(open ? 'panels.collapseFolder' : 'panels.expandFolder', {
-        values: { name: node.name }
-      })}
-      onclick={() => toggleFolder(node.path)}
-    >
-      <span aria-hidden="true">{open ? '▾' : '▸'}</span>
-      {node.name}
-    </button>
-    {#if open && node.children.length > 0}
-      <ul>
-        {#each node.children as child (child.path)}
-          <FileTreeNode node={child} depth={depth + 1} />
-        {/each}
-      </ul>
+{#snippet dirRow(props: Record<string, unknown>)}
+  <button
+    {...props}
+    type="button"
+    class="file dir"
+    class:sel={node.path === $selectedNode}
+    style:padding-left={indent}
+    aria-expanded={open}
+    aria-label={$t(open ? 'panels.collapseFolder' : 'panels.expandFolder', {
+      values: { name: node.name }
+    })}
+    onclick={() => {
+      selectedNode.set(node.path)
+      toggleFolder(node.path)
+    }}
+    onkeydown={onKeydown}
+  >
+    <span aria-hidden="true">{open ? '▾' : '▸'}</span>
+    {node.name}
+  </button>
+{/snippet}
+
+{#snippet fileRow(props: Record<string, unknown>)}
+  <button
+    {...props}
+    type="button"
+    class="file"
+    class:on={node.path === $activePath}
+    class:sel={node.path === $selectedNode}
+    style:padding-left={indent}
+    aria-current={node.path === $activePath ? 'true' : undefined}
+    onclick={() => selectedNode.set(node.path)}
+    ondblclick={() => openFile(bridge, node.path)}
+    onkeydown={onKeydown}
+  >
+    {node.name}
+    {#if hasProblems}
+      <span class="dot" role="img" aria-label={$t('panels.hasProblems')}></span>
     {/if}
+  </button>
+{/snippet}
+
+<li>
+  {#if renaming && $treeEdit}
+    <FileTreeEdit
+      initial={node.name}
+      {indent}
+      error={$treeEdit.error}
+      oncommit={(value) => void commitEdit(bridge, value)}
+      oncancel={cancelEdit}
+      oninput={clearEditError}
+    />
   {:else}
-    <button
-      type="button"
-      class="file"
-      class:on={node.path === $activePath}
-      class:sel={node.path === $selectedNode}
-      style:padding-left={indent}
-      aria-current={node.path === $activePath ? 'true' : undefined}
-      onclick={() => selectedNode.set(node.path)}
-      ondblclick={() => openFile(bridge, node.path)}
-      onkeydown={onKeydown}
-    >
-      {node.name}
-      {#if hasProblems}
-        <span class="dot" role="img" aria-label={$t('panels.hasProblems')}></span>
+    <FileTreeMenu path={node.path} row={node.isDir ? dirRow : fileRow} />
+  {/if}
+  {#if node.isDir && showChildren}
+    <ul>
+      {#if creatingHere && $treeEdit}
+        <li>
+          <FileTreeEdit
+            indent={`${14 + (depth + 1) * 12}px`}
+            error={$treeEdit.error}
+            oncommit={(value) => void commitEdit(bridge, value)}
+            oncancel={cancelEdit}
+            oninput={clearEditError}
+          />
+        </li>
       {/if}
-    </button>
+      {#each node.children as child (child.path)}
+        <FileTreeNode node={child} depth={depth + 1} />
+      {/each}
+    </ul>
   {/if}
 </li>
 

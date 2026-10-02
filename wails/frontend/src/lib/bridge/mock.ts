@@ -4,15 +4,14 @@ import { TERMINATED_BY_USER } from '../events'
 import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { createEmitter } from './emitter'
 import { mockAssistant } from './mockAssistant'
+import { mockFiles } from './mockFiles'
 import {
-  SAMPLE_SOURCES,
   defaultSettings,
   sampleDebugState,
   SAMPLE_STRUCT_REFERENCE,
   sampleLocation,
   sampleStructFields,
-  sampleSymbols,
-  sampleTree
+  sampleSymbols
 } from './mockData'
 import {
   emitDebugStart,
@@ -164,13 +163,7 @@ export const createMockBridge = (): MockBridge => {
       () => resolveLanguage(state.settings.language, systemLanguage()),
       emit
     ),
-    files: {
-      openFolder: async () => sampleTree(),
-      listTree: async () => sampleTree(),
-      readFile: async (path) => SAMPLE_SOURCES[path] ?? '',
-      saveFile: async () => {},
-      watchFiles: async () => {}
-    },
+    files: mockFiles(),
     settings: mockSettings(state, emit),
     system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },
     on

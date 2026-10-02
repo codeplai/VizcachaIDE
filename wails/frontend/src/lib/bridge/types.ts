@@ -75,6 +75,14 @@ export interface FilesApi {
   saveFile: (path: string, text: string) => Promise<void>
   /** Files (the open tabs) to watch; changes made elsewhere arrive as `file:changed`. */
   watchFiles: (paths: string[]) => Promise<void>
+  // Files panel operations (create, rename, Recycle Bin, Show in Explorer).
+  createFile: (path: string, text: string) => Promise<void>
+  createFolder: (path: string) => Promise<void>
+  /** Fails if the target already exists. */
+  rename: (from: string, to: string) => Promise<void>
+  /** Sends the file or folder to the Recycle Bin; it never deletes permanently. */
+  moveToTrash: (path: string) => Promise<void>
+  revealInExplorer: (path: string) => Promise<void>
 }
 
 /** Mirrors bridge.SettingsService (Go). */

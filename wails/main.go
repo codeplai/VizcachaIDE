@@ -11,6 +11,7 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
@@ -128,7 +129,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),
-			bridge.NewFilesService(sink, store, watcher),
+			bridge.NewFilesService(sink, store, watcher).UseShell(filesystem.New()),
 			bridge.NewSettingsService(sink, store, language).
 				UseTools(goToolchain, bridge.NewExecutableDialog(sink, texts.withData)),
 		},
