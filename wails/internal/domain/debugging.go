@@ -32,6 +32,13 @@ type StackFrame struct {
 	Location *SourceLocation `json:"location"`
 }
 
+// FrameVariables is what one stack frame holds: the arguments it received and its
+// local variables. The Calls view asks for it frame by frame.
+type FrameVariables struct {
+	Arguments []Variable `json:"arguments"`
+	Locals    []Variable `json:"locals"`
+}
+
 // Goroutine is one goroutine of the debugged program.
 type Goroutine struct {
 	GoroutineID int             `json:"goroutineId"`

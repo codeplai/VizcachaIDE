@@ -42,6 +42,7 @@ export const createWailsBridge = (): Bridge => ({
     resume: () => DebugService.Resume(),
     runTo: (location) => DebugService.RunTo(toWire(location)),
     requestVariables: (reference) => DebugService.RequestVariables(reference),
+    frameVariables: async (frameId) => fromWire(await DebugService.FrameVariables(frameId)),
     stop: () => DebugService.Stop()
   },
   language: {

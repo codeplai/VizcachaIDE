@@ -165,6 +165,15 @@ func (d *Debugger) RequestVariables(reference int) error {
 	return nil
 }
 
+// FrameVariables returns the arguments and locals of one frame of the paused stack.
+func (d *Debugger) FrameVariables(frameID int) (domain.FrameVariables, error) {
+	current := d.active()
+	if current == nil {
+		return domain.FrameVariables{Arguments: []domain.Variable{}, Locals: []domain.Variable{}}, nil
+	}
+	return current.frameVariables(frameID), nil
+}
+
 // Stop ends the session; debug:terminated carries domain.TerminatedByUser.
 func (d *Debugger) Stop() error {
 	current := d.active()

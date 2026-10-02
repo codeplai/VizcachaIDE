@@ -59,5 +59,10 @@ func (s *DebugService) RequestVariables(reference int) error {
 	return s.debugger.RequestVariables(reference)
 }
 
+// FrameVariables returns the arguments and locals of one frame of the paused stack.
+func (s *DebugService) FrameVariables(frameID int) (domain.FrameVariables, error) {
+	return s.debugger.FrameVariables(frameID)
+}
+
 // Stop ends the session.
 func (s *DebugService) Stop() error { return s.debugger.Stop() }

@@ -10,6 +10,7 @@ import type {
   SourceLocation,
   Variable
 } from '../domain'
+import { SAMPLE_CALLERS } from './mockFrames'
 
 export const SAMPLE_DIR = 'hola-go'
 export const SAMPLE_MAIN = 'hola-go/main.go'
@@ -28,6 +29,13 @@ func sumar(a, b int) int {
 func main() {
     resultado := sumar(5, 7)
     fmt.Println("Hola, Go")
+}
+
+func factorial(n int) int {
+    if n <= 1 {
+        return sumar(1, 0)
+    }
+    return n * factorial(n-1)
 }
 `,
   [SAMPLE_CALC]: `package main
@@ -104,10 +112,7 @@ export const sampleStructFields = (): Variable[] => [
 
 export const sampleDebugState = (line = 6): DebugState => ({
   reason: line === 6 ? 'breakpoint' : 'step',
-  frames: [
-    { frameId: 1, function: 'sumar', location: sampleLocation(line, 1) },
-    { frameId: 2, function: 'main', location: sampleLocation(11, 1) }
-  ],
+  frames: [{ frameId: 1, function: 'sumar', location: sampleLocation(line, 1) }, ...SAMPLE_CALLERS],
   variables: [
     { name: 'a', typeName: 'int', value: '5', reference: 0, changed: false, children: [] },
     { name: 'b', typeName: 'int', value: '7', reference: 0, changed: false, children: [] },
