@@ -1,0 +1,59 @@
+/* Colors of the 16 ANSI names used by the Output panel (readable on the light and dark window). */
+:root {
+  --ansi-black: #18222c;
+  --ansi-red: #c2412d;
+  --ansi-green: #1f7a4a;
+  --ansi-yellow: #8a6200;
+  --ansi-blue: #1f58b8;
+  --ansi-magenta: #8a3ffc;
+  --ansi-cyan: #007d9c;
+  --ansi-white: #5b6876;
+  --ansi-bright-black: #7a8794;
+  --ansi-bright-red: #d9503a;
+  --ansi-bright-green: #2a9a5f;
+  --ansi-bright-yellow: #a87a00;
+  --ansi-bright-blue: #3b72d6;
+  --ansi-bright-magenta: #a566ff;
+  --ansi-bright-cyan: #1396b8;
+  --ansi-bright-white: #18222c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ansi-black: #7b8a97;
+    --ansi-red: #ff8a73;
+    --ansi-green: #6fd39b;
+    --ansi-yellow: #e0bf86;
+    --ansi-blue: #7fb0ff;
+    --ansi-magenta: #c4a2ff;
+    --ansi-cyan: #6fd8f0;
+    --ansi-white: #c3ccd4;
+    --ansi-bright-black: #93a2b0;
+    --ansi-bright-red: #ffa593;
+    --ansi-bright-green: #8fdcae;
+    --ansi-bright-yellow: #f0d29e;
+    --ansi-bright-blue: #a3c6ff;
+    --ansi-bright-magenta: #d7bfff;
+    --ansi-bright-cyan: #9be6f7;
+    --ansi-bright-white: #e3e9ee;
+  }
+}
+
+:root[data-theme='dark'] {
+  --ansi-black: #7b8a97;
+  --ansi-red: #ff8a73;
+  --ansi-green: #6fd39b;
+  --ansi-yellow: #e0bf86;
+  --ansi-blue: #7fb0ff;
+  --ansi-magenta: #c4a2ff;
+  --ansi-cyan: #6fd8f0;
+  --ansi-white: #c3ccd4;
+  --ansi-bright-black: #93a2b0;
+  --ansi-bright-red: #ffa593;
+  --ansi-bright-green: #8fdcae;
+  --ansi-bright-yellow: #f0d29e;
+  --ansi-bright-blue: #a3c6ff;
+  --ansi-bright-magenta: #d7bfff;
+  --ansi-bright-cyan: #9be6f7;
+  --ansi-bright-white: #e3e9ee;
+}

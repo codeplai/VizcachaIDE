@@ -6,6 +6,7 @@ import { connectOutline } from './outline'
 import { connectRun } from './run'
 import { connectSettings } from './settings'
 
+export * from './ansi'
 export * from './assistant'
 export * from './commands'
 export * from './confirm'

@@ -3,7 +3,7 @@ import { TERMINATED_BY_USER } from '../events'
 import { debugActive, debugOutput, debugStarting, currentLine } from './debug'
 import { activeFileName } from './files'
 import { compileProblemCount } from './assistant'
-import { splitOutputLinks, type OutputSegment } from './outputLinks'
+import { styledSegments, type OutputSegment } from './outputLinks'
 import { runLines, runResult, stoppedByUser } from './run'
 
 /** A line of the Output panel: either program text or an i18n key with its values. */
@@ -21,7 +21,7 @@ export interface OutputLine {
 const textLine = (tone: 'plain' | 'error', text: string): OutputLine => ({
   tone,
   text,
-  segments: splitOutputLinks(text)
+  segments: styledSegments(text)
 })
 
 const verdictOf = (
