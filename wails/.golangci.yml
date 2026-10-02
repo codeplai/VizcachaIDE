@@ -60,75 +60,14 @@ linters:
           deny:
             - pkg: github.com/wailsapp/wails/v2/pkg/runtime
               desc: only internal/bridge may import the Wails runtime
-        adapter-toolchain:
+        adapters-are-independent:
+          # Covers every adapter, including new ones: an adapter talks only to domain/app ports.
           files:
-            - "**/internal/adapters/toolchain/**"
+            - "**/internal/adapters/**"
           deny:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
               desc: adapters never import bridge
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
-              desc: adapters never import other adapters
-        adapter-delve:
-          files:
-            - "**/internal/adapters/delve/**"
-          deny:
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
-              desc: adapters never import bridge
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
-              desc: adapters never import other adapters
-        adapter-gopls:
-          files:
-            - "**/internal/adapters/gopls/**"
-          deny:
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
-              desc: adapters never import bridge
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
-              desc: adapters never import other adapters
-        adapter-errorcatalog:
-          files:
-            - "**/internal/adapters/errorcatalog/**"
-          deny:
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
-              desc: adapters never import bridge
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
-              desc: adapters never import other adapters
-        adapter-settings:
-          files:
-            - "**/internal/adapters/settings/**"
-          deny:
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
-              desc: adapters never import bridge
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
-              desc: adapters never import other adapters
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters
               desc: adapters never import other adapters
   exclusions:
     paths:
