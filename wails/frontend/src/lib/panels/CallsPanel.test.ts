@@ -42,6 +42,30 @@ describe('CallsPanel', () => {
     expect(screen.getByText('sumar(a=1, b=0)')).toBeTruthy()
   })
 
+  it('rebuilds the arguments when the debugger mixes them with the locals (real Delve)', async () => {
+    const original = bridge.debug.frameVariables
+    const variable = (name: string, value: string) => ({
+      name,
+      typeName: 'int',
+      value,
+      reference: 0,
+      changed: false,
+      children: []
+    })
+    bridge.debug.frameVariables = async (frameId) => ({
+      arguments: [],
+      locals: [variable('n', String(frameId)), variable('~r0', '0')]
+    })
+    try {
+      render(CallsPanel)
+      await mockControls?.play('debug')
+      await waitFor(() => expect(screen.getAllByText(/^factorial\(n=\d+\)$/).length).toBe(3))
+      expect(screen.queryByText('~r0')).toBeNull()
+    } finally {
+      bridge.debug.frameVariables = original
+    }
+  })
+
   it('takes the editor to the line of the box that was clicked', async () => {
     render(CallsPanel)
     await mockControls?.play('debug')
