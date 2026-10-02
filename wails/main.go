@@ -9,6 +9,7 @@ import (
 	"embed"
 	"log"
 
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
@@ -84,6 +85,22 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 	return bridge.NewWindowKeeper(store), nil
 }
 
+// newGoTools creates the Delve and gopls adapters. Tool paths are resolved when a debug
+// session or gopls starts (configured -> bundled -> PATH), so changing them in Settings
+// needs no restart.
+func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
+	debugger := delve.New(sink, delve.Options{
+		DelvePath:   func() string { return goToolchain.Locate(toolchain.ToolDelve).Path },
+		Environment: goToolchain.Environment,
+		Translate:   texts.text,
+	})
+	languageServer := gopls.New(sink, gopls.Config{
+		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
+		Environment: goToolchain.Environment,
+	})
+	return debugger, languageServer
+}
+
 // newBackend creates the adapters and the services that use them.
 func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	store, err := settings.NewDefaultStore()
@@ -105,17 +122,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 		Settings:         store,
 		FirstBuildNotice: func() string { return texts.text("run.firstBuild") },
 	})
-	// Tool paths are resolved when a debug session or gopls starts (configured ->
-	// bundled -> PATH), so changing them in Settings needs no restart.
-	debugger := delve.New(sink, delve.Options{
-		DelvePath:   func() string { return goToolchain.Locate(toolchain.ToolDelve).Path },
-		Environment: goToolchain.Environment,
-		Translate:   texts.text,
-	})
-	languageServer := gopls.New(sink, gopls.Config{
-		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
-		Environment: goToolchain.Environment,
-	})
+	debugger, languageServer := newGoTools(sink, goToolchain, texts)
 
 	watcher, err := filewatch.New(sink, filewatch.DefaultDebounce)
 	if err != nil {
@@ -125,6 +132,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	return &backend{
 		services: []any{
 			bridge.NewRunService(goToolchain),
+			bridge.NewConsoleService(console.New(0)),
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),

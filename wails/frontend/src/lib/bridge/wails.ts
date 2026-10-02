@@ -1,12 +1,13 @@
 // The only module (with ./mock.ts) that touches the generated wailsjs code.
 import * as AssistantService from '../../../wailsjs/go/bridge/AssistantService'
+import * as ConsoleService from '../../../wailsjs/go/bridge/ConsoleService'
 import * as DebugService from '../../../wailsjs/go/bridge/DebugService'
 import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, RunApi } from './types'
+import type { Bridge, ConsoleApi, DebugApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -29,22 +30,29 @@ const createRunApi = (): RunApi => ({
   toolchain: async () => fromWire(await RunService.Toolchain())
 })
 
+const createConsoleApi = (): ConsoleApi => ({
+  eval: async (code) => fromWire(await ConsoleService.Eval(code)),
+  reset: () => ConsoleService.Reset()
+})
+
+const createDebugApi = (): DebugApi => ({
+  start: (path, breakpoints, argsText) =>
+    DebugService.Start(path, toWire(breakpoints), argsText ?? ''),
+  setBreakpoints: (file, lines) => DebugService.SetBreakpoints(file, lines),
+  stepOver: () => DebugService.StepOver(),
+  stepInto: () => DebugService.StepInto(),
+  stepOut: () => DebugService.StepOut(),
+  resume: () => DebugService.Resume(),
+  runTo: (location) => DebugService.RunTo(toWire(location)),
+  requestVariables: (reference) => DebugService.RequestVariables(reference),
+  frameVariables: async (frameId) => fromWire(await DebugService.FrameVariables(frameId)),
+  stop: () => DebugService.Stop()
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
-  debug: {
-    start: (path, breakpoints, argsText) =>
-      DebugService.Start(path, toWire(breakpoints), argsText ?? ''),
-    setBreakpoints: (file, lines) => DebugService.SetBreakpoints(file, lines),
-    stepOver: () => DebugService.StepOver(),
-    stepInto: () => DebugService.StepInto(),
-    stepOut: () => DebugService.StepOut(),
-    resume: () => DebugService.Resume(),
-    runTo: (location) => DebugService.RunTo(toWire(location)),
-    requestVariables: (reference) => DebugService.RequestVariables(reference),
-    frameVariables: async (frameId) => fromWire(await DebugService.FrameVariables(frameId)),
-    stop: () => DebugService.Stop()
-  },
+  debug: createDebugApi(),
   language: {
     openDocument: (path, text) => LanguageService.OpenDocument(path, text),
     changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
@@ -62,6 +70,7 @@ export const createWailsBridge = (): Bridge => ({
     explainDiagnostics: async (diagnostics) =>
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },
+  console: createConsoleApi(),
   files: {
     openFolder: async () => fromWire(await FilesService.OpenFolder()),
     listTree: async (root) => fromWire(await FilesService.ListTree(root)),

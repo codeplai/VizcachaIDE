@@ -85,6 +85,22 @@ export namespace domain {
 	        this.insertText = source["insertText"];
 	    }
 	}
+	export class ConsoleResult {
+	    result: string;
+	    output: string;
+	    error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ConsoleResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.result = source["result"];
+	        this.output = source["output"];
+	        this.error = source["error"];
+	    }
+	}
 	export class Diagnostic {
 	    location?: SourceLocation;
 	    severity: string;

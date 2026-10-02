@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 
 export type SidebarView = 'files' | 'outline' | 'search'
-export type OutputTab = 'output' | 'problems'
+export type OutputTab = 'output' | 'problems' | 'console'
 export type DebugTab = 'stack' | 'calls' | 'goroutines'
 export type DialogName = 'settings' | 'about' | 'modules'
 export type SettingsTab = 'general' | 'editor' | 'tools'
