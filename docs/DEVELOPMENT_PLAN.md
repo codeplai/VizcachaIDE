@@ -162,7 +162,7 @@ foundations            A B C D E F                         G H I                
 4. Create `ui/app.py` as the composition root.
 5. Create `i18n/translator.py` + `babel.cfg` and wrap the existing strings in `_()`, without translating them yet.
 6. **Remove the simulated debugger** (`_simulate_step`) and leave a `NullDebugger` that warns "Debugger not available yet".
-7. Minimal implementation of `GoEnvironment` to unify the logic duplicated between [core/runner.py](../core/runner.py) and `build_code()` in [gui/main_window.py](../gui/main_window.py).
+7. Minimal implementation of `GoEnvironment` to unify the logic duplicated between `core/runner.py` (pre-Phase 0 path) and `build_code()` in `gui/main_window.py` (pre-Phase 0 path).
 8. Set up `pyproject.toml` (dependencies, ruff, pytest, import-linter), `tests/` with smoke tests and `.github/workflows/ci.yml` with the 3-OS matrix.
 9. Remove `Pygments` from the dependencies, because it is unused.
 
