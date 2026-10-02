@@ -2,7 +2,7 @@
 
 Source strings are written in English and wrapped in ``_()``. Catalogs live in
 ``vizcacha/i18n/locale/<lang>/LC_MESSAGES/vizcacha.po`` and are maintained with
-Babel (see ``babel.cfg`` and docs/PLAN_DESARROLLO.md section 3).
+Babel (see ``babel.cfg`` and docs/DEVELOPMENT_PLAN.md section 3).
 
 This module is a leaf: it must not import Qt or any other vizcacha package.
 """

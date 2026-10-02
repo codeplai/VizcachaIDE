@@ -185,7 +185,7 @@ Las claves nuevas de i18n se proponen en el informe final; el orquestador las fu
 - **Coder Q (Sonnet), QA:**
   - port de `packaging/qa` a la app Wails;
   - capturas EN/ES;
-  - checklist de paridad con la 1.0 (cada función de la tabla de COMPARATIVA_THONNY que ya tenía la 1.0).
+  - checklist de paridad con la 1.0 (cada función de la tabla de THONNY_COMPARISON que ya tenía la 1.0).
 
 ### W3 · Release
 

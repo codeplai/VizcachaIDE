@@ -59,8 +59,8 @@ Other conventions:
   modules), and typed exceptions. Prefer a maintained library to custom code.
 - Out of scope: MicroPython, TinyGo and microcontrollers.
 
-More background, in Spanish: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) and
-[docs/PLAN_DESARROLLO.md](docs/PLAN_DESARROLLO.md).
+More background: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and
+[docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md).
 
 ## Adding a feature
 
