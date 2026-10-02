@@ -6,7 +6,12 @@ import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
-import { BrowserOpenURL, EventsOn } from '../../../wailsjs/runtime/runtime'
+import {
+  BrowserOpenURL,
+  ClipboardGetText,
+  ClipboardSetText,
+  EventsOn
+} from '../../../wailsjs/runtime/runtime'
 import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
 
 // The generated classes and our plain interfaces describe the same JSON.
@@ -95,6 +100,12 @@ export const createWailsBridge = (): Bridge => ({
     resolvedLanguage: async () =>
       (await SettingsService.ResolvedLanguage()) === 'es' ? 'es' : 'en'
   },
-  system: { openUrl: (url) => BrowserOpenURL(url) },
+  system: {
+    openUrl: (url) => BrowserOpenURL(url),
+    readClipboard: () => ClipboardGetText(),
+    writeClipboard: async (text) => {
+      if (!(await ClipboardSetText(text))) throw new Error('clipboard refused the text')
+    }
+  },
   on: (name, handler) => EventsOn(name, handler)
 })

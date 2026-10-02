@@ -1,33 +1,63 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { baseName, goToLocation, problemKey, problems } from '../stores'
+  import { baseName, copyText, goToLocation, problemKey, problems, selectAllIn } from '../stores'
+  import PanelMenu, { type PanelAction } from './PanelMenu.svelte'
+
+  let list: HTMLDivElement | undefined = $state()
+
+  /** "main.go:5:2 La variable «x» nunca se usa", one problem per line. */
+  const allProblems = (): string =>
+    $problems
+      .map((item) => {
+        const at = item.diagnostic.location
+        const where = at ? `${baseName(at.file)}:${at.line}:${at.column} ` : ''
+        return `${where}${item.explanation?.title ?? item.diagnostic.message}`
+      })
+      .join('\n')
+
+  const actions = (selection: string): PanelAction[] => [
+    {
+      label: 'panels.menuCopy',
+      keys: 'Ctrl+C',
+      disabled: !selection,
+      run: (text) => void copyText(bridge, text)
+    },
+    {
+      label: 'panels.menuCopyAll',
+      disabled: $problems.length === 0,
+      run: () => void copyText(bridge, allProblems())
+    },
+    { label: 'panels.menuSelectAll', run: () => selectAllIn(list) }
+  ]
 </script>
 
-<div class="list">
-  {#if $problems.length > 0}
-    <ul aria-label={$t('a11y.problemsList')}>
-      {#each $problems as item (problemKey(item.diagnostic))}
-        {@const location = item.diagnostic.location}
-        <li>
-          <button
-            type="button"
-            class="problem"
-            disabled={!location}
-            onclick={() => location && goToLocation(bridge, location)}
-          >
-            {#if location}
-              <span class="loc">{baseName(location.file)}:{location.line}:{location.column}</span>
-            {/if}
-            <span class="msg">{item.explanation?.title ?? item.diagnostic.message}</span>
-          </button>
-        </li>
-      {/each}
-    </ul>
-  {:else}
-    <p class="empty">{$t('empty.problems')}</p>
-  {/if}
-</div>
+<PanelMenu {actions}>
+  <div class="list" bind:this={list}>
+    {#if $problems.length > 0}
+      <ul aria-label={$t('a11y.problemsList')}>
+        {#each $problems as item (problemKey(item.diagnostic))}
+          {@const location = item.diagnostic.location}
+          <li>
+            <button
+              type="button"
+              class="problem"
+              disabled={!location}
+              onclick={() => location && goToLocation(bridge, location)}
+            >
+              {#if location}
+                <span class="loc">{baseName(location.file)}:{location.line}:{location.column}</span>
+              {/if}
+              <span class="msg">{item.explanation?.title ?? item.diagnostic.message}</span>
+            </button>
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <p class="empty">{$t('empty.problems')}</p>
+    {/if}
+  </div>
+</PanelMenu>
 
 <style>
   .list {

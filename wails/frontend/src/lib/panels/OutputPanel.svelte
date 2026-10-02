@@ -2,7 +2,18 @@
   import { tick } from 'svelte'
   import { bridge } from '../bridge'
   import { formatSeconds, locale, t } from '../i18n'
-  import { goToLocation, outputLines, running, type OutputLine } from '../stores'
+  import {
+    clearOutput,
+    copyText,
+    goToLocation,
+    outputLines,
+    readClipboard,
+    running,
+    selectAllIn,
+    stdinDraft,
+    type OutputLine
+  } from '../stores'
+  import PanelMenu, { type PanelAction } from './PanelMenu.svelte'
   import StdinInput from './StdinInput.svelte'
 
   let terminal: HTMLDivElement | undefined = $state()
@@ -12,6 +23,31 @@
     if (line.seconds !== undefined) values.seconds = formatSeconds(language ?? 'en', line.seconds)
     return values
   }
+
+  const pasteIntoInput = async (): Promise<void> => {
+    const text = await readClipboard(bridge)
+    stdinDraft.update((draft) => draft + text.replace(/\r?\n$/, ''))
+  }
+
+  const actions = (selection: string): PanelAction[] => [
+    {
+      label: 'panels.menuCopy',
+      keys: 'Ctrl+C',
+      disabled: !selection,
+      run: (text) => void copyText(bridge, text)
+    },
+    {
+      label: 'panels.menuCopyAll',
+      run: () => void copyText(bridge, terminal?.innerText || terminal?.textContent || '')
+    },
+    {
+      label: 'panels.menuPasteInput',
+      disabled: !$running,
+      run: () => void pasteIntoInput()
+    },
+    { label: 'panels.menuSelectAll', run: () => selectAllIn(terminal) },
+    { label: 'panels.menuClear', separated: true, run: clearOutput }
+  ]
 
   // Follow the program: keep the newest line in view.
   $effect(() => {
@@ -23,45 +59,47 @@
 </script>
 
 <div class="pane">
-  <div
-    class="term"
-    role="log"
-    aria-live="polite"
-    aria-label={$t('a11y.output')}
-    bind:this={terminal}
-  >
-    {#each $outputLines as line, index (index)}
-      <div class={line.tone}>
-        {#if line.key}
-          {$t(line.key, { values: valuesOf(line, $locale) })}
-        {:else}
-          {#each line.segments ?? [] as segment, position (position)}
-            {#if segment.location}
-              {@const location = segment.location}
-              <button
-                type="button"
-                class="place"
-                title={$t('a11y.goToPlace', { values: { place: segment.text } })}
-                onclick={() => goToLocation(bridge, location)}
-              >
+  <PanelMenu {actions}>
+    <div
+      class="term"
+      role="log"
+      aria-live="polite"
+      aria-label={$t('a11y.output')}
+      bind:this={terminal}
+    >
+      {#each $outputLines as line, index (index)}
+        <div class={line.tone}>
+          {#if line.key}
+            {$t(line.key, { values: valuesOf(line, $locale) })}
+          {:else}
+            {#each line.segments ?? [] as segment, position (position)}
+              {#if segment.location}
+                {@const location = segment.location}
+                <button
+                  type="button"
+                  class="place"
+                  title={$t('a11y.goToPlace', { values: { place: segment.text } })}
+                  onclick={() => goToLocation(bridge, location)}
+                >
+                  {segment.text}
+                </button>
+              {:else if segment.color || segment.background || segment.decorations}
+                <span
+                  class={(segment.decorations ?? []).map((name) => `ansi-${name}`).join(' ')}
+                  style:color={segment.color}
+                  style:background-color={segment.background}>{segment.text}</span
+                >
+              {:else}
                 {segment.text}
-              </button>
-            {:else if segment.color || segment.background || segment.decorations}
-              <span
-                class={(segment.decorations ?? []).map((name) => `ansi-${name}`).join(' ')}
-                style:color={segment.color}
-                style:background-color={segment.background}>{segment.text}</span
-              >
-            {:else}
-              {segment.text}
-            {/if}
-          {/each}
-        {/if}
-      </div>
-    {:else}
-      <div class="system">{$t('empty.output')}</div>
-    {/each}
-  </div>
+              {/if}
+            {/each}
+          {/if}
+        </div>
+      {:else}
+        <div class="system">{$t('empty.output')}</div>
+      {/each}
+    </div>
+  </PanelMenu>
   {#if $running}<StdinInput />{/if}
 </div>
 

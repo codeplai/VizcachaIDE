@@ -168,7 +168,11 @@ export const createMockBridge = (): MockBridge => {
     console: mockConsole(),
     files: mockFiles(),
     settings: mockSettings(state, emit),
-    system: { openUrl: (url) => void window.open(url, '_blank', 'noopener') },
+    system: {
+      openUrl: (url) => void window.open(url, '_blank', 'noopener'),
+      readClipboard: () => navigator.clipboard.readText(),
+      writeClipboard: (text) => navigator.clipboard.writeText(text)
+    },
     on
   }
   const play = async (next: Scenario): Promise<void> => {

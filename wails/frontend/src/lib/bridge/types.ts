@@ -114,6 +114,9 @@ export interface SettingsApi {
 export interface SystemApi {
   /** Opens a web page in the default browser (Wails BrowserOpenURL). */
   openUrl: (url: string) => void
+  /** The clipboard, through Wails (a WebView2 page cannot read it by itself). */
+  readClipboard: () => Promise<string>
+  writeClipboard: (text: string) => Promise<void>
 }
 
 /**

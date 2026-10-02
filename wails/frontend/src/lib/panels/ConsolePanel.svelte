@@ -2,7 +2,17 @@
   import { tick } from 'svelte'
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { consoleEntries, evalConsole, resetConsole, stepConsoleHistory } from '../stores'
+  import {
+    clearConsoleScreen,
+    consoleEntries,
+    copyText,
+    evalConsole,
+    readClipboard,
+    resetConsole,
+    selectAllIn,
+    stepConsoleHistory
+  } from '../stores'
+  import PanelMenu, { type PanelAction } from './PanelMenu.svelte'
 
   let draft = $state('')
   let scroller: HTMLDivElement | undefined = $state()
@@ -29,6 +39,27 @@
     draft = text
   }
 
+  const paste = async (): Promise<void> => {
+    draft += await readClipboard(bridge)
+  }
+
+  const actions = (selection: string): PanelAction[] => [
+    {
+      label: 'panels.menuCopy',
+      keys: 'Ctrl+C',
+      disabled: !selection,
+      run: (text) => void copyText(bridge, text)
+    },
+    {
+      label: 'panels.menuCopyAll',
+      run: () => void copyText(bridge, scroller?.innerText || scroller?.textContent || '')
+    },
+    { label: 'panels.menuPaste', run: () => void paste() },
+    { label: 'panels.menuSelectAll', run: () => selectAllIn(scroller) },
+    { label: 'panels.menuClearScreen', separated: true, run: clearConsoleScreen },
+    { label: 'console.reset', run: () => void resetConsole(bridge) }
+  ]
+
   const onKeydown = (event: KeyboardEvent): void => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
@@ -39,21 +70,23 @@
 </script>
 
 <div class="console">
-  <div class="scroll" bind:this={scroller}>
-    {#if $consoleEntries.length === 0}
-      <p class="empty">{$t('console.empty')}</p>
-      <p class="note">{$t('console.note')}</p>
-    {:else}
-      {#each $consoleEntries as entry (entry.id)}
-        <div class="entry">
-          <pre class="code"><span class="prompt">›</span> {entry.code}</pre>
-          {#if entry.output}<pre class="out">{entry.output}</pre>{/if}
-          {#if entry.result}<pre class="result">{entry.result}</pre>{/if}
-          {#if entry.error}<pre class="err">{entry.error}</pre>{/if}
-        </div>
-      {/each}
-    {/if}
-  </div>
+  <PanelMenu {actions}>
+    <div class="scroll" bind:this={scroller}>
+      {#if $consoleEntries.length === 0}
+        <p class="empty">{$t('console.empty')}</p>
+        <p class="note">{$t('console.note')}</p>
+      {:else}
+        {#each $consoleEntries as entry (entry.id)}
+          <div class="entry">
+            <pre class="code"><span class="prompt">›</span> {entry.code}</pre>
+            {#if entry.output}<pre class="out">{entry.output}</pre>{/if}
+            {#if entry.result}<pre class="result">{entry.result}</pre>{/if}
+            {#if entry.error}<pre class="err">{entry.error}</pre>{/if}
+          </div>
+        {/each}
+      {/if}
+    </div>
+  </PanelMenu>
   <div class="bar">
     <span class="prompt">›</span>
     <textarea

@@ -1,14 +1,12 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { sendProgramInput } from '../stores'
-
-  let typed = $state('')
+  import { sendProgramInput, stdinDraft } from '../stores'
 
   const submit = (event: KeyboardEvent): void => {
     if (event.key !== 'Enter' || event.isComposing) return
-    const text = typed
-    typed = ''
+    const text = $stdinDraft
+    stdinDraft.set('')
     void sendProgramInput(bridge, text)
   }
 </script>
@@ -20,7 +18,7 @@
   autocomplete="off"
   placeholder={$t('run.inputPlaceholder')}
   aria-label={$t('run.inputPlaceholder')}
-  bind:value={typed}
+  bind:value={$stdinDraft}
   onkeydown={submit}
 />
 
