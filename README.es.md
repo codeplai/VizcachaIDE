@@ -15,8 +15,9 @@ pueda ver cómo se ejecuta su programa, sin la configuración que piden los IDE 
 para aprenderlo. El nombre viene de la *vizcacha*, el roedor andino del Perú que siempre se ve
 relajado. Ese es el ánimo que queremos para quien escribe su primer programa.
 
-> **Estado: edición 2.0.0-rc1 (versión candidata).** El producto principal es la nueva edición
-> en [`wails/`](wails/) (backend en Go, Svelte 5 y CodeMirror 6). La edición original en PyQt5
+> **Estado: edición 2.1.0.** El producto principal es la nueva edición
+> en [`wails/`](wails/) (backend en Go, Svelte 5 y CodeMirror 6). Desde la 2.1 su núcleo está listo
+> para más lenguajes: Python y C++ son los siguientes. La edición original en PyQt5
 > (1.x, carpeta `vizcacha/`) sigue disponible como [edición clásica](#edición-clásica-1x-pyqt5),
 > en mantenimiento.
 

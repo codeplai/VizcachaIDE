@@ -97,7 +97,7 @@ describe('About and Packages dialogs', () => {
     expect(screen.getByText('Marks Calderon')).toBeTruthy()
     expect(screen.getByText('CEO Codeplai')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'hola@codeplai.pe' })).toBeTruthy()
-    expect(screen.getByText('Version 2.0.0-rc1')).toBeTruthy()
+    expect(screen.getByText('Version 2.1.0')).toBeTruthy()
     expect(screen.getByText(/ABSOLUTELY NO WARRANTY/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Read the MIT license' })).toBeTruthy()
   })

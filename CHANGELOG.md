@@ -8,6 +8,38 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-03
+
+Wails edition. The IDE is now built around **language profiles**, so Python and C++ can be added
+next without touching the rest of the IDE. Go works exactly as in 2.0.0-rc1 (34/34 parity steps in
+English and Spanish, see `docs/wails/QA_WAILS.md`).
+
+### Added
+- *File → New file of…*: new files of Go, Python or C++, each with its own template and
+  extension. Settings has a "Language for new files" option.
+- Settings → Tools shows one group per language with the tools it found and their versions.
+- A missing tool now shows which one is missing, with *Install* or *Copy the command* and
+  *Choose in Settings*.
+- The language server stops after 5 minutes without open files and starts again when one opens.
+- Programs of future languages can run in a pseudoterminal (ConPTY on Windows), so what they
+  print before crashing is not lost.
+
+### Changed
+- `settings.json` keeps tool paths in `toolPaths`. A 2.0 file (`goPath`, `delvePath`,
+  `goplsPath`) is converted automatically the first time 2.1 starts.
+- The Console tab and the package actions follow the language of the open file. The debug panel
+  says "Goroutines" for Go and "Threads" for other languages.
+- The "Go modules" dialog is now the "Packages" dialog. For Go it shows the same texts and
+  actions (`go mod init`, `go get`, `go mod tidy`).
+
+### Notes
+- Python and C++ files can be created and edited (plain text), but running them says "This isn't
+  available for Python/C++" until their support arrives (plans in `docs/PLAN_PYTHON.md` and
+  `docs/PLAN_CPP.md`).
+- For developers: the debugger (DAP), language server (LSP), process supervisor and error catalog
+  engine moved to `wails/internal/protocol`; the Go adapter lives in `wails/internal/adapters/golang`.
+  See `docs/PLAN_NUCLEO_MULTILENGUAJE.md`.
+
 ## [1.0.0-rc1] - 2026-10-01
 
 First release candidate of the public, bilingual 1.0. The code base was rewritten
@@ -101,6 +133,40 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 
 ## [Sin publicar]
 
+## [2.1.0] - 2026-10-03
+
+Edición Wails. El IDE se organiza ahora en torno a **perfiles de lenguaje**, así que Python y C++
+se podrán añadir sin tocar el resto del IDE. Go funciona exactamente igual que en 2.0.0-rc1
+(34/34 pasos de paridad en inglés y español, ver `docs/wails/QA_WAILS.md`).
+
+### Añadido
+- *Archivo → Nuevo archivo de…*: archivos nuevos de Go, Python o C++, cada uno con su plantilla y
+  su extensión. Ajustes tiene la opción "Lenguaje de los archivos nuevos".
+- Ajustes → Herramientas muestra un grupo por lenguaje con las herramientas encontradas y sus
+  versiones.
+- Cuando falta una herramienta, el aviso dice cuál es y ofrece *Instalar* o *Copiar el comando* y
+  *Elegir en Ajustes*.
+- El servidor de lenguaje se detiene tras 5 minutos sin archivos abiertos y vuelve a arrancar al
+  abrir uno.
+- Los programas de los próximos lenguajes pueden ejecutarse en una pseudoterminal (ConPTY en
+  Windows), para que no se pierda lo que imprimen antes de caerse.
+
+### Cambiado
+- `settings.json` guarda las rutas de las herramientas en `toolPaths`. Un archivo de la 2.0
+  (`goPath`, `delvePath`, `goplsPath`) se convierte solo la primera vez que arranca la 2.1.
+- La pestaña Consola y las acciones de paquetes siguen al lenguaje del archivo abierto. El panel de
+  depuración dice "Goroutines" en Go e "Hilos" en los demás lenguajes.
+- El diálogo "Módulos de Go" es ahora el diálogo "Paquetes". Para Go muestra los mismos textos y
+  acciones (`go mod init`, `go get`, `go mod tidy`).
+
+### Notas
+- Los archivos de Python y C++ se pueden crear y editar (como texto plano), pero al ejecutarlos el
+  IDE dice "Esto no está disponible para Python/C++" hasta que llegue su soporte (planes en
+  `docs/PLAN_PYTHON.md` y `docs/PLAN_CPP.md`).
+- Para desarrolladores: el depurador (DAP), el servidor de lenguaje (LSP), el supervisor de
+  procesos y el motor del catálogo de errores pasaron a `wails/internal/protocol`; el adaptador de
+  Go vive en `wails/internal/adapters/golang`. Ver `docs/PLAN_NUCLEO_MULTILENGUAJE.md`.
+
 ## [1.0.0-rc1] - 2026-10-01
 
 Primera versión candidata de la 1.0 pública y bilingüe. El código se reescribió sobre una
@@ -188,7 +254,8 @@ arquitectura en capas, y casi todo lo que prometía el README de la 0.1 ahora ex
 - Una interfaz de depurador **simulada** (paneles de Variables y Pila de llamadas) que no usaba
   Delve.
 
-[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/v1.0.0-rc1...HEAD
-[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/v1.0.0-rc1...HEAD
+[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...HEAD
+[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...HEAD
+[2.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/wails-v2.1.0
 [1.0.0-rc1]: https://github.com/codeplai/VizcachaIDE/compare/v0.1.0...v1.0.0-rc1
 [0.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/v0.1.0

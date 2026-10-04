@@ -11,7 +11,7 @@ python wails/packaging/build_release.py --cache-dir /path/to/packaging/cache   #
 ```
 
 Output: `wails/dist/release/VizcachaIDE-<version>-<os>-<arch>-<variant>…` + `SHA256SUMS-*.txt`.
-Version = `info.productVersion` in `wails/wails.json` (`2.0.0-rc1`). Wails cannot cross-compile
+Version = `info.productVersion` in `wails/wails.json` (`2.1.0`). Wails cannot cross-compile
 with CGO targets, so each OS/arch is built on its own machine (see `.github/workflows/wails-release.yml`,
 tags `wails-v*`).
 
@@ -23,7 +23,8 @@ tags `wails-v*`).
 
 ## Where the locator finds the toolchain
 
-`toolchain.Locator` uses `filepath.Dir(os.Executable())/toolchain/{go/bin,bin}`:
+The Go runner (`internal/adapters/golang/runner`, through `internal/protocol/toollocator`) looks in
+`filepath.Dir(os.Executable())/toolchain/{go/bin,bin}`:
 
 * Windows / Linux tar.gz: next to the executable.
 * AppImage: `os.Executable()` is `<mount>/usr/bin/VizcachaIDE`, so the toolchain is in `usr/bin/toolchain`.
