@@ -1,28 +1,31 @@
-package gopls
+package lsp
 
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 
 	"go.lsp.dev/protocol"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// ensureStartedLocked launches gopls the first time. Failures leave the state unavailable.
+// ensureStartedLocked launches the server the first time. Failures leave the state unavailable.
 func (s *Server) ensureStartedLocked(path string) {
 	if s.state != stateIdle {
 		return
 	}
-	env := s.environment()
-	executable, err := locateGopls(s.configuredExecutable(), env)
+	env := s.flavor.Environment()
+	executable, args, err := s.flavor.Command(env)
 	if err != nil {
+		slog.Warn("language server unavailable", "server", s.opts.Name, "error", err)
 		s.makeUnavailableLocked(nil)
 		return
 	}
-	root := moduleRoot(path)
-	conn, err := startConnection(executable, env, root, s.onNotification)
+	root := s.flavor.RootOf(path)
+	conn, err := startConnection(executable, args, env, root, s.onNotification)
 	if err != nil {
+		slog.Warn("language server did not start", "server", s.opts.Name, "error", err)
 		s.makeUnavailableLocked(nil)
 		return
 	}
@@ -37,10 +40,7 @@ func (s *Server) ensureStartedLocked(path string) {
 func (s *Server) initialize(conn *connection, root string) {
 	ctx, cancel := context.WithTimeout(context.Background(), initializeTimeout)
 	defer cancel()
-	_, err := conn.call(ctx, "initialize", initializeParams(root))
-	if err == nil {
-		err = conn.notify(ctx, "initialized", protocol.InitializedParams{})
-	}
+	err := s.handshake(ctx, conn, root)
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.conn != conn || s.state != stateStarting {
@@ -58,7 +58,22 @@ func (s *Server) initialize(conn *connection, root string) {
 	s.sink.LanguageServerStatus(domain.ServerReady)
 }
 
-// watchExit marks the server unavailable if gopls dies on its own.
+// handshake sends initialize, initialized and, if the flavor has one, its configuration.
+func (s *Server) handshake(ctx context.Context, conn *connection, root string) error {
+	if _, err := conn.call(ctx, "initialize", initializeParams(root, s.flavor.InitializationOptions())); err != nil {
+		return err
+	}
+	if err := conn.notify(ctx, "initialized", protocol.InitializedParams{}); err != nil {
+		return err
+	}
+	settings := s.flavor.Configuration()
+	if settings == nil {
+		return nil
+	}
+	return conn.notify(ctx, "workspace/didChangeConfiguration", map[string]any{"settings": settings})
+}
+
+// watchExit marks the server unavailable if the server dies on its own.
 func (s *Server) watchExit(conn *connection) {
 	<-conn.conn.Done()
 	s.mu.Lock()
@@ -84,12 +99,12 @@ func (s *Server) makeUnavailableLocked(conn *connection) {
 
 // openLocked sends didOpen (adding the module folder to the workspace first).
 func (s *Server) openLocked(doc document) {
-	root := moduleRoot(doc.path)
+	root := s.flavor.RootOf(doc.path)
 	if !s.folders[pathKey(root)] {
 		s.folders[pathKey(root)] = true
 		s.notifyLocked("workspace/didChangeWorkspaceFolders", addFolderParams(root))
 	}
-	s.notifyLocked("textDocument/didOpen", didOpenParams(doc))
+	s.notifyLocked("textDocument/didOpen", didOpenParams(doc, s.opts.LanguageID))
 }
 
 func (s *Server) notifyLocked(method string, params any) {
@@ -98,7 +113,7 @@ func (s *Server) notifyLocked(method string, params any) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), notifyTimeout)
 	defer cancel()
-	_ = s.conn.notify(ctx, method, params) // a dead gopls is noticed by watchExit
+	_ = s.conn.notify(ctx, method, params) // a dead server is noticed by watchExit
 }
 
 // onNotification publishes the diagnostics of open documents.
@@ -115,5 +130,5 @@ func (s *Server) onNotification(method string, raw json.RawMessage) {
 	if !open {
 		return
 	}
-	s.sink.Diagnostics(doc.path, toDiagnostics(params, doc.path, doc.text))
+	s.sink.Diagnostics(doc.path, toDiagnostics(params, doc.path, doc.text, s.opts.Name))
 }

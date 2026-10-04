@@ -1,8 +1,7 @@
-package gopls
+package lsp
 
 import (
 	"io"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -72,25 +71,6 @@ func TestLinesAreSplitWithoutCarriageReturns(t *testing.T) {
 	}
 	if got := lineOf(text, 9); got != "" {
 		t.Errorf("lineOf past the end = %q", got)
-	}
-}
-
-func TestModuleRootIsTheNearestGoMod(t *testing.T) {
-	root := t.TempDir()
-	nested := filepath.Join(root, "cmd", "app")
-	if err := os.MkdirAll(nested, 0o750); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module x\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	file := filepath.Join(nested, "main.go")
-	if got := moduleRoot(file); pathKey(got) != pathKey(root) {
-		t.Errorf("moduleRoot = %q, want %q", got, root)
-	}
-	loose := filepath.Join(t.TempDir(), "solo.go")
-	if got := moduleRoot(loose); pathKey(got) != pathKey(filepath.Dir(loose)) {
-		t.Errorf("without go.mod the root is the folder, got %q", got)
 	}
 }
 

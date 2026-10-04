@@ -1,7 +1,6 @@
 package gopls
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,7 +17,7 @@ func locateGopls(configured string, env map[string]string) (string, error) {
 		if isFile(configured) {
 			return configured, nil
 		}
-		return "", fmt.Errorf("gopls at %q: %w", configured, app.ErrToolNotFound)
+		return "", app.MissingTool(toolID)
 	}
 	name := "gopls"
 	if runtime.GOOS == "windows" {
@@ -32,7 +31,7 @@ func locateGopls(configured string, env map[string]string) (string, error) {
 	if found, err := exec.LookPath("gopls"); err == nil {
 		return found, nil
 	}
-	return "", fmt.Errorf("gopls: %w", app.ErrToolNotFound)
+	return "", app.MissingTool(toolID)
 }
 
 func searchDirs(env map[string]string) []string {

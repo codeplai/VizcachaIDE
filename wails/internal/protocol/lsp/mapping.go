@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"encoding/json"
@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	diagnosticSource = "gopls"
-	maxCompletions   = 60
+	maxCompletions = 60
 )
 
 var severities = map[protocol.DiagnosticSeverity]domain.Severity{
@@ -65,7 +64,8 @@ func markupText(raw json.RawMessage) string {
 
 // toDiagnostics maps the params of textDocument/publishDiagnostics. file is the path
 // the editor knows and text its current content (needed to convert UTF-16 columns).
-func toDiagnostics(params protocol.PublishDiagnosticsParams, file, text string) []domain.Diagnostic {
+// source names the server (Diagnostic.Source).
+func toDiagnostics(params protocol.PublishDiagnosticsParams, file, text, source string) []domain.Diagnostic {
 	result := make([]domain.Diagnostic, 0, len(params.Diagnostics))
 	for _, item := range params.Diagnostics {
 		start := locationIn(text, file, item.Range.Start)
@@ -77,7 +77,7 @@ func toDiagnostics(params protocol.PublishDiagnosticsParams, file, text string) 
 		result = append(result, domain.Diagnostic{
 			Location: &start, End: &end, Severity: severity,
 			Message: item.Message, RawText: item.Message,
-			Source: diagnosticSource, Code: codeText(item.Code),
+			Source: source, Code: codeText(item.Code),
 		})
 	}
 	return result

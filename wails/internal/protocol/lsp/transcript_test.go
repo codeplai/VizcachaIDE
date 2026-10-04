@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"bytes"
@@ -97,7 +97,7 @@ func TestPublishedDiagnosticsBecomeDomainDiagnostics(t *testing.T) {
 	if err := json.Unmarshal(session.result(t, "publishDiagnostics"), &params); err != nil {
 		t.Fatal(err)
 	}
-	got := toDiagnostics(params, session.source, session.text)
+	got := toDiagnostics(params, session.source, session.text, "gopls")
 	if len(got) != 1 {
 		t.Fatalf("diagnostics = %+v", got)
 	}

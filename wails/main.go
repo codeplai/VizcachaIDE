@@ -8,20 +8,22 @@ import (
 	"context"
 	"embed"
 	"log"
+	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/console"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/delve"
 	golangerrors "github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/errors"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/packages"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/runner"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -91,7 +93,7 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 // newGoTools creates the Delve and gopls adapters. Tool paths are resolved when a debug
 // session or gopls starts (configured -> bundled -> PATH), so changing them in Settings
 // needs no restart.
-func newGoTools(sink *bridge.WailsEventSink, goRunner *runner.Runner, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
+func newGoTools(sink *bridge.WailsEventSink, goRunner *runner.Runner, texts *backendTexts) (*delve.Debugger, *lsp.Server) {
 	debugger := delve.New(sink, delve.Options{
 		DelvePath:   func() string { return goRunner.Locate("dlv").Path },
 		Environment: goRunner.Environment,
@@ -100,7 +102,7 @@ func newGoTools(sink *bridge.WailsEventSink, goRunner *runner.Runner, texts *bac
 	languageServer := gopls.New(sink, gopls.Config{
 		Executable:  func() string { return goRunner.Locate("gopls").Path },
 		Environment: goRunner.Environment,
-	})
+	}, lsp.Options{IdleTimeout: 5 * time.Minute})
 	return debugger, languageServer
 }
 

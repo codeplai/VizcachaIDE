@@ -1,6 +1,6 @@
 //go:build !windows
 
-package gopls
+package lsp
 
 import "os/exec"
 

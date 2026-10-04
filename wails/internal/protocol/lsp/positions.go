@@ -1,9 +1,6 @@
-// Package gopls implements app.LanguageServer with an LSP client (go.lsp.dev/jsonrpc2
-// and go.lsp.dev/protocol) that talks to "gopls serve" over stdio.
-package gopls
+package lsp
 
 import (
-	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -15,8 +12,6 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
-
-const goModuleFile = "go.mod"
 
 // pathToURI turns a file path into a file:// URI.
 func pathToURI(path string) protocol.DocumentURI {
@@ -44,23 +39,6 @@ func pathKey(path string) string {
 		return strings.ToLower(abs)
 	}
 	return abs
-}
-
-// moduleRoot is the folder with the nearest go.mod above file, or the file's own folder.
-func moduleRoot(file string) string {
-	abs, err := filepath.Abs(file)
-	if err != nil {
-		abs = file
-	}
-	folder := filepath.Dir(abs)
-	for candidate := folder; ; candidate = filepath.Dir(candidate) {
-		if info, err := os.Stat(filepath.Join(candidate, goModuleFile)); err == nil && !info.IsDir() {
-			return candidate
-		}
-		if filepath.Dir(candidate) == candidate {
-			return folder
-		}
-	}
 }
 
 // lineOf returns line number lineIndex (0-based) of text without its line ending.
