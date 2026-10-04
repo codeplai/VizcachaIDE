@@ -154,7 +154,7 @@ describe('First start wizard', () => {
 describe('Status bar', () => {
   it('shows gopls, the Go version, the position and the language, and turns sand while debugging', async () => {
     const view = render(StatusBar)
-    expect(await screen.findByText('gopls ready')).toBeTruthy()
+    expect(await screen.findByText('Code helper ready')).toBeTruthy()
     expect(screen.getByText('Go 1.25.5')).toBeTruthy()
     expect(screen.getByText('Line 1, column 1')).toBeTruthy()
     expect(view.container.querySelector('footer')?.classList.contains('debug')).toBe(false)

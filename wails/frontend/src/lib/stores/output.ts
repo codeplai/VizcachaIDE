@@ -69,7 +69,9 @@ const debuggingLines = derived(
   ([lines, file, line, starting, canType]) => {
     if (starting) return [{ tone: 'system', key: 'run.debugStarting' } satisfies OutputLine]
     const view: OutputLine[] = [
-      { tone: 'system', key: 'run.debugging', values: { file, line: line ?? 0 } }
+      line === null
+        ? { tone: 'system', key: 'run.debugRunning', values: { file } }
+        : { tone: 'system', key: 'run.debugging', values: { file, line } }
     ]
     // Delve gives a Go program no keyboard; a Python debuggee runs in a terminal and reads it.
     if (!canType) view.push({ tone: 'system', key: 'run.debugStdin' })

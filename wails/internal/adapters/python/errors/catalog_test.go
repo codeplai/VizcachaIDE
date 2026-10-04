@@ -163,8 +163,12 @@ func TestOtherPythonVersionsAndShapesAreRecognised(t *testing.T) {
 		"AttributeError: module 'random' has no attribute 'randin'. Did you mean: 'randint'?": "PY-ATTRIBUTE",
 		"IndexError: list assignment index out of range":                                      "PY-INDEX-RANGE",
 		"ZeroDivisionError: integer modulo by zero":                                           "PY-ZERO-DIVISION",
-		"AssertionError: la edad no puede ser negativa":                                       "PY-ASSERTION",
-		"TypeError: 'NoneType' object is not subscriptable":                                   "PY-TYPE-NOT-SUBSCRIPTABLE",
+		// pyflakes through pylsp (live problems) words them differently from ruff.
+		"undefined name 'nombre'":                              "W-PY-UNDEFINED",
+		"'os' imported but unused":                             "W-PY-UNUSED-IMPORT",
+		"local variable 'total' is assigned to but never used": "W-PY-UNUSED-VAR",
+		"AssertionError: la edad no puede ser negativa":        "PY-ASSERTION",
+		"TypeError: 'NoneType' object is not subscriptable":    "PY-TYPE-NOT-SUBSCRIPTABLE",
 	}
 	for message, want := range messages {
 		got := explainer.Explain(domain.Diagnostic{Message: message}, "en")

@@ -13,6 +13,10 @@ export const WAILS_DIR = path.resolve(HERE, '../../..')
 export const REPO = path.resolve(WAILS_DIR, '..')
 export const EDGE = process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
 export const WQ = path.join(os.tmpdir(), 'wq')
+/** A Python with debugpy, pylsp, pyflakes and ruff for the Python steps (docs/PLAN_PYTHON.md section 0). */
+export const DEV_PYTHON =
+  process.env.VIZCACHA_TEST_PYTHON ||
+  path.join(WAILS_DIR, '.venv-py312', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python')
 export const PROJECT = path.join(WQ, 'proj')
 export const SETTINGS_DIR = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'VizcachaIDE')
 export const SETTINGS_FILE = path.join(SETTINGS_DIR, 'settings.json')

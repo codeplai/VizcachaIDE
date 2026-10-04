@@ -3,6 +3,7 @@
   import { resolveLanguage, systemLanguage } from '../language'
   import { t } from '../i18n'
   import {
+    activeProfile,
     cursor,
     debugActive,
     lspStatus,
@@ -20,7 +21,13 @@
 
   const language = $derived(resolveLanguage($settings?.language ?? 'auto', systemLanguage()))
   const otherLanguage = $derived(language === 'es' ? 'en' : 'es')
-  const goVersion = $derived(toolStatus('go', $tools)?.version ?? '')
+  // The runtime and the language server of the open file's language (Go or Python...).
+  const runtimeSpec = $derived($activeProfile?.tools.find((spec) => spec.role === 'runtime'))
+  const serverSpec = $derived($activeProfile?.tools.find((spec) => spec.role === 'languageServer'))
+  const runtimeVersion = $derived(
+    runtimeSpec ? (toolStatus(runtimeSpec.id, $tools)?.version ?? '') : ''
+  )
+  const unavailableKey = $derived(serverSpec?.missingKey || 'errors.goplsNotFound')
 </script>
 
 <footer class="status" class:debug={$debugActive}>
@@ -30,12 +37,18 @@
     <span
       class="live"
       data-status={$lspStatus}
-      title={$lspStatus === 'unavailable' ? $t('errors.goplsNotFound') : undefined}
+      title={$lspStatus === 'unavailable' ? $t(unavailableKey) : undefined}
     >
       {$t(lspKey[$lspStatus])}
     </span>
   {/if}
-  {#if goVersion}<span>{$t('status.goVersion', { values: { version: goVersion } })}</span>{/if}
+  {#if runtimeVersion && $activeProfile}
+    <span>
+      {$t('status.runtimeVersion', {
+        values: { codeLanguage: $t($activeProfile.nameKey), version: runtimeVersion }
+      })}
+    </span>
+  {/if}
   <span class="sp">
     {$t('status.position', { values: { line: $cursor.line, column: $cursor.column } })}
   </span>

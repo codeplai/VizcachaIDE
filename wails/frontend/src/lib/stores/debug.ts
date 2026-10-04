@@ -90,7 +90,14 @@ export const connectDebug = (bridge: Bridge): Unsubscribe => {
           : state
       )
     }),
-    bridge.on('debug:output', (line) => debugOutput.update((lines) => [...lines, line])),
+    bridge.on('debug:output', (line) => {
+      debugOutput.update((lines) => [...lines, line])
+      // A program that never pauses (no breakpoint, waiting for input()) is running already.
+      if (line.category !== 'console' && get(debugStarting)) {
+        debugStarting.set(false)
+        debugActive.set(true)
+      }
+    }),
     bridge.on('debug:terminated', () => {
       debugStarting.set(false)
       debugActive.set(false)

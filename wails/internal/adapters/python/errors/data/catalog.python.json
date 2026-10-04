@@ -405,7 +405,7 @@
  },
  {
   "id": "W-PY-UNUSED-VAR",
-  "patterns": ["^Local variable `(?P<name>[^`]+)` is assigned to but never used"],
+  "patterns": ["^Local variable `(?P<name>[^`]+)` is assigned to but never used", "^local variable '(?P<name>[^']+)' is assigned to but never used"],
   "en": {
    "title": "Variable \"{name}\" is never used",
    "body": "You gave a value to \"{name}\" but the function never reads it. It is usually a leftover or a sign that something is missing.",
@@ -419,7 +419,7 @@
  },
  {
   "id": "W-PY-UNUSED-IMPORT",
-  "patterns": ["^`(?P<module>[^`]+)` imported but unused"],
+  "patterns": ["^`(?P<module>[^`]+)` imported but unused", "^'(?P<module>[^']+)' imported but unused"],
   "en": {
    "title": "\"{module}\" is imported but never used",
    "body": "The file imports \"{module}\", but nothing in it uses it. It does no harm, but it is clutter.",
@@ -433,7 +433,7 @@
  },
  {
   "id": "W-PY-UNDEFINED",
-  "patterns": ["^Undefined name `(?P<name>[^`]+)`"],
+  "patterns": ["^Undefined name `(?P<name>[^`]+)`", "^undefined name '(?P<name>[^']+)'"],
   "en": {
    "title": "The name \"{name}\" is not defined",
    "body": "The code uses \"{name}\", but nothing with that name is created or imported in the file. If you ran the program now it would stop with a NameError.",

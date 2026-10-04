@@ -60,6 +60,7 @@
   "run.debugStdin": { "en": "While debugging, your program can't read the keyboard.", "es": "Mientras depuras, tu programa no puede leer el teclado." },
   "run.debugAdapterStopped": { "en": "The debugger stopped unexpectedly. Try starting it again.", "es": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo." },
   "run.debugStarting": { "en": "Starting the debugger…", "es": "Iniciando el depurador…" },
+  "run.debugRunning": { "en": "● Debugging {file} · running", "es": "● Depurando {file} · en ejecución" },
 
   "errors.goNotFound": { "en": "Go isn't installed. VizcachaIDE needs Go to run your programs. Install Go or choose where it is in Settings.", "es": "Go no está instalado. VizcachaIDE necesita Go para ejecutar tus programas. Instálalo o indica dónde está en Configuración." },
   "errors.goNotFoundInstall": { "en": "Install Go", "es": "Instalar Go" },
@@ -117,12 +118,12 @@
   "assistant.goToLine": { "en": "Go to line {line}", "es": "Ir a la línea {line}" },
   "assistant.searchError": { "en": "Search this error", "es": "Buscar este error" },
 
-  "status.lspStarting": { "en": "gopls starting…", "es": "gopls iniciando…" },
-  "status.lspReady": { "en": "gopls ready", "es": "gopls listo" },
-  "status.lspUnavailable": { "en": "gopls unavailable", "es": "gopls no disponible" },
+  "status.lspStarting": { "en": "Code helper starting…", "es": "Ayudante de código iniciando…" },
+  "status.lspReady": { "en": "Code helper ready", "es": "Ayudante de código listo" },
+  "status.lspUnavailable": { "en": "Code helper unavailable", "es": "Ayudante de código no disponible" },
   "status.debugging": { "en": "● Debugging", "es": "● Depurando" },
   "status.position": { "en": "Line {line}, column {column}", "es": "Línea {line}, columna {column}" },
-  "status.goVersion": { "en": "Go {version}", "es": "Go {version}" },
+  "status.runtimeVersion": { "en": "{codeLanguage} {version}", "es": "{codeLanguage} {version}" },
 
   "panels.loading": { "en": "Loading…", "es": "Cargando…" },
   "panels.goroutines": { "en": "Goroutines", "es": "Goroutines" },
