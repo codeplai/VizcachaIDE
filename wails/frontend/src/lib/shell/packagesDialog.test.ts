@@ -107,7 +107,7 @@ describe('Packages dialog for Python', () => {
     await fireEvent.input(await screen.findByLabelText('Package to add'), {
       target: { value: 'requests==2.32.0' }
     })
-    await fireEvent.click(screen.getByRole('button', { name: 'Add a package' }))
+    await fireEvent.click(screen.getByRole('button', { name: 'Install a package' }))
     expect(add).toHaveBeenCalledWith('python', 'C:/work/app', 'requests==2.32.0')
   })
 

@@ -2,6 +2,7 @@
 import { derived, get, writable } from 'svelte/store'
 import type { Bridge, ToolId, Unsubscribe } from '../bridge'
 import type { Capabilities, CodeLanguage, LanguageProfile, Settings, ToolStatus } from '../domain'
+import { debuggedPath } from './debug'
 import { activePath } from './files'
 import { settings } from './settings'
 
@@ -53,6 +54,21 @@ export const activeProfile = derived(
 export const capabilities = derived(activeProfile, (profile): Capabilities | null =>
   profile ? profile.capabilities : null
 )
+
+/** The profiles the student chose to use (`settings.enabledCodeLanguages`); empty means all of them. */
+export const enabledProfiles = derived(
+  [profiles, settings],
+  ([all, current]): LanguageProfile[] => {
+    const chosen = current?.enabledCodeLanguages ?? []
+    return chosen.length === 0 ? all : all.filter((profile) => chosen.includes(profile.id))
+  }
+)
+
+/** True when the program being debugged can read the keyboard (its language says so). */
+export const debugInputEnabled = derived([debuggedPath, profiles], ([path, all]): boolean => {
+  const profile = path ? profileOf(path, all) : null
+  return profile?.capabilities.debugInput ?? false
+})
 
 /** The status of one tool; undefined until the backend reported it. */
 export const toolStatus = (id: string, all: ToolStatus[] = get(tools)): ToolStatus | undefined =>

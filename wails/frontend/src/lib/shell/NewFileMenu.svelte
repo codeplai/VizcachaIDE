@@ -2,7 +2,7 @@
   import { DropdownMenu } from 'bits-ui'
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { newFile, profiles } from '../stores'
+  import { enabledProfiles, newFile } from '../stores'
 </script>
 
 <DropdownMenu.Sub>
@@ -12,7 +12,7 @@
   </DropdownMenu.SubTrigger>
   <DropdownMenu.Portal>
     <DropdownMenu.SubContent class="menu" sideOffset={4}>
-      {#each $profiles as profile (profile.id)}
+      {#each $enabledProfiles as profile (profile.id)}
         <DropdownMenu.Item class="menu-item" onSelect={() => void newFile(bridge, profile.id)}>
           {$t('files.newFileOf', { values: { codeLanguage: $t(profile.nameKey) } })}
         </DropdownMenu.Item>

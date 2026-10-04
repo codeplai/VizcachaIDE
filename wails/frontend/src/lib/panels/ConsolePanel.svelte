@@ -3,6 +3,7 @@
   import { bridge } from '../bridge'
   import { t } from '../i18n'
   import {
+    activeCodeLanguage,
     clearConsoleScreen,
     consoleEntries,
     copyText,
@@ -13,6 +14,11 @@
     stepConsoleHistory
   } from '../stores'
   import PanelMenu, { type PanelAction } from './PanelMenu.svelte'
+
+  // Python's console looks like python's own; Go keeps its single-chevron prompt and its texts.
+  const python = $derived($activeCodeLanguage === 'python')
+  const prompt = $derived(python ? '>>>' : '›')
+  const text = (name: string): string => (python ? `console.${name}Python` : `console.${name}`)
 
   let draft = $state('')
   let scroller: HTMLDivElement | undefined = $state()
@@ -73,12 +79,12 @@
   <PanelMenu {actions}>
     <div class="scroll" bind:this={scroller}>
       {#if $consoleEntries.length === 0}
-        <p class="empty">{$t('console.empty')}</p>
-        <p class="note">{$t('console.note')}</p>
+        <p class="empty">{$t(text('empty'))}</p>
+        <p class="note">{$t(text('note'))}</p>
       {:else}
         {#each $consoleEntries as entry (entry.id)}
           <div class="entry">
-            <pre class="code"><span class="prompt">›</span> {entry.code}</pre>
+            <pre class="code"><span class="prompt">{prompt}</span> {entry.code}</pre>
             {#if entry.output}<pre class="out">{entry.output}</pre>{/if}
             {#if entry.result}<pre class="result">{entry.result}</pre>{/if}
             {#if entry.error}<pre class="err">{entry.error}</pre>{/if}
@@ -88,12 +94,12 @@
     </div>
   </PanelMenu>
   <div class="bar">
-    <span class="prompt">›</span>
+    <span class="prompt">{prompt}</span>
     <textarea
       rows="1"
       spellcheck="false"
-      aria-label={$t('console.inputLabel')}
-      placeholder={$t('console.inputPlaceholder')}
+      aria-label={$t(text('inputLabel'))}
+      placeholder={$t(text('inputPlaceholder'))}
       bind:value={draft}
       onkeydown={onKeydown}></textarea>
     <button

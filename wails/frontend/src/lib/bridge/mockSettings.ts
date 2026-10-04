@@ -1,5 +1,5 @@
 // Settings and detected tools of the mock bridge (see mock.ts).
-import type { Settings, ToolSource, ToolStatus } from '../domain'
+import type { CodeLanguage, Settings, ToolSource, ToolStatus } from '../domain'
 import { resolveLanguage, systemLanguage } from '../language'
 import type { Emit } from './mockScenarios'
 import type { Bridge } from './types'
@@ -12,26 +12,32 @@ export interface SettingsHolder {
 const sourceOf = (settings: Settings, toolId: string, found: ToolSource): ToolSource =>
   settings.toolPaths[toolId] ? 'configured' : found
 
-const goTool = (
+const detected = (
   settings: Settings,
+  codeLanguage: CodeLanguage,
   id: string,
   role: ToolStatus['role'],
   version: string,
   found: ToolSource
 ): ToolStatus => ({
   id,
-  codeLanguage: 'go',
+  codeLanguage,
   role,
   version,
   source: sourceOf(settings, id, found),
   path: settings.toolPaths[id] ?? ''
 })
 
-/** The detected tools of every language (only Go has tools in the demo). */
+/** The detected tools of every language (C++ has none in the demo yet). */
 export const toolsFor = (settings: Settings): ToolStatus[] => [
-  goTool(settings, 'go', 'runtime', '1.25.5', 'bundled'),
-  goTool(settings, 'dlv', 'debugAdapter', '1.27.2', 'bundled'),
-  goTool(settings, 'gopls', 'languageServer', '0.21.1', 'path')
+  detected(settings, 'go', 'go', 'runtime', '1.25.5', 'bundled'),
+  detected(settings, 'go', 'dlv', 'debugAdapter', '1.27.2', 'bundled'),
+  detected(settings, 'go', 'gopls', 'languageServer', '0.21.1', 'path'),
+  detected(settings, 'python', 'python', 'runtime', '3.12.4', 'path'),
+  // The modules live inside the interpreter: they have no path of their own.
+  detected(settings, 'python', 'debugpy', 'debugAdapter', '1.8.5', 'path'),
+  detected(settings, 'python', 'pylsp', 'languageServer', '1.12.0', 'path'),
+  detected(settings, 'python', 'ruff', 'formatter', '0.6.9', 'path')
 ]
 
 export const mockSettings = (state: SettingsHolder, emit: Emit): Bridge['settings'] => {
