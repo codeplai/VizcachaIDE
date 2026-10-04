@@ -100,7 +100,7 @@ func TestRunModuleOfTwoFiles(t *testing.T) {
 		"util.go": "package main\n\nfunc saludo() string { return \"desde util\" }\n",
 	})
 	config := app.ConfigurationForFile(filepath.Join(dir, "main.go"), nil)
-	if config.Mode != domain.RunPackage || config.Module == nil {
+	if config.Mode != domain.RunProject || config.Project == nil {
 		t.Fatalf("config = %+v, want package mode", config)
 	}
 
@@ -138,7 +138,7 @@ func TestBuildProducesAnExecutable(t *testing.T) {
 	}
 	event := sink.waitFinished(t)
 
-	built := filepath.Join(dir, config.ExecutableName(isWindows()))
+	built := filepath.Join(dir, app.GoExecutableName(config, isWindows()))
 	if _, err := os.Stat(built); event.ExitCode != 0 || err != nil {
 		t.Errorf("exit %d, executable %s: %v, stderr %q", event.ExitCode, built, err, sink.Stderr())
 	}
@@ -170,7 +170,7 @@ func TestRunWithoutGoReportsToolNotFound(t *testing.T) {
 	sink := newTestSink()
 	tc := New(Options{Sink: sink, AppDir: t.TempDir(), BaseEnvironment: []string{"PATH="}})
 
-	err := tc.Run(context.Background(), domain.NewFileRunConfiguration("main.go", nil))
+	err := tc.Run(context.Background(), domain.NewFileRunConfiguration(domain.CodeLanguageGo, "main.go", nil))
 
 	if !errors.Is(err, app.ErrToolNotFound) {
 		t.Errorf("error = %v, want ErrToolNotFound", err)

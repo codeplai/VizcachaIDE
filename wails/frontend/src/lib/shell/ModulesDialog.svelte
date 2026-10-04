@@ -21,7 +21,8 @@
   let packageName = $state('')
   let touchedName = false
 
-  const module = $derived($lastRunConfiguration?.module ?? null)
+  const project = $derived($lastRunConfiguration?.project ?? null)
+  const module = $derived(project?.kind === 'gomod' ? project : null)
   // Prefill with the folder's name until the person types their own.
   $effect(() => {
     if (!touchedName) moduleName = $suggestedModuleName
@@ -40,7 +41,7 @@
   {#if module}
     <dl>
       <dt>{$t('shell.modulesName')}</dt>
-      <dd>{module.modulePath}</dd>
+      <dd>{module.name}</dd>
       <dt>{$t('shell.modulesFolder')}</dt>
       <dd>{module.root}</dd>
     </dl>

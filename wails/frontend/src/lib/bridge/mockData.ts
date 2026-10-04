@@ -126,11 +126,11 @@ export const sampleDebugState = (line = 6): DebugState => ({
     },
     ...(line > 6 ? [sampleStructVariable] : [])
   ],
-  goroutines: [
-    { goroutineId: 1, name: 'main.main', location: sampleLocation(11, 1) },
-    { goroutineId: 2, name: 'runtime.gopark', location: null }
+  threads: [
+    { threadId: 1, name: 'main.main', location: sampleLocation(11, 1) },
+    { threadId: 2, name: 'runtime.gopark', location: null }
   ],
-  currentGoroutine: 1,
+  currentThread: 1,
   description: ''
 })
 
@@ -157,9 +157,9 @@ export const defaultSettings = (): Settings => ({
   language: 'auto',
   theme: 'system',
   fontSize: 14,
-  goPath: '',
-  delvePath: '',
-  goplsPath: '',
+  toolPaths: {},
+  defaultCodeLanguage: 'go',
+  enabledCodeLanguages: [],
   firstRun: false,
   lastFolder: '',
   formatOnSave: true,

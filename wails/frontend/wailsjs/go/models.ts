@@ -387,26 +387,30 @@ export namespace domain {
 		    return a;
 		}
 	}
-	export class GoModule {
+	export class ProjectContext {
 	    root: string;
-	    modulePath: string;
+	    kind: string;
+	    name: string;
 	
 	    static createFrom(source: any = {}) {
-	        return new GoModule(source);
+	        return new ProjectContext(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.root = source["root"];
-	        this.modulePath = source["modulePath"];
+	        this.kind = source["kind"];
+	        this.name = source["name"];
 	    }
 	}
 	export class RunConfiguration {
+	    codeLanguage: string;
 	    target: string;
 	    workingDir: string;
 	    mode: string;
 	    programArgs: string[];
-	    module?: GoModule;
+	    project?: ProjectContext;
+	    echo: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new RunConfiguration(source);
@@ -414,11 +418,13 @@ export namespace domain {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.codeLanguage = source["codeLanguage"];
 	        this.target = source["target"];
 	        this.workingDir = source["workingDir"];
 	        this.mode = source["mode"];
 	        this.programArgs = source["programArgs"];
-	        this.module = this.convertValues(source["module"], GoModule);
+	        this.project = this.convertValues(source["project"], ProjectContext);
+	        this.echo = source["echo"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -443,11 +449,11 @@ export namespace domain {
 	    language: string;
 	    theme: string;
 	    fontSize: number;
-	    goPath: string;
-	    delvePath: string;
-	    goplsPath: string;
+	    toolPaths: Record<string, string>;
 	    firstRun: boolean;
 	    lastFolder: string;
+	    defaultCodeLanguage: string;
+	    enabledCodeLanguages: string[];
 	    formatOnSave: boolean;
 	    recentFiles: string[];
 	
@@ -460,11 +466,11 @@ export namespace domain {
 	        this.language = source["language"];
 	        this.theme = source["theme"];
 	        this.fontSize = source["fontSize"];
-	        this.goPath = source["goPath"];
-	        this.delvePath = source["delvePath"];
-	        this.goplsPath = source["goplsPath"];
+	        this.toolPaths = source["toolPaths"];
 	        this.firstRun = source["firstRun"];
 	        this.lastFolder = source["lastFolder"];
+	        this.defaultCodeLanguage = source["defaultCodeLanguage"];
+	        this.enabledCodeLanguages = source["enabledCodeLanguages"];
 	        this.formatOnSave = source["formatOnSave"];
 	        this.recentFiles = source["recentFiles"];
 	    }

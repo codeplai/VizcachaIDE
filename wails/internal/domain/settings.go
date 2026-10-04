@@ -1,6 +1,6 @@
 package domain
 
-// Language values stored in Settings.Language.
+// Language values stored in Settings.Language (the UI language, not a CodeLanguage).
 const (
 	LanguageAuto = "auto"
 	LanguageEN   = "en"
@@ -26,15 +26,20 @@ const (
 
 // Settings are the user preferences saved between sessions.
 type Settings struct {
-	Language   string `json:"language"`
-	Theme      string `json:"theme"`
-	FontSize   int    `json:"fontSize"`
-	GoPath     string `json:"goPath"`
-	DelvePath  string `json:"delvePath"`
-	GoplsPath  string `json:"goplsPath"`
-	FirstRun   bool   `json:"firstRun"`
-	LastFolder string `json:"lastFolder"`
-	// FormatOnSave runs gofmt (go/format) every time a .go file is saved.
+	// Language is the UI language (LanguageAuto, LanguageEN or LanguageES).
+	Language string `json:"language"`
+	Theme    string `json:"theme"`
+	FontSize int    `json:"fontSize"`
+	// ToolPaths are the executables chosen in Settings, by ToolSpec.ID ("go", "dlv", "gopls"...).
+	// A missing or empty entry means "find it automatically".
+	ToolPaths  map[string]string `json:"toolPaths"`
+	FirstRun   bool              `json:"firstRun"`
+	LastFolder string            `json:"lastFolder"`
+	// DefaultCodeLanguage is the language of new files.
+	DefaultCodeLanguage CodeLanguage `json:"defaultCodeLanguage"`
+	// EnabledCodeLanguages are the languages chosen in the first-run wizard; empty means all.
+	EnabledCodeLanguages []CodeLanguage `json:"enabledCodeLanguages"`
+	// FormatOnSave formats a file every time it is saved, when its language can format.
 	FormatOnSave bool `json:"formatOnSave"`
 	// RecentFiles are the last opened files, newest first (at most MaxRecentFiles).
 	RecentFiles []string `json:"recentFiles"`
@@ -45,5 +50,9 @@ const MaxRecentFiles = 10
 
 // DefaultSettings returns the settings of a fresh installation.
 func DefaultSettings() Settings {
-	return Settings{Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, FirstRun: true, FormatOnSave: true, RecentFiles: []string{}}
+	return Settings{
+		Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, ToolPaths: map[string]string{},
+		FirstRun: true, DefaultCodeLanguage: CodeLanguageGo, EnabledCodeLanguages: []CodeLanguage{},
+		FormatOnSave: true, RecentFiles: []string{},
+	}
 }

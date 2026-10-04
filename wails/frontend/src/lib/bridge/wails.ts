@@ -13,6 +13,7 @@ import {
   EventsOn
 } from '../../../wailsjs/runtime/runtime'
 import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
+import { createCodeLanguagesApi, createPackagesApi } from './wailsCodeLanguages'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -23,21 +24,22 @@ export const hasWailsBackend = (): boolean =>
 
 const createRunApi = (): RunApi => ({
   run: async (path, args) => fromWire(await RunService.Run(path, args)),
-  runUntitled: async (source, args) => fromWire(await RunService.RunUntitled(source, args)),
+  // Transitional (M0): the 2.0 RunService runs untitled code as Go; N5 routes by the path.
+  runUntitled: async (_path, source, args) => fromWire(await RunService.RunUntitled(source, args)),
   build: async (path, args) => fromWire(await RunService.Build(path, args)),
   splitArguments: (text) => RunService.SplitArguments(text),
   modInit: (dir, modulePath) => RunService.ModInit(dir, modulePath),
   modGet: (dir, pkg) => RunService.ModGet(dir, pkg),
   modTidy: (dir) => RunService.ModTidy(dir),
-  vet: (config) => RunService.Vet(toWire(config)),
+  check: (config) => RunService.Vet(toWire(config)),
   stop: () => RunService.Stop(),
   writeInput: (text) => RunService.WriteInput(text),
-  format: (text) => RunService.Format(text),
+  format: (_path, text) => RunService.Format(text),
   toolchain: async () => fromWire(await RunService.Toolchain())
 })
 
 const createConsoleApi = (): ConsoleApi => ({
-  eval: async (code) => fromWire(await ConsoleService.Eval(code)),
+  eval: async (_codeLanguage, code) => fromWire(await ConsoleService.Eval(code)),
   reset: () => ConsoleService.Reset()
 })
 
@@ -73,6 +75,8 @@ const createFilesApi = (): FilesApi => ({
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
+  packages: createPackagesApi(),
+  codeLanguages: createCodeLanguagesApi(),
   debug: createDebugApi(),
   language: {
     openDocument: (path, text) => LanguageService.OpenDocument(path, text),
@@ -87,7 +91,7 @@ export const createWailsBridge = (): Bridge => ({
     documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path))
   },
   assistant: {
-    explain: async (raw, dir) => fromWire(await AssistantService.Explain(raw, dir)),
+    explain: async (_codeLanguage, raw, dir) => fromWire(await AssistantService.Explain(raw, dir)),
     explainDiagnostics: async (diagnostics) =>
       fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
   },

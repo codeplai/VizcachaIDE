@@ -86,7 +86,7 @@ export const runActiveFile = async (bridge: Bridge): Promise<void> => {
   resetRun()
   await withToolErrors(bridge, () =>
     isUntitled(path)
-      ? bridge.run.runUntitled(get(buffers)[path] ?? '', args)
+      ? bridge.run.runUntitled(path, get(buffers)[path] ?? '', args)
       : bridge.run.run(path, args)
   )
 }

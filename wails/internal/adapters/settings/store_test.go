@@ -46,7 +46,7 @@ func TestMissingFileGivesDefaults(t *testing.T) {
 
 func TestSaveThenLoadRoundTrips(t *testing.T) {
 	store, _ := newTestStore(t)
-	want := domain.Settings{Language: "es", Theme: "dark", FontSize: 18, GoPath: "C:/go/bin/go.exe", LastFolder: "C:/x", RecentFiles: []string{"C:/x/main.go"}}
+	want := domain.Settings{Language: "es", Theme: "dark", FontSize: 18, ToolPaths: map[string]string{"go": "C:/go/bin/go.exe"}, LastFolder: "C:/x", RecentFiles: []string{"C:/x/main.go"}}
 	if err := store.Save(want); err != nil {
 		t.Fatal(err)
 	}

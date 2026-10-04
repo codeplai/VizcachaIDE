@@ -15,7 +15,7 @@ func TestStopReasons(t *testing.T) {
 		"function breakpoint": domain.StopBreakpoint,
 		"step":                domain.StopStep,
 		"entry":               domain.StopEntry,
-		"exception":           domain.StopPanic,
+		"exception":           domain.StopException,
 		"pause":               domain.StopPause,
 		"something new":       domain.StopPause,
 	}
@@ -70,7 +70,7 @@ func TestPanicDescription(t *testing.T) {
 	if want := "panic: runtime error: index out of range [3] with length 0"; got != want {
 		t.Errorf("description = %q, want %q", got, want)
 	}
-	if stopReason(stopped.Body.Reason) != domain.StopPanic {
+	if stopReason(stopped.Body.Reason) != domain.StopException {
 		t.Errorf("reason = %q, want panic", stopped.Body.Reason)
 	}
 }

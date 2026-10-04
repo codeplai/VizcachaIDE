@@ -5,16 +5,16 @@
 </script>
 
 <ul class="routines" aria-label={$t('panels.goroutines')}>
-  {#each $debugState?.goroutines ?? [] as routine (routine.goroutineId)}
+  {#each $debugState?.threads ?? [] as routine (routine.threadId)}
     {@const location = routine.location}
     <li>
       <button
         type="button"
-        class:on={routine.goroutineId === $debugState?.currentGoroutine}
+        class:on={routine.threadId === $debugState?.currentThread}
         disabled={!location}
         onclick={() => location && goToLocation(bridge, location)}
       >
-        {$t('panels.goroutine', { values: { id: routine.goroutineId } })} · {routine.name}
+        {$t('panels.goroutine', { values: { id: routine.threadId } })} · {routine.name}
         {#if location}· {baseName(location.file)}:{location.line}{/if}
       </button>
     </li>

@@ -35,7 +35,7 @@ type launch struct {
 }
 
 func runArguments(config domain.RunConfiguration) []string {
-	return append([]string{"run", config.GoTargetArgument()}, config.ProgramArgs...)
+	return append([]string{"run", app.GoTargetArgument(config)}, config.ProgramArgs...)
 }
 
 // Run implements app.Toolchain.
@@ -45,8 +45,8 @@ func (t *Toolchain) Run(ctx context.Context, config domain.RunConfiguration) err
 
 // Build implements app.Toolchain.
 func (t *Toolchain) Build(ctx context.Context, config domain.RunConfiguration) error {
-	output := config.ExecutableName(isWindows())
-	args := []string{"build", "-o", output, config.GoTargetArgument()}
+	output := app.GoExecutableName(config, isWindows())
+	args := []string{"build", "-o", output, app.GoTargetArgument(config)}
 	return t.launch(ctx, launch{config: config, args: args})
 }
 
@@ -55,7 +55,7 @@ func (t *Toolchain) RunGoCommand(ctx context.Context, workingDir string, args []
 	config := domain.RunConfiguration{
 		Target:      strings.Join(append([]string{"go"}, args...), " "),
 		WorkingDir:  workingDir,
-		Mode:        domain.RunPackage,
+		Mode:        domain.RunProject,
 		ProgramArgs: []string{},
 	}
 	return t.launch(ctx, launch{config: config, args: args})

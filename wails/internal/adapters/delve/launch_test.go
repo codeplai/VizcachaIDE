@@ -34,7 +34,7 @@ func TestStaleDebugBinariesAreRemovedButNotOurOwn(t *testing.T) {
 
 func TestLaunchArgumentsRunTheProgramRemotelyFromItsFolder(t *testing.T) {
 	dir := t.TempDir()
-	config := domain.NewFileRunConfiguration(filepath.Join(dir, "functions.go"), []string{"-n", "3"})
+	config := domain.NewFileRunConfiguration(domain.CodeLanguageGo, filepath.Join(dir, "functions.go"), []string{"-n", "3"})
 
 	request, err := launchRequest(config, map[string]string{"GOFLAGS": "-mod=mod"}, "out.exe")
 	if err != nil {

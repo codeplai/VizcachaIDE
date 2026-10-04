@@ -20,10 +20,10 @@ export const lineFromFormatError = (error: unknown): number | null => {
 }
 
 /** Formats the text when the user asked for it. A file Go cannot read is saved as it is. */
-const textToSave = async (bridge: Bridge, text: string): Promise<string> => {
+const textToSave = async (bridge: Bridge, path: string, text: string): Promise<string> => {
   if (!get(settings)?.formatOnSave) return text
   try {
-    return await bridge.run.format(text)
+    return await bridge.run.format(path, text)
   } catch (error) {
     const line = lineFromFormatError(error)
     showNotice({ messageKey: 'errors.formatRejected', values: { line: line ?? '?' }, actions: [] })
@@ -88,7 +88,7 @@ export const saveAs = async (bridge: Bridge, path: string): Promise<string | nul
   )
   if (!target) return null
   clearSaveNotice()
-  const text = await textToSave(bridge, get(buffers)[path] ?? '')
+  const text = await textToSave(bridge, path, get(buffers)[path] ?? '')
   if (!(await writeFile(bridge, target, text, () => void saveAs(bridge, path)))) return null
   await moveTab(bridge, path, target, text)
   return target
@@ -98,7 +98,7 @@ export const saveAs = async (bridge: Bridge, path: string): Promise<string | nul
 export const saveTab = async (bridge: Bridge, path: string): Promise<string | null> => {
   if (isUntitled(path)) return saveAs(bridge, path)
   clearSaveNotice()
-  const text = await textToSave(bridge, get(buffers)[path] ?? '')
+  const text = await textToSave(bridge, path, get(buffers)[path] ?? '')
   if (!(await writeFile(bridge, path, text, () => void saveFile(bridge, path)))) return null
   buffers.update((all) => ({ ...all, [path]: text }))
   dirty.update((all) => ({ ...all, [path]: false }))

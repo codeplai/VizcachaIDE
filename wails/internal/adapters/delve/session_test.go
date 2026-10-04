@@ -53,8 +53,8 @@ func TestSessionReplaysTheRecordedSession(t *testing.T) {
 			t.Errorf("%s must not be changed on the first stop", variable.Name)
 		}
 	}
-	if len(first.Goroutines) != 6 || first.Goroutines[1].Location == nil || *first.CurrentGoroutine != 1 {
-		t.Errorf("goroutines = %+v", first.Goroutines)
+	if len(first.Threads) != 6 || first.Threads[1].Location == nil || *first.CurrentThread != 1 {
+		t.Errorf("goroutines = %+v", first.Threads)
 	}
 
 	server.after["next"] = []dap.Message{stoppedEvent("step")}
@@ -161,7 +161,7 @@ func TestControlsWithoutSessionReturnErrNoSession(t *testing.T) {
 func TestDelveNotFoundIsToolNotFound(t *testing.T) {
 	debugger := New(newEventSink(), Options{DelvePath: func() string { return filepath.Join(t.TempDir(), "no-dlv") }})
 
-	err := debugger.Start(t.Context(), domain.NewFileRunConfiguration("x/main.go", nil), nil)
+	err := debugger.Start(t.Context(), domain.NewFileRunConfiguration(domain.CodeLanguageGo, "x/main.go", nil), nil)
 
 	if !errors.Is(err, app.ErrToolNotFound) {
 		t.Fatalf("err = %v, want ErrToolNotFound", err)

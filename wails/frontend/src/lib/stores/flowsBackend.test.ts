@@ -80,7 +80,7 @@ describe('tools and language from the backend', () => {
     const buttons = await screen.findAllByRole('button', { name: 'Choose…' })
     await fireEvent.click(buttons[0] as HTMLElement)
     await waitFor(() => expect(get(toolchain)?.goSource).toBe('configured'))
-    expect((await bridge.settings.get()).goPath).toBe('C:\\tools\\go.exe')
+    expect((await bridge.settings.get()).toolPaths['go']).toBe('C:\\tools\\go.exe')
     expect(await screen.findByText(/Location you chose/)).toBeTruthy()
   })
 

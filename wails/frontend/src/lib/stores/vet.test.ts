@@ -34,17 +34,21 @@ afterEach(() => {
 
 describe('go vet after a run', () => {
   it('feeds the vet output to the explainer and shows the warnings', async () => {
-    const vet = vi.spyOn(bridge.run, 'vet').mockResolvedValue('./main.go:9:2: unreachable code\n')
+    const vet = vi.spyOn(bridge.run, 'check').mockResolvedValue('./main.go:9:2: unreachable code\n')
     const explain = vi.spyOn(bridge.assistant, 'explain').mockResolvedValue([warning])
     await mockControls?.play('write')
     await waitFor(() => expect(get(runDiagnostics)).toHaveLength(1))
     expect(vet).toHaveBeenCalledTimes(1)
-    expect(explain).toHaveBeenCalledWith('./main.go:9:2: unreachable code\n', expect.any(String))
+    expect(explain).toHaveBeenCalledWith(
+      'go',
+      './main.go:9:2: unreachable code\n',
+      expect.any(String)
+    )
     expect(get(runDiagnostics)[0]?.code).toBe('V-UNREACHABLE')
   })
 
   it('does nothing when vet finds nothing', async () => {
-    const vet = vi.spyOn(bridge.run, 'vet').mockResolvedValue('')
+    const vet = vi.spyOn(bridge.run, 'check').mockResolvedValue('')
     const explain = vi.spyOn(bridge.assistant, 'explain')
     await mockControls?.play('write')
     await waitFor(() => expect(vet).toHaveBeenCalled())
@@ -53,7 +57,7 @@ describe('go vet after a run', () => {
   })
 
   it('is not run when the build failed', async () => {
-    const vet = vi.spyOn(bridge.run, 'vet').mockResolvedValue('')
+    const vet = vi.spyOn(bridge.run, 'check').mockResolvedValue('')
     await mockControls?.play('error')
     await waitFor(() => expect(get(runDiagnostics).length).toBeGreaterThan(0))
     expect(vet).not.toHaveBeenCalled()

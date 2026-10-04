@@ -28,8 +28,8 @@ var stopReasons = map[string]domain.StopReason{
 	"step":                   domain.StopStep,
 	"goto":                   domain.StopStep,
 	"entry":                  domain.StopEntry,
-	"exception":              domain.StopPanic,
-	"panic":                  domain.StopPanic,
+	"exception":              domain.StopException,
+	"panic":                  domain.StopException,
 	"pause":                  domain.StopPause,
 }
 
@@ -118,11 +118,11 @@ func localsReference(scopes []dap.Scope) int {
 	return 0
 }
 
-func mapGoroutines(threads []dap.Thread) []domain.Goroutine {
-	goroutines := make([]domain.Goroutine, 0, len(threads))
+func mapGoroutines(threads []dap.Thread) []domain.Thread {
+	goroutines := make([]domain.Thread, 0, len(threads))
 	for _, thread := range threads {
 		name := currentThreadMark.ReplaceAllString(thread.Name, "")
-		goroutines = append(goroutines, domain.Goroutine{GoroutineID: thread.Id, Name: name})
+		goroutines = append(goroutines, domain.Thread{ThreadID: thread.Id, Name: name})
 	}
 	return goroutines
 }

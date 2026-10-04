@@ -371,6 +371,20 @@ lectura de salida, escritura de entrada, `Ctrl+C` por la PTY y cierre limpio.
   regulares propias; la librería elegida se añade a la lista permitida de §4.6.
 - Si falla en Windows: `Mode: Pipes` para todos en 2.1 y se registra la PTY como mejora.
 
+**Resultado del spike (N0, 2026-10-03, Windows 10).** Elegido `github.com/aymanbagabas/go-pty`
+(ConPTY en Windows, `creack/pty` en Unix) con `github.com/charmbracelet/x/ansi` para limpiar.
+Implementado en `internal/protocol/pty` (`Start`, `Read`, `Write`, `Interrupt`, `Wait`, `Close`,
+`Clean`). Con una caída nativa real (`faulthandler._sigsegv`), por pipes se pierde lo impreso y por
+la PTY se ve entero; `input()` funciona y la PTY devuelve el eco (`Echo: true` es correcto).
+Hallazgos que N3 debe respetar:
+- ConPTY **parte las líneas** al ancho de la terminal: `pty.Columns = 4096` lo evita (las rutas de
+  los tracebacks no se cortan).
+- ConPTY emite borrado de pantalla, título de ventana, cursor y colores; `pty.Clean` los quita
+  todos. Python 3.13+ colorea los tracebacks en una terminal: `pty.Start` añade `NO_COLOR=1`,
+  `PYTHON_COLORS=0` y `TERM=dumb`. `Clean` trabaja sobre cadenas completas: limpiar por líneas.
+- **Ctrl+C escrito como ETX no llega** al programa en ConPTY. `Stop` en modo `Terminal` llama a
+  `Interrupt` y, a los 2 s, mata el árbol como hoy. Go sigue en `Pipes`, así que no pierde nada.
+
 ### 4.3 `protocol/dap`
 
 Se mueven desde `adapters/delve`: `client.go` (entero), el mapeo genérico de `mapping.go`
@@ -527,9 +541,14 @@ go-adapter-stays-in-go:           # M1 and M2 copy this rule for python/ and cpp
       desc: a language adapter imports only its own folder
 ```
 
-N0 comprueba en el spike que golangci-lint aplica la precedencia así (un import de
-`adapters/golang` desde `adapters/golang/runner` pasa; uno de `adapters/settings` falla). Si no,
-se usa una regla `deny` explícita por cada carpeta hermana. Los adapters sí pueden importar
+**Comprobado en N0: depguard no aplica la coincidencia más específica** (el `deny` de
+`internal/adapters` gana al `allow` más largo de `internal/adapters/golang`). Por eso la regla real
+de `.golangci.yml` excluye `adapters/golang/**` de `adapters-are-independent` y, en
+`go-adapter-stays-in-go`, **niega cada carpeta hermana por nombre** (python, cpp, settings,
+filewatch, filesystem, windowstate y, hasta que N1 y N3 las muevan, toolchain, delve, gopls,
+errorcatalog y console). Probado con paquetes temporales: `adapters/golang/x` puede importar
+`adapters/golang` y `app`, y no `adapters/settings`. Al añadir una carpeta de adaptador hay que
+sumarla a esas listas; M1 y M2 copian la regla. Los adapters sí pueden importar
 `internal/protocol`. `internal/architecture_test.go` no cambia.
 
 ## 5. `adapters/golang`: reagrupación del adaptador de Go
@@ -666,6 +685,28 @@ N0 (orquestador, secuencial) ──► N1 · N2 · N3 · N4 · N5 en paralelo �
 | **N5 · App y bridge** | `app/language_support.go` (con `UnavailableSupport`), `bridge/*` (con `support_router.go`), `adapters/settings` (migración), `main.go`, `support_go.go`, `support_unavailable.go` | registro con su validación, `Supervisor` compartido, enrutamiento, servicios nuevos, migración, perfiles provisionales de Python y C++ | tests del bridge con fakes en verde; `wails build` arranca con el perfil de Go cuando N1 a N3 estén integrados |
 
 Orden de integración: N3 → N1 → N2 → N5 → N4. Después, QA.
+
+### 10.1 Estado tras N0 (lo que queda transitorio y quién lo retira)
+
+N0 dejó el contrato v3 compilando con todo 2.0 en verde. Para eso hay piezas marcadas
+**`Transitional (M0)`** en el código (no `Deprecated`, porque staticcheck rompería el lint). Cada
+track borra las suyas:
+
+| Pieza transitoria | Dónde | La retira |
+|---|---|---|
+| Puerto `app.Toolchain` y `domain.ToolchainInfo` | `app/ports.go`, `domain/project.go` | N3 (el runner implementa `ProgramRunner`) y N5 (el bridge deja de usarlos) |
+| `FindGoModule`, `ParseModulePath`, `GoModFileName`, `ConfigurationForFile`, `GoTargetArgument`, `GoExecutableName` | `app/go_project.go` | N3 los muda a `adapters/golang`. N1 sigue llamando `app.GoTargetArgument` en `launch.go`; el orquestador lo cambia al integrar (N3 se integra antes que N1) |
+| `ModInitArguments`, `GetArguments`, `ModTidyArguments`, `singleWord` | `app/go_commands.go` | N3 (`adapters/golang/packages`); `SingleWordArgument` exportado se queda en `app` |
+| Migración de `settings.json` de 2.0 (`goPath`, `delvePath`, `goplsPath` → `toolPaths`) | `adapters/settings` | N5. Hasta entonces, en la rama, un `settings.json` de 2.0 pierde las rutas configuradas |
+| `run.toolchain`, `run.modInit/modGet/modTidy`, `ToolId = string`, `pickExecutable` que devuelve `ToolchainInfo` | `frontend/src/lib/bridge/types.ts` | N4 (usa `codeLanguages.tools()` y `packages.*`) y N5 (cambia el servicio Go) |
+| `wailsCodeLanguages.ts`: perfiles fijos y herramientas convertidas desde `ToolchainInfo`; `packages` sobre `ModInit/ModGet/ModTidy` | `frontend/src/lib/bridge/` | N5 (crea `CodeLanguagesService` y `PackagesService`); `languageProfiles.ts` queda sólo para el mock |
+| `runUntitled(path, …)`, `format(path, …)`, `console.eval(codeLanguage, …)` y `assistant.explain(codeLanguage, …)` ignoran el lenguaje en `wails.ts` | `frontend/src/lib/bridge/wails.ts` | N5 (las firmas Go nuevas) |
+| `CONSOLE_LANGUAGE = 'go'` | `frontend/src/lib/stores/console.ts` | N4 (`activeCodeLanguage`) |
+| Reglas depguard de las carpetas viejas (toolchain, delve, gopls, errorcatalog, console) | `.golangci.yml` | N1 y N3, al vaciar cada carpeta |
+
+Además, N0 sincronizó `tools/po2json/ux_copy.json`: 96 claves existían sólo en los `locales/*.json`
+generados (añadidas a mano por tracks anteriores) y `go run ./tools/po2json` las borraba. Ahora
+están en la fuente con sus textos EN/ES exactos; regenerar ya no pierde nada.
 
 ## 11. Criterios de salida (2.1.0)
 

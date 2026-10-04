@@ -82,9 +82,9 @@ describe('Settings dialog', () => {
     expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(1)
     const go = screen.getByLabelText('Go')
     await fireEvent.change(go, { target: { value: ' C:\\go\\bin\\go.exe ' } })
-    await waitFor(() => expect(get(settings)?.goPath).toBe('C:\\go\\bin\\go.exe'))
+    await waitFor(() => expect(get(settings)?.toolPaths['go']).toBe('C:\\go\\bin\\go.exe'))
     expect(await screen.findByText(/Location you chose/)).toBeTruthy()
-    await bridge.settings.save({ ...(await bridge.settings.get()), goPath: '' })
+    await bridge.settings.save({ ...(await bridge.settings.get()), toolPaths: {} })
   })
 })
 
@@ -108,11 +108,13 @@ describe('About and Go modules dialogs', () => {
     render(ModulesDialog)
     expect(await screen.findByText(/No go\.mod found/)).toBeTruthy()
     lastRunConfiguration.set({
+      codeLanguage: 'go',
       target: 'main.go',
       workingDir: '.',
-      mode: 'package',
+      mode: 'project',
       programArgs: [],
-      module: { root: 'C:\\proj', modulePath: 'example.com/hola' }
+      project: { root: 'C:\\proj', kind: 'gomod', name: 'example.com/hola' },
+      echo: false
     })
     expect(await screen.findByText('example.com/hola')).toBeTruthy()
   })

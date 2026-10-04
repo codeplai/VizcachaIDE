@@ -38,7 +38,7 @@ func TestRunServiceBuildsTheConfigurationFromTheFile(t *testing.T) {
 
 	config, err := NewRunService(fake).Run(filepath.Join(root, "main.go"), []string{"a"})
 
-	if err != nil || config.Mode != domain.RunPackage || fake.runConfig.Module == nil {
+	if err != nil || config.Mode != domain.RunProject || fake.runConfig.Project == nil {
 		t.Errorf("config = %+v, err = %v", config, err)
 	}
 }

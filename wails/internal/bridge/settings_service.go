@@ -92,13 +92,9 @@ func (s *SettingsService) chooseAndSave(tool string) error {
 	if err != nil {
 		return err
 	}
-	switch tool {
-	case toolGo:
-		current.GoPath = path
-	case toolDelve:
-		current.DelvePath = path
-	case toolGopls:
-		current.GoplsPath = path
+	if current.ToolPaths == nil {
+		current.ToolPaths = map[string]string{}
 	}
+	current.ToolPaths[tool] = path
 	return s.Save(current)
 }

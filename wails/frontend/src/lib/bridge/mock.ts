@@ -22,6 +22,7 @@ import {
   type Scenario
 } from './mockScenarios'
 import { sampleFrameVariables } from './mockFrames'
+import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import { mockSettings, toolchainFor } from './mockSettings'
 import type { Bridge, DebugApi, LanguageApi, RunApi } from './types'
 
@@ -47,11 +48,13 @@ const LAST_LINE = 7
 const FIELDS_DELAY_MS = 250
 
 const configurationFor = (path: string): RunConfiguration => ({
+  codeLanguage: codeLanguageOfPath(path),
   target: path,
   workingDir: 'hola-go',
   mode: 'file',
   programArgs: [],
-  module: null
+  project: null,
+  echo: false
 })
 
 const mockRun = (state: MockState, emit: Emit): RunApi => {
@@ -63,16 +66,17 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
   }
   return {
     run,
-    runUntitled: (_source, args) => run('untitled/main.go', args),
+    runUntitled: (path, _source, args) => run(path, args),
     build: async (path) => configurationFor(path),
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
     modInit: async () => {},
     modGet: async () => {},
     modTidy: async () => {},
-    vet: async () => '',
+    check: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
-    format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
+    format: async (_path, text) =>
+      text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
     toolchain: async () => toolchainFor(state.settings)
   }
 }
@@ -158,6 +162,8 @@ export const createMockBridge = (): MockBridge => {
   const bridge: Bridge = {
     isMock: true,
     run: mockRun(state, emit),
+    packages: mockPackages(),
+    codeLanguages: mockCodeLanguages(state),
     debug,
     language: mockLanguage(emit),
     assistant: mockAssistant(

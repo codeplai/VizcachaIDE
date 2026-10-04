@@ -4,14 +4,12 @@
   import { t } from '../i18n'
   import { pickTool, settings, toolSourceKey, toolchain, updateSettings } from '../stores'
 
-  type PathKey = 'goPath' | 'delvePath' | 'goplsPath'
   type VersionKey = 'goVersion' | 'delveVersion' | 'goplsVersion'
   type SourceKey = 'goSource' | 'delveSource' | 'goplsSource'
 
   interface Tool {
     id: ToolId
     label: string
-    path: PathKey
     version: VersionKey
     source: SourceKey
   }
@@ -20,50 +18,49 @@
     {
       id: 'go',
       label: 'settings.toolGo',
-      path: 'goPath',
       version: 'goVersion',
       source: 'goSource'
     },
     {
       id: 'dlv',
       label: 'settings.toolDelve',
-      path: 'delvePath',
       version: 'delveVersion',
       source: 'delveSource'
     },
     {
       id: 'gopls',
       label: 'settings.toolGopls',
-      path: 'goplsPath',
       version: 'goplsVersion',
       source: 'goplsSource'
     }
   ]
 
-  const pathOf = (current: Settings | null, key: PathKey): string => current?.[key] ?? ''
+  const pathOf = (current: Settings | null, id: ToolId): string => current?.toolPaths[id] ?? ''
+
+  const savePath = (id: ToolId, value: string): Promise<void> =>
+    updateSettings(bridge, { toolPaths: { ...($settings?.toolPaths ?? {}), [id]: value } })
 </script>
 
-{#each tools as tool (tool.path)}
-  {@const path = pathOf($settings, tool.path)}
+{#each tools as tool (tool.id)}
+  {@const path = pathOf($settings, tool.id)}
   {@const version = $toolchain?.[tool.version]}
   {@const source = $toolchain?.[tool.source]}
   <div class="field">
-    <label for={`setting-${tool.path}`}>{$t(tool.label)}</label>
+    <label for={`setting-${tool.id}`}>{$t(tool.label)}</label>
     <div class="row">
       <input
-        id={`setting-${tool.path}`}
+        id={`setting-${tool.id}`}
         type="text"
         value={path}
         placeholder={$t('settings.pathPlaceholder')}
-        aria-describedby={`setting-${tool.path}-origin`}
-        onchange={(event) =>
-          updateSettings(bridge, { [tool.path]: event.currentTarget.value.trim() })}
+        aria-describedby={`setting-${tool.id}-origin`}
+        onchange={(event) => savePath(tool.id, event.currentTarget.value.trim())}
       />
       <button type="button" class="dlg-button plain" onclick={() => pickTool(bridge, tool.id)}>
         {$t('settings.chooseTool')}
       </button>
     </div>
-    <span class="hint" id={`setting-${tool.path}-origin`}>
+    <span class="hint" id={`setting-${tool.id}-origin`}>
       {#if source}{$t(toolSourceKey(source))} ·{/if}
       {version ? $t('settings.version', { values: { version } }) : $t('settings.notFound')}
     </span>

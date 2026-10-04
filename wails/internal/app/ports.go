@@ -8,9 +8,10 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// PORTS: FROZEN CONTRACT (phase W0).
+// PORTS: FROZEN CONTRACT (phase W0, revised once as contract v3 in M0).
 //
-// The parallel tracks of W1 implement these interfaces; they do not edit them.
+// The language ports are in language_ports.go. The parallel tracks implement these
+// interfaces; they do not edit them.
 // A track that needs a change writes a "Contract change request" in its final
 // report and the integrator decides.
 //
@@ -49,6 +50,9 @@ type EventSink interface {
 
 // Toolchain runs the user's program with the Go toolchain.
 //
+// Transitional (M0): replaced by ProgramRunner, CodeFormatter, CodeChecker and PackageManager
+// (language_ports.go). It stays only until N3 (Go runner) and N5 (bridge) are integrated.
+//
 // Events (through the EventSink given to the adapter): run:started when a process
 // starts, run:output for every stdout/stderr chunk, run:finished when it ends.
 type Toolchain interface {
@@ -80,7 +84,7 @@ type Toolchain interface {
 	FormatSource(text string) (string, error)
 }
 
-// Debugger is the interactive debugger (Delve over DAP).
+// Debugger is the interactive debugger of one language (Delve, debugpy, lldb-dap over DAP).
 //
 // Events: debug:stopped (DebugState) each time the program pauses, debug:variables
 // (reference, variables) as the answer to RequestVariables, debug:output
@@ -111,10 +115,10 @@ type Debugger interface {
 	IsActive() bool
 }
 
-// LanguageServer gives code intelligence (gopls over LSP).
+// LanguageServer gives code intelligence for one language (gopls, pylsp, clangd over LSP).
 //
 // Events: lsp:diagnostics (path, diagnostics) whenever the server publishes them,
-// lsp:status ("starting", "ready", "unavailable"). If gopls is missing, status is
+// lsp:status ("starting", "ready", "unavailable"). If the server is missing, status is
 // "unavailable" and every query returns an empty result without an error.
 type LanguageServer interface {
 	OpenDocument(ctx context.Context, path, text string) error
@@ -133,7 +137,8 @@ type LanguageServer interface {
 	Shutdown(ctx context.Context) error
 }
 
-// ErrorExplainer turns raw Go output into diagnostics and beginner-friendly explanations.
+// ErrorExplainer turns raw tool output of one language into diagnostics and
+// beginner-friendly explanations.
 //
 // It is synchronous and emits no events; AssistantService emits "assistant:explained".
 type ErrorExplainer interface {
@@ -171,7 +176,7 @@ type FileWatcher interface {
 	Close() error
 }
 
-// Console is the interactive Go console (the "Shell"): one interpreter session that
+// Console is the interactive console of a language (the "Shell"): one interpreter session that
 // remembers the variables and functions defined by earlier snippets.
 //
 // It is synchronous and emits no events.

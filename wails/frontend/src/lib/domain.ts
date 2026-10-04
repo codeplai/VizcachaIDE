@@ -1,4 +1,12 @@
-// TypeScript mirror of internal/domain (JSON tags in camelCase). FROZEN contract.
+// TypeScript mirror of internal/domain (JSON tags in camelCase). FROZEN contract, revised once as
+// contract v3 in M0 (docs/PLAN_NUCLEO_MULTILENGUAJE.md section 3).
+//
+// Naming: "language" alone is the UI language (en/es, see ../language.ts); the programming
+// language is a CodeLanguage.
+
+import type { CodeLanguage } from './domainCodeLanguage'
+
+export * from './domainCodeLanguage'
 
 export type Severity = 'error' | 'warning' | 'info' | 'hint'
 
@@ -96,20 +104,22 @@ export interface FrameVariables {
   locals: Variable[]
 }
 
-export interface Goroutine {
-  goroutineId: number
+/** One thread of the debugged program (a goroutine in Go). */
+export interface Thread {
+  threadId: number
   name: string
   location: SourceLocation | null
 }
 
-export type StopReason = 'entry' | 'breakpoint' | 'step' | 'pause' | 'panic'
+/** 'exception' is an uncaught error: a panic in Go, an exception in Python, a crash in C++. */
+export type StopReason = 'entry' | 'breakpoint' | 'step' | 'pause' | 'exception'
 
 export interface DebugState {
   reason: StopReason
   frames: StackFrame[]
   variables: Variable[]
-  goroutines: Goroutine[]
-  currentGoroutine: number | null
+  threads: Thread[]
+  currentThread: number | null
   description: string
 }
 
@@ -126,19 +136,26 @@ export interface ExplainedDiagnostic {
   explanation: ErrorExplanation | null
 }
 
-export interface GoModule {
+export type ProjectKind = 'gomod' | 'folder' | 'pyproject'
+
+/** The project around the file being run. For Go, name is the module path. */
+export interface ProjectContext {
   root: string
-  modulePath: string
+  kind: ProjectKind
+  name: string
 }
 
-export type RunTarget = 'file' | 'package'
+export type RunTarget = 'file' | 'project'
 
 export interface RunConfiguration {
+  codeLanguage: CodeLanguage
   target: string
   workingDir: string
   mode: RunTarget
   programArgs: string[]
-  module: GoModule | null
+  project: ProjectContext | null
+  /** True when a pseudoterminal already echoes the input: Output must not repeat it. */
+  echo: boolean
 }
 
 export interface FileNode {
@@ -146,17 +163,6 @@ export interface FileNode {
   path: string
   isDir: boolean
   children: FileNode[]
-}
-
-export type ToolSource = 'configured' | 'bundled' | 'path' | 'missing'
-
-export interface ToolchainInfo {
-  goVersion: string
-  delveVersion: string
-  goplsVersion: string
-  goSource: ToolSource
-  delveSource: ToolSource
-  goplsSource: ToolSource
 }
 
 export type ServerStatus = 'starting' | 'ready' | 'unavailable'
@@ -167,11 +173,14 @@ export interface Settings {
   language: LanguageSetting
   theme: ThemeSetting
   fontSize: number
-  goPath: string
-  delvePath: string
-  goplsPath: string
+  /** Executables chosen in Settings, by ToolSpec.id; missing or '' = find it automatically. */
+  toolPaths: Record<string, string>
   firstRun: boolean
   lastFolder: string
+  /** Language of new files. */
+  defaultCodeLanguage: CodeLanguage
+  /** Languages chosen in the first-run wizard; empty = all. */
+  enabledCodeLanguages: CodeLanguage[]
   formatOnSave: boolean
   /** Last opened files, newest first (at most 10). */
   recentFiles: string[]

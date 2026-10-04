@@ -91,15 +91,7 @@ func (t *Toolchain) configuredPath(tool string) string {
 	if err != nil {
 		return ""
 	}
-	switch tool {
-	case ToolGo:
-		return strings.TrimSpace(settings.GoPath)
-	case ToolDelve:
-		return strings.TrimSpace(settings.DelvePath)
-	case ToolGopls:
-		return strings.TrimSpace(settings.GoplsPath)
-	}
-	return ""
+	return strings.TrimSpace(settings.ToolPaths[tool])
 }
 
 // Locate reports where a tool ("go", "dlv" or "gopls") comes from.
@@ -160,7 +152,7 @@ func (t *Toolchain) RunUntitled(ctx context.Context, source string, programArgs 
 		cleanup()
 		return domain.RunConfiguration{}, fmt.Errorf("save the untitled file: %w", err)
 	}
-	config := domain.NewFileRunConfiguration(path, programArgs)
+	config := domain.NewFileRunConfiguration(domain.CodeLanguageGo, path, programArgs)
 	err = t.launch(ctx, launch{config: config, args: runArguments(config), cleanup: cleanup})
 	return config, err
 }

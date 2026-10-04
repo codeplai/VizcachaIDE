@@ -1,10 +1,11 @@
 import { derived, get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
+import type { ProjectContext } from '../domain'
 import { activePath, baseName, fileTree } from './files'
 import { lastRunConfiguration, runLines, runResult, running } from './run'
 
 /** The module the dialog knows about. A "go mod" command's own run must not make it forget. */
-const knownModule = writable<{ root: string; modulePath: string } | null>(null)
+const knownModule = writable<ProjectContext | null>(null)
 /** Set when the dialog ran "go mod init" successfully for this folder. */
 const createdIn = writable<string | null>(null)
 
@@ -14,7 +15,7 @@ export type ModuleAction = 'init' | 'tidy' | 'get'
 export const moduleTask = writable<{ action: ModuleAction; error: string | null } | null>(null)
 
 lastRunConfiguration.subscribe((config) => {
-  if (config?.module) knownModule.set(config.module)
+  if (config?.project?.kind === 'gomod') knownModule.set(config.project)
 })
 
 const parentOf = (path: string): string => path.replace(/[\\/][^\\/]*$/, '')

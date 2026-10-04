@@ -35,7 +35,7 @@ func TestDebugStartUsesTheRunConfigurationOfRun(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if debugger.config.Mode != domain.RunPackage || debugger.config.Module == nil {
+	if debugger.config.Mode != domain.RunProject || debugger.config.Project == nil {
 		t.Errorf("config = %+v, want a package run inside the module", debugger.config)
 	}
 	if want := []string{"-n", "3", "two words"}; !reflect.DeepEqual(debugger.config.ProgramArgs, want) {
@@ -60,7 +60,7 @@ type infoToolchain struct {
 
 func (f infoToolchain) Info(context.Context) domain.ToolchainInfo {
 	settings, _ := f.store.Load()
-	return domain.ToolchainInfo{DelveVersion: settings.DelvePath}
+	return domain.ToolchainInfo{DelveVersion: settings.ToolPaths["dlv"]}
 }
 
 func TestPickExecutableSavesRedetectsAndNotifies(t *testing.T) {
@@ -74,8 +74,8 @@ func TestPickExecutableSavesRedetectsAndNotifies(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if saved, _ := store.Load(); saved.DelvePath != "/tools/dlv" {
-		t.Errorf("DelvePath = %q", saved.DelvePath)
+	if saved, _ := store.Load(); saved.ToolPaths["dlv"] != "/tools/dlv" {
+		t.Errorf("ToolPaths = %v", saved.ToolPaths)
 	}
 	if info.DelveVersion != "/tools/dlv" {
 		t.Errorf("info = %+v, want the tools detected after the change", info)

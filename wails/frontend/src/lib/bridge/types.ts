@@ -1,5 +1,6 @@
 import type {
   Breakpoint,
+  CodeLanguage,
   ConsoleResult,
   CompletionItem,
   Diagnostic,
@@ -7,33 +8,55 @@ import type {
   ExplainedDiagnostic,
   FileNode,
   FrameVariables,
+  LanguageProfile,
   RunConfiguration,
   Settings,
   SignatureHelp,
   SourceLocation,
   SourceRange,
-  ToolchainInfo
+  ToolchainInfo,
+  ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
 
 export type Unsubscribe = () => void
 
-/** Mirrors bridge.RunService (Go). */
+/** Mirrors bridge.RunService (Go). The language comes from the path's extension. */
 export interface RunApi {
   run: (path: string, programArgs: string[]) => Promise<RunConfiguration>
-  runUntitled: (source: string, programArgs: string[]) => Promise<RunConfiguration>
+  /** path is the untitled name (e.g. "untitled-1.py"): its extension decides the language. */
+  runUntitled: (path: string, source: string, programArgs: string[]) => Promise<RunConfiguration>
   build: (path: string, programArgs: string[]) => Promise<RunConfiguration>
   /** Splits the "program arguments" text like a shell (quotes group words). */
   splitArguments: (text: string) => Promise<string[]>
-  modInit: (workingDir: string, modulePath: string) => Promise<void>
-  modGet: (workingDir: string, pkg: string) => Promise<void>
-  modTidy: (workingDir: string) => Promise<void>
-  /** Runs `go vet` on the target of a finished run and returns Go's output ("" if nothing). */
-  vet: (config: RunConfiguration) => Promise<string>
+  /** Runs the checker of config.codeLanguage (go vet, ruff check); "" when it found nothing. */
+  check: (config: RunConfiguration) => Promise<string>
   stop: () => Promise<void>
   writeInput: (text: string) => Promise<void>
-  format: (text: string) => Promise<string>
+  format: (path: string, text: string) => Promise<string>
+  /** Transitional (M0): use codeLanguages.tools(). Deleted when N4 and N5 are integrated. */
   toolchain: () => Promise<ToolchainInfo>
+  /** Transitional (M0): use packages.*. Deleted when N4 and N5 are integrated. */
+  modInit: (workingDir: string, modulePath: string) => Promise<void>
+  /** Transitional (M0): use packages.add. */
+  modGet: (workingDir: string, pkg: string) => Promise<void>
+  /** Transitional (M0): use packages.tidy. */
+  modTidy: (workingDir: string) => Promise<void>
+}
+
+/** Mirrors bridge.PackagesService (Go). Verbs a language lacks reject with "unsupported". */
+export interface PackagesApi {
+  init: (codeLanguage: CodeLanguage, dir: string, name: string) => Promise<void>
+  add: (codeLanguage: CodeLanguage, dir: string, pkg: string) => Promise<void>
+  remove: (codeLanguage: CodeLanguage, dir: string, pkg: string) => Promise<void>
+  tidy: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
+  list: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
+}
+
+/** Mirrors bridge.CodeLanguagesService (Go). Not to be confused with LanguageApi (the LSP). */
+export interface CodeLanguagesApi {
+  profiles: () => Promise<LanguageProfile[]>
+  tools: () => Promise<ToolStatus[]>
 }
 
 /** Mirrors bridge.DebugService (Go). */
@@ -51,7 +74,7 @@ export interface DebugApi {
   stop: () => Promise<void>
 }
 
-/** Mirrors bridge.LanguageService (Go). */
+/** Mirrors bridge.LanguageService (Go): code intelligence, routed by path. */
 export interface LanguageApi {
   openDocument: (path: string, text: string) => Promise<void>
   changeDocument: (path: string, text: string, version: number) => Promise<void>
@@ -66,14 +89,18 @@ export interface LanguageApi {
 
 /** Mirrors bridge.AssistantService (Go). */
 export interface AssistantApi {
-  explain: (rawOutput: string, workingDir: string) => Promise<ExplainedDiagnostic[]>
+  explain: (
+    codeLanguage: CodeLanguage,
+    rawOutput: string,
+    workingDir: string
+  ) => Promise<ExplainedDiagnostic[]>
   explainDiagnostics: (diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
 }
 
 /** Mirrors bridge.ConsoleService (Go). */
 export interface ConsoleApi {
-  eval: (code: string) => Promise<ConsoleResult>
-  reset: () => Promise<void>
+  eval: (codeLanguage: CodeLanguage, code: string) => Promise<ConsoleResult>
+  reset: (codeLanguage: CodeLanguage) => Promise<void>
 }
 
 /** Mirrors bridge.FilesService (Go). */
@@ -86,7 +113,7 @@ export interface FilesApi {
   watchFiles: (paths: string[]) => Promise<void>
   /** Native "open file" dialog; "" when the user cancels. */
   openFileDialog: () => Promise<string>
-  /** Native "save as" dialog (adds .go when the name has no extension); "" when cancelled. */
+  /** Native "save as" dialog (filters by the profiles' extensions); "" when cancelled. */
   saveFileDialog: (suggestedName: string, folder: string) => Promise<string>
   // Files panel operations (create, rename, Recycle Bin, Show in Explorer).
   createFile: (path: string, text: string) => Promise<void>
@@ -98,14 +125,18 @@ export interface FilesApi {
   revealInExplorer: (path: string) => Promise<void>
 }
 
-/** Mirrors bridge.SettingsService (Go). */
-export type ToolId = 'go' | 'dlv' | 'gopls'
+/** A ToolSpec.id ('go', 'dlv', 'gopls', 'python', 'clangd'...). */
+export type ToolId = string
 
+/** Mirrors bridge.SettingsService (Go). */
 export interface SettingsApi {
   get: () => Promise<Settings>
   save: (settings: Settings) => Promise<void>
-  /** Native file dialog for a tool; saves the path and returns the tools detected again. */
-  pickExecutable: (tool: ToolId) => Promise<ToolchainInfo>
+  /**
+   * Native file dialog for a tool (a ToolSpec.id); saves the path and returns the tools
+   * detected again. Transitional (M0): the result becomes ToolStatus[] with N4 and N5.
+   */
+  pickExecutable: (toolId: ToolId) => Promise<ToolchainInfo>
   /** The language the backend resolved ("auto" becomes the system language). */
   resolvedLanguage: () => Promise<'en' | 'es'>
 }
@@ -127,6 +158,8 @@ export interface Bridge {
   /** True when there is no Go backend (browser development with demo data). */
   readonly isMock: boolean
   run: RunApi
+  packages: PackagesApi
+  codeLanguages: CodeLanguagesApi
   debug: DebugApi
   language: LanguageApi
   assistant: AssistantApi

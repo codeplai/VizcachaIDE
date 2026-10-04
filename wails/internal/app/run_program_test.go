@@ -25,7 +25,7 @@ func TestConfigurationForFileWithoutModuleRunsTheFile(t *testing.T) {
 	dir := t.TempDir()
 	write(t, filepath.Join(dir, "main.go"), "package main")
 	config := ConfigurationForFile(filepath.Join(dir, "main.go"), nil)
-	if config.Mode != domain.RunFile || config.Module != nil || config.WorkingDir != dir {
+	if config.Mode != domain.RunFile || config.Project != nil || config.WorkingDir != dir {
 		t.Errorf("config = %+v", config)
 	}
 }
@@ -38,14 +38,14 @@ func TestConfigurationForFileInsideModuleRunsThePackage(t *testing.T) {
 
 	config := ConfigurationForFile(file, []string{"-v"})
 
-	if config.Mode != domain.RunPackage || config.WorkingDir != filepath.Dir(file) {
+	if config.Mode != domain.RunProject || config.WorkingDir != filepath.Dir(file) {
 		t.Errorf("config = %+v", config)
 	}
-	if config.Module == nil || config.Module.Root != root || config.Module.ModulePath != "example.com/app" {
-		t.Errorf("module = %+v", config.Module)
+	if config.Project == nil || config.Project.Root != root || config.Project.Name != "example.com/app" || config.Project.Kind != domain.ProjectGoModule {
+		t.Errorf("project = %+v", config.Project)
 	}
-	if config.GoTargetArgument() != "." {
-		t.Errorf("target = %q", config.GoTargetArgument())
+	if GoTargetArgument(config) != "." {
+		t.Errorf("target = %q", GoTargetArgument(config))
 	}
 }
 
@@ -136,5 +136,25 @@ func TestReadAndWriteSourceFile(t *testing.T) {
 	}
 	if _, err := ReadSourceFile(filepath.Join(filepath.Dir(path), "no.go")); !errors.Is(err, os.ErrNotExist) {
 		t.Errorf("error = %v, want not exist", err)
+	}
+}
+
+func TestGoTargetArgumentAndExecutableName(t *testing.T) {
+	file := domain.NewFileRunConfiguration(domain.CodeLanguageGo, "proj/main.go", nil)
+	if got := GoTargetArgument(file); got != "main.go" {
+		t.Errorf("GoTargetArgument(file) = %q, want main.go", got)
+	}
+	if got := GoExecutableName(file, true); got != "main.exe" {
+		t.Errorf("GoExecutableName(file, true) = %q, want main.exe", got)
+	}
+	if got := GoExecutableName(file, false); got != "main" {
+		t.Errorf("GoExecutableName(file, false) = %q, want main", got)
+	}
+	project := domain.RunConfiguration{Target: "proj/main.go", WorkingDir: "proj", Mode: domain.RunProject}
+	if got := GoTargetArgument(project); got != "." {
+		t.Errorf("GoTargetArgument(project) = %q, want .", got)
+	}
+	if got := GoExecutableName(project, false); got != "proj" {
+		t.Errorf("GoExecutableName(project, false) = %q, want proj", got)
 	}
 }

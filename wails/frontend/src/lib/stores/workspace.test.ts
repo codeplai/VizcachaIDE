@@ -148,7 +148,7 @@ describe('workspace with the mock bridge', () => {
     expect(get(buffers)[path]).toContain('Hola, Go')
     const runUntitled = vi.spyOn(bridge.run, 'runUntitled')
     await runActiveFile(bridge)
-    expect(runUntitled).toHaveBeenCalledWith(get(buffers)[path], [])
+    expect(runUntitled).toHaveBeenCalledWith(path, get(buffers)[path], [])
   })
 
   it('shows "Go not installed" with its two buttons when running fails', async () => {

@@ -31,8 +31,10 @@ const TOOL_SOURCE_KEYS: Record<ToolSource, string> = {
 /** i18n key that says where the backend found a tool (the `*Source` fields of ToolchainInfo). */
 export const toolSourceKey = (source: ToolSource): string => TOOL_SOURCE_KEYS[source]
 
-const toolPathsDiffer = (a: Settings, b: Settings): boolean =>
-  a.goPath !== b.goPath || a.delvePath !== b.delvePath || a.goplsPath !== b.goplsPath
+const toolPathsDiffer = (a: Settings, b: Settings): boolean => {
+  const ids = new Set([...Object.keys(a.toolPaths), ...Object.keys(b.toolPaths)])
+  return [...ids].some((id) => (a.toolPaths[id] ?? '') !== (b.toolPaths[id] ?? ''))
+}
 
 /** Asks again which tools exist and where they come from (after a tool path changed). */
 const refreshToolchain = async (bridge: Bridge): Promise<void> => {

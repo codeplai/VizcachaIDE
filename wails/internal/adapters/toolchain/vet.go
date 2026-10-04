@@ -28,7 +28,7 @@ func (t *Toolchain) Vet(ctx context.Context, config domain.RunConfiguration) (st
 	}
 	ctx, cancel := context.WithTimeout(ctx, vetTimeout)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, goPath.Path, "vet", config.GoTargetArgument())
+	cmd := exec.CommandContext(ctx, goPath.Path, "vet", app.GoTargetArgument(config))
 	cmd.Dir = config.WorkingDir
 	cmd.Env = environmentList(t.Environment())
 	hideConsole(cmd)
