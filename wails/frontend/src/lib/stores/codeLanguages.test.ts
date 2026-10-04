@@ -32,8 +32,8 @@ describe('code languages from the backend', () => {
   })
   afterEach(() => stop?.())
 
-  it('loads the three profiles and finds a language by lower-case extension', () => {
-    expect(get(profiles).map((profile) => profile.id)).toEqual(['go', 'python', 'cpp'])
+  it('loads the profiles and finds a language by lower-case extension', () => {
+    expect(get(profiles).map((profile) => profile.id)).toEqual(['go', 'python', 'cpp', 'rust'])
     expect(codeLanguageOf('C:/work/main.GO')).toBe('go')
     expect(codeLanguageOf('C:/work/tool.py')).toBe('python')
     expect(codeLanguageOf('C:/work/Main.CPP')).toBe('cpp')

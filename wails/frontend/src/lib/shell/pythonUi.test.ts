@@ -97,8 +97,8 @@ describe('Settings > Tools for Python', () => {
       expect(screen.getByText(`${module} module`)).toBeTruthy()
       expect(screen.queryByLabelText(`${module} module`)).toBeNull()
     }
-    // One per executable: go, dlv, gopls, python and the four of C++. The modules have none.
-    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(8)
+    // One per executable: go, dlv, gopls, python, the four of C++ and the four of Rust. The modules have none.
+    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(12)
     expect(screen.getByText(/Version 3\.12\.4/)).toBeTruthy()
   })
 
@@ -123,7 +123,7 @@ describe('Settings > General languages you use', () => {
     settingsTab.set('general')
     render(SettingsDialog)
     expect(await screen.findByRole('group', { name: 'Languages you use' })).toBeTruthy()
-    expect(boxes().map((box) => box.checked)).toEqual([true, true, true])
+    expect(boxes().map((box) => box.checked)).toEqual([true, true, true, true])
   })
 
   it('saves the choice and never lets the last one go', async () => {
@@ -133,6 +133,7 @@ describe('Settings > General languages you use', () => {
     await screen.findByRole('group', { name: 'Languages you use' })
     await fireEvent.click(boxes()[1] as HTMLInputElement)
     await fireEvent.click(boxes()[2] as HTMLInputElement)
+    await fireEvent.click(boxes()[3] as HTMLInputElement)
     await waitFor(() => expect(get(settings)?.enabledCodeLanguages).toEqual(['go']))
     await waitFor(() => expect(boxes()[0]?.disabled).toBe(true))
   })
@@ -148,7 +149,9 @@ describe('First start wizard languages step', () => {
     expect(screen.getByText('Which programming languages will you use?')).toBeTruthy()
     const go = screen.getByRole('checkbox', { name: 'Go' })
     await fireEvent.click(go)
-    await waitFor(() => expect(get(settings)?.enabledCodeLanguages).toEqual(['python', 'cpp']))
+    await waitFor(() =>
+      expect(get(settings)?.enabledCodeLanguages).toEqual(['python', 'cpp', 'rust'])
+    )
     await next()
     expect(await screen.findByText(/Python · Version 3\.12\.4/)).toBeTruthy()
     expect(screen.queryByText(/Checking Go/)).toBeNull()

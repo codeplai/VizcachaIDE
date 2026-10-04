@@ -41,7 +41,14 @@ export const toolsFor = (settings: Settings): ToolStatus[] => [
   detected(settings, 'cpp', 'cxx', 'compiler', '15.2.0', 'path'),
   detected(settings, 'cpp', 'lldb-dap', 'debugAdapter', '23.1.2', 'path'),
   detected(settings, 'cpp', 'clangd', 'languageServer', '23.1.2', 'path'),
-  detected(settings, 'cpp', 'clang-format', 'formatter', '23.1.2', 'path')
+  detected(settings, 'cpp', 'clang-format', 'formatter', '23.1.2', 'path'),
+  detected(settings, 'rust', 'rustc', 'compiler', '1.99.0', 'path'),
+  detected(settings, 'rust', 'cargo', 'runtime', '1.99.0', 'path'),
+  detected(settings, 'rust', 'rust-analyzer', 'languageServer', '1.99.0', 'path'),
+  detected(settings, 'rust', 'lldb-dap', 'debugAdapter', '23.1.2', 'path'),
+  // clippy and rustfmt are components of the toolchain: no path of their own.
+  detected(settings, 'rust', 'clippy', 'compiler', '1.99.0', 'path'),
+  detected(settings, 'rust', 'rustfmt', 'formatter', '1.9.0', 'path')
 ]
 
 export const mockSettings = (state: SettingsHolder, emit: Emit): Bridge['settings'] => {

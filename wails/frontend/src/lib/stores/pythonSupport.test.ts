@@ -38,7 +38,7 @@ describe('enabled languages', () => {
   })
 
   it('shows every profile while the student has not chosen', () => {
-    expect(ids()).toEqual(['go', 'python', 'cpp'])
+    expect(ids()).toEqual(['go', 'python', 'cpp', 'rust'])
   })
 
   it('shows only the chosen ones, in profile order', () => {
@@ -49,14 +49,14 @@ describe('enabled languages', () => {
   })
 
   it('keeps at least one language ticked', () => {
-    const all = ['go', 'python', 'cpp'] as const
+    const all = ['go', 'python', 'cpp', 'rust'] as const
     expect(toggledLanguages([...all], ['go'], 'go')).toBeNull()
     expect(toggledLanguages([...all], ['go', 'python'], 'go')).toEqual(['python'])
   })
 
   it('saves the empty list (all) when every language is ticked again', () => {
-    const all = ['go', 'python', 'cpp'] as const
-    expect(toggledLanguages([...all], ['go', 'python'], 'cpp')).toEqual([])
+    const all = ['go', 'python', 'cpp', 'rust'] as const
+    expect(toggledLanguages([...all], ['go', 'python', 'cpp'], 'rust')).toEqual([])
   })
 
   it('saves the choice and moves the default language off one that was cleared', async () => {
@@ -66,7 +66,7 @@ describe('enabled languages', () => {
     await toggleEnabledLanguage(own, 'go')
     expect(save).toHaveBeenCalledWith(
       expect.objectContaining({
-        enabledCodeLanguages: ['python', 'cpp'],
+        enabledCodeLanguages: ['python', 'cpp', 'rust'],
         defaultCodeLanguage: 'python'
       })
     )

@@ -5,8 +5,8 @@ import type { DialogName } from './stores/layout'
 export interface DevQuery {
   scenario: Scenario
   language: LanguageSetting | null
-  /** `language=python|cpp` opens that sample project (`lang` is the interface language). */
-  codeLanguage: Extract<CodeLanguage, 'go' | 'python' | 'cpp'> | null
+  /** `language=python|cpp|rust` opens that sample project (`lang` is the interface language). */
+  codeLanguage: Extract<CodeLanguage, 'go' | 'python' | 'cpp' | 'rust'> | null
   theme: ThemeSetting | null
   /** `folder=none` starts with no folder open (the empty state of the Files panel). */
   noFolder: boolean
@@ -31,7 +31,7 @@ export const parseDevQuery = (search: string): DevQuery => {
     scenario:
       pick(params.get('scenario'), ['write', 'error', 'debug', 'crash'] as const) ?? 'write',
     language: pick(params.get('lang'), ['en', 'es'] as const),
-    codeLanguage: pick(params.get('language'), ['go', 'python', 'cpp'] as const),
+    codeLanguage: pick(params.get('language'), ['go', 'python', 'cpp', 'rust'] as const),
     theme: pick(params.get('theme'), ['light', 'dark'] as const),
     noFolder: params.get('folder') === 'none',
     firstRun: params.get('firstrun') === '1',
@@ -40,8 +40,9 @@ export const parseDevQuery = (search: string): DevQuery => {
   }
 }
 
-/** The line the dev bar's "debug" state pauses on: the sample's own (bridge/mockPython.ts, mockCpp.ts). */
+/** The line the dev bar's "debug" state pauses on: the sample's own (bridge/mockPython.ts, mockCpp.ts, mockRust.ts). */
 export const demoBreakpointLine = (path: string): number => {
   if (path.endsWith('.py')) return 8
+  if (path.endsWith('.rs')) return 11
   return path.endsWith('.cpp') ? 11 : 6
 }

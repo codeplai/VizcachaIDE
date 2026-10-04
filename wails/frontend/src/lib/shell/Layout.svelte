@@ -15,6 +15,7 @@
   import DevControls from './DevControls.svelte'
   import FirstRunWizard from './FirstRunWizard.svelte'
   import PackagesDialog from './PackagesDialog.svelte'
+  import RunMemberDialog from './RunMemberDialog.svelte'
   import NoticeBar from './NoticeBar.svelte'
   import Rail from './Rail.svelte'
   import SettingsDialog from './SettingsDialog.svelte'
@@ -95,6 +96,7 @@
   <SettingsDialog />
   <AboutDialog />
   <PackagesDialog />
+  <RunMemberDialog />
   <ConfirmHost />
   <FirstRunWizard />
 </div>

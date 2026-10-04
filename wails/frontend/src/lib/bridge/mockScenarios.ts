@@ -24,12 +24,19 @@ import {
   pythonDiagnostic,
   pythonExplanation
 } from './mockPython'
+import { RUST_COMPILING_NOTICE, RUST_DIR, RUST_MAIN, rustDebugState } from './mockRust'
+import {
+  rustCrashExplained,
+  rustDiagnostic,
+  rustExplanation,
+  rustPanicDiagnostic
+} from './mockRustErrors'
 
-/** `crash` only plays for C++: the program compiles, runs and dies (Segmentation fault). */
+/** `crash` plays for native languages: the program compiles, runs and dies (a segfault, a panic). */
 export type Scenario = 'write' | 'error' | 'debug' | 'crash'
 
 /** The languages the demo has a sample project for. */
-export type SampleLanguage = Extract<CodeLanguage, 'go' | 'python' | 'cpp'>
+export type SampleLanguage = Extract<CodeLanguage, 'go' | 'python' | 'cpp' | 'rust'>
 
 export type Emit = <E extends EventName>(name: E, payload: EventPayloads[E]) => void
 
@@ -84,6 +91,15 @@ const SAMPLES: Record<SampleLanguage, Sample> = {
     explanation: cppExplanation,
     debugState: (line) => cppDebugState(line),
     notice: CPP_COMPILING_NOTICE
+  },
+  rust: {
+    main: RUST_MAIN,
+    configuration: configurationOf('rust', RUST_MAIN, RUST_DIR),
+    greeting: 'Hola, Rust',
+    diagnostic: rustDiagnostic,
+    explanation: rustExplanation,
+    debugState: (line) => rustDebugState(line),
+    notice: RUST_COMPILING_NOTICE
   }
 }
 
@@ -114,15 +130,32 @@ export const emitSuccessfulBuild = (emit: Emit, codeLanguage: SampleLanguage = '
   emit('run:finished', { exitCode: 0, durationMs: 300 })
 }
 
-/** The C++ program that prints, then dies on a bad memory access (exit code of SIGSEGV). */
-export const emitCrashedRun = (emit: Emit, language: Language): void => {
-  const sample = sampleOf('cpp')
-  clearProblems(emit, 'cpp')
+/** What a native program leaves when it dies after printing: the system's text and exit code. */
+const CRASHES = {
+  // The exit code of SIGSEGV.
+  cpp: { stderr: 'Segmentation fault\n', explained: cppCrashExplained, exitCode: 139 },
+  // A panic prints its own message and the backtrace; Rust exits with 101.
+  rust: {
+    stderr: `${rustPanicDiagnostic().rawText}\n`,
+    explained: rustCrashExplained,
+    exitCode: 101
+  }
+}
+
+/** The program that prints, then dies (C++: bad memory access; Rust: a panic). */
+export const emitCrashedRun = (
+  emit: Emit,
+  language: Language,
+  codeLanguage: keyof typeof CRASHES = 'cpp'
+): void => {
+  const sample = sampleOf(codeLanguage)
+  const crash = CRASHES[codeLanguage]
+  clearProblems(emit, codeLanguage)
   emit('run:started', sample.configuration)
   emit('run:output', { stream: 'stdout', text: `${sample.notice}\n${sample.greeting}\n` })
-  emit('run:output', { stream: 'stderr', text: 'Segmentation fault\n' })
-  emit('assistant:explained', cppCrashExplained(language))
-  emit('run:finished', { exitCode: 139, durationMs: 350 })
+  emit('run:output', { stream: 'stderr', text: crash.stderr })
+  emit('assistant:explained', crash.explained(language))
+  emit('run:finished', { exitCode: crash.exitCode, durationMs: 350 })
 }
 
 export const emitFailedRun = (

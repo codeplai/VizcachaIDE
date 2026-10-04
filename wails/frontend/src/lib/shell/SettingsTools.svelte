@@ -2,6 +2,7 @@
   import { bridge, type ToolId } from '../bridge'
   import type { Settings, ToolSpec } from '../domain'
   import { t } from '../i18n'
+  import SettingsToolAdvice from './SettingsToolAdvice.svelte'
   import {
     enabledProfiles,
     pickTool,
@@ -57,6 +58,7 @@
       </span>
     </div>
   {/each}
+  {#if profile.id === 'rust'}<SettingsToolAdvice />{/if}
 {/each}
 
 <style>

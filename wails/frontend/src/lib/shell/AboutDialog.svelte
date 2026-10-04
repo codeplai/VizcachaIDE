@@ -17,10 +17,22 @@
     cxx: 'g++ / clang++',
     'lldb-dap': 'lldb-dap',
     clangd: 'clangd',
-    'clang-format': 'clang-format'
+    'clang-format': 'clang-format',
+    rustc: 'rustc',
+    cargo: 'Cargo',
+    'rust-analyzer': 'rust-analyzer',
+    clippy: 'clippy',
+    rustfmt: 'rustfmt'
   }
-  /** Third-party projects the C++ toolchain comes from (product names are not translated). */
-  const toolchainCredits = 'LLVM (clang, lldb, clangd, clang-format) · MinGW-w64 · GCC'
+  /** Third-party projects the C++ and Rust toolchains come from (product names are not translated). */
+  const toolchainCredits = [
+    'LLVM (clang, lldb, clangd, clang-format) · MinGW-w64 · GCC',
+    'Rust (rustc, cargo, clippy, rustfmt, rust-analyzer)'
+  ]
+  // Two languages can share a tool (lldb-dap): it is listed once.
+  const listedTools = $derived(
+    $tools.filter((tool, index) => $tools.findIndex((other) => other.id === tool.id) === index)
+  )
   const author = { name: 'Marks Calderon', role: 'CEO Codeplai', email: 'hola@codeplai.pe' }
   const website = 'https://vizcacha.codeplai.pe'
   const licenseUrl = 'https://opensource.org/licenses/MIT'
@@ -44,7 +56,7 @@
   <div class="field">
     <span class="label">{$t('shell.aboutTools')}</span>
     <dl>
-      {#each $tools as tool (tool.id)}
+      {#each listedTools as tool (tool.id)}
         <dt>{TOOL_NAMES[tool.id] ?? tool.id}</dt>
         <dd>
           {tool.version || $t('shell.aboutNotFound')}
@@ -68,7 +80,7 @@
     <p>{copyright}</p>
     <p>{$t('shell.aboutWarranty')}</p>
     <p>{$t('shell.aboutBundled')}</p>
-    <p>{toolchainCredits}</p>
+    {#each toolchainCredits as credit (credit)}<p>{credit}</p>{/each}
     <button type="button" class="link" onclick={() => bridge.system.openUrl(licenseUrl)}>
       {$t('shell.aboutLicenseLink')}
     </button>
