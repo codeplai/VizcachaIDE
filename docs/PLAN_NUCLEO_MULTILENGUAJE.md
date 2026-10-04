@@ -704,6 +704,17 @@ track borra las suyas:
 | `CONSOLE_LANGUAGE = 'go'` | `frontend/src/lib/stores/console.ts` | N4 (`activeCodeLanguage`) |
 | Reglas depguard de las carpetas viejas (toolchain, delve, gopls, errorcatalog, console) | `.golangci.yml` | N1 y N3, al vaciar cada carpeta |
 
+**Reparto fijado al lanzar N1–N5** (completa la tabla de §10):
+- `main.go`: N1, N2 y N3 sólo tocan los imports y las líneas que construyen su adaptador; el resto
+  (partirlo, `support_go.go`, `support_unavailable.go`) es de N5. El orquestador resuelve los choques.
+- El pegamento Go↔TS (`frontend/src/lib/bridge/wails.ts`, `wailsCodeLanguages.ts` y
+  `frontend/wailsjs/**`) es de **N5**, porque cambia cuando cambian las firmas Go; el resto de
+  `frontend/src/lib` es de N4.
+- Nadie borra una pieza transitoria que otro track aún usa: lo nuevo se crea al lado y el orquestador
+  borra lo viejo al integrar. N3 mantiene el runner de Go cumpliendo también `app.Toolchain`; N5
+  envuelve el `app.Toolchain` de 2.0 en los puertos nuevos dentro de `package main` hasta que se
+  integra el runner de N3.
+
 Además, N0 sincronizó `tools/po2json/ux_copy.json`: 96 claves existían sólo en los `locales/*.json`
 generados (añadidas a mano por tracks anteriores) y `go run ./tools/po2json` las borraba. Ahora
 están en la fuente con sus textos EN/ES exactos; regenerar ya no pierde nada.
