@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   n = int("doce")
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\value_literal.py", line 1, in <module>
+    n = int("doce")
+        ^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'doce'

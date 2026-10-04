@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   print("hola)
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\syntax_unterminated_string.py", line 1
+    print("hola)
+          ^
+SyntaxError: unterminated string literal (detected at line 1)

@@ -67,6 +67,7 @@ linters:
           files:
             - "**/internal/adapters/**"
             - "!**/internal/adapters/golang/**"
+            - "!**/internal/adapters/python/**"
           deny:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
               desc: adapters never import bridge
@@ -83,6 +84,25 @@ linters:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
               desc: adapters never import bridge
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/python
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate
+              desc: a language adapter imports only its own folder
+        python-adapter-stays-in-python:
+          # Same rule as go-adapter-stays-in-go, for the Python adapter (PLAN_PYTHON.md section 3.1).
+          files:
+            - "**/internal/adapters/python/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
               desc: a language adapter imports only its own folder

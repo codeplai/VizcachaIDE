@@ -1,0 +1,11 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   print("hola")
+#   print(nombre)
+# output:
+hola
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\name_error.py", line 2, in <module>
+    print(nombre)
+          ^^^^^^
+NameError: name 'nombre' is not defined

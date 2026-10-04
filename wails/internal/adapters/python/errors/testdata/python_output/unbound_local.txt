@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   contador = 0
+#   def sumar():
+#       contador += 1
+#   sumar()
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\unbound_local.py", line 4, in <module>
+    sumar()
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\unbound_local.py", line 3, in sumar
+    contador += 1
+    ^^^^^^^^
+UnboundLocalError: cannot access local variable 'contador' where it is not associated with a value

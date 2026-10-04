@@ -319,5 +319,17 @@
   "tree.renameFailed": { "en": "Could not rename it to {name}. Close any program that is using the file and try again.", "es": "No se pudo renombrar a {name}. Cierra el programa que esté usando el archivo e inténtalo de nuevo." },
   "tree.reveal": { "en": "Show in Explorer", "es": "Mostrar en el Explorador" },
   "tree.revealFailed": { "en": "Could not open the file manager for {name}. Open it yourself and look for that path.", "es": "No se pudo abrir el explorador de archivos para {name}. Ábrelo tú y busca esa ruta." },
-  "tree.revealMac": { "en": "Show in Finder", "es": "Mostrar en el Finder" }
+  "tree.revealMac": { "en": "Show in Finder", "es": "Mostrar en el Finder" },
+
+  "settings.toolPython": { "en": "Python", "es": "Python" },
+  "settings.modulePython": { "en": "{module} module", "es": "Módulo {module}" },
+  "errors.pythonNotFound": { "en": "Python isn't available. Install it or choose it in Settings.", "es": "Python no está disponible. Instálalo o elígelo en Ajustes." },
+  "errors.debugpyMissing": { "en": "The debugger for Python (debugpy) isn't installed in this Python. Install it with the command below.", "es": "El depurador de Python (debugpy) no está instalado en este Python. Instálalo con el comando de abajo." },
+  "errors.pylspMissing": { "en": "The code helper for Python (python-lsp-server) isn't installed. Suggestions and live problems are off.", "es": "El ayudante de código de Python (python-lsp-server) no está instalado. No habrá sugerencias ni problemas en vivo." },
+  "errors.consoleNoInput": { "en": "The console can't read the keyboard. Try it in a file with F5.", "es": "La consola no puede leer el teclado. Pruébalo en un archivo con F5." },
+  "packages.add": { "en": "Install a package", "es": "Instalar un paquete" },
+  "packages.pipHint": { "en": "Packages are installed with pip into the Python VizcachaIDE uses.", "es": "Los paquetes se instalan con pip en el Python que usa VizcachaIDE." },
+  "firstRun.languages": { "en": "Which programming languages will you use?", "es": "¿Qué lenguajes de programación vas a usar?" },
+  "run.pythonVenv": { "en": "Using the project's .venv", "es": "Usando el .venv del proyecto" },
+  "settings.enabledCodeLanguages": { "en": "Languages you use", "es": "Lenguajes que usas" }
 }

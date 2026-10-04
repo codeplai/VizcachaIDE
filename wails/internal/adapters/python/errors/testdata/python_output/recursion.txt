@@ -1,0 +1,21 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   def f(n):
+#       return f(n + 1)
+#   
+#   f(0)
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\recursion.py", line 4, in <module>
+    f(0)
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\recursion.py", line 2, in f
+    return f(n + 1)
+           ^^^^^^^^
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\recursion.py", line 2, in f
+    return f(n + 1)
+           ^^^^^^^^
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\recursion.py", line 2, in f
+    return f(n + 1)
+           ^^^^^^^^
+  [Previous line repeated 996 more times]
+RecursionError: maximum recursion depth exceeded

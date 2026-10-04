@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   texto = "hola"
+#   texto.push("!")
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\attribute_error.py", line 2, in <module>
+    texto.push("!")
+    ^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'push'

@@ -28,7 +28,7 @@ const (
 // sequences line by line and sent as stdout.
 type terminalSession struct {
 	terminal *pty.Terminal
-	sink     app.EventSink
+	sink     JobEvents
 	output   atomic.Bool
 	ended    chan struct{}
 	drained  chan struct{}
@@ -38,7 +38,7 @@ type terminalSession struct {
 	flusher *time.Timer
 }
 
-func startTerminal(ctx context.Context, job Job, sink app.EventSink) (session, error) {
+func startTerminal(ctx context.Context, job Job, sink JobEvents) (session, error) {
 	var env []string
 	if job.Env != nil {
 		env = environmentList(job.Env)

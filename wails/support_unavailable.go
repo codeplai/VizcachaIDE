@@ -14,7 +14,7 @@ var provisionalPythonProfile = domain.LanguageProfile{
 	ID: domain.CodeLanguagePython, NameKey: "codeLanguage.python", Extensions: []string{".py", ".pyw"},
 	Indent: domain.IndentStyle{UseTabs: false, Size: 4},
 	Capabilities: domain.Capabilities{
-		Build: false, Console: true, Format: true, Check: true,
+		Build: false, Console: true, Format: true, Check: true, DebugInput: true,
 		PackageActions: []domain.PackageAction{domain.PackageAdd, domain.PackageRemove, domain.PackageList},
 		ThreadsLabel:   "debug.threads",
 	},
@@ -26,7 +26,7 @@ var provisionalCppProfile = domain.LanguageProfile{
 	Extensions: []string{".cpp", ".cc", ".cxx", ".c++", ".h", ".hpp", ".hh"},
 	Indent:     domain.IndentStyle{UseTabs: false, Size: 4},
 	Capabilities: domain.Capabilities{
-		Build: true, Console: false, Format: true, Check: false,
+		Build: true, Console: false, Format: true, Check: false, DebugInput: false,
 		PackageActions: nil,
 		ThreadsLabel:   "debug.threads",
 	},

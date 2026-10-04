@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   open("datos.txt")
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\file_not_found.py", line 1, in <module>
+    open("datos.txt")
+FileNotFoundError: [Errno 2] No such file or directory: 'datos.txt'

@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   if True:
+#   	x = 1
+#           y = 2
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\tab_error.py", line 3
+    y = 2
+TabError: inconsistent use of tabs and spaces in indentation

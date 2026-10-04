@@ -87,8 +87,9 @@ lanzar los tracks:
 1. **Salida y teclado del programa depurado.** Con `runInTerminal` el programa depurado corre en el
    `Supervisor` compartido (PTY), pero el Supervisor emite `run:*` y el frontend los trataría como una
    ejecución normal (Output de ejecución, `running`, `ruff check` al terminar). Cambio de contrato:
-   - `process.Job` gana `Events JobEvents` (opcional): `Started(config)`, `Output(stream, text)`,
-     `Finished(exitCode, durationMs)`. Si es nil se emiten los `run:*` de siempre. El
+   - `process.Job` gana `Events JobEvents` (opcional), con los mismos métodos que `app.EventSink`:
+     `RunStarted(config)`, `RunOutput(stream, text)`, `RunFinished(exitCode, durationMs)` (así el
+     sink los cumple sin adaptador). Si es nil se emiten los `run:*` de siempre. El
      `ReverseHandler` de debugpy pasa uno que reenvía la salida como `debug:output` (categoría
      `stdout`/`stderr`) y no emite inicio ni fin.
    - `domain.Capabilities` gana `DebugInput bool` (`debugInput`): Go `false` (Delve no da teclado),
@@ -109,7 +110,11 @@ lanzar los tracks:
 5. **depguard:** regla `python-adapter-stays-in-python` (un `deny` por carpeta hermana: golang, cpp y
    los adaptadores neutrales, porque depguard no aplica la coincidencia más específica) y exclusión de
    `adapters/python/**` en `adapters-are-independent`.
-6. **QA:** además de la lista de §10, el arnés E2E (`wails/packaging/qa/e2e`) gana pasos de Python
+6. **ruff aislado** (decidido en P0): `ruff check --isolated --select E9,F` y `ruff format --isolated`.
+   Sin `--isolated`, una configuración de ruff del usuario de la máquina se cuela (en la de desarrollo
+   activaba `I001`, orden de imports); el alumno sólo debe ver errores de sintaxis y de pyflakes, como
+   con pylsp. El fixture `ruff_check.json` está grabado así.
+7. **QA:** además de la lista de §10, el arnés E2E (`wails/packaging/qa/e2e`) gana pasos de Python
    (ejecutar con `input()`, error explicado, depurar con variables) en EN y ES.
 
 ## 4. Diseño: `wails/internal/adapters/python/`
@@ -186,9 +191,9 @@ empaquetado, además `PYTHONNOUSERSITE=1` para no mezclar paquetes de otro Pytho
 - `Build`: `ErrUnsupported`.
 - `Check` y `Format` no son del runner: los implementa `ruff/` como `app.CodeChecker` y
   `app.CodeFormatter` (M0 §3.5):
-  - `Check`: `python -m ruff check --output-format json <target>`; devuelve el JSON (el parser de
+  - `Check`: `python -m ruff check --isolated --select E9,F --output-format json <target>`; devuelve el JSON (el parser de
     §4.9 lo entiende); `""` si no hay nada o ruff no está.
-  - `Format(path, text)`: `python -m ruff format --stdin-filename <nombre de path> -` con el texto
+  - `Format(path, text)`: `python -m ruff format --isolated --stdin-filename <nombre de path> -` con el texto
     por stdin; errores de sintaxis → `ErrFormat` con la línea (el frontend ya muestra
     `errors.formatRejected`).
 - `Stop`: lo hace `protocol/process` (Ctrl+C por la PTY, luego árbol de procesos).

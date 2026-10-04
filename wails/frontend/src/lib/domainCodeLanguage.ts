@@ -15,6 +15,8 @@ export interface Capabilities {
   console: boolean
   format: boolean
   check: boolean
+  /** The program can read the keyboard while it is debugged (Python: yes; Go: no). */
+  debugInput: boolean
   /** Empty: the language has no package manager. */
   packageActions: PackageAction[]
   /** i18n key: 'debug.goroutines' or 'debug.threads'. */

@@ -71,3 +71,6 @@ settings.ini
 # Packaging: downloaded toolchains; the PyInstaller spec IS versioned
 /packaging/cache/
 !packaging/*.spec
+
+# Python virtual environments for development (e.g. wails/.venv-py312, PLAN_PYTHON.md §0)
+.venv-*/

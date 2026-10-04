@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   print("hola"
+#   x = 1
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\syntax_unclosed.py", line 1
+    print("hola"
+         ^
+SyntaxError: '(' was never closed

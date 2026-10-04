@@ -23,6 +23,7 @@ export const goProfile: LanguageProfile = {
     console: true,
     format: true,
     check: true,
+    debugInput: false,
     packageActions: ['init', 'add', 'tidy'],
     threadsLabel: 'debug.goroutines'
   },
@@ -61,6 +62,7 @@ export const pythonProfile: LanguageProfile = {
     console: true,
     format: true,
     check: true,
+    debugInput: true,
     packageActions: ['add', 'remove', 'list'],
     threadsLabel: 'debug.threads'
   },
@@ -77,6 +79,7 @@ export const cppProfile: LanguageProfile = {
     console: false,
     format: true,
     check: false,
+    debugInput: false,
     packageActions: [],
     threadsLabel: 'debug.threads'
   },

@@ -99,6 +99,7 @@ export namespace domain {
 	    console: boolean;
 	    format: boolean;
 	    check: boolean;
+	    debugInput: boolean;
 	    packageActions: string[];
 	    threadsLabel: string;
 	
@@ -112,6 +113,7 @@ export namespace domain {
 	        this.console = source["console"];
 	        this.format = source["format"];
 	        this.check = source["check"];
+	        this.debugInput = source["debugInput"];
 	        this.packageActions = source["packageActions"];
 	        this.threadsLabel = source["threadsLabel"];
 	    }

@@ -56,6 +56,17 @@ type Job struct {
 	// stage is followed by the program), or false to finish. run:finished carries the exit code
 	// of the last stage that ran.
 	Then func(exitCode int) (*Job, bool)
+	// Events receives the start, output and end of the run instead of the supervisor's sink
+	// (run:started, run:output, run:finished). A debug adapter's runInTerminal passes one that
+	// turns the output into debug:output. Only the first stage's Events counts. Nil = the sink.
+	Events JobEvents
+}
+
+// JobEvents is what a run reports. app.EventSink satisfies it, so the default is the sink.
+type JobEvents interface {
+	RunStarted(config domain.RunConfiguration)
+	RunOutput(stream, text string)
+	RunFinished(exitCode int, durationMs int64)
 }
 
 // session is one running stage.
@@ -74,6 +85,7 @@ type session interface {
 type run struct {
 	current session
 	stopped bool
+	events  JobEvents
 }
 
 // Supervisor owns the single slot.
@@ -95,16 +107,25 @@ func (s *Supervisor) Start(ctx context.Context, job Job) error {
 		cleanup(job)
 		return app.ErrBusy
 	}
-	first, err := startSession(ctx, job, s.sink)
+	events := s.eventsOf(job)
+	first, err := startSession(ctx, job, events)
 	if err != nil {
 		cleanup(job)
 		return err
 	}
-	occupant := &run{current: first}
+	occupant := &run{current: first, events: events}
 	s.run = occupant
-	s.sink.RunStarted(job.Config)
+	events.RunStarted(job.Config)
 	go s.supervise(ctx, occupant, job)
 	return nil
+}
+
+// eventsOf returns where the job reports: its own Events, or the supervisor's sink.
+func (s *Supervisor) eventsOf(job Job) JobEvents {
+	if job.Events != nil {
+		return job.Events
+	}
+	return s.sink
 }
 
 // IsRunning reports whether a run is alive.

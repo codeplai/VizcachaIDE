@@ -1,0 +1,33 @@
+package process_test
+
+import (
+	"context"
+	"strings"
+	"testing"
+
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
+)
+
+// A job with its own Events (a debug adapter's runInTerminal) reports there, not to the sink.
+func TestJobEventsReplaceTheSink(t *testing.T) {
+	sink := newSink()
+	supervisor := process.New(sink)
+	events := newSink()
+	job := helperJob("print", "debugged output", "4")
+	job.Events = events
+
+	if err := supervisor.Start(context.Background(), job); err != nil {
+		t.Fatal(err)
+	}
+	event := events.waitFinished(t)
+
+	if !strings.Contains(events.Stdout(), "debugged output") || event.ExitCode != 4 || events.startedCount() != 1 {
+		t.Errorf("job events: stdout %q, exit %d, started %d", events.Stdout(), event.ExitCode, events.startedCount())
+	}
+	if sink.Stdout() != "" || sink.startedCount() != 0 || len(sink.finished) != 0 {
+		t.Errorf("the supervisor's sink got events: stdout %q, started %d", sink.Stdout(), sink.startedCount())
+	}
+	if supervisor.IsRunning() {
+		t.Error("the slot is still taken after the job ended")
+	}
+}
