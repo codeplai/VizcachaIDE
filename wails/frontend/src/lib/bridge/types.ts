@@ -28,6 +28,8 @@ export interface RunApi {
   /** path is the untitled name (e.g. "untitled-1.py"): its extension decides the language. */
   runUntitled: (path: string, source: string, programArgs: string[]) => Promise<RunConfiguration>
   build: (path: string, programArgs: string[]) => Promise<RunConfiguration>
+  /** Runs the member of a Cargo workspace chosen after `run` rejected with run.chooseMember. */
+  runMember: (path: string, member: string, programArgs: string[]) => Promise<RunConfiguration>
   /** Splits the "program arguments" text like a shell (quotes group words). */
   splitArguments: (text: string) => Promise<string[]>
   /** Runs the checker of config.codeLanguage (go vet, ruff check); "" when it found nothing. */

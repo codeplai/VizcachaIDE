@@ -28,6 +28,7 @@ const createRunApi = (): RunApi => ({
   runUntitled: async (path, source, args) =>
     fromWire(await RunService.RunUntitled(path, source, args)),
   build: async (path, args) => fromWire(await RunService.Build(path, args)),
+  runMember: async (path, member, args) => fromWire(await RunService.RunMember(path, member, args)),
   splitArguments: (text) => RunService.SplitArguments(text),
   check: (config) => RunService.Check(toWire(config)),
   stop: () => RunService.Stop(),

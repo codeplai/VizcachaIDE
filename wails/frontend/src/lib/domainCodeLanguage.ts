@@ -59,4 +59,6 @@ export interface ToolStatus {
   version: string
   source: ToolSource
   path: string
+  /** i18n keys of non-blocking advice about the tool (errors.rustTooOld...); null or [] when none. */
+  advice?: string[] | null
 }

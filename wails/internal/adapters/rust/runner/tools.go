@@ -2,9 +2,11 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -43,7 +45,25 @@ func (r *Runner) status(ctx context.Context, spec domain.ToolSpec) domain.ToolSt
 	if status.Source != domain.ToolMissing {
 		status.Version = r.versionOf(ctx, spec.ID, status.Path)
 	}
+	status.Advice = []string{}
+	if spec.ID == rust.ToolRustc && status.Source != domain.ToolMissing {
+		status.Advice = r.adviceOf(ctx)
+	}
 	return status
+}
+
+// adviceOf is what the student should fix about the toolchain (docs/PLAN_RUST.md sections 4.2
+// and 3.2 point 7): a rustup without toolchain, a Visual Studio host, a channel or version that is
+// not the current stable.
+func (r *Runner) adviceOf(ctx context.Context) []string {
+	toolchain, err := r.locator.Toolchain(ctx)
+	if errors.Is(err, rust.ErrNoToolchain) {
+		return []string{"errors.rustupNoToolchain"}
+	}
+	if err != nil {
+		return []string{}
+	}
+	return toolchain.Advice(runtime.GOOS)
 }
 
 // besideCargo looks for a component of the toolchain (clippy, rustfmt) in the folder of the

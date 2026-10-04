@@ -10,6 +10,8 @@ export function Format(arg1:string,arg2:string):Promise<string>;
 
 export function Run(arg1:string,arg2:Array<string>):Promise<domain.RunConfiguration>;
 
+export function RunMember(arg1:string,arg2:string,arg3:Array<string>):Promise<domain.RunConfiguration>;
+
 export function RunUntitled(arg1:string,arg2:string,arg3:Array<string>):Promise<domain.RunConfiguration>;
 
 export function SplitArguments(arg1:string):Promise<Array<string>>;

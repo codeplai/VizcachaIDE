@@ -3,17 +3,14 @@
 import { get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { RunApi } from '../bridge/types'
-import type { RunConfiguration } from '../domain'
 import { resetRun } from './run'
 import { withToolErrors } from './toolErrors'
 
 /** The key the backend's error message starts with (the i18n key of the dialog's title). */
 export const CHOOSE_MEMBER_KEY = 'run.chooseMember'
 
-/** The call the backend adds for the choice (CCR); until then `run` has no such method. */
-export interface RunMemberApi {
-  runMember: (path: string, member: string, programArgs: string[]) => Promise<RunConfiguration>
-}
+/** The bridge call that runs the chosen member. */
+export type RunMemberApi = Pick<RunApi, 'runMember'>
 
 /** The run waiting for a member: what was asked and the members to choose from. */
 export interface MemberChoice {
@@ -57,15 +54,10 @@ export const runOrChooseMember = async (
 export const chooseMember = async (bridge: Bridge, member: string): Promise<void> => {
   const choice = get(memberChoice)
   memberChoice.set(null)
-  const run = bridge.run as RunApi & Partial<RunMemberApi>
-  if (!choice || !run.runMember) return
+  if (!choice) return
   const { path, args } = choice
   resetRun()
-  await withToolErrors(
-    bridge,
-    'rust',
-    () => run.runMember?.(path, member, args) ?? Promise.resolve()
-  )
+  await withToolErrors(bridge, 'rust', () => bridge.run.runMember(path, member, args))
 }
 
 export const dismissMemberChoice = (): void => memberChoice.set(null)

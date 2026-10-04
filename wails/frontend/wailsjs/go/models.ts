@@ -672,6 +672,7 @@ export namespace domain {
 	    version: string;
 	    source: string;
 	    path: string;
+	    advice: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new ToolStatus(source);
@@ -685,6 +686,7 @@ export namespace domain {
 	        this.version = source["version"];
 	        this.source = source["source"];
 	        this.path = source["path"];
+	        this.advice = source["advice"];
 	    }
 	}
 	export class UpdateState {
