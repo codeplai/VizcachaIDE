@@ -28,6 +28,23 @@ llvm-mingw.
 - **Known limitations:** Rust is not bundled (rustup); rust-analyzer needs several seconds and a few
   hundred MB per project; borrow-checker errors of a loose file appear after a run (clippy), not
   live. macOS and Linux are covered only by CI.
+- **Multi-file experiment** (`qa.mjs --only multi`, asked by the user, 24/24 after the fixes): in
+  each language a 4-file project (main → a second file → a third one, and a fourth that uses an
+  external library: Go `github.com/google/uuid`, Python `humanize`, header-only `nlohmann/json`,
+  Rust `rand`) runs, Ctrl+click opens the definition in another file, hover documents the library's
+  function, a breakpoint in the third file shows `main → second → third` with its variables, and an
+  error in the third file is listed in Problems and opens that file. It found four bugs, all fixed:
+  breakpoints of other files were not sent to the debugger; gopls (and rust-analyzer) never heard of
+  `go.mod`/`Cargo.toml` changes made by the package commands (`lsp.ManifestFiles`); `rand` did not
+  build with rustup's GNU toolchain (its dlltool needs an assembler it lacks: LLVM's `llvm-dlltool`
+  is passed, and `RS-DLLTOOL` explains a missing one); LLDB's disassembly pseudo-paths
+  (`tienda.exe\`main`) counted as user code, so the standard library frames below `main` showed.
+  Known gaps: with only rustup (lite, no llvm-mingw) `rand` cannot build; C++ Ctrl+click reaches the
+  declaration in the header (clangd runs without a background index).
+- After those fixes the regression run gave 77/80: the Go `modules` step (EN and ES) opened
+  `qa/loop/main.go` because the reload right after the harness restart still showed the previous
+  folder (the step now retries until the tree is `qa/mod`; both phases then passed 14/14), and the
+  C++ crash card was missing once in ES (not reproduced: the C++ ES phase passed 8/8 when run again).
 - Evidence: [qa-2.4/](qa-2.4/).
 
 ## 2.3.0 (M2, C++): QA, 2026-10-04

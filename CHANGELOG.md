@@ -49,6 +49,13 @@ them. Go, Python and C++ work as in 2.3.0 (80/80 QA steps in English and Spanish
   `Some(440)`); the IDE ships a fix for LLDB's Rust formatters.
 - A Rust install could fail to link when llvm-mingw was on PATH: the toolchain's own MinGW linker is
   now always used.
+- Debugging did not stop at breakpoints set in another file of the project (only the open file's
+  were sent), in every language.
+- After `go get` or `cargo add` the code helper kept saying the package could not be found: the
+  language servers now hear when `go.mod`, `go.sum`, `Cargo.toml` or `Cargo.lock` change.
+- Crates such as `rand` did not build with rustup's Windows GNU toolchain (dlltool): VizcachaIDE
+  passes llvm-mingw's `llvm-dlltool`, and the Assistant explains what to install when there is none.
+- The call stack of Rust and C++ showed the standard library frames below `main` again.
 
 ### Notes
 - Rust is not bundled: install it with rustup (on Windows the `x86_64-pc-windows-gnu` toolchain,
@@ -323,6 +330,14 @@ pasos de QA en inglés y español, ver `docs/wails/QA_WAILS.md`).
   leía `Some(440)`); la IDE incluye un arreglo para los formateadores de Rust de LLDB.
 - Una instalación de Rust podía fallar al enlazar si llvm-mingw estaba en el PATH: ahora se usa
   siempre el enlazador MinGW propio del toolchain.
+- Depurar no se detenía en los puntos de interrupción puestos en otro archivo del proyecto (sólo se
+  enviaban los del archivo abierto), en todos los lenguajes.
+- Después de `go get` o `cargo add` el ayudante de código seguía diciendo que no encontraba el
+  paquete: ahora los servidores de lenguaje se enteran cuando cambian `go.mod`, `go.sum`,
+  `Cargo.toml` o `Cargo.lock`.
+- Crates como `rand` no compilaban con el toolchain GNU de rustup en Windows (dlltool): VizcachaIDE
+  pasa el `llvm-dlltool` de llvm-mingw, y el Asistente explica qué instalar cuando no lo hay.
+- La pila de llamadas de Rust y C++ volvía a mostrar los marcos de la biblioteca estándar bajo `main`.
 
 ### Notas
 - Rust no viene incluido: se instala con rustup (en Windows el toolchain `x86_64-pc-windows-gnu`,

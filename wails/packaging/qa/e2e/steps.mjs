@@ -299,9 +299,16 @@ export const steps = (ctx, lang) => {
   })
 
   add('modules', 'Module run: go run . in a folder with go.mod (qa/mod)', async () => {
-    await L.go(page, 'FilesService', 'ListTree', path.join(L.PROJECT, 'qa', 'mod'))
-    await U.reload(page, url)
-    await U.openByName(page, 'main.go')
+    // Right after the harness restarts wails dev the reload can still show the previous folder
+    // (qa/loop, whose main.go never ends): ask again until the tree is qa/mod.
+    for (let attempt = 0; ; attempt++) {
+      await L.go(page, 'FilesService', 'ListTree', path.join(L.PROJECT, 'qa', 'mod'))
+      await U.reload(page, url)
+      const ok = await U.openByName(page, 'main.go', 'qa/mod/').then(() => true, () => false)
+      if (ok) break
+      must(attempt < 3, 'the Files panel never showed qa/mod')
+      await L.sleep(2000)
+    }
     await U.run(page)
     await U.waitOutput(page, T.finished)
     must((await out()).includes('module ok'), `output: ${await out()}`)
