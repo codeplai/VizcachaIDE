@@ -9,18 +9,20 @@ import (
 	"embed"
 	"log"
 
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/console"
+	golangerrors "github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/errors"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/packages"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/runner"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -89,15 +91,15 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 // newGoTools creates the Delve and gopls adapters. Tool paths are resolved when a debug
 // session or gopls starts (configured -> bundled -> PATH), so changing them in Settings
 // needs no restart.
-func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
+func newGoTools(sink *bridge.WailsEventSink, goRunner *runner.Runner, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
 	debugger := delve.New(sink, delve.Options{
-		DelvePath:   func() string { return goToolchain.Locate(toolchain.ToolDelve).Path },
-		Environment: goToolchain.Environment,
+		DelvePath:   func() string { return goRunner.Locate("dlv").Path },
+		Environment: goRunner.Environment,
 		Translate:   texts.text,
 	})
 	languageServer := gopls.New(sink, gopls.Config{
-		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
-		Environment: goToolchain.Environment,
+		Executable:  func() string { return goRunner.Locate("gopls").Path },
+		Environment: goRunner.Environment,
 	})
 	return debugger, languageServer
 }
@@ -113,17 +115,21 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	if err != nil {
 		return nil, err
 	}
-	explainer, err := errorcatalog.NewExplainer()
+	explainer, err := golangerrors.NewExplainer()
 	if err != nil {
 		return nil, err
 	}
 
-	goToolchain := toolchain.New(toolchain.Options{
-		Sink:             sink,
+	// One supervisor for the whole IDE: a single program runs at a time, whatever its language.
+	supervisor := process.New(sink)
+	goRunner := runner.New(supervisor, runner.Options{
 		Settings:         store,
 		FirstBuildNotice: func() string { return texts.text("run.firstBuild") },
 	})
-	debugger, languageServer := newGoTools(sink, goToolchain, texts)
+	// Transitional (M0): N5 injects the package manager into the bridge; until then the bridge
+	// still runs "go mod" through the app.Toolchain view of the runner.
+	_ = packages.New(supervisor, goRunner)
+	debugger, languageServer := newGoTools(sink, goRunner, texts)
 
 	watcher, err := filewatch.New(sink, filewatch.DefaultDebounce)
 	if err != nil {
@@ -132,17 +138,17 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 
 	return &backend{
 		services: []any{
-			bridge.NewRunService(goToolchain),
+			bridge.NewRunService(goRunner.Compat()),
 			bridge.NewConsoleService(console.New(0)),
 			bridge.NewDebugService(debugger),
 			bridge.NewLanguageService(languageServer),
 			bridge.NewAssistantService(sink, explainer, language),
 			bridge.NewFilesServiceWithTexts(sink, store, watcher, texts.withData).UseShell(filesystem.New()),
 			bridge.NewSettingsService(sink, store, language).
-				UseTools(goToolchain, bridge.NewExecutableDialog(sink, texts.withData)),
+				UseTools(goRunner.Compat(), bridge.NewExecutableDialog(sink, texts.withData)),
 		},
 		shutdown: func(ctx context.Context) {
-			_ = goToolchain.Stop() // never leave the user's program running
+			_ = supervisor.Stop() // never leave the user's program running
 			_ = debugger.Stop()
 			_ = languageServer.Shutdown(ctx)
 			_ = watcher.Close()
