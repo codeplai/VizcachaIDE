@@ -1,0 +1,18 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   int doble(int a) {
+#       int r = 2 * a;
+#   }
+#   int main() {
+#       return doble(2);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int doble(int)':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:9: warning: unused variable 'r' [-Wunused-variable]
+    2 |     int r = 2 * a;
+      |         ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:1: warning: no return statement in function returning non-void [-Wreturn-type]
+    3 | }
+      | ^

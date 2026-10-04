@@ -1,0 +1,17 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <string>
+#   int main() {
+#       std::string nombre = "Ana";
+#       int n = nombre;
+#       return n;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:13: error: cannot convert 'std::string' {aka 'std::__cxx11::basic_string<char>'} to 'int' in initialization
+    4 |     int n = nombre;
+      |             ^~~~~~
+      |             |
+      |             std::string {aka std::__cxx11::basic_string<char>}

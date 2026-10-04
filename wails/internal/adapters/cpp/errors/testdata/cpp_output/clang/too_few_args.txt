@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int sumar(int a, int b) { return a + b; }
+#   int main() {
+#       return sumar(1);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:12: error: no matching function for call to 'sumar'
+    3 |     return sumar(1);
+      |            ^~~~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:1:5: note: candidate function not viable: requires 2 arguments, but 1 was provided
+    1 | int sumar(int a, int b) { return a + b; }
+      |     ^     ~~~~~~~~~~~~
+1 error generated.

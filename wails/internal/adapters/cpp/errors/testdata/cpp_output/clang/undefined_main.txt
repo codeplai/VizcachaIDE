@@ -1,0 +1,12 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int ayudar() {
+#       return 1;
+#   }
+# output:
+ld.lld: error: undefined symbol: WinMain
+>>> referenced by ../crt/crtexewin.c:62
+>>>               libmingw32.a(lib64_libmingw32_a-crtexewin.o):(main)
+clang-23: error: linker command failed with exit code 1 (use -v to see invocation)

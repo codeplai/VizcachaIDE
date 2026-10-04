@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
 const (
@@ -46,6 +47,8 @@ type Options struct {
 	Name string
 	// LanguageID is the languageId sent with didOpen ("go", "python"...).
 	LanguageID string
+	// CodeLanguage is the language reported with every lsp:status of this server.
+	CodeLanguage domain.CodeLanguage
 	// IdleTimeout shuts the server down (shutdown + exit) when no document stays open for
 	// this long. The next OpenDocument starts it again and the status is not "unavailable":
 	// that one means the tool is missing. Zero disables it.

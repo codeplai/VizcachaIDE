@@ -32,6 +32,12 @@ func TestDetectInstallationReadsTheBundledToolchain(t *testing.T) {
 	if got := DetectInstallation("windows", "amd64", dir); got.Variant != "lite" || got.Installed {
 		t.Fatalf("empty folder: %+v", got)
 	}
+	if err := os.MkdirAll(filepath.Join(dir, "toolchain", "cpp"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if got := DetectInstallation("windows", "amd64", dir); got.Variant != "full-cpp" {
+		t.Fatalf("cpp only: %+v", got)
+	}
 	for _, sub := range []string{"toolchain/go", "toolchain/python"} {
 		if err := os.MkdirAll(filepath.Join(dir, sub), 0o755); err != nil {
 			t.Fatal(err)

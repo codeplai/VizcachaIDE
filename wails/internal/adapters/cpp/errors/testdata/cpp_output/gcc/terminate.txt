@@ -1,0 +1,12 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# runExit: 3221226505 (0xC0000409)
+# program:
+#   #include <stdexcept>
+#   int main() {
+#       throw std::runtime_error("algo salio mal");
+#   }
+# output:
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  algo salio mal

@@ -1,0 +1,17 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int main() {
+#       int total = 1;
+#       return totl;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:12: error: 'totl' was not declared in this scope; did you mean 'total'?
+    3 |     return totl;
+      |            ^~~~
+      |            total
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:9: warning: unused variable 'total' [-Wunused-variable]
+    2 |     int total = 1;
+      |         ^~~~~

@@ -6,7 +6,7 @@ import { mockConsole } from './mockConsole'
 import { defaultSettings, sampleLocation, sampleSymbols } from './mockData'
 import { mockDebug, mockRun, type MockState } from './mockExecution'
 import { mockFiles } from './mockFiles'
-import { mockCodeLanguages, mockPackages } from './mockCodeLanguages'
+import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
 import { mockSettings } from './mockSettings'
 import { mockUpdates } from './mockUpdates'
@@ -24,7 +24,8 @@ export interface MockBridge {
 }
 
 const mockLanguage = (emit: Emit): LanguageApi => ({
-  openDocument: async () => emit('lsp:status', 'ready'),
+  openDocument: async (path) =>
+    emit('lsp:status', { codeLanguage: codeLanguageOfPath(path), status: 'ready' }),
   changeDocument: async () => {},
   closeDocument: async () => {},
   completion: async () => [

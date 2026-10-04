@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   int main() {
+#       const char* s = "si";
+#       if (s == "si") {
+#           return 1;
+#       }
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:11: warning: comparison with string literal results in unspecified behavior [-Waddress]
+    3 |     if (s == "si") {
+      |         ~~^~~~~~~

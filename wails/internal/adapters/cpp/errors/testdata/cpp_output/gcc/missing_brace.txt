@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <iostream>
+#   int main() {
+#       std::cout << "hola";
+#       return 0;
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:14: error: expected '}' at end of input
+    4 |     return 0;
+      |              ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:12: note: to match this '{'
+    2 | int main() {
+      |            ^

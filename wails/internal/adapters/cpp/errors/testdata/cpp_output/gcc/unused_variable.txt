@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   int main() {
+#       int sin_usar = 3;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:9: warning: unused variable 'sin_usar' [-Wunused-variable]
+    2 |     int sin_usar = 3;
+      |         ^~~~~~~~

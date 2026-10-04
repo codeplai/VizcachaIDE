@@ -96,7 +96,12 @@ Contrastado con el código de M0 y M1. C0 hace los cambios de contrato antes de 
    lo dice.
 5. **Teclado al depurar.** `Capabilities.DebugInput` = true: lldb-dap con `runInTerminal` arranca el
    programa en el Supervisor (PTY) con `Job.Events` → `debug:output`, como debugpy. C0 lo comprueba
-   en Windows con la versión de llvm-mingw elegida (riesgo §11).
+   en Windows con la versión de llvm-mingw elegida (riesgo §11). **Comprobado en C0 (2026-10-04,
+   llvm-mingw 20260922 / LLVM 23.1.2):** lldb-dap envía `runInTerminal` con un lanzador
+   `lldb-dap.exe --comm-file \\.\pipe\lldb-dap-run-in-terminal-comm-<n> --launch-target <exe>` y
+   para en el breakpoint, con y sin
+   `runInTerminal`. **Requisito: compilar con `-static`**; sin él el `.exe` no arranca fuera del IDE
+   ni al depurar (`0xc0000135`, falta `libc++.dll`), confirmado por el spike.
 6. **APIs reales:** `dap.StdioTransport`, `dap.NewSession(SessionDeps)`, `ReverseHandler`,
    `lsp.New(sink, flavor, lsp.Options{Name: "clangd", LanguageID: "cpp", ...})`,
    `errorcatalog.NewExplainer`, `toollocator.Tool`, `process.Job{Then, Events, Mode}`,

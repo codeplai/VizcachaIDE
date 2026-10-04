@@ -1,0 +1,21 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# runExit: 3221225725 (0xC00000FD)
+# program:
+#   int f(int n) {
+#       volatile int a[1000];
+#       a[0] = n;
+#       return f(n + 1) + a[0];
+#   }
+#   int main() {
+#       return f(0);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int f(int)':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:1:5: warning: infinite recursion detected [-Winfinite-recursion]
+    1 | int f(int n) {
+      |     ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:13: note: recursive call
+    4 |     return f(n + 1) + a[0];
+      |            ~^~~~~~~

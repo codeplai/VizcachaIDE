@@ -1,0 +1,19 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# program:
+#   #include <iostream>
+#   int main() {
+#       int x;
+#       std::cout << x;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:4:18: warning: variable 'x' is uninitialized when used here [-Wuninitialized]
+    4 |     std::cout << x;
+      |                  ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:10: note: initialize the variable 'x' to silence this warning
+    3 |     int x;
+      |          ^
+      |           = 0
+1 warning generated.

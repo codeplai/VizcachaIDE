@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# runExit: 3221225477 (0xC0000005)
+# program:
+#   #include <iostream>
+#   int main() {
+#       std::cout << "antes de caer" << std::endl;
+#       int* p = nullptr;
+#       *p = 42;
+#       return 0;
+#   }
+# output:
+antes de caer

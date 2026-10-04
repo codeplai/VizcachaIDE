@@ -1,0 +1,15 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   #include <vector>
+#   int main() {
+#       std::vector<int> v(3);
+#       for (int i = 0; i < v.size(); i++) {}
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:23: warning: comparison of integer expressions of different signedness: 'int' and 'std::vector<int>::size_type' {aka 'long long unsigned int'} [-Wsign-compare]
+    4 |     for (int i = 0; i < v.size(); i++) {}
+      |                     ~~^~~~~~~~~~

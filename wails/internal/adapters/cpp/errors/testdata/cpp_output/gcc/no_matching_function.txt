@@ -1,0 +1,24 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <string>
+#   void saludar(std::string nombre, int veces) {}
+#   int main() {
+#       saludar(5, "tres");
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'void saludar(std::string, int)':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:26: warning: unused parameter 'nombre' [-Wunused-parameter]
+    2 | void saludar(std::string nombre, int veces) {}
+      |              ~~~~~~~~~~~~^~~~~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:2:38: warning: unused parameter 'veces' [-Wunused-parameter]
+    2 | void saludar(std::string nombre, int veces) {}
+      |                                  ~~~~^~~~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:13: error: could not convert '5' from 'int' to 'std::string' {aka 'std::__cxx11::basic_string<char>'}
+    4 |     saludar(5, "tres");
+      |             ^
+      |             |
+      |             int

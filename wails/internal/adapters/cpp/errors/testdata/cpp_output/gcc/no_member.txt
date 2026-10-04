@@ -1,0 +1,15 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <string>
+#   int main() {
+#       std::string s = "hola";
+#       return s.lenght();
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:14: error: 'std::string' {aka 'class std::__cxx11::basic_string<char>'} has no member named 'lenght'; did you mean 'length'?
+    4 |     return s.lenght();
+      |              ^~~~~~
+      |              length

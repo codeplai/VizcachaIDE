@@ -3,6 +3,7 @@ import { derived, get, writable } from 'svelte/store'
 import type { Bridge, ToolId, Unsubscribe } from '../bridge'
 import type { Capabilities, CodeLanguage, LanguageProfile, Settings, ToolStatus } from '../domain'
 import { debuggedPath } from './debug'
+import { lspStatuses } from './diagnostics'
 import { activePath } from './files'
 import { settings } from './settings'
 
@@ -101,3 +102,9 @@ export const pickTool = async (bridge: Bridge, toolId: ToolId): Promise<void> =>
   await bridge.settings.pickExecutable(toolId)
   await refreshTools(bridge)
 }
+
+/** The state of the open file's language server ("starting" until it reports). */
+export const lspStatus = derived(
+  [lspStatuses, activeCodeLanguage],
+  ([all, codeLanguage]) => all[codeLanguage] ?? 'starting'
+)

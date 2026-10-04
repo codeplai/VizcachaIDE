@@ -110,8 +110,8 @@ export const cppProfile: LanguageProfile = {
     build: true,
     console: false,
     format: true,
-    check: false,
-    debugInput: false,
+    check: true,
+    debugInput: true,
     packageActions: [],
     threadsLabel: 'debug.threads'
   },

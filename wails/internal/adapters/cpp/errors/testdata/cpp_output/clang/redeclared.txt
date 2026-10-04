@@ -1,0 +1,17 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int main() {
+#       int x = 1;
+#       int x = 2;
+#       return x;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:9: error: redefinition of 'x'
+    3 |     int x = 2;
+      |         ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:9: note: previous definition is here
+    2 |     int x = 1;
+      |         ^
+1 error generated.

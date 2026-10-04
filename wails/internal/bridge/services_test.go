@@ -21,7 +21,7 @@ func (r *recordingSink) DebugTerminated(int)        { r.calls = append(r.calls, 
 func (r *recordingSink) Diagnostics(string, []domain.Diagnostic) {
 	r.calls = append(r.calls, "diagnostics")
 }
-func (r *recordingSink) LanguageServerStatus(domain.ServerStatus) {
+func (r *recordingSink) LanguageServerStatus(domain.CodeLanguage, domain.ServerStatus) {
 	r.calls = append(r.calls, "status")
 }
 func (r *recordingSink) Explained([]domain.ExplainedDiagnostic) {

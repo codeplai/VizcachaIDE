@@ -3,6 +3,7 @@ package process
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync/atomic"
 	"time"
 )
@@ -39,8 +40,25 @@ func (s *Supervisor) supervise(ctx context.Context, occupant *run, job Job) {
 	}
 	s.mu.Lock()
 	s.run = nil
+	stopped := occupant.stopped
 	s.mu.Unlock()
+	if line := finishedLine(job, exitCode, stopped); line != "" {
+		occupant.events.RunOutput("stderr", line)
+	}
 	occupant.events.RunFinished(exitCode, time.Since(began).Milliseconds())
+}
+
+// finishedLine is the last stage's closing line (a crash a terminal would print, such as
+// "Segmentation fault"), or "" when there is none or the user stopped the run.
+func finishedLine(job Job, exitCode int, stopped bool) string {
+	if job.Finished == nil || stopped {
+		return ""
+	}
+	line := job.Finished(exitCode)
+	if line == "" || strings.HasSuffix(line, "\n") {
+		return line
+	}
+	return line + "\n"
 }
 
 // nextStage asks the job for its successor, unless the user stopped the run.

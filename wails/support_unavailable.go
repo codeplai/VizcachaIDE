@@ -15,7 +15,7 @@ var provisionalCppProfile = domain.LanguageProfile{
 	Extensions: []string{".cpp", ".cc", ".cxx", ".c++", ".h", ".hpp", ".hh"},
 	Indent:     domain.IndentStyle{UseTabs: false, Size: 4},
 	Capabilities: domain.Capabilities{
-		Build: true, Console: false, Format: true, Check: false, DebugInput: false,
+		Build: true, Console: false, Format: true, Check: true, DebugInput: true,
 		PackageActions: nil,
 		ThreadsLabel:   "debug.threads",
 	},

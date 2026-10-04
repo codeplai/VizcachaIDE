@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   int main() {
+#       int a[3] = {1, 2, 3};
+#       return a[5];
+#   }
+# output:

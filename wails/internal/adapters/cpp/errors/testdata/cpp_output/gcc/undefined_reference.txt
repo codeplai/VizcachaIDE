@@ -1,0 +1,12 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int calcular(int x);
+#   int main() {
+#       return calcular(2);
+#   }
+# output:
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/16.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: D:\Users\mcalderon\AppData\Local\Temp\cc7aj5Yn.o: in function `main':
+D:/Users/mcalderon/AppData/Local/Temp/tmpwdtu43i8/mis programas ñandú/main.cpp:3:(.text+0x13): undefined reference to `calcular(int)'
+collect2.exe: error: ld returned 1 exit status

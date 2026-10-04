@@ -1,0 +1,12 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# runExit: 3221226505 (0xC0000409)
+# program:
+#   #include <vector>
+#   int main() {
+#       std::vector<int> v(3);
+#       return v.at(10);
+#   }
+# output:
+libc++abi: terminating due to uncaught exception of type std::out_of_range: vector

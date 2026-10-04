@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   #include <iostream>
+#   int main() {
+#       int x = 5
+#       std::cout << x;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:14: error: expected ';' at end of declaration
+    3 |     int x = 5
+      |              ^
+      |              ;
+1 error generated.

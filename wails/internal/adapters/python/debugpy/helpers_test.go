@@ -41,9 +41,9 @@ func (e *eventSink) RunStarted(domain.RunConfiguration)    { e.countRun() }
 func (e *eventSink) RunFinished(int, int64)                { e.countRun() }
 func (e *eventSink) Diagnostics(string, []domain.Diagnostic) {
 }
-func (e *eventSink) LanguageServerStatus(domain.ServerStatus) {}
-func (e *eventSink) Explained([]domain.ExplainedDiagnostic)   {}
-func (e *eventSink) SettingsChanged(domain.Settings)          {}
+func (e *eventSink) LanguageServerStatus(domain.CodeLanguage, domain.ServerStatus) {}
+func (e *eventSink) Explained([]domain.ExplainedDiagnostic)                        {}
+func (e *eventSink) SettingsChanged(domain.Settings)                               {}
 
 func (e *eventSink) countRun() {
 	e.mu.Lock()

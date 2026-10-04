@@ -22,7 +22,7 @@ const (
 	EventDebugTerminated = "debug:terminated"
 	// EventLspDiagnostics carries DiagnosticsPayload.
 	EventLspDiagnostics = "lsp:diagnostics"
-	// EventLspStatus carries a domain.ServerStatus string.
+	// EventLspStatus carries LspStatusPayload: the state of one language's server.
 	EventLspStatus = "lsp:status"
 	// EventAssistantExplained carries []domain.ExplainedDiagnostic with translated texts.
 	EventAssistantExplained = "assistant:explained"

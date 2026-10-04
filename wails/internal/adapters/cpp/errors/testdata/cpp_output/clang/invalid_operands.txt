@@ -1,0 +1,59 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   #include <string>
+#   #include <vector>
+#   int main() {
+#       std::vector<int> v;
+#       std::string s = "a";
+#       auto r = v + s;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:6:16: error: invalid operands to binary expression ('std::vector<int>' and 'std::string' (aka 'basic_string<char>'))
+    6 |     auto r = v + s;
+      |              ~ ^ ~
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3684:1: note: candidate template ignored: deduced conflicting types for parameter '_CharT' ('std::vector<int>' vs. 'char')
+ 3684 | operator+(_CharT __lhs, const basic_string<_CharT, _Traits, _Allocator>& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3747:1: note: candidate template ignored: deduced conflicting types for parameter '_CharT' ('std::vector<int>' vs. 'char')
+ 3747 | operator+(_CharT __lhs, basic_string<_CharT, _Traits, _Allocator>&& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/__iterator/reverse_iterator.h:293:1: note: candidate template ignored: could not match 'reverse_iterator' against 'basic_string'
+  293 | operator+(typename reverse_iterator<_Iter>::difference_type __n, const reverse_iterator<_Iter>& __x) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3668:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3668 | operator+(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3675:1: note: candidate template ignored: could not match 'const _CharT *' against 'std::vector<int>'
+ 3675 | operator+(const _CharT* __lhs, const basic_string<_CharT, _Traits, _Allocator>& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3691:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3691 | operator+(const basic_string<_CharT, _Traits, _Allocator>& __lhs, const _CharT* __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3697:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3697 | operator+(const basic_string<_CharT, _Traits, _Allocator>& __lhs, _CharT __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3723:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3723 | operator+(basic_string<_CharT, _Traits, _Allocator>&& __lhs, const basic_string<_CharT, _Traits, _Allocator>& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3729:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3729 | operator+(const basic_string<_CharT, _Traits, _Allocator>& __lhs, basic_string<_CharT, _Traits, _Allocator>&& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3735:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3735 | operator+(basic_string<_CharT, _Traits, _Allocator>&& __lhs, basic_string<_CharT, _Traits, _Allocator>&& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3741:1: note: candidate template ignored: could not match 'const _CharT *' against 'std::vector<int>'
+ 3741 | operator+(const _CharT* __lhs, basic_string<_CharT, _Traits, _Allocator>&& __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3754:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3754 | operator+(basic_string<_CharT, _Traits, _Allocator>&& __lhs, const _CharT* __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:3760:1: note: candidate template ignored: could not match 'basic_string' against 'std::vector'
+ 3760 | operator+(basic_string<_CharT, _Traits, _Allocator>&& __lhs, _CharT __rhs) {
+      | ^
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/__iterator/move_iterator.h:331:1: note: candidate template ignored: could not match 'move_iterator' against 'basic_string'
+  331 | operator+(typename move_iterator<_Iter>::difference_type __n, const move_iterator<_Iter>& __x) {
+      | ^
+1 error generated.

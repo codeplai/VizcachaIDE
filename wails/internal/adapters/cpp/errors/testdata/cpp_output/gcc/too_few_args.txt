@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int sumar(int a, int b) { return a + b; }
+#   int main() {
+#       return sumar(1);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:17: error: too few arguments to function 'int sumar(int, int)'
+    3 |     return sumar(1);
+      |            ~~~~~^~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:1:5: note: declared here
+    1 | int sumar(int a, int b) { return a + b; }
+      |     ^~~~~

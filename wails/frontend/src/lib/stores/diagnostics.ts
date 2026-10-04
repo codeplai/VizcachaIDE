@@ -1,10 +1,11 @@
 import { derived, writable } from 'svelte/store'
 import type { Bridge, Unsubscribe } from '../bridge'
-import type { Diagnostic, ExplainedDiagnostic, ServerStatus } from '../domain'
+import type { CodeLanguage, Diagnostic, ExplainedDiagnostic, ServerStatus } from '../domain'
 
 export const diagnosticsByFile = writable<Record<string, Diagnostic[]>>({})
 export const explained = writable<ExplainedDiagnostic[]>([])
-export const lspStatus = writable<ServerStatus>('starting')
+/** The state of each language's server; the status bar shows the open file's one. */
+export const lspStatuses = writable<Partial<Record<CodeLanguage, ServerStatus>>>({})
 
 export const problemKey = (d: Diagnostic): string =>
   `${d.location?.file ?? ''}:${d.location?.line ?? 0}:${d.location?.column ?? 0}:${d.message}`
@@ -57,7 +58,9 @@ export const connectDiagnostics = (bridge: Bridge): Unsubscribe => {
       diagnosticsByFile.update((all) => ({ ...all, [path]: diagnostics }))
     ),
     bridge.on('assistant:explained', (items) => explained.set(items)),
-    bridge.on('lsp:status', (status) => lspStatus.set(status))
+    bridge.on('lsp:status', ({ codeLanguage, status }) =>
+      lspStatuses.update((all) => ({ ...all, [codeLanguage]: status }))
+    )
   ]
   return () => offs.forEach((off) => off())
 }

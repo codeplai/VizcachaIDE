@@ -33,6 +33,12 @@ type DebugTerminatedPayload struct {
 }
 
 // DiagnosticsPayload is the payload of EventLspDiagnostics.
+// LspStatusPayload is the state of the language server of one language (event lsp:status).
+type LspStatusPayload struct {
+	CodeLanguage domain.CodeLanguage `json:"codeLanguage"`
+	Status       domain.ServerStatus `json:"status"`
+}
+
 type DiagnosticsPayload struct {
 	Path        string              `json:"path"`
 	Diagnostics []domain.Diagnostic `json:"diagnostics"`

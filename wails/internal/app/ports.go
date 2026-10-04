@@ -40,8 +40,8 @@ type EventSink interface {
 	DebugTerminated(exitCode int)
 	// Diagnostics emits "lsp:diagnostics" for one file.
 	Diagnostics(path string, diagnostics []domain.Diagnostic)
-	// LanguageServerStatus emits "lsp:status".
-	LanguageServerStatus(status domain.ServerStatus)
+	// LanguageServerStatus emits "lsp:status" for the language server of one language.
+	LanguageServerStatus(codeLanguage domain.CodeLanguage, status domain.ServerStatus)
 	// Explained emits "assistant:explained" with already translated texts.
 	Explained(items []domain.ExplainedDiagnostic)
 	// SettingsChanged emits "settings:changed".

@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <iostreem>
+#   int main() {
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:1:10: fatal error: iostreem: No such file or directory
+    1 | #include <iostreem>
+      |          ^~~~~~~~~~
+compilation terminated.

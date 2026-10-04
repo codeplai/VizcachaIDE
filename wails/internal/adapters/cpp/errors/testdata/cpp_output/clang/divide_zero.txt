@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# runExit: 3221225620 (0xC0000094)
+# program:
+#   #include <iostream>
+#   int main() {
+#       int a = 10;
+#       volatile int b = 0;
+#       std::cout << a / b;
+#       return 0;
+#   }
+# output:
