@@ -1,6 +1,7 @@
 // Mock of the Files service: an in-memory tree that create, rename and delete really change.
 import type { FileNode } from '../domain'
 import { SAMPLE_DIR, SAMPLE_SOURCES, sampleTree } from './mockData'
+import { CPP_DIR, CPP_SOURCES, cppTree } from './mockCpp'
 import { PYTHON_DIR, PYTHON_SOURCES, pythonTree } from './mockPython'
 import type { SampleLanguage } from './mockScenarios'
 import type { FilesApi } from './types'
@@ -11,7 +12,8 @@ const PROJECTS: Record<
   { dir: string; tree: () => FileNode; sources: Record<string, string>; dialogFile: string }
 > = {
   go: { dir: SAMPLE_DIR, tree: sampleTree, sources: SAMPLE_SOURCES, dialogFile: 'saludo.go' },
-  python: { dir: PYTHON_DIR, tree: pythonTree, sources: PYTHON_SOURCES, dialogFile: 'saludo.py' }
+  python: { dir: PYTHON_DIR, tree: pythonTree, sources: PYTHON_SOURCES, dialogFile: 'saludo.py' },
+  cpp: { dir: CPP_DIR, tree: cppTree, sources: CPP_SOURCES, dialogFile: 'saludo.cpp' }
 }
 
 const separatorOf = (path: string): string => (path.includes('\\') ? '\\' : '/')

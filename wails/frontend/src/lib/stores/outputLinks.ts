@@ -1,7 +1,7 @@
 import type { SourceLocation } from '../domain'
 import { parseAnsi } from './ansi'
 
-/** A piece of an output line: plain text, or a "file.go:line:column" place the user can click. */
+/** A piece of an output line: plain text, or a "file:line:column" place the user can click. */
 export interface OutputSegment {
   text: string
   location?: SourceLocation
@@ -11,7 +11,13 @@ export interface OutputSegment {
   decorations?: string[]
 }
 
-const PLACE = /((?:[A-Za-z]:)?[^\s:()'"]+\.go):(\d+)(?::(\d+))?/g
+// Source files of the languages that print "file:line:column" (Go and C++; .h and .hpp too).
+const SOURCE_EXTENSION = String.raw`go|cpp|cxx|cc|c\+\+|hpp|hh|h`
+// A Windows path may hold spaces, accents and backslashes ("C:\Users\Ana\mis programas\main.cpp").
+const WINDOWS_FILE = String.raw`(?<![A-Za-z0-9_])[A-Za-z]:[\\/][^:*?"<>|]*?\.(?:${SOURCE_EXTENSION})`
+const PLAIN_FILE = String.raw`[^\s:()'"]+\.(?:${SOURCE_EXTENSION})`
+// The line is required: GCC's linker form "main.cpp:(.text+0x1a)" is not a place to go to.
+const PLACE = new RegExp(String.raw`(${WINDOWS_FILE}|${PLAIN_FILE}):(\d+)(?::(\d+))?`, 'gi')
 
 export const splitOutputLinks = (text: string): OutputSegment[] => {
   const segments: OutputSegment[] = []
@@ -28,7 +34,7 @@ export const splitOutputLinks = (text: string): OutputSegment[] => {
 
 /**
  * Splits one line of program output into pieces: ANSI colors and bold become style fields,
- * "file.go:line:column" places become clickable. The pieces are plain text, never HTML.
+ * "file:line:column" places become clickable. The pieces are plain text, never HTML.
  */
 export const styledSegments = (text: string): OutputSegment[] =>
   parseAnsi(text).flatMap((piece) =>

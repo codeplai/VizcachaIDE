@@ -1,5 +1,5 @@
-// The three language profiles as the backend declares them (adapters/golang/profile.go and
-// adapters/python/profile.go; C++ is still provisional, docs/PLAN_CPP.md section 4.1).
+// The three language profiles as the backend declares them (adapters/golang/profile.go,
+// adapters/python/profile.go and adapters/cpp/profile.go).
 // The mock serves them; the Wails bridge uses them only until bridge.CodeLanguagesService exists
 // (track N5), then this file serves the mock alone.
 import type { LanguageProfile, ToolSpec } from '../domain'
@@ -115,7 +115,36 @@ export const cppProfile: LanguageProfile = {
     packageActions: [],
     threadsLabel: 'debug.threads'
   },
-  tools: []
+  tools: [
+    tool({
+      id: 'cxx',
+      role: 'compiler',
+      labelKey: 'settings.toolCxx',
+      missingKey: 'errors.cxxNotFound',
+      installUrl: 'https://winlibs.com/'
+    }),
+    tool({
+      id: 'lldb-dap',
+      role: 'debugAdapter',
+      labelKey: 'settings.toolLldbDap',
+      missingKey: 'errors.lldbDapNotFound',
+      installUrl: 'https://github.com/mstorsjo/llvm-mingw/releases'
+    }),
+    tool({
+      id: 'clangd',
+      role: 'languageServer',
+      labelKey: 'settings.toolClangd',
+      missingKey: 'errors.clangdNotFound',
+      installUrl: 'https://clangd.llvm.org/installation'
+    }),
+    tool({
+      id: 'clang-format',
+      role: 'formatter',
+      labelKey: 'settings.toolClangFormat',
+      missingKey: 'errors.clangFormatNotFound',
+      installUrl: 'https://github.com/mstorsjo/llvm-mingw/releases'
+    })
+  ]
 }
 
 export const languageProfiles: LanguageProfile[] = [goProfile, pythonProfile, cppProfile]

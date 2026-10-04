@@ -28,7 +28,7 @@ const detected = (
   path: settings.toolPaths[id] ?? ''
 })
 
-/** The detected tools of every language (C++ has none in the demo yet). */
+/** The detected tools of every language. */
 export const toolsFor = (settings: Settings): ToolStatus[] => [
   detected(settings, 'go', 'go', 'runtime', '1.25.5', 'bundled'),
   detected(settings, 'go', 'dlv', 'debugAdapter', '1.27.2', 'bundled'),
@@ -37,7 +37,11 @@ export const toolsFor = (settings: Settings): ToolStatus[] => [
   // The modules live inside the interpreter: they have no path of their own.
   detected(settings, 'python', 'debugpy', 'debugAdapter', '1.8.5', 'path'),
   detected(settings, 'python', 'pylsp', 'languageServer', '1.12.0', 'path'),
-  detected(settings, 'python', 'ruff', 'formatter', '0.6.9', 'path')
+  detected(settings, 'python', 'ruff', 'formatter', '0.6.9', 'path'),
+  detected(settings, 'cpp', 'cxx', 'compiler', '15.2.0', 'path'),
+  detected(settings, 'cpp', 'lldb-dap', 'debugAdapter', '23.1.2', 'path'),
+  detected(settings, 'cpp', 'clangd', 'languageServer', '23.1.2', 'path'),
+  detected(settings, 'cpp', 'clang-format', 'formatter', '23.1.2', 'path')
 ]
 
 export const mockSettings = (state: SettingsHolder, emit: Emit): Bridge['settings'] => {

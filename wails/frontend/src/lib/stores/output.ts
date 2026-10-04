@@ -5,7 +5,15 @@ import { debugActive, debugOutput, debugStarting, currentLine } from './debug'
 import { activeFileName } from './files'
 import { compileProblemCount } from './assistant'
 import { styledSegments, type OutputSegment } from './outputLinks'
-import { addChunk, running, runLines, runResult, stoppedByUser, type RawRunLine } from './run'
+import {
+  addChunk,
+  lastRunConfiguration,
+  running,
+  runLines,
+  runResult,
+  stoppedByUser,
+  type RawRunLine
+} from './run'
 
 /** A line of the Output panel: either program text or an i18n key with its values. */
 export interface OutputLine {
@@ -25,28 +33,37 @@ const textLine = (tone: 'plain' | 'error', text: string): OutputLine => ({
   segments: styledSegments(text)
 })
 
+/** Exit codes of a native program killed by the system: Unix 128 + signal, Windows 0xC000xxxx. */
+const UNIX_CRASH_CODES = [134, 135, 136, 139]
+const WINDOWS_CRASH_FLOOR = 0xc0000000
+const isCrash = (exitCode: number): boolean =>
+  UNIX_CRASH_CODES.includes(exitCode) || exitCode >>> 0 >= WINDOWS_CRASH_FLOOR
+
 const verdictOf = (
   exitCode: number,
   durationMs: number,
   problems: number,
-  stopped: boolean
+  stopped: boolean,
+  native: boolean
 ): OutputLine => {
   if (stopped || exitCode === TERMINATED_BY_USER) return { tone: 'system', key: 'run.stopped' }
   if (exitCode === 0) return { tone: 'success', key: 'run.finished', seconds: durationMs / 1000 }
   if (problems > 0) return { tone: 'error', key: 'run.compileFailed', values: { count: problems } }
+  if (native && isCrash(exitCode)) return { tone: 'error', key: 'run.crashed' }
   return { tone: 'error', key: 'run.exitCode', values: { code: exitCode } }
 }
 
 const programLines = derived(
-  [runLines, runResult, compileProblemCount, stoppedByUser],
-  ([lines, result, problems, stopped]) => {
+  [runLines, runResult, compileProblemCount, stoppedByUser, lastRunConfiguration],
+  ([lines, result, problems, stopped, configuration]) => {
     const view: OutputLine[] = lines.map((line) => {
       if (line.kind === 'start') {
         return { tone: 'system', key: 'run.starting', values: { file: line.text } }
       }
       return textLine(line.kind === 'stderr' ? 'error' : 'plain', line.text)
     })
-    if (result) view.push(verdictOf(result.exitCode, result.durationMs, problems, stopped))
+    const native = configuration?.codeLanguage === 'cpp'
+    if (result) view.push(verdictOf(result.exitCode, result.durationMs, problems, stopped, native))
     return view
   }
 )
