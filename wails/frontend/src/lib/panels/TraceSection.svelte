@@ -1,15 +1,15 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { debugTab, type DebugTab } from '../stores'
+  import { capabilities, debugTab, type DebugTab } from '../stores'
   import CallStackPanel from './CallStackPanel.svelte'
   import CallsPanel from './CallsPanel.svelte'
-  import GoroutinesPanel from './GoroutinesPanel.svelte'
+  import ThreadsPanel from './ThreadsPanel.svelte'
 
-  const tabs: { id: DebugTab; label: string }[] = [
+  const tabs: { id: DebugTab; label: string }[] = $derived([
     { id: 'stack', label: 'panels.callStack' },
     { id: 'calls', label: 'panels.calls' },
-    { id: 'goroutines', label: 'panels.goroutines' }
-  ]
+    { id: 'threads', label: $capabilities?.threadsLabel ?? 'debug.goroutines' }
+  ])
 </script>
 
 <section class="block">
@@ -29,7 +29,7 @@
   </div>
   <div role="tabpanel">
     {#if $debugTab === 'stack'}<CallStackPanel />{:else if $debugTab === 'calls'}<CallsPanel
-      />{:else}<GoroutinesPanel />{/if}
+      />{:else}<ThreadsPanel />{/if}
   </div>
 </section>
 

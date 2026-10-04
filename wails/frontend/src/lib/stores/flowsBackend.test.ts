@@ -21,7 +21,8 @@ import {
   runActiveFile,
   settingsTab,
   startDebugging,
-  toolchain,
+  toolStatus,
+  tools,
   updateSettings
 } from '.'
 
@@ -79,7 +80,7 @@ describe('tools and language from the backend', () => {
     render(SettingsDialog)
     const buttons = await screen.findAllByRole('button', { name: 'Choose…' })
     await fireEvent.click(buttons[0] as HTMLElement)
-    await waitFor(() => expect(get(toolchain)?.goSource).toBe('configured'))
+    await waitFor(() => expect(toolStatus('go', get(tools))?.source).toBe('configured'))
     expect((await bridge.settings.get()).toolPaths['go']).toBe('C:\\tools\\go.exe')
     expect(await screen.findByText(/Location you chose/)).toBeTruthy()
   })

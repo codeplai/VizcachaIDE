@@ -3,7 +3,14 @@
   import { bridge } from '../bridge'
   import type { LanguageSetting } from '../domain'
   import { t } from '../i18n'
-  import { FIRST_RUN_STEPS, completeFirstRun, settings, toolchain, updateSettings } from '../stores'
+  import {
+    FIRST_RUN_STEPS,
+    completeFirstRun,
+    settings,
+    toolStatus,
+    tools,
+    updateSettings
+  } from '../stores'
 
   let step = $state(1)
 
@@ -11,7 +18,7 @@
     { id: 'en', label: 'language.en' },
     { id: 'es', label: 'language.es' }
   ]
-  const goVersion = $derived($toolchain?.goVersion ?? '')
+  const goVersion = $derived(toolStatus('go', $tools)?.version ?? '')
   import logo from '../../assets/brand/logo.png'
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { outputTab, problemCount } from '../stores'
+  import { capabilities, outputTab, problemCount } from '../stores'
   import ConsolePanel from './ConsolePanel.svelte'
   import OutputPanel from './OutputPanel.svelte'
   import ProblemsPanel from './ProblemsPanel.svelte'
@@ -29,19 +29,22 @@
       {$t('panels.problems')}
       {#if $problemCount > 0}<span class="count">{$problemCount}</span>{/if}
     </button>
-    <button
-      type="button"
-      role="tab"
-      class="otab"
-      class:on={$outputTab === 'console'}
-      aria-selected={$outputTab === 'console'}
-      onclick={() => outputTab.set('console')}
-    >
-      {$t('console.title')}
-    </button>
+    {#if $capabilities?.console}
+      <button
+        type="button"
+        role="tab"
+        class="otab"
+        class:on={$outputTab === 'console'}
+        aria-selected={$outputTab === 'console'}
+        onclick={() => outputTab.set('console')}
+      >
+        {$t('console.title')}
+      </button>
+    {/if}
   </div>
   <div class="body">
-    {#if $outputTab === 'output'}<OutputPanel />{:else if $outputTab === 'console'}<ConsolePanel
+    {#if $outputTab === 'output'}<OutputPanel
+      />{:else if $outputTab === 'console' && $capabilities?.console}<ConsolePanel
       />{:else}<ProblemsPanel />{/if}
   </div>
 </section>

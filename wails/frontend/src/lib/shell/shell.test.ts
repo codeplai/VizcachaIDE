@@ -19,7 +19,7 @@ import {
 import AboutDialog from './AboutDialog.svelte'
 import ConfirmHost from './ConfirmHost.svelte'
 import FirstRunWizard from './FirstRunWizard.svelte'
-import ModulesDialog from './ModulesDialog.svelte'
+import PackagesDialog from './PackagesDialog.svelte'
 import MoreMenu from './MoreMenu.svelte'
 import SettingsDialog from './SettingsDialog.svelte'
 import StatusBar from './StatusBar.svelte'
@@ -88,7 +88,7 @@ describe('Settings dialog', () => {
   })
 })
 
-describe('About and Go modules dialogs', () => {
+describe('About and Packages dialogs', () => {
   it('lists the tool versions', async () => {
     openDialog.set('about')
     render(AboutDialog)
@@ -104,8 +104,8 @@ describe('About and Go modules dialogs', () => {
 
   it('explains that there is no go.mod, then shows the module of the last run', async () => {
     lastRunConfiguration.set(null)
-    openDialog.set('modules')
-    render(ModulesDialog)
+    openDialog.set('packages')
+    render(PackagesDialog)
     expect(await screen.findByText(/No go\.mod found/)).toBeTruthy()
     lastRunConfiguration.set({
       codeLanguage: 'go',

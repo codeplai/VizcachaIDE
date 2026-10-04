@@ -1,5 +1,6 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
+import { profileOf } from './codeLanguages'
 import { confirmCloseChanges } from './confirm'
 import { activePath, baseName, buffers, closeFile, dirty, fileTree, openTabs } from './files'
 import { askNativeDialog } from './nativeDialogs'
@@ -13,15 +14,16 @@ const SAVE_NOTICE_KEYS = ['errors.saveFailed', 'errors.formatRejected']
 const errorReason = (error: unknown): string =>
   error instanceof Error ? error.message : String(error ?? '')
 
-/** First "line:column" in a gofmt error such as "main.go:5:2: expected ...". */
+/** First "line:column" in a formatter error such as "main.go:5:2: expected ...". */
 export const lineFromFormatError = (error: unknown): number | null => {
   const match = /:(\d+):\d+/.exec(errorReason(error))
   return match?.[1] ? Number(match[1]) : null
 }
 
-/** Formats the text when the user asked for it. A file Go cannot read is saved as it is. */
+/** Formats the text when the user asked for it and the file's language has a formatter. */
 const textToSave = async (bridge: Bridge, path: string, text: string): Promise<string> => {
   if (!get(settings)?.formatOnSave) return text
+  if (!profileOf(path)?.capabilities.format) return text
   try {
     return await bridge.run.format(path, text)
   } catch (error) {

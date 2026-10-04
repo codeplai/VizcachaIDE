@@ -25,7 +25,7 @@ describe('File menu', () => {
     render(FileMenu)
     await fireEvent.keyDown(screen.getByRole('button', { name: 'File' }), { key: 'Enter' })
     for (const name of [
-      /^New file/,
+      /^New file(?! of)/,
       /^Open file…/,
       /^Open folder…/,
       /^Save\s*(Ctrl\+S)?$/,
@@ -36,14 +36,16 @@ describe('File menu', () => {
     ]) {
       expect(await screen.findByRole('menuitem', { name })).toBeTruthy()
     }
-    expect(screen.getByRole('menuitem', { name: /^New file/ }).textContent).toContain('Ctrl+N')
+    expect(screen.getByRole('menuitem', { name: /^New file(?! of)/ }).textContent).toContain(
+      'Ctrl+N'
+    )
     expect(screen.getByText('Open recent')).toBeTruthy()
   })
 
   it('New file opens an untitled tab', async () => {
     render(FileMenu)
     await fireEvent.keyDown(screen.getByRole('button', { name: 'File' }), { key: 'Enter' })
-    await fireEvent.click(await screen.findByRole('menuitem', { name: /^New file/ }))
+    await fireEvent.click(await screen.findByRole('menuitem', { name: /^New file(?! of)/ }))
     await vi.waitFor(() => expect(get(activePath)).toBe('untitled/main.go'))
   })
 })

@@ -1,9 +1,11 @@
 import { derived, get } from 'svelte/store'
 import type { Bridge } from '../bridge'
+import type { CodeLanguage } from '../domain'
 import { activePath, dirty, openFile, openTabs } from './files'
 import { showNotice } from './notice'
 import { requestCloseTab, saveAs, saveFile } from './saving'
-import { BLANK_PROGRAM, isUntitled, openUntitled } from './untitled'
+import { settings } from './settings'
+import { isUntitled, openUntitled } from './untitled'
 import { askNativeDialog } from './nativeDialogs'
 
 /** True when the open file has changes to save, or is new and not on disk yet. */
@@ -11,9 +13,9 @@ export const activeNeedsSave = derived([activePath, dirty], ([path, marks]) =>
   path ? Boolean(marks[path]) || isUntitled(path) : false
 )
 
-/** New file (Ctrl+N): a tab without title with the smallest Go program. */
-export const newFile = async (bridge: Bridge): Promise<void> => {
-  await openUntitled(bridge, BLANK_PROGRAM)
+/** New file (Ctrl+N): a tab without title in the default language, or in the one chosen. */
+export const newFile = async (bridge: Bridge, codeLanguage?: CodeLanguage): Promise<void> => {
+  await openUntitled(bridge, codeLanguage ?? get(settings)?.defaultCodeLanguage ?? 'go')
 }
 
 /** Open file (Ctrl+O): asks for a file and opens it in a tab. Cancelling does nothing. */

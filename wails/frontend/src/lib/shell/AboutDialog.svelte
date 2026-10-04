@@ -1,15 +1,12 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { openDialog, toolSourceKey, toolchain } from '../stores'
+  import { openDialog, toolSourceKey, tools } from '../stores'
   import logo from '../../assets/brand/logo.png'
   import Modal from './Modal.svelte'
 
-  const tools = [
-    { name: 'Go', key: 'goVersion', source: 'goSource' },
-    { name: 'Delve', key: 'delveVersion', source: 'delveSource' },
-    { name: 'gopls', key: 'goplsVersion', source: 'goplsSource' }
-  ] as const
+  /** Product names are not translated; a tool without an entry shows its id. */
+  const TOOL_NAMES: Record<string, string> = { go: 'Go', dlv: 'Delve', gopls: 'gopls' }
   const author = { name: 'Marks Calderon', role: 'CEO Codeplai', email: 'hola@codeplai.pe' }
   const website = 'https://vizcacha.codeplai.pe'
   const licenseUrl = 'https://opensource.org/licenses/MIT'
@@ -33,11 +30,11 @@
   <div class="field">
     <span class="label">{$t('shell.aboutTools')}</span>
     <dl>
-      {#each tools as tool (tool.name)}
-        <dt>{tool.name}</dt>
+      {#each $tools as tool (tool.id)}
+        <dt>{TOOL_NAMES[tool.id] ?? tool.id}</dt>
         <dd>
-          {$toolchain?.[tool.key] || $t('shell.aboutNotFound')}
-          {#if $toolchain}<small>{$t(toolSourceKey($toolchain[tool.source]))}</small>{/if}
+          {tool.version || $t('shell.aboutNotFound')}
+          <small>{$t(toolSourceKey(tool.source))}</small>
         </dd>
       {/each}
     </dl>
