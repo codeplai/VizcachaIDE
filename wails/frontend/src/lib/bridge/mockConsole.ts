@@ -21,7 +21,7 @@ const arithmetic = (code: string, variables: Map<string, string>): string | null
 export const mockConsole = (): ConsoleApi => {
   const variables = new Map<string, string>()
   return {
-    eval: async (code) => {
+    eval: async (_codeLanguage, code) => {
       const text = code.trim()
       const declaration = DECLARATION.exec(text)
       if (declaration) {

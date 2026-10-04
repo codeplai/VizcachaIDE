@@ -32,6 +32,6 @@ export const parseDevQuery = (search: string): DevQuery => {
     noFolder: params.get('folder') === 'none',
     firstRun: params.get('firstrun') === '1',
     closeChanges: params.get('closechanges') === '1',
-    dialog: pick(params.get('dialog'), ['settings', 'about', 'modules'] as const)
+    dialog: pick(params.get('dialog'), ['settings', 'about', 'packages'] as const)
   }
 }

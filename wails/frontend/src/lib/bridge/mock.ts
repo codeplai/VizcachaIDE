@@ -22,7 +22,8 @@ import {
   type Scenario
 } from './mockScenarios'
 import { sampleFrameVariables } from './mockFrames'
-import { mockSettings, toolchainFor } from './mockSettings'
+import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
+import { mockSettings } from './mockSettings'
 import type { Bridge, DebugApi, LanguageApi, RunApi } from './types'
 
 export interface MockControls {
@@ -43,37 +44,40 @@ interface MockState {
   debugging: boolean
 }
 
+/** The text of app.ErrUnsupported: the language's adapter does not exist yet. */
+const UNSUPPORTED_ACTION = 'this language does not support the action'
 const LAST_LINE = 7
 const FIELDS_DELAY_MS = 250
 
 const configurationFor = (path: string): RunConfiguration => ({
+  codeLanguage: codeLanguageOfPath(path),
   target: path,
   workingDir: 'hola-go',
   mode: 'file',
   programArgs: [],
-  module: null
+  project: null,
+  echo: false
 })
 
 const mockRun = (state: MockState, emit: Emit): RunApi => {
   const language = (): Language => resolveLanguage(state.settings.language, systemLanguage())
   const run: RunApi['run'] = async (path) => {
+    // Like the 2.1 backend: Python and C++ have a profile but no adapter yet.
+    if (codeLanguageOfPath(path) !== 'go') throw new Error(UNSUPPORTED_ACTION)
     if (state.scenario === 'error') emitFailedRun(emit, language())
     else emitSuccessfulRun(emit)
     return configurationFor(path)
   }
   return {
     run,
-    runUntitled: (_source, args) => run('untitled/main.go', args),
+    runUntitled: (path, _source, args) => run(path, args),
     build: async (path) => configurationFor(path),
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
-    modInit: async () => {},
-    modGet: async () => {},
-    modTidy: async () => {},
-    vet: async () => '',
+    check: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
-    format: async (text) => text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
-    toolchain: async () => toolchainFor(state.settings)
+    format: async (_path, text) =>
+      text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4))
   }
 }
 
@@ -158,6 +162,8 @@ export const createMockBridge = (): MockBridge => {
   const bridge: Bridge = {
     isMock: true,
     run: mockRun(state, emit),
+    packages: mockPackages(),
+    codeLanguages: mockCodeLanguages(state),
     debug,
     language: mockLanguage(emit),
     assistant: mockAssistant(

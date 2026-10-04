@@ -72,7 +72,8 @@ describe('settings helpers', () => {
   it('recognises a missing tool in a backend error', () => {
     expect(missingToolIn('exec: "go": executable file not found in %PATH%')).toBe('go')
     expect(missingToolIn('go: not found')).toBe('go')
-    expect(missingToolIn('dlv not found')).toBe('delve')
+    expect(missingToolIn('dlv not found')).toBe('dlv')
+    expect(missingToolIn('tool "gopls": tool not found')).toBe('gopls')
     expect(missingToolIn('something else')).toBeNull()
   })
 })
@@ -148,7 +149,7 @@ describe('workspace with the mock bridge', () => {
     expect(get(buffers)[path]).toContain('Hola, Go')
     const runUntitled = vi.spyOn(bridge.run, 'runUntitled')
     await runActiveFile(bridge)
-    expect(runUntitled).toHaveBeenCalledWith(get(buffers)[path], [])
+    expect(runUntitled).toHaveBeenCalledWith(path, get(buffers)[path], [])
   })
 
   it('shows "Go not installed" with its two buttons when running fails', async () => {

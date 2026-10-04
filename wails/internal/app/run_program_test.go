@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
 func write(t *testing.T, path, text string) {
@@ -18,47 +16,6 @@ func write(t *testing.T, path, text string) {
 	}
 	if err := os.WriteFile(path, []byte(text), 0o600); err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestConfigurationForFileWithoutModuleRunsTheFile(t *testing.T) {
-	dir := t.TempDir()
-	write(t, filepath.Join(dir, "main.go"), "package main")
-	config := ConfigurationForFile(filepath.Join(dir, "main.go"), nil)
-	if config.Mode != domain.RunFile || config.Module != nil || config.WorkingDir != dir {
-		t.Errorf("config = %+v", config)
-	}
-}
-
-func TestConfigurationForFileInsideModuleRunsThePackage(t *testing.T) {
-	root := t.TempDir()
-	write(t, filepath.Join(root, "go.mod"), "module example.com/app\n\ngo 1.21\n")
-	file := filepath.Join(root, "cmd", "main.go")
-	write(t, file, "package main")
-
-	config := ConfigurationForFile(file, []string{"-v"})
-
-	if config.Mode != domain.RunPackage || config.WorkingDir != filepath.Dir(file) {
-		t.Errorf("config = %+v", config)
-	}
-	if config.Module == nil || config.Module.Root != root || config.Module.ModulePath != "example.com/app" {
-		t.Errorf("module = %+v", config.Module)
-	}
-	if config.GoTargetArgument() != "." {
-		t.Errorf("target = %q", config.GoTargetArgument())
-	}
-}
-
-func TestParseModulePath(t *testing.T) {
-	cases := map[string]string{
-		"module example.com/x\n\ngo 1.21": "example.com/x",
-		"// c\nmodule \"quoted/mod\"\n":   "quoted/mod",
-		"go 1.21":                         "",
-	}
-	for text, want := range cases {
-		if got := ParseModulePath(text); got != want {
-			t.Errorf("ParseModulePath(%q) = %q, want %q", text, got, want)
-		}
 	}
 }
 
@@ -82,23 +39,6 @@ func TestSplitProgramArguments(t *testing.T) {
 	}
 	if _, err := SplitProgramArguments(`abc "sin cerrar`); !errors.Is(err, ErrUnclosedQuote) {
 		t.Errorf("error = %v, want ErrUnclosedQuote", err)
-	}
-}
-
-func TestGoCommandArgumentsAreValidated(t *testing.T) {
-	if got, err := ModInitArguments(" example.com/x "); err != nil || !reflect.DeepEqual(got, []string{"mod", "init", "example.com/x"}) {
-		t.Errorf("ModInitArguments = %v, %v", got, err)
-	}
-	if got, err := GetArguments("github.com/google/uuid"); err != nil || !reflect.DeepEqual(got, []string{"get", "github.com/google/uuid"}) {
-		t.Errorf("GetArguments = %v, %v", got, err)
-	}
-	for _, bad := range []string{"", "  ", "-u", "two words"} {
-		if _, err := GetArguments(bad); !errors.Is(err, ErrInvalidGoArgument) {
-			t.Errorf("GetArguments(%q) error = %v", bad, err)
-		}
-		if _, err := ModInitArguments(bad); !errors.Is(err, ErrInvalidGoArgument) {
-			t.Errorf("ModInitArguments(%q) error = %v", bad, err)
-		}
 	}
 }
 

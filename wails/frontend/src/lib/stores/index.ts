@@ -1,5 +1,6 @@
 import type { Bridge, Unsubscribe } from '../bridge'
 import { connectAssistant } from './assistant'
+import { connectCodeLanguages } from './codeLanguages'
 import { connectDebug } from './debug'
 import { connectDiagnostics } from './diagnostics'
 import { connectExternalChanges } from './externalChanges'
@@ -11,6 +12,7 @@ import { connectSettings } from './settings'
 export * from './ansi'
 export * from './assistant'
 export * from './callArguments'
+export * from './codeLanguages'
 export * from './commands'
 export * from './confirm'
 export * from './console'
@@ -22,7 +24,6 @@ export * from './fileTreeEdit'
 export * from './files'
 export * from './firstRun'
 export * from './frames'
-export * from './goModules'
 export * from './layout'
 export * from './mode'
 export * from './navigation'
@@ -30,6 +31,7 @@ export * from './notice'
 export * from './outline'
 export * from './panelText'
 export * from './output'
+export * from './packages'
 export * from './outputLinks'
 export * from './programArguments'
 export * from './recentFiles'
@@ -37,11 +39,13 @@ export * from './recentOpen'
 export * from './run'
 export * from './saving'
 export * from './settings'
+export * from './toolErrors'
 export * from './untitled'
 
 /** Subscribes every store to the backend events. Call the returned function to stop. */
 export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
   const offSettings = await connectSettings(bridge)
+  const offCodeLanguages = await connectCodeLanguages(bridge)
   const offs = [
     connectRun(bridge),
     connectDebug(bridge),
@@ -50,7 +54,8 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
     connectAssistant(bridge),
     connectOutline(bridge),
     connectExternalChanges(bridge),
-    offSettings
+    offSettings,
+    offCodeLanguages
   ]
   return () => offs.forEach((off) => off())
 }

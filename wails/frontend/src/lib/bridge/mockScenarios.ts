@@ -16,11 +16,13 @@ export const clearProblems = (emit: Emit): void => {
 export const emitSuccessfulRun = (emit: Emit): void => {
   clearProblems(emit)
   emit('run:started', {
+    codeLanguage: 'go',
     target: SAMPLE_MAIN,
     workingDir: 'hola-go',
     mode: 'file',
     programArgs: [],
-    module: null
+    project: null,
+    echo: false
   })
   emit('run:output', { stream: 'stdout', text: 'Hola, Go\n' })
   emit('run:finished', { exitCode: 0, durationMs: 400 })
@@ -32,11 +34,13 @@ export const emitFailedRun = (emit: Emit, language: Language): void => {
     { diagnostic, explanation: sampleExplanation(language) }
   ]
   emit('run:started', {
+    codeLanguage: 'go',
     target: SAMPLE_MAIN,
     workingDir: 'hola-go',
     mode: 'file',
     programArgs: [],
-    module: null
+    project: null,
+    echo: false
   })
   emit('run:output', { stream: 'stderr', text: `${diagnostic.rawText}\n` })
   emit('lsp:diagnostics', { path: SAMPLE_MAIN, diagnostics: [diagnostic] })

@@ -1,5 +1,6 @@
 import { get, writable } from 'svelte/store'
 import type { Bridge } from '../bridge'
+import { activeCodeLanguage } from './codeLanguages'
 
 /** One snippet of the console scrollback with what came back from the interpreter. */
 export interface ConsoleEntry {
@@ -23,17 +24,19 @@ export const evalConsole = async (bridge: Bridge, code: string): Promise<void> =
   if (code.trim() === '') return
   consoleHistory.update((all) => (all[all.length - 1] === code ? all : [...all, code]))
   consoleCursor.set(null)
-  const answer = await bridge.console.eval(code).catch((reason: unknown) => ({
-    result: '',
-    output: '',
-    error: String(reason)
-  }))
+  const answer = await bridge.console
+    .eval(get(activeCodeLanguage), code)
+    .catch((reason: unknown) => ({
+      result: '',
+      output: '',
+      error: String(reason)
+    }))
   consoleEntries.update((all) => [...all, { id: nextId++, code, ...answer }])
 }
 
 /** Clears the scrollback and the interpreter session; the history is kept. */
 export const resetConsole = async (bridge: Bridge): Promise<void> => {
-  await bridge.console.reset()
+  await bridge.console.reset(get(activeCodeLanguage))
   consoleEntries.set([])
   consoleCursor.set(null)
 }

@@ -1,9 +1,8 @@
 import { derived, get, writable } from 'svelte/store'
-import type { Bridge, ToolId, Unsubscribe } from '../bridge'
-import type { LanguageSetting, Settings, ToolSource, ToolchainInfo } from '../domain'
+import type { Bridge, Unsubscribe } from '../bridge'
+import type { LanguageSetting, Settings, ToolSource } from '../domain'
 
 export const settings = writable<Settings | null>(null)
-export const toolchain = writable<ToolchainInfo | null>(null)
 /** The language the backend resolved for "auto" (the system language), null until it answers. */
 export const resolvedLanguage = writable<'en' | 'es' | null>(null)
 
@@ -28,31 +27,22 @@ const TOOL_SOURCE_KEYS: Record<ToolSource, string> = {
   missing: 'settings.originMissing'
 }
 
-/** i18n key that says where the backend found a tool (the `*Source` fields of ToolchainInfo). */
+/** i18n key that says where the backend found a tool (the `source` of a ToolStatus). */
 export const toolSourceKey = (source: ToolSource): string => TOOL_SOURCE_KEYS[source]
-
-const toolPathsDiffer = (a: Settings, b: Settings): boolean =>
-  a.goPath !== b.goPath || a.delvePath !== b.delvePath || a.goplsPath !== b.goplsPath
-
-/** Asks again which tools exist and where they come from (after a tool path changed). */
-const refreshToolchain = async (bridge: Bridge): Promise<void> => {
-  toolchain.set(await bridge.run.toolchain())
-}
 
 const refreshLanguage = async (bridge: Bridge): Promise<void> => {
   resolvedLanguage.set(await bridge.settings.resolvedLanguage())
 }
 
-/** Loads the saved settings and the tool versions, then keeps the store in sync with the backend. */
+/** Loads the saved settings and the UI language, then keeps the store in sync with the backend. */
 export const connectSettings = async (bridge: Bridge): Promise<Unsubscribe> => {
   const off = bridge.on('settings:changed', (next) => {
     const before = get(settings)
     settings.set(next)
-    if (before && toolPathsDiffer(before, next)) void refreshToolchain(bridge)
     if (before && before.language !== next.language) void refreshLanguage(bridge)
   })
   settings.set(await bridge.settings.get())
-  await Promise.all([refreshToolchain(bridge), refreshLanguage(bridge)])
+  await refreshLanguage(bridge)
   return off
 }
 
@@ -60,9 +50,4 @@ export const updateSettings = async (bridge: Bridge, change: Partial<Settings>):
   const current = get(settings)
   if (!current) return
   await bridge.settings.save({ ...current, ...change })
-}
-
-/** "Choose…" next to a tool path: the native dialog saves the path and re-detects the tools. */
-export const pickTool = async (bridge: Bridge, tool: ToolId): Promise<void> => {
-  toolchain.set(await bridge.settings.pickExecutable(tool))
 }

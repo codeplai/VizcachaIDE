@@ -1,8 +1,8 @@
 <script lang="ts">
   import { bridge } from '../bridge'
-  import type { LanguageSetting, ThemeSetting } from '../domain'
+  import type { CodeLanguage, LanguageSetting, ThemeSetting } from '../domain'
   import { t } from '../i18n'
-  import { settings, updateSettings } from '../stores'
+  import { profiles, settings, updateSettings } from '../stores'
 
   const languages: { id: LanguageSetting; label: string }[] = [
     { id: 'auto', label: 'settings.languageAuto' },
@@ -26,6 +26,20 @@
   >
     {#each languages as option (option.id)}
       <option value={option.id}>{$t(option.label)}</option>
+    {/each}
+  </select>
+</div>
+
+<div class="field">
+  <label for="setting-code-language">{$t('settings.defaultCodeLanguage')}</label>
+  <select
+    id="setting-code-language"
+    value={$settings?.defaultCodeLanguage}
+    onchange={(event) =>
+      updateSettings(bridge, { defaultCodeLanguage: event.currentTarget.value as CodeLanguage })}
+  >
+    {#each $profiles as profile (profile.id)}
+      <option value={profile.id}>{$t(profile.nameKey)}</option>
     {/each}
   </select>
 </div>

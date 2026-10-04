@@ -8,9 +8,10 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// PORTS: FROZEN CONTRACT (phase W0).
+// PORTS: FROZEN CONTRACT (phase W0, revised once as contract v3 in M0).
 //
-// The parallel tracks of W1 implement these interfaces; they do not edit them.
+// The language ports are in language_ports.go. The parallel tracks implement these
+// interfaces; they do not edit them.
 // A track that needs a change writes a "Contract change request" in its final
 // report and the integrator decides.
 //
@@ -47,40 +48,7 @@ type EventSink interface {
 	SettingsChanged(settings domain.Settings)
 }
 
-// Toolchain runs the user's program with the Go toolchain.
-//
-// Events (through the EventSink given to the adapter): run:started when a process
-// starts, run:output for every stdout/stderr chunk, run:finished when it ends.
-type Toolchain interface {
-	// Environment returns the environment variables the Go tools run with.
-	Environment() map[string]string
-	// Info reports which tools were found (config, bundled, PATH) and their versions.
-	Info(ctx context.Context) domain.ToolchainInfo
-	// Run compiles and runs the configuration. Returns ErrBusy while another run is active.
-	Run(ctx context.Context, config domain.RunConfiguration) error
-	// Build compiles without running. Emits the same events as Run.
-	Build(ctx context.Context, config domain.RunConfiguration) error
-	// Stop interrupts the running program, if any (Ctrl+C semantics: defers and signal
-	// handlers run) and kills its whole process tree if it is still alive after ~2 s.
-	Stop() error
-	// IsRunning reports whether a process started by Run, Build or RunGoCommand is alive.
-	IsRunning() bool
-	// WriteInput sends text to the program's stdin.
-	WriteInput(text string) error
-	// RunUntitled runs unsaved source from a temporary directory and returns the
-	// configuration it used. Returns ErrBusy while another run is active.
-	RunUntitled(ctx context.Context, source string, programArgs []string) (domain.RunConfiguration, error)
-	// RunGoCommand runs "go <args>" (for example "mod tidy") emitting the same events.
-	RunGoCommand(ctx context.Context, workingDir string, args []string) error
-	// Vet runs "go vet" on the configuration's target without events and without
-	// using the single run slot, so it can work in the background. It returns Go's
-	// output ("" when vet found nothing or the target no longer exists).
-	Vet(ctx context.Context, config domain.RunConfiguration) (string, error)
-	// FormatSource returns gofmt-formatted text. Errors wrap ErrFormat or ErrToolNotFound.
-	FormatSource(text string) (string, error)
-}
-
-// Debugger is the interactive debugger (Delve over DAP).
+// Debugger is the interactive debugger of one language (Delve, debugpy, lldb-dap over DAP).
 //
 // Events: debug:stopped (DebugState) each time the program pauses, debug:variables
 // (reference, variables) as the answer to RequestVariables, debug:output
@@ -111,10 +79,10 @@ type Debugger interface {
 	IsActive() bool
 }
 
-// LanguageServer gives code intelligence (gopls over LSP).
+// LanguageServer gives code intelligence for one language (gopls, pylsp, clangd over LSP).
 //
 // Events: lsp:diagnostics (path, diagnostics) whenever the server publishes them,
-// lsp:status ("starting", "ready", "unavailable"). If gopls is missing, status is
+// lsp:status ("starting", "ready", "unavailable"). If the server is missing, status is
 // "unavailable" and every query returns an empty result without an error.
 type LanguageServer interface {
 	OpenDocument(ctx context.Context, path, text string) error
@@ -133,7 +101,8 @@ type LanguageServer interface {
 	Shutdown(ctx context.Context) error
 }
 
-// ErrorExplainer turns raw Go output into diagnostics and beginner-friendly explanations.
+// ErrorExplainer turns raw tool output of one language into diagnostics and
+// beginner-friendly explanations.
 //
 // It is synchronous and emits no events; AssistantService emits "assistant:explained".
 type ErrorExplainer interface {
@@ -171,7 +140,7 @@ type FileWatcher interface {
 	Close() error
 }
 
-// Console is the interactive Go console (the "Shell"): one interpreter session that
+// Console is the interactive console of a language (the "Shell"): one interpreter session that
 // remembers the variables and functions defined by earlier snippets.
 //
 // It is synchronous and emits no events.

@@ -61,14 +61,58 @@ linters:
             - pkg: github.com/wailsapp/wails/v2/pkg/runtime
               desc: only internal/bridge may import the Wails runtime
         adapters-are-independent:
-          # Covers every adapter, including new ones: an adapter talks only to domain/app ports.
+          # Neutral adapters (settings, filewatch, filesystem, windowstate) and any new one: an
+          # adapter talks only to domain/app ports and internal/protocol. Language adapters have
+          # their own rule below (PLAN_NUCLEO_MULTILENGUAJE.md section 4.6).
           files:
             - "**/internal/adapters/**"
+            - "!**/internal/adapters/golang/**"
           deny:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
               desc: adapters never import bridge
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters
               desc: adapters never import other adapters
+        go-adapter-stays-in-go:
+          # Inside one language folder imports are fine; between languages and towards the
+          # neutral adapters they are not. depguard lets a deny win over a longer allow, so every
+          # sibling folder is denied by name (keep this list in sync when an adapter folder is
+          # added). M1 and M2 copy this rule for python/ and cpp/.
+          files:
+            - "**/internal/adapters/golang/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/python
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate
+              desc: a language adapter imports only its own folder
+        protocol-is-shared:
+          # Code shared by the language adapters: DAP, LSP, processes, PTY, error catalog.
+          list-mode: strict
+          files:
+            - "**/internal/protocol/**"
+          allow:
+            - $gostd
+            - github.com/codeplai/VizcachaIDE/wails/internal/domain
+            - github.com/codeplai/VizcachaIDE/wails/internal/app
+            - github.com/codeplai/VizcachaIDE/wails/internal/protocol
+            - github.com/google/go-dap
+            - go.lsp.dev
+            - github.com/aymanbagabas/go-pty
+            - github.com/charmbracelet/x/ansi
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters
+              desc: protocol never imports adapters
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: protocol never imports bridge
   exclusions:
     paths:
       - frontend

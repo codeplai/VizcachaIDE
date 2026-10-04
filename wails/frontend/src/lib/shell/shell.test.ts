@@ -19,7 +19,7 @@ import {
 import AboutDialog from './AboutDialog.svelte'
 import ConfirmHost from './ConfirmHost.svelte'
 import FirstRunWizard from './FirstRunWizard.svelte'
-import ModulesDialog from './ModulesDialog.svelte'
+import PackagesDialog from './PackagesDialog.svelte'
 import MoreMenu from './MoreMenu.svelte'
 import SettingsDialog from './SettingsDialog.svelte'
 import StatusBar from './StatusBar.svelte'
@@ -82,13 +82,13 @@ describe('Settings dialog', () => {
     expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(1)
     const go = screen.getByLabelText('Go')
     await fireEvent.change(go, { target: { value: ' C:\\go\\bin\\go.exe ' } })
-    await waitFor(() => expect(get(settings)?.goPath).toBe('C:\\go\\bin\\go.exe'))
+    await waitFor(() => expect(get(settings)?.toolPaths['go']).toBe('C:\\go\\bin\\go.exe'))
     expect(await screen.findByText(/Location you chose/)).toBeTruthy()
-    await bridge.settings.save({ ...(await bridge.settings.get()), goPath: '' })
+    await bridge.settings.save({ ...(await bridge.settings.get()), toolPaths: {} })
   })
 })
 
-describe('About and Go modules dialogs', () => {
+describe('About and Packages dialogs', () => {
   it('lists the tool versions', async () => {
     openDialog.set('about')
     render(AboutDialog)
@@ -97,22 +97,24 @@ describe('About and Go modules dialogs', () => {
     expect(screen.getByText('Marks Calderon')).toBeTruthy()
     expect(screen.getByText('CEO Codeplai')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'hola@codeplai.pe' })).toBeTruthy()
-    expect(screen.getByText('Version 2.0.0-rc1')).toBeTruthy()
+    expect(screen.getByText('Version 2.1.0')).toBeTruthy()
     expect(screen.getByText(/ABSOLUTELY NO WARRANTY/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Read the MIT license' })).toBeTruthy()
   })
 
   it('explains that there is no go.mod, then shows the module of the last run', async () => {
     lastRunConfiguration.set(null)
-    openDialog.set('modules')
-    render(ModulesDialog)
+    openDialog.set('packages')
+    render(PackagesDialog)
     expect(await screen.findByText(/No go\.mod found/)).toBeTruthy()
     lastRunConfiguration.set({
+      codeLanguage: 'go',
       target: 'main.go',
       workingDir: '.',
-      mode: 'package',
+      mode: 'project',
       programArgs: [],
-      module: { root: 'C:\\proj', modulePath: 'example.com/hola' }
+      project: { root: 'C:\\proj', kind: 'gomod', name: 'example.com/hola' },
+      echo: false
     })
     expect(await screen.findByText('example.com/hola')).toBeTruthy()
   })

@@ -7,12 +7,30 @@ import (
 	"testing"
 )
 
-func TestWithGoExtension(t *testing.T) {
-	cases := map[string]string{"": "", "hola": "hola.go", "hola.go": "hola.go", "notas.txt": "notas.txt"}
-	for in, want := range cases {
-		if got := withGoExtension(in); got != want {
-			t.Errorf("withGoExtension(%q) = %q, want %q", in, got, want)
+func TestWithExtensionOfTheSuggestedName(t *testing.T) {
+	cases := []struct{ suggested, path, want string }{
+		{"hola.go", "", ""},
+		{"hola.go", "hola", "hola.go"},
+		{"hola.py", "hola", "hola.py"},
+		{"hola.go", "hola.go", "hola.go"},
+		{"hola.go", "notas.txt", "notas.txt"},
+		{"hola", "hola", "hola"},
+	}
+	for _, c := range cases {
+		if got := withExtensionOf(c.suggested, c.path); got != c.want {
+			t.Errorf("withExtensionOf(%q, %q) = %q, want %q", c.suggested, c.path, got, c.want)
 		}
+	}
+}
+
+func TestFileFiltersListEveryLanguage(t *testing.T) {
+	service := NewFilesService(noContext{}, nil, nil).UseLanguages(newTestRegistry(t))
+	filters := service.fileFilters()
+	if len(filters) != 3 || filters[0].Pattern != "*.go" || filters[1].Pattern != "*.py;*.pyw" || filters[2].Pattern != "*.*" {
+		t.Errorf("filters = %+v", filters)
+	}
+	if only := NewFilesService(noContext{}, nil, nil).fileFilters(); len(only) != 1 || only[0].Pattern != "*.*" {
+		t.Errorf("without languages = %+v", only)
 	}
 }
 

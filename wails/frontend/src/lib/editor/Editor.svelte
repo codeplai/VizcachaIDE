@@ -7,6 +7,7 @@
     type EditorHandlers,
     type LanguageWiring
   } from './createEditor'
+  import { profileOf } from '../stores/codeLanguages'
   import type { RevealRequest } from '../stores/navigation'
   import type { EditorMarks } from './marks'
   import { editorPhrases } from './phrases'
@@ -27,7 +28,7 @@
   let lastGoto = 0
 
   onMount(() => {
-    handle = createEditor(host, handlers, wiring)
+    handle = createEditor(host, handlers, wiring, (file) => profileOf(file))
     return () => handle?.destroy()
   })
 

@@ -9,13 +9,6 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// Tool names accepted by PickExecutable.
-const (
-	toolGo    = "go"
-	toolDelve = "dlv"
-	toolGopls = "gopls"
-)
-
 // ExecutablePicker asks the user for the executable of a tool and returns its path,
 // or "" when the user cancels.
 type ExecutablePicker func(tool string) (string, error)
@@ -23,22 +16,23 @@ type ExecutablePicker func(tool string) (string, error)
 // SettingsService reads and saves the user preferences. Emits settings:changed
 // after every successful Save.
 type SettingsService struct {
-	sink      app.EventSink
-	store     app.SettingsStore
-	language  *LanguageResolver
-	toolchain app.Toolchain
-	pick      ExecutablePicker
+	sink     app.EventSink
+	store    app.SettingsStore
+	language *LanguageResolver
+	registry *app.LanguageRegistry
+	pick     ExecutablePicker
 }
 
-// NewSettingsService creates the service. Without UseTools, PickExecutable is unavailable.
-func NewSettingsService(sink app.EventSink, store app.SettingsStore, language *LanguageResolver) *SettingsService {
-	return &SettingsService{sink: sink, store: store, language: language}
+// NewSettingsService creates the service. The registry says which tools exist and detects them.
+// Without UseTools, PickExecutable is unavailable.
+func NewSettingsService(sink app.EventSink, store app.SettingsStore, language *LanguageResolver, registry *app.LanguageRegistry) *SettingsService {
+	return &SettingsService{sink: sink, store: store, language: language, registry: registry}
 }
 
-// UseTools gives the service what PickExecutable needs: the toolchain that detects the
-// tools and the dialog that asks for a file. It returns the service for chaining.
-func (s *SettingsService) UseTools(toolchain app.Toolchain, pick ExecutablePicker) *SettingsService {
-	s.toolchain, s.pick = toolchain, pick
+// UseTools gives the service the dialog that asks for a file, which PickExecutable needs.
+// It returns the service for chaining.
+func (s *SettingsService) UseTools(pick ExecutablePicker) *SettingsService {
+	s.pick = pick
 	return s
 }
 
@@ -64,23 +58,40 @@ func (s *SettingsService) Save(settings domain.Settings) error {
 // the setting is "auto".
 func (s *SettingsService) ResolvedLanguage() string { return s.language.Current() }
 
-// PickExecutable asks the user for the executable of a tool ("go", "dlv" or "gopls"),
-// saves it in the settings (emitting settings:changed) and returns the tools detected
-// again. If the user cancels, nothing changes.
-func (s *SettingsService) PickExecutable(tool string) (domain.ToolchainInfo, error) {
-	if s.toolchain == nil || s.pick == nil {
-		return domain.ToolchainInfo{}, fmt.Errorf("pick %s: %w", tool, app.ErrToolNotFound)
+// PickExecutable asks the user for the executable of a tool (a ToolSpec.ID of any language),
+// saves it in the settings (emitting settings:changed) and returns the tools detected again.
+// Tools that live inside another one (ProvidedBy) have no path of their own and are rejected.
+// If the user cancels, nothing changes.
+func (s *SettingsService) PickExecutable(toolID string) ([]domain.ToolStatus, error) {
+	if s.pick == nil {
+		return nil, fmt.Errorf("pick %s: %w", toolID, app.ErrToolNotFound)
 	}
-	if err := s.chooseAndSave(tool); err != nil {
-		return domain.ToolchainInfo{}, err
+	if err := s.checkPickable(toolID); err != nil {
+		return nil, err
 	}
-	return s.toolchain.Info(context.Background()), nil
+	if err := s.chooseAndSave(toolID); err != nil {
+		return nil, err
+	}
+	return toolStatuses(context.Background(), s.registry), nil
+}
+
+// checkPickable accepts only the ids of tools that have an executable of their own.
+func (s *SettingsService) checkPickable(toolID string) error {
+	for _, profile := range s.registry.Profiles() {
+		for _, spec := range profile.Tools {
+			if spec.ID != toolID {
+				continue
+			}
+			if spec.ProvidedBy != "" {
+				return fmt.Errorf("tool %q is provided by %q and cannot be chosen", toolID, spec.ProvidedBy)
+			}
+			return nil
+		}
+	}
+	return fmt.Errorf("unknown tool %q", toolID)
 }
 
 func (s *SettingsService) chooseAndSave(tool string) error {
-	if tool != toolGo && tool != toolDelve && tool != toolGopls {
-		return fmt.Errorf("unknown tool %q", tool)
-	}
 	path, err := s.pick(tool)
 	if err != nil {
 		return fmt.Errorf("choose %s: %w", tool, err)
@@ -92,13 +103,9 @@ func (s *SettingsService) chooseAndSave(tool string) error {
 	if err != nil {
 		return err
 	}
-	switch tool {
-	case toolGo:
-		current.GoPath = path
-	case toolDelve:
-		current.DelvePath = path
-	case toolGopls:
-		current.GoplsPath = path
+	if current.ToolPaths == nil {
+		current.ToolPaths = map[string]string{}
 	}
+	current.ToolPaths[tool] = path
 	return s.Save(current)
 }

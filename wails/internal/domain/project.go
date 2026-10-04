@@ -1,65 +1,59 @@
 package domain
 
-import (
-	"path/filepath"
-	"strings"
+import "path/filepath"
+
+// ProjectKind says what marks the project around the file being run.
+type ProjectKind string
+
+// ProjectKind values.
+const (
+	ProjectGoModule  ProjectKind = "gomod"
+	ProjectFolder    ProjectKind = "folder"
+	ProjectPyProject ProjectKind = "pyproject"
 )
 
-// GoModule is a Go module found around the file being run.
-type GoModule struct {
-	Root       string `json:"root"`
-	ModulePath string `json:"modulePath"`
+// ProjectContext is the project found around the file being run. For Go, Name is the
+// module path.
+type ProjectContext struct {
+	Root string      `json:"root"`
+	Kind ProjectKind `json:"kind"`
+	Name string      `json:"name"`
 }
 
-// RunTarget says whether to run one file or a whole package.
+// RunTarget says whether to run one file or its whole project.
 type RunTarget string
 
 // RunTarget values.
 const (
 	RunFile    RunTarget = "file"
-	RunPackage RunTarget = "package"
+	RunProject RunTarget = "project"
 )
 
-// RunConfiguration is what the user wants to run: a single file or a Go package.
+// RunConfiguration is what the user wants to run: a single file or a project.
 type RunConfiguration struct {
-	Target      string    `json:"target"`
-	WorkingDir  string    `json:"workingDir"`
-	Mode        RunTarget `json:"mode"`
-	ProgramArgs []string  `json:"programArgs"`
-	Module      *GoModule `json:"module"`
+	CodeLanguage CodeLanguage    `json:"codeLanguage"`
+	Target       string          `json:"target"`
+	WorkingDir   string          `json:"workingDir"`
+	Mode         RunTarget       `json:"mode"`
+	ProgramArgs  []string        `json:"programArgs"`
+	Project      *ProjectContext `json:"project"`
+	// Echo is true when the program runs in a pseudoterminal, which already echoes what the
+	// user types; the frontend then does not repeat the input in Output.
+	Echo bool `json:"echo"`
 }
 
 // NewFileRunConfiguration builds the configuration that runs one file from its folder.
-func NewFileRunConfiguration(path string, programArgs []string) RunConfiguration {
+func NewFileRunConfiguration(language CodeLanguage, path string, programArgs []string) RunConfiguration {
 	if programArgs == nil {
 		programArgs = []string{} // JSON "[]", not "null"
 	}
 	return RunConfiguration{
-		Target:      path,
-		WorkingDir:  filepath.Dir(path),
-		Mode:        RunFile,
-		ProgramArgs: programArgs,
+		CodeLanguage: language,
+		Target:       path,
+		WorkingDir:   filepath.Dir(path),
+		Mode:         RunFile,
+		ProgramArgs:  programArgs,
 	}
-}
-
-// GoTargetArgument is the argument passed to "go run" or "go build" from WorkingDir.
-func (c RunConfiguration) GoTargetArgument() string {
-	if c.Mode == RunPackage {
-		return "."
-	}
-	return filepath.Base(c.Target)
-}
-
-// ExecutableName is the file name "go build" produces for this configuration.
-func (c RunConfiguration) ExecutableName(windows bool) string {
-	base := strings.TrimSuffix(filepath.Base(c.Target), filepath.Ext(c.Target))
-	if c.Mode == RunPackage {
-		base = filepath.Base(c.WorkingDir)
-	}
-	if windows {
-		return base + ".exe"
-	}
-	return base
 }
 
 // FileNode is one entry of the project tree shown in the Files panel.
@@ -69,25 +63,3 @@ type FileNode struct {
 	IsDir    bool       `json:"isDir"`
 	Children []FileNode `json:"children"`
 }
-
-// ToolchainInfo describes the Go tools the IDE found. Empty means "not found".
-type ToolchainInfo struct {
-	GoVersion    string `json:"goVersion"`
-	DelveVersion string `json:"delveVersion"`
-	GoplsVersion string `json:"goplsVersion"`
-	// Where each tool was found: one of the ToolSource values.
-	GoSource    ToolSource `json:"goSource"`
-	DelveSource ToolSource `json:"delveSource"`
-	GoplsSource ToolSource `json:"goplsSource"`
-}
-
-// ToolSource says where a Go tool comes from (settings, bundled toolchain or PATH).
-type ToolSource string
-
-// ToolSource values.
-const (
-	ToolConfigured ToolSource = "configured"
-	ToolBundled    ToolSource = "bundled"
-	ToolOnPath     ToolSource = "path"
-	ToolMissing    ToolSource = "missing"
-)

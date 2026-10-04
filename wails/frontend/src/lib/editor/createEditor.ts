@@ -1,5 +1,6 @@
 import { Compartment, EditorSelection, EditorState, type Extension } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
+import type { LanguageProfile } from '../domain'
 import { offsetOf } from './documentContext'
 import {
   editorExtensions,
@@ -8,6 +9,7 @@ import {
   type LanguageWiring
 } from './extensions'
 import { external } from './externalEdit'
+import { languageExtensionsFor } from './languageSupport'
 import { setMarks, type EditorMarks } from './marks'
 import { pushDiagnostics } from './problemLint'
 import { minimalChange } from './textChange'
@@ -24,10 +26,24 @@ export interface EditorHandle {
   destroy: () => void
 }
 
+/** The state of a file: the shared extensions plus the ones of its own language. */
+const newFileState = (
+  path: string,
+  text: string,
+  extensions: Extension[],
+  profile: LanguageProfile | null
+): EditorState =>
+  EditorState.create({
+    doc: text,
+    extensions: [extensions, languageExtensionsFor(path, profile)]
+  })
+
 export const createEditor = (
   parent: HTMLElement,
   handlers: EditorHandlers,
-  wiring: LanguageWiring | null = null
+  wiring: LanguageWiring | null = null,
+  /** The profile of a file's language, for its syntax and indentation. */
+  profileFor: (path: string) => LanguageProfile | null = () => null
 ): EditorHandle => {
   const phrases = new Compartment()
   const states = new Map<string, EditorState>()
@@ -44,7 +60,7 @@ export const createEditor = (
   const switchTo = (path: string, text: string): void => {
     if (currentPath) states.set(currentPath, view.state)
     currentPath = path
-    view.setState(states.get(path) ?? EditorState.create({ doc: text, extensions }))
+    view.setState(states.get(path) ?? newFileState(path, text, extensions, profileFor(path)))
     view.dispatch({ effects: phrases.reconfigure(currentPhrases) })
     reportCursor(view.state, handlers)
   }

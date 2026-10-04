@@ -1,6 +1,31 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
-## Summary
+## 2.1.0 (M0, multi-language core): parity QA, 2026-10-03
+
+Same environment and harness as below (Windows 10, `wails dev`, Go 1.25.5 / dlv 1.27.2 /
+gopls 0.23.0, Edge 154 headless), on branch `m0-nucleo-multilenguaje` after N0–N5 were integrated.
+
+- **Result: 34/34 steps pass** in English, Spanish, settings persistence and first run. Go behaves
+  as in 2.0 on top of the new core (registry, `internal/protocol`, shared process supervisor):
+  run, stdin, arguments, Stop, explained errors and panics, gopls (underline, hover, definition,
+  completion), gofmt on save, the close dialog, modules, editor extras, the real debugger (variables,
+  Next line, "just changed", goroutines, Run to here), the 1024 px layout and the first-run wizard.
+- **Q2 closed:** settings persistence after a restart is now confirmed end to end (Spanish, dark
+  theme, 18 px survive the restart; "auto" resolves to the system language). The harness writes
+  2.0-style settings (`goPath`…), so the 2.0 → 2.1 migration also runs in every session.
+- **Fixed in the harness:**
+  - Edge 154 headless left a reloaded tab with `visibilityState: hidden`, so no frames were
+    painted and every wait or click after a reload hung. 2.0 (`main`) showed the same failure, so it
+    was not a regression. `ui.mjs` `reload` now brings the tab to the front and enables focus
+    emulation.
+  - `format-save` failed in the second language because both phases share the project and the file
+    was already formatted. The step now restores the unformatted file first.
+- **Fixed in the app:** Settings → Tools showed empty "Python tools" / "C++ tools" headings,
+  because those profiles have no tools in 2.1. Groups without tools are now hidden.
+- Evidence: EN/ES screenshots in [qa-2.1/](qa-2.1/). Python and C++ only exist as profiles in
+  2.1: new files get their template, and running one answers "not available".
+
+## Summary (2.0.0-rc1)
 
 Parity QA against 1.0, done on **2026-10-01 on Windows 10** with the **real backend**: `wails dev`, Go 1.25.5, Delve 1.27.2 and gopls 0.21.1, driven through headless Edge with CDP.
 

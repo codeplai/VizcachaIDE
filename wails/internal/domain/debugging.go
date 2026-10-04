@@ -39,11 +39,11 @@ type FrameVariables struct {
 	Locals    []Variable `json:"locals"`
 }
 
-// Goroutine is one goroutine of the debugged program.
-type Goroutine struct {
-	GoroutineID int             `json:"goroutineId"`
-	Name        string          `json:"name"`
-	Location    *SourceLocation `json:"location"`
+// Thread is one thread of the debugged program (a goroutine in Go).
+type Thread struct {
+	ThreadID int             `json:"threadId"`
+	Name     string          `json:"name"`
+	Location *SourceLocation `json:"location"`
 }
 
 // StopReason says why the program paused.
@@ -55,7 +55,9 @@ const (
 	StopBreakpoint StopReason = "breakpoint"
 	StopStep       StopReason = "step"
 	StopPause      StopReason = "pause"
-	StopPanic      StopReason = "panic"
+	// StopException is an uncaught error: a panic in Go, an exception in Python, a crash
+	// signal in C++. The description keeps the tool's own text ("panic: ...").
+	StopException StopReason = "exception"
 )
 
 // TerminatedByUser is the exit code of debug:terminated when the user stopped
@@ -64,12 +66,12 @@ const TerminatedByUser = -1
 
 // DebugState is the snapshot taken every time the program stops.
 type DebugState struct {
-	Reason           StopReason   `json:"reason"`
-	Frames           []StackFrame `json:"frames"`
-	Variables        []Variable   `json:"variables"`
-	Goroutines       []Goroutine  `json:"goroutines"`
-	CurrentGoroutine *int         `json:"currentGoroutine"`
-	Description      string       `json:"description"`
+	Reason        StopReason   `json:"reason"`
+	Frames        []StackFrame `json:"frames"`
+	Variables     []Variable   `json:"variables"`
+	Threads       []Thread     `json:"threads"`
+	CurrentThread *int         `json:"currentThread"`
+	Description   string       `json:"description"`
 }
 
 // CurrentLocation returns where the top frame is, or nil when unknown.

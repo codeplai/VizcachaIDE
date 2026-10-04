@@ -63,9 +63,9 @@ const isGoCommand = (config: RunConfiguration): boolean => /^go\s/.test(config.t
  */
 const vetInBackground = async (bridge: Bridge, config: RunConfiguration): Promise<void> => {
   const number = runNumber
-  const output = await bridge.run.vet(config)
+  const output = await bridge.run.check(config)
   if (!output.trim() || number !== runNumber) return
-  const items = await bridge.assistant.explain(output, config.workingDir)
+  const items = await bridge.assistant.explain(config.codeLanguage, output, config.workingDir)
   if (number !== runNumber || items.length === 0) return
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)
@@ -75,7 +75,11 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
   const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
   const config = get(lastRunConfiguration)
   const items = failed
-    ? await bridge.assistant.explain(stderrOfRun(), config?.workingDir ?? '')
+    ? await bridge.assistant.explain(
+        config?.codeLanguage ?? 'go',
+        stderrOfRun(),
+        config?.workingDir ?? ''
+      )
     : []
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)

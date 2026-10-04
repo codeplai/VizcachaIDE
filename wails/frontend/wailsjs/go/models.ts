@@ -1,3 +1,20 @@
+export namespace app {
+	
+	export class LanguageRegistry {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new LanguageRegistry(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+
+}
+
 export namespace bridge {
 	
 	export class FilesService {
@@ -76,6 +93,28 @@ export namespace domain {
 		    }
 		    return a;
 		}
+	}
+	export class Capabilities {
+	    build: boolean;
+	    console: boolean;
+	    format: boolean;
+	    check: boolean;
+	    packageActions: string[];
+	    threadsLabel: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Capabilities(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.build = source["build"];
+	        this.console = source["console"];
+	        this.format = source["format"];
+	        this.check = source["check"];
+	        this.packageActions = source["packageActions"];
+	        this.threadsLabel = source["threadsLabel"];
+	    }
 	}
 	export class CompletionItem {
 	    label: string;
@@ -387,26 +426,108 @@ export namespace domain {
 		    return a;
 		}
 	}
-	export class GoModule {
-	    root: string;
-	    modulePath: string;
+	export class IndentStyle {
+	    useTabs: boolean;
+	    size: number;
 	
 	    static createFrom(source: any = {}) {
-	        return new GoModule(source);
+	        return new IndentStyle(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.useTabs = source["useTabs"];
+	        this.size = source["size"];
+	    }
+	}
+	export class ToolSpec {
+	    id: string;
+	    role: string;
+	    labelKey: string;
+	    missingKey: string;
+	    installUrl: string;
+	    installCommand: string;
+	    providedBy: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolSpec(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.role = source["role"];
+	        this.labelKey = source["labelKey"];
+	        this.missingKey = source["missingKey"];
+	        this.installUrl = source["installUrl"];
+	        this.installCommand = source["installCommand"];
+	        this.providedBy = source["providedBy"];
+	    }
+	}
+	export class LanguageProfile {
+	    id: string;
+	    nameKey: string;
+	    extensions: string[];
+	    indent: IndentStyle;
+	    capabilities: Capabilities;
+	    tools: ToolSpec[];
+	
+	    static createFrom(source: any = {}) {
+	        return new LanguageProfile(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.nameKey = source["nameKey"];
+	        this.extensions = source["extensions"];
+	        this.indent = this.convertValues(source["indent"], IndentStyle);
+	        this.capabilities = this.convertValues(source["capabilities"], Capabilities);
+	        this.tools = this.convertValues(source["tools"], ToolSpec);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ProjectContext {
+	    root: string;
+	    kind: string;
+	    name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProjectContext(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.root = source["root"];
-	        this.modulePath = source["modulePath"];
+	        this.kind = source["kind"];
+	        this.name = source["name"];
 	    }
 	}
 	export class RunConfiguration {
+	    codeLanguage: string;
 	    target: string;
 	    workingDir: string;
 	    mode: string;
 	    programArgs: string[];
-	    module?: GoModule;
+	    project?: ProjectContext;
+	    echo: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new RunConfiguration(source);
@@ -414,11 +535,13 @@ export namespace domain {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.codeLanguage = source["codeLanguage"];
 	        this.target = source["target"];
 	        this.workingDir = source["workingDir"];
 	        this.mode = source["mode"];
 	        this.programArgs = source["programArgs"];
-	        this.module = this.convertValues(source["module"], GoModule);
+	        this.project = this.convertValues(source["project"], ProjectContext);
+	        this.echo = source["echo"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -443,11 +566,11 @@ export namespace domain {
 	    language: string;
 	    theme: string;
 	    fontSize: number;
-	    goPath: string;
-	    delvePath: string;
-	    goplsPath: string;
+	    toolPaths: Record<string, string>;
 	    firstRun: boolean;
 	    lastFolder: string;
+	    defaultCodeLanguage: string;
+	    enabledCodeLanguages: string[];
 	    formatOnSave: boolean;
 	    recentFiles: string[];
 	
@@ -460,11 +583,11 @@ export namespace domain {
 	        this.language = source["language"];
 	        this.theme = source["theme"];
 	        this.fontSize = source["fontSize"];
-	        this.goPath = source["goPath"];
-	        this.delvePath = source["delvePath"];
-	        this.goplsPath = source["goplsPath"];
+	        this.toolPaths = source["toolPaths"];
 	        this.firstRun = source["firstRun"];
 	        this.lastFolder = source["lastFolder"];
+	        this.defaultCodeLanguage = source["defaultCodeLanguage"];
+	        this.enabledCodeLanguages = source["enabledCodeLanguages"];
 	        this.formatOnSave = source["formatOnSave"];
 	        this.recentFiles = source["recentFiles"];
 	    }
@@ -489,26 +612,27 @@ export namespace domain {
 	}
 	
 	
-	export class ToolchainInfo {
-	    goVersion: string;
-	    delveVersion: string;
-	    goplsVersion: string;
-	    goSource: string;
-	    delveSource: string;
-	    goplsSource: string;
+	
+	export class ToolStatus {
+	    id: string;
+	    codeLanguage: string;
+	    role: string;
+	    version: string;
+	    source: string;
+	    path: string;
 	
 	    static createFrom(source: any = {}) {
-	        return new ToolchainInfo(source);
+	        return new ToolStatus(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.goVersion = source["goVersion"];
-	        this.delveVersion = source["delveVersion"];
-	        this.goplsVersion = source["goplsVersion"];
-	        this.goSource = source["goSource"];
-	        this.delveSource = source["delveSource"];
-	        this.goplsSource = source["goplsSource"];
+	        this.id = source["id"];
+	        this.codeLanguage = source["codeLanguage"];
+	        this.role = source["role"];
+	        this.version = source["version"];
+	        this.source = source["source"];
+	        this.path = source["path"];
 	    }
 	}
 

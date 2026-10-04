@@ -7,28 +7,12 @@ import (
 )
 
 func TestNewFileRunConfiguration(t *testing.T) {
-	config := NewFileRunConfiguration("proj/main.go", []string{"-v"})
-	if config.Mode != RunFile {
-		t.Fatalf("mode = %q, want %q", config.Mode, RunFile)
+	config := NewFileRunConfiguration(CodeLanguageGo, "proj/main.go", nil)
+	if config.Mode != RunFile || config.CodeLanguage != CodeLanguageGo || config.WorkingDir != "proj" {
+		t.Fatalf("config = %+v", config)
 	}
-	if got := config.GoTargetArgument(); got != "main.go" {
-		t.Errorf("GoTargetArgument() = %q, want main.go", got)
-	}
-	if got := config.ExecutableName(true); got != "main.exe" {
-		t.Errorf("ExecutableName(true) = %q, want main.exe", got)
-	}
-	if got := config.ExecutableName(false); got != "main" {
-		t.Errorf("ExecutableName(false) = %q, want main", got)
-	}
-}
-
-func TestPackageRunConfiguration(t *testing.T) {
-	config := RunConfiguration{Target: "proj/main.go", WorkingDir: "proj", Mode: RunPackage}
-	if got := config.GoTargetArgument(); got != "." {
-		t.Errorf("GoTargetArgument() = %q, want .", got)
-	}
-	if got := config.ExecutableName(false); got != "proj" {
-		t.Errorf("ExecutableName(false) = %q, want proj", got)
+	if config.ProgramArgs == nil {
+		t.Error("ProgramArgs must be [] in JSON, not null")
 	}
 }
 
@@ -83,7 +67,7 @@ func TestJSONUsesCamelCase(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := string(data)
-	for _, want := range []string{`"reason"`, `"typeName"`, `"currentGoroutine"`} {
+	for _, want := range []string{`"reason"`, `"typeName"`, `"currentThread"`, `"threads"`} {
 		if !strings.Contains(text, want) {
 			t.Errorf("json %s lacks %s", text, want)
 		}

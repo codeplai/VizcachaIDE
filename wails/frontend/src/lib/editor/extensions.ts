@@ -1,17 +1,16 @@
 // The editor's extension list, in one place.
 import { closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands'
-import { go } from '@codemirror/lang-go'
-import { bracketMatching, indentUnit } from '@codemirror/language'
+import { bracketMatching } from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
 import { gotoLine, search, searchKeymap } from '@codemirror/search'
-import { EditorState, Prec, type Compartment, type Extension } from '@codemirror/state'
+import { Prec, type Compartment, type EditorState, type Extension } from '@codemirror/state'
 import { EditorView, drawSelection, keymap, lineNumbers } from '@codemirror/view'
 import { breakpointGutter } from './breakpointGutter'
 import type { DocumentContext, LanguageApi } from './documentContext'
 import { isExternalEdit } from './externalEdit'
 import { documentSync } from './documentSync'
-import { goCompletion } from './goCompletion'
+import { goCompletion } from './lspCompletion'
 import { goToDefinition, type OpenLocation } from './goToDefinition'
 import { hoverDocs } from './hoverDocs'
 import { inlineHints } from './inlineHint'
@@ -31,9 +30,6 @@ export interface LanguageWiring {
   language: LanguageApi
   openLocation: OpenLocation
 }
-
-/** Go uses real tabs; Enter between braces puts the closing brace on its own line. */
-const goIndentation: Extension = [indentUnit.of('\t'), EditorState.tabSize.of(4), closeBrackets()]
 
 const keys = Prec.high(
   keymap.of([
@@ -85,14 +81,13 @@ export const editorExtensions = (
     history(),
     drawSelection(),
     bracketMatching(),
-    goIndentation,
+    closeBrackets(),
     // Replace all runs CodeMirror's own command; asking `confirmReplaceAll` first would need a
     // custom search panel, so the shell's confirmation is not connected to it (see the report).
     search({ top: true }),
     problemLint,
     keys,
     keymap.of([...defaultKeymap, ...historyKeymap]),
-    go(),
     editorTheme,
     popupTheme,
     editorHighlighting,

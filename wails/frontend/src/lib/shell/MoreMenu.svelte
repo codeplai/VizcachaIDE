@@ -1,13 +1,22 @@
 <script lang="ts">
   import { DropdownMenu } from 'bits-ui'
   import { t } from '../i18n'
-  import { openDialog } from '../stores'
+  import { activeCodeLanguage, capabilities, openDialog } from '../stores'
 
-  const entries = [
-    { label: 'shell.goModules', run: () => openDialog.set('modules') },
+  // The package manager of the open file's language; languages without one have no entry.
+  const hasPackages = $derived(($capabilities?.packageActions.length ?? 0) > 0)
+  const entries = $derived([
+    ...(hasPackages
+      ? [
+          {
+            label: $activeCodeLanguage === 'go' ? 'shell.goModules' : 'packages.title',
+            run: () => openDialog.set('packages')
+          }
+        ]
+      : []),
     { label: 'panels.settings', run: () => openDialog.set('settings') },
     { label: 'shell.about', run: () => openDialog.set('about') }
-  ]
+  ])
 </script>
 
 <DropdownMenu.Root>

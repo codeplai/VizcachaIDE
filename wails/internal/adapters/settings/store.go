@@ -70,6 +70,7 @@ func (s *Store) Load() (domain.Settings, error) {
 	if loaded.RecentFiles == nil { // "recentFiles": null must reach the UI as a list
 		loaded.RecentFiles = []string{}
 	}
+	s.migrateLegacyToolPaths(data, &loaded)
 	return loaded, nil
 }
 

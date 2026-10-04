@@ -5,6 +5,11 @@ import * as L from './lib.mjs'
 /** Loads the app (reload) and waits until the file tree is there. */
 export const reload = async (page, url, lang) => {
   await page.goto(url, { waitUntil: 'load' })
+  // Headless Edge (seen with 154) leaves a reloaded tab with visibilityState "hidden": no frames,
+  // so requestAnimationFrame never fires and every wait or click hangs. Keep the tab in front and
+  // focused.
+  await page.bringToFront()
+  await (await page.createCDPSession()).send('Emulation.setFocusEmulationEnabled', { enabled: true })
   await page.waitForFunction(() => !!window.go && document.querySelector('.titlebar'), { timeout: 30000 })
   await page.waitForFunction(() => document.querySelector('.crumbs b') || document.body.innerText.length > 50, { timeout: 30000 })
   await L.sleep(1500)
