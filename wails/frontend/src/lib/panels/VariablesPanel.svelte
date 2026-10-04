@@ -6,9 +6,9 @@
 
 <section class="block">
   <h3 class="side-h">
-    {$t('panels.variables', {
-      values: { function: shortFunctionName($currentFrame?.function ?? '') }
-    })}
+    {$currentFrame?.function
+      ? $t('panels.variables', { values: { function: shortFunctionName($currentFrame.function) } })
+      : $t('panels.variablesPlain')}
   </h3>
   <div class="vars">
     {#each ($debugState?.variables ?? []).filter((item) => !isHiddenVariable(item)) as variable, position (position)}

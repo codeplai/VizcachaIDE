@@ -25,6 +25,7 @@
     "other": "{{.count}} problemas"
   },
   "assistant.chipReady": "Listo",
+  "assistant.chipRunning": "En ejecución",
   "assistant.goToLine": "Ir a la línea {{.line}}",
   "assistant.searchError": "Buscar este error",
   "assistant.tryThis": "Prueba esto:",
@@ -516,6 +517,7 @@
   "panels.thread": "Hilo {{.id}}",
   "panels.threadsEmpty": "Todavía no hay hilos para mostrar.",
   "panels.variables": "Variables en {{.function}}()",
+  "panels.variablesPlain": "Variables",
   "recent.clear": "Borrar la lista",
   "recent.empty": "Todavía no hay archivos recientes.",
   "recent.missing": "{{.file}} ya no existe, así que se quitó de Archivos recientes.",
