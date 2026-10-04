@@ -48,42 +48,6 @@ type EventSink interface {
 	SettingsChanged(settings domain.Settings)
 }
 
-// Toolchain runs the user's program with the Go toolchain.
-//
-// Transitional (M0): replaced by ProgramRunner, CodeFormatter, CodeChecker and PackageManager
-// (language_ports.go). It stays only until N3 (Go runner) and N5 (bridge) are integrated.
-//
-// Events (through the EventSink given to the adapter): run:started when a process
-// starts, run:output for every stdout/stderr chunk, run:finished when it ends.
-type Toolchain interface {
-	// Environment returns the environment variables the Go tools run with.
-	Environment() map[string]string
-	// Info reports which tools were found (config, bundled, PATH) and their versions.
-	Info(ctx context.Context) domain.ToolchainInfo
-	// Run compiles and runs the configuration. Returns ErrBusy while another run is active.
-	Run(ctx context.Context, config domain.RunConfiguration) error
-	// Build compiles without running. Emits the same events as Run.
-	Build(ctx context.Context, config domain.RunConfiguration) error
-	// Stop interrupts the running program, if any (Ctrl+C semantics: defers and signal
-	// handlers run) and kills its whole process tree if it is still alive after ~2 s.
-	Stop() error
-	// IsRunning reports whether a process started by Run, Build or RunGoCommand is alive.
-	IsRunning() bool
-	// WriteInput sends text to the program's stdin.
-	WriteInput(text string) error
-	// RunUntitled runs unsaved source from a temporary directory and returns the
-	// configuration it used. Returns ErrBusy while another run is active.
-	RunUntitled(ctx context.Context, source string, programArgs []string) (domain.RunConfiguration, error)
-	// RunGoCommand runs "go <args>" (for example "mod tidy") emitting the same events.
-	RunGoCommand(ctx context.Context, workingDir string, args []string) error
-	// Vet runs "go vet" on the configuration's target without events and without
-	// using the single run slot, so it can work in the background. It returns Go's
-	// output ("" when vet found nothing or the target no longer exists).
-	Vet(ctx context.Context, config domain.RunConfiguration) (string, error)
-	// FormatSource returns gofmt-formatted text. Errors wrap ErrFormat or ErrToolNotFound.
-	FormatSource(text string) (string, error)
-}
-
 // Debugger is the interactive debugger of one language (Delve, debugpy, lldb-dap over DAP).
 //
 // Events: debug:stopped (DebugState) each time the program pauses, debug:variables

@@ -94,10 +94,10 @@ func TestInitAndTidyRunGoModCommands(t *testing.T) {
 func TestArgumentsAreValidatedBeforeRunning(t *testing.T) {
 	manager, events := newManager(t)
 	for _, bad := range []string{"", "-u", "two words"} {
-		if err := manager.Add(context.Background(), t.TempDir(), bad); !errors.Is(err, app.ErrInvalidGoArgument) {
+		if err := manager.Add(context.Background(), t.TempDir(), bad); !errors.Is(err, app.ErrInvalidArgument) {
 			t.Errorf("Add(%q) error = %v, want ErrInvalidGoArgument", bad, err)
 		}
-		if err := manager.Init(context.Background(), t.TempDir(), bad); !errors.Is(err, app.ErrInvalidGoArgument) {
+		if err := manager.Init(context.Background(), t.TempDir(), bad); !errors.Is(err, app.ErrInvalidArgument) {
 			t.Errorf("Init(%q) error = %v, want ErrInvalidGoArgument", bad, err)
 		}
 	}

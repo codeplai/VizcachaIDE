@@ -63,17 +63,3 @@ type FileNode struct {
 	IsDir    bool       `json:"isDir"`
 	Children []FileNode `json:"children"`
 }
-
-// ToolchainInfo describes the Go tools the IDE found. Empty means "not found".
-//
-// Transitional (M0): replaced by []ToolStatus (contract v3). It stays only until N3 (Go runner),
-// N5 (bridge) and N4 (Settings) are integrated, then it is deleted.
-type ToolchainInfo struct {
-	GoVersion    string `json:"goVersion"`
-	DelveVersion string `json:"delveVersion"`
-	GoplsVersion string `json:"goplsVersion"`
-	// Where each tool was found: one of the ToolSource values.
-	GoSource    ToolSource `json:"goSource"`
-	DelveSource ToolSource `json:"delveSource"`
-	GoplsSource ToolSource `json:"goplsSource"`
-}

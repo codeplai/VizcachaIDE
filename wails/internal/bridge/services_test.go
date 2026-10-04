@@ -1,10 +1,8 @@
 package bridge
 
 import (
-	"testing"
-
-	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
+	"testing"
 )
 
 type recordingSink struct {
@@ -31,30 +29,9 @@ func (r *recordingSink) Explained([]domain.ExplainedDiagnostic) {
 }
 func (r *recordingSink) SettingsChanged(domain.Settings) { r.calls = append(r.calls, "settings") }
 
-// stoppingDebugger is an app.Debugger whose Stop reports the user's stop, like the real one.
-type stoppingDebugger struct {
-	app.Debugger
-	sink app.EventSink
-}
-
-func (d stoppingDebugger) Stop() error {
-	d.sink.DebugTerminated(domain.TerminatedByUser)
-	return nil
-}
-
-func TestDebugServiceStopIsTerminatedByUser(t *testing.T) {
-	sink := &recordingSink{}
-	if err := NewDebugService(stoppingDebugger{sink: sink}).Stop(); err != nil {
-		t.Fatal(err)
-	}
-	if len(sink.calls) != 1 || sink.calls[0] != "terminated" {
-		t.Errorf("calls = %v, want [terminated]", sink.calls)
-	}
-}
-
 func TestSettingsServiceNotifiesOnSave(t *testing.T) {
 	sink := &recordingSink{}
-	service := NewSettingsService(sink, NewMemorySettingsStore(), NewLanguageResolver(NewMemorySettingsStore(), nil))
+	service := NewSettingsService(sink, NewMemorySettingsStore(), NewLanguageResolver(NewMemorySettingsStore(), nil), newTestRegistry(t))
 	if err := service.Save(domain.DefaultSettings()); err != nil {
 		t.Fatal(err)
 	}

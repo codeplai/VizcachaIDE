@@ -94,17 +94,6 @@ linters:
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate
               desc: a language adapter imports only its own folder
-            # 2.0 folders that N1 and N3 move into adapters/golang; delete these lines with them.
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain
-              desc: a language adapter imports only its own folder
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve
-              desc: a language adapter imports only its own folder
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls
-              desc: a language adapter imports only its own folder
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog
-              desc: a language adapter imports only its own folder
-            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/console
-              desc: a language adapter imports only its own folder
         protocol-is-shared:
           # Code shared by the language adapters: DAP, LSP, processes, PTY, error catalog.
           list-mode: strict

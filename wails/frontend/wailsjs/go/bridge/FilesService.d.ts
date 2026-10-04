@@ -26,6 +26,8 @@ export function SaveFile(arg1:string,arg2:string):Promise<void>;
 
 export function SaveFileDialog(arg1:string,arg2:string):Promise<string>;
 
+export function UseLanguages(arg1:app.LanguageRegistry):Promise<bridge.FilesService>;
+
 export function UseShell(arg1:app.SystemShell):Promise<bridge.FilesService>;
 
 export function WatchFiles(arg1:Array<string>):Promise<void>;

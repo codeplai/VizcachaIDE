@@ -2,65 +2,10 @@ package bridge
 
 import (
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/codeplai/VizcachaIDE/wails/internal/app"
-	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
-
-// fakeToolchain records what RunService asks for.
-type fakeToolchain struct {
-	app.Toolchain
-	runConfig domain.RunConfiguration
-	goArgs    []string
-	runErr    error
-}
-
-func (f *fakeToolchain) Run(_ context.Context, c domain.RunConfiguration) error {
-	f.runConfig = c
-	return f.runErr
-}
-
-func (f *fakeToolchain) RunGoCommand(_ context.Context, _ string, args []string) error {
-	f.goArgs = args
-	return nil
-}
-
-func TestRunServiceBuildsTheConfigurationFromTheFile(t *testing.T) {
-	root := t.TempDir()
-	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.com/m\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	fake := &fakeToolchain{}
-
-	config, err := NewRunService(fake).Run(filepath.Join(root, "main.go"), []string{"a"})
-
-	if err != nil || config.Mode != domain.RunProject || fake.runConfig.Project == nil {
-		t.Errorf("config = %+v, err = %v", config, err)
-	}
-}
-
-func TestRunServicePropagatesBusy(t *testing.T) {
-	fake := &fakeToolchain{runErr: app.ErrBusy}
-	_, err := NewRunService(fake).Run("main.go", nil)
-	if !errors.Is(err, app.ErrBusy) {
-		t.Errorf("error = %v, want ErrBusy", err)
-	}
-}
-
-func TestRunServiceValidatesModuleArguments(t *testing.T) {
-	fake := &fakeToolchain{}
-	service := NewRunService(fake)
-	if err := service.ModGet("dir", "-u"); !errors.Is(err, app.ErrInvalidGoArgument) {
-		t.Errorf("ModGet error = %v", err)
-	}
-	if err := service.ModTidy("dir"); err != nil || len(fake.goArgs) != 2 || fake.goArgs[1] != "tidy" {
-		t.Errorf("ModTidy args = %v, err = %v", fake.goArgs, err)
-	}
-}
 
 type noContext struct{}
 

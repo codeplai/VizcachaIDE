@@ -27,7 +27,7 @@ func New(supervisor *process.Supervisor, goRunner *runner.Runner) *Manager {
 
 // Init implements app.PackageManager: "go mod init <name>".
 func (m *Manager) Init(ctx context.Context, dir, name string) error {
-	args, err := app.ModInitArguments(name)
+	args, err := modInitArguments(name)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (m *Manager) Init(ctx context.Context, dir, name string) error {
 
 // Add implements app.PackageManager: "go get <pkg>".
 func (m *Manager) Add(ctx context.Context, dir, pkg string) error {
-	args, err := app.GetArguments(pkg)
+	args, err := getArguments(pkg)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (m *Manager) Add(ctx context.Context, dir, pkg string) error {
 
 // Tidy implements app.PackageManager: "go mod tidy".
 func (m *Manager) Tidy(ctx context.Context, dir string) error {
-	return m.run(ctx, dir, app.ModTidyArguments())
+	return m.run(ctx, dir, modTidyArguments())
 }
 
 // Remove implements app.PackageManager. Go drops a dependency by tidying after deleting its import.

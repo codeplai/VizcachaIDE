@@ -4,24 +4,16 @@ import {domain} from '../models';
 
 export function Build(arg1:string,arg2:Array<string>):Promise<domain.RunConfiguration>;
 
-export function Format(arg1:string):Promise<string>;
+export function Check(arg1:domain.RunConfiguration):Promise<string>;
 
-export function ModGet(arg1:string,arg2:string):Promise<void>;
-
-export function ModInit(arg1:string,arg2:string):Promise<void>;
-
-export function ModTidy(arg1:string):Promise<void>;
+export function Format(arg1:string,arg2:string):Promise<string>;
 
 export function Run(arg1:string,arg2:Array<string>):Promise<domain.RunConfiguration>;
 
-export function RunUntitled(arg1:string,arg2:Array<string>):Promise<domain.RunConfiguration>;
+export function RunUntitled(arg1:string,arg2:string,arg3:Array<string>):Promise<domain.RunConfiguration>;
 
 export function SplitArguments(arg1:string):Promise<Array<string>>;
 
 export function Stop():Promise<void>;
-
-export function Toolchain():Promise<domain.ToolchainInfo>;
-
-export function Vet(arg1:domain.RunConfiguration):Promise<string>;
 
 export function WriteInput(arg1:string):Promise<void>;

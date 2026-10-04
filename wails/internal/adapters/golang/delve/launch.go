@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/codeplai/VizcachaIDE/wails/internal/app"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
@@ -56,7 +56,7 @@ func workingDirectory(config domain.RunConfiguration) string {
 
 // programPath is the file or package folder Delve builds.
 func programPath(config domain.RunConfiguration) string {
-	path := filepath.Join(workingDirectory(config), app.GoTargetArgument(config))
+	path := filepath.Join(workingDirectory(config), golang.GoTargetArgument(config))
 	if absolute, err := filepath.Abs(path); err == nil {
 		return absolute
 	}
