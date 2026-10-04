@@ -2,6 +2,7 @@
 
     python wails/packaging/build_release.py --variant all
     python wails/packaging/build_release.py --variant full-python --target windows/amd64
+    python wails/packaging/build_release.py --variant full-cpp --target windows/amd64 --no-installer
     python wails/packaging/build_release.py --variant full,lite --target darwin/arm64
     python wails/packaging/build_release.py --variant lite --cache-dir D:/shared/cache
 
@@ -16,12 +17,16 @@ Variants (what goes under ``toolchain/``):
     lite         nothing, the IDE uses the Go / Python installed on the system
     full-go      Go, Delve and gopls (this was called "full" before Python was bundled)
     full-python  CPython + debugpy, python-lsp-server and ruff
-    full         both (Go and Python)
+    full-cpp     clang/clang++, lld, lldb-dap, clangd and clang-format (llvm-mingw, Windows only)
+    full         everything: Go + Python, plus C++ on Windows (macOS and Linux have no bundled C++
+                 compiler, they use the one of the system, so there ``full`` = Go + Python)
 
 The Go part uses the same code as the PyQt packaging: ``packaging/fetch_toolchain.py`` and
 ``packaging/go_tools.py`` are imported, not copied. The Python part is
-``packaging/fetch_python.py``. ``--variant both`` (lite + full-go) and ``--variant all`` (the four)
-are shortcuts, and a comma list such as ``lite,full-python`` also works.
+``packaging/fetch_python.py`` and the C++ part ``packaging/fetch_cpp.py`` (llvm-mingw pruned to x86_64,
+placed in ``toolchain/cpp/``). ``--variant both`` (lite + full-go) and ``--variant all`` (every
+variant) are shortcuts, and a comma list such as ``lite,full-python`` also works. ``full-cpp`` is
+skipped, with a note, for macOS and Linux targets.
 The toolchain is placed next to the executable, which is where ``toolchain.Locator`` looks
 (``filepath.Dir(os.Executable())/toolchain/go/bin`` and ``.../toolchain/bin``):
 
@@ -65,8 +70,12 @@ VARIANT_PARTS = {
     "lite": (),
     "full-go": ("go",),
     "full-python": ("python",),
-    "full": ("go", "python"),
+    "full-cpp": ("cpp",),
+    "full": ("go", "python", "cpp"),
 }
+# Parts that exist only for some operating systems; elsewhere the system tools are used.
+PART_OPERATING_SYSTEMS = {"cpp": ("windows",)}
+PARTS = ("go", "python", "cpp")
 VARIANT_SHORTCUTS = {"both": ["lite", "full-go"], "all": list(VARIANT_PARTS)}
 PRODUCT = "VizcachaIDE"
 
@@ -81,7 +90,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--variant",
         default="both",
-        help="lite, full-go, full-python, full (Go + Python), both (lite + full-go), all, "
+        help="lite, full-go, full-python, full-cpp (Windows), full (Go + Python + C++), "
+        "both (lite + full-go), all, "
         "or a comma list; default both",
     )
     parser.add_argument(
@@ -130,8 +140,25 @@ def parse_variants(text: str) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+def parts_for(variant: str, os_name: str) -> tuple[str, ...]:
+    """The toolchain parts of ``variant`` that exist for ``os_name`` (C++ is bundled on Windows only)."""
+    return tuple(
+        part
+        for part in VARIANT_PARTS[variant]
+        if os_name in PART_OPERATING_SYSTEMS.get(part, (os_name,))
+    )
+
+
+def drop_unavailable_variants(variants: list[str], os_name: str) -> list[str]:
+    """Remove the variants that would be empty on ``os_name`` but are not ``lite`` (full-cpp off Windows)."""
+    kept = [name for name in variants if name == "lite" or parts_for(name, os_name)]
+    for name in set(variants) - set(kept):
+        print(f"[release] {name} does not exist for {os_name}: skipped (it uses the system compiler)")
+    return kept
+
+
 def stage_part(part: str, target: str, args: argparse.Namespace) -> Path:
-    """Fetch one toolchain part ("go" or "python"); return the folder that contains toolchain/."""
+    """Fetch one toolchain part ("go", "python" or "cpp"); return the folder that contains toolchain/."""
     versions, fetch_toolchain, _ = load_legacy(args.cache_dir)
     os_name, arch = target.split("/")
     stage = STAGE_DIR / f"{os_name}-{arch}" / part
@@ -144,10 +171,14 @@ def stage_part(part: str, target: str, args: argparse.Namespace) -> Path:
     if part == "go":
         options = argparse.Namespace(skip_go=False, skip_tools=False, go=args.go)
         fetch_toolchain.fetch_toolchain(versions.Target(os_name, arch), stage, options)
-    else:
+    elif part == "python":
         import fetch_python  # noqa: PLC0415
 
         fetch_python.fetch_python(versions.Target(os_name, arch), stage)
+    else:
+        import fetch_cpp  # noqa: PLC0415
+
+        fetch_cpp.fetch_cpp(versions.Target(os_name, arch), stage)
     return stage
 
 
@@ -167,15 +198,15 @@ def merge_stages(parts: list[Path], destination: Path) -> Path:
 
 def stage_variants(target: str, variants: list[str], args: argparse.Namespace) -> dict[str, Path]:
     """Return {variant: folder containing toolchain/} for every variant that bundles something."""
-    needed = {part for variant in variants for part in VARIANT_PARTS[variant]}
-    parts = {part: stage_part(part, target, args) for part in ("go", "python") if part in needed}
+    os_name, arch = target.split("/")
+    needed = {part for variant in variants for part in parts_for(variant, os_name)}
+    parts = {part: stage_part(part, target, args) for part in PARTS if part in needed}
     stages: dict[str, Path] = {}
     for variant in variants:
-        wanted = [parts[part] for part in VARIANT_PARTS[variant]]
+        wanted = [parts[part] for part in parts_for(variant, os_name)]
         if len(wanted) == 1:
             stages[variant] = wanted[0]
         elif wanted:
-            os_name, arch = target.split("/")
             merged = STAGE_DIR / f"{os_name}-{arch}" / variant
             stages[variant] = merge_stages(wanted, merged)
     return stages
@@ -411,7 +442,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     target = args.target
     os_name = target.split("/")[0]
-    variants = parse_variants(args.variant)
+    variants = drop_unavailable_variants(parse_variants(args.variant), os_name)
     version = product_version()
     print(f"[release] {PRODUCT} {version} for {target}, variants: {', '.join(variants)}")
 
