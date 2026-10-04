@@ -1,0 +1,37 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   void f(int a) {}
+#   void f(double a, double b) {}
+#   int main() {
+#       f("x", "y", "z");
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'void f(int)':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:1:12: warning: unused parameter 'a' [-Wunused-parameter]
+    1 | void f(int a) {}
+      |        ~~~~^
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'void f(double, double)':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:2:15: warning: unused parameter 'a' [-Wunused-parameter]
+    2 | void f(double a, double b) {}
+      |        ~~~~~~~^
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:2:25: warning: unused parameter 'b' [-Wunused-parameter]
+    2 | void f(double a, double b) {}
+      |                  ~~~~~~~^
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:4:6: error: no matching function for call to 'f(const char [2], const char [2], const char [2])'
+    4 |     f("x", "y", "z");
+      |     ~^~~~~~~~~~~~~~~
+  • there are 2 candidates
+    • candidate 1: 'void f(int)'
+      D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:1:6:
+          1 | void f(int a) {}
+            |      ^
+      • candidate expects 1 argument, 3 provided
+    • candidate 2: 'void f(double, double)'
+      D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:2:6:
+          2 | void f(double a, double b) {}
+            |      ^
+      • candidate expects 2 arguments, 3 provided

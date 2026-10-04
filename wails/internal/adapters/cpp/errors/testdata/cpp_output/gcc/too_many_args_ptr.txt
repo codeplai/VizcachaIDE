@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int doble(int a) { return 2 * a; }
+#   int main() {
+#       int (*f)(int) = doble;
+#       return f(1, 2);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:4:13: error: too many arguments to function
+    4 |     return f(1, 2);
+      |            ~^~~~~~
