@@ -14,6 +14,8 @@ import type { InlayHint } from '../domain'
 import type { DocumentContext, LanguageApi } from './documentContext'
 
 export const INLAY_DELAY_MS = 300
+/** A server still indexing answers with no hints (rust-analyzer takes seconds): ask again. */
+export const INLAY_RETRY_MS = [2000, 4000, 8000, 16000]
 
 class InlayWidget extends WidgetType {
   constructor(readonly hint: InlayHint) {
@@ -118,6 +120,7 @@ interface Switchboard {
 class InlayRequests {
   private timer: ReturnType<typeof setTimeout> | undefined
   private ticket = 0
+  private retries = 0
   private destroyed = false
   private readonly onToggle = (): void => this.restart()
 
@@ -145,6 +148,7 @@ class InlayRequests {
   private restart(): void {
     clearTimeout(this.timer)
     this.ticket++
+    this.retries = 0
     if (!this.board.enabled) {
       this.show(Decoration.none)
       return
@@ -160,7 +164,13 @@ class InlayRequests {
       await this.file.flush()
       const hints = await this.language.inlayHints(visibleLines(this.view, path))
       const stale = ticket !== this.ticket || !this.board.enabled || this.file.path() !== path
-      if (!stale) this.show(toDecorations(this.view.state, hints))
+      if (stale) return
+      this.show(toDecorations(this.view.state, hints))
+      const wait = INLAY_RETRY_MS[this.retries]
+      if (hints.length === 0 && wait !== undefined) {
+        this.retries++
+        this.timer = setTimeout(() => void this.ask(), wait)
+      }
     } catch {
       // a failed query only means no hints this time
     }

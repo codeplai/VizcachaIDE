@@ -75,6 +75,19 @@ describe('inlayHints', () => {
     expect(shown()).toEqual([': Vec<i32>'])
   })
 
+  it('asks again while the server answers with none, then stops', async () => {
+    let calls = 0
+    const ask = vi.fn(async () => (++calls === 3 ? [typeHint(1, 2, ': Vec<i32>')] : []))
+    setup(ask)
+    await settle()
+    await settle(2000)
+    await settle(4000)
+    expect(ask).toHaveBeenCalledTimes(3)
+    expect(shown()).toEqual([': Vec<i32>'])
+    await settle(60000)
+    expect(ask).toHaveBeenCalledTimes(3)
+  })
+
   it('debounces a burst of edits into one request', async () => {
     const ask = vi.fn(async () => [] as InlayHint[])
     setup(ask)
