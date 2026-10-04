@@ -2,7 +2,15 @@
   import { bridge } from '../bridge'
   import { resolveLanguage, systemLanguage } from '../language'
   import { t } from '../i18n'
-  import { cursor, debugActive, lspStatus, settings, toolchain, updateSettings } from '../stores'
+  import {
+    cursor,
+    debugActive,
+    lspStatus,
+    settings,
+    toolStatus,
+    tools,
+    updateSettings
+  } from '../stores'
 
   const lspKey = {
     starting: 'status.lspStarting',
@@ -12,7 +20,7 @@
 
   const language = $derived(resolveLanguage($settings?.language ?? 'auto', systemLanguage()))
   const otherLanguage = $derived(language === 'es' ? 'en' : 'es')
-  const goVersion = $derived($toolchain?.goVersion ?? '')
+  const goVersion = $derived(toolStatus('go', $tools)?.version ?? '')
 </script>
 
 <footer class="status" class:debug={$debugActive}>

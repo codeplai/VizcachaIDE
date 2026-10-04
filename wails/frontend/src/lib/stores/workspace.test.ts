@@ -72,7 +72,8 @@ describe('settings helpers', () => {
   it('recognises a missing tool in a backend error', () => {
     expect(missingToolIn('exec: "go": executable file not found in %PATH%')).toBe('go')
     expect(missingToolIn('go: not found')).toBe('go')
-    expect(missingToolIn('dlv not found')).toBe('delve')
+    expect(missingToolIn('dlv not found')).toBe('dlv')
+    expect(missingToolIn('tool "gopls": tool not found')).toBe('gopls')
     expect(missingToolIn('something else')).toBeNull()
   })
 })

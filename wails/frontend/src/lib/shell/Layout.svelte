@@ -13,7 +13,7 @@
   import ConfirmHost from './ConfirmHost.svelte'
   import DevControls from './DevControls.svelte'
   import FirstRunWizard from './FirstRunWizard.svelte'
-  import ModulesDialog from './ModulesDialog.svelte'
+  import PackagesDialog from './PackagesDialog.svelte'
   import NoticeBar from './NoticeBar.svelte'
   import Rail from './Rail.svelte'
   import SettingsDialog from './SettingsDialog.svelte'
@@ -52,7 +52,7 @@
   <StatusBar />
   <SettingsDialog />
   <AboutDialog />
-  <ModulesDialog />
+  <PackagesDialog />
   <ConfirmHost />
   <FirstRunWizard />
 </div>

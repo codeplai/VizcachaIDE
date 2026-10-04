@@ -14,6 +14,7 @@
     saveActiveFile,
     saveAll
   } from '../stores'
+  import NewFileMenu from './NewFileMenu.svelte'
   import RecentMenu from './RecentMenu.svelte'
 
   interface Entry {
@@ -74,6 +75,9 @@
           <span>{$t(entry.label)}</span>
           {#if entry.shortcut}<span class="shortcut">{entry.shortcut}</span>{/if}
         </DropdownMenu.Item>
+        {#if entry.label === 'file.new'}
+          <NewFileMenu />
+        {/if}
         {#if entry.label === 'shell.openFolder'}
           <RecentMenu />
         {/if}

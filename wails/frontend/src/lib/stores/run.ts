@@ -16,7 +16,7 @@ export interface RawRunLine {
 export const runLines = writable<RawRunLine[]>([])
 export const runResult = writable<RunFinishedPayload | null>(null)
 export const running = writable(false)
-/** The configuration of the last run (its `module` feeds the "Go modules" dialog). */
+/** The configuration of the last run (its `project` feeds the Packages dialog, its `echo` tells if the program echoes typed input). */
 export const lastRunConfiguration = writable<RunConfiguration | null>(null)
 /** True when the user pressed Stop for the current run. */
 export const stoppedByUser = writable(false)

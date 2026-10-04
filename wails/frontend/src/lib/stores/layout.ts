@@ -1,13 +1,15 @@
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
+import { capabilities } from './codeLanguages'
 
 export type SidebarView = 'files' | 'outline' | 'search'
 export type OutputTab = 'output' | 'problems' | 'console'
-export type DebugTab = 'stack' | 'calls' | 'goroutines'
-export type DialogName = 'settings' | 'about' | 'modules'
+export type DebugTab = 'stack' | 'calls' | 'threads'
+export type DialogName = 'settings' | 'about' | 'packages'
 export type SettingsTab = 'general' | 'editor' | 'tools'
 
 export const sidebarView = writable<SidebarView>('files')
 export const outputTab = writable<OutputTab>('output')
+/** The tab of the debug side panel. */
 export const debugTab = writable<DebugTab>('stack')
 export const settingsTab = writable<SettingsTab>('general')
 /** The dialog that is open, if any (confirmations have their own store). */
@@ -18,6 +20,11 @@ export const collapsedFolders = writable<Set<string>>(new Set())
 export const selectedNode = writable<string | null>(null)
 /** Cursor position shown in the status bar (1-based). */
 export const cursor = writable({ line: 1, column: 1 })
+
+// The Console tab exists only for languages with a console: leave it when the file changes to one without.
+capabilities.subscribe((current) => {
+  if (current && !current.console && get(outputTab) === 'console') outputTab.set('output')
+})
 
 export const toggleFolder = (path: string): void =>
   collapsedFolders.update((all) => {

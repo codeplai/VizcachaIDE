@@ -44,6 +44,8 @@ interface MockState {
   debugging: boolean
 }
 
+/** The text of app.ErrUnsupported: the language's adapter does not exist yet. */
+const UNSUPPORTED_ACTION = 'this language does not support the action'
 const LAST_LINE = 7
 const FIELDS_DELAY_MS = 250
 
@@ -60,6 +62,8 @@ const configurationFor = (path: string): RunConfiguration => ({
 const mockRun = (state: MockState, emit: Emit): RunApi => {
   const language = (): Language => resolveLanguage(state.settings.language, systemLanguage())
   const run: RunApi['run'] = async (path) => {
+    // Like the 2.1 backend: Python and C++ have a profile but no adapter yet.
+    if (codeLanguageOfPath(path) !== 'go') throw new Error(UNSUPPORTED_ACTION)
     if (state.scenario === 'error') emitFailedRun(emit, language())
     else emitSuccessfulRun(emit)
     return configurationFor(path)

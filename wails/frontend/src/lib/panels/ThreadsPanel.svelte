@@ -1,10 +1,14 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { baseName, debugState, goToLocation } from '../stores'
+  import { baseName, capabilities, debugState, goToLocation } from '../stores'
+
+  const label = $derived($capabilities?.threadsLabel ?? 'debug.goroutines')
+  // Go keeps its own words (goroutines); every other language talks about threads.
+  const kind = $derived(label === 'debug.goroutines' ? 'goroutine' : 'thread')
 </script>
 
-<ul class="routines" aria-label={$t('panels.goroutines')}>
+<ul class="routines" aria-label={$t(label)}>
   {#each $debugState?.threads ?? [] as routine (routine.threadId)}
     {@const location = routine.location}
     <li>
@@ -14,12 +18,12 @@
         disabled={!location}
         onclick={() => location && goToLocation(bridge, location)}
       >
-        {$t('panels.goroutine', { values: { id: routine.threadId } })} · {routine.name}
+        {$t(`panels.${kind}`, { values: { id: routine.threadId } })} · {routine.name}
         {#if location}· {baseName(location.file)}:{location.line}{/if}
       </button>
     </li>
   {:else}
-    <li class="empty">{$t('panels.goroutinesEmpty')}</li>
+    <li class="empty">{$t(`panels.${kind}sEmpty`)}</li>
   {/each}
 </ul>
 
