@@ -18,11 +18,16 @@ func (r *Runner) linkerFor(toolchain rust.Toolchain) string {
 	return chooseLinker(toolchain, runtime.GOOS, isFile, r.clang)
 }
 
-// chooseLinker returns clang() only for a Windows GNU toolchain that lacks its own MinGW linker
-// and when a clang exists. exists and clang are parameters so the decision is testable.
+// chooseLinker pins the linker of a Windows GNU toolchain: its own MinGW gcc when it has one (an
+// llvm-mingw on PATH would otherwise be picked up and fail on -lgcc_eh), llvm-mingw's clang when it
+// does not, "" elsewhere. exists and clang are parameters so the decision is testable.
 func chooseLinker(toolchain rust.Toolchain, goos string, exists func(string) bool, clang func() string) string {
-	if goos != "windows" || toolchain.SelfContainedLinker(exists) {
+	own := toolchain.SelfContainedGCC()
+	if goos != "windows" || own == "" {
 		return ""
+	}
+	if exists(own) {
+		return own
 	}
 	return clang()
 }

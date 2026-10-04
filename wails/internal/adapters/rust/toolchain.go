@@ -95,8 +95,17 @@ func (t Toolchain) SelfContainedLinker(exists func(path string) bool) bool {
 	if !strings.HasSuffix(t.Host, "-windows-gnu") {
 		return true // macOS and Linux link with the system cc; MSVC is not supported
 	}
-	gcc := filepath.Join(t.Sysroot, "lib", "rustlib", t.Host, "bin", "self-contained", "x86_64-w64-mingw32-gcc.exe")
-	return exists(gcc)
+	return exists(t.SelfContainedGCC())
+}
+
+// SelfContainedGCC is the MinGW linker the Windows GNU toolchain brings, "" for other hosts.
+// The IDE passes it explicitly: rustc otherwise runs the first x86_64-w64-mingw32-gcc on PATH,
+// and llvm-mingw's (a clang wrapper) cannot find libgcc_eh (found in M3 R2).
+func (t Toolchain) SelfContainedGCC() string {
+	if !strings.HasSuffix(t.Host, "-windows-gnu") {
+		return ""
+	}
+	return filepath.Join(t.Sysroot, "lib", "rustlib", t.Host, "bin", "self-contained", "x86_64-w64-mingw32-gcc.exe")
 }
 
 // FormattersDir is the folder of rustc's LLDB formatters (lldb_lookup.py, lldb_providers.py).

@@ -69,7 +69,7 @@ func TestCrashLines(t *testing.T) {
 	}
 }
 
-func TestLinkerFallbackOnlyWithoutTheSelfContainedMinGW(t *testing.T) {
+func TestLinkerIsPinnedAndClangOnlyAFallback(t *testing.T) {
 	gnu := rust.Toolchain{Host: "x86_64-pc-windows-gnu", Sysroot: `C:\rust`}
 	clang := func() string { return `C:\llvm\bin\clang.exe` }
 	none := func() string { return "" }
@@ -83,7 +83,7 @@ func TestLinkerFallbackOnlyWithoutTheSelfContainedMinGW(t *testing.T) {
 		clang func() string
 		want  string
 	}{
-		{"own linker", gnu, "windows", has, clang, ""},
+		{"own linker, pinned", gnu, "windows", has, clang, gnu.SelfContainedGCC()},
 		{"no own linker, clang found", gnu, "windows", lacks, clang, `C:\llvm\bin\clang.exe`},
 		{"no own linker, no clang", gnu, "windows", lacks, none, ""},
 		{"linux", rust.Toolchain{Host: "x86_64-unknown-linux-gnu"}, "linux", lacks, clang, ""},
