@@ -4,6 +4,7 @@
   import type { LanguageProfile, ToolSpec } from '../domain'
   import { t } from '../i18n'
   import FirstRunCppHint from './FirstRunCppHint.svelte'
+  import FirstRunRustHint from './FirstRunRustHint.svelte'
   import { enabledProfiles, refreshTools, toolStatus, tools } from '../stores'
 
   // The wizard's check: the runtime (or the compiler) of each language the student chose.
@@ -16,6 +17,12 @@
       return spec ? [{ profile, spec, version: toolStatus(spec.id, $tools)?.version ?? '' }] : []
     })
   )
+
+  // Rust runs without lldb-dap, but debugging needs it: the step says so.
+  const lldbMissing = $derived.by(() => {
+    const status = toolStatus('lldb-dap', $tools)
+    return status !== undefined && status.version === ''
+  })
 
   onMount(() => void refreshTools(bridge))
 </script>
@@ -37,6 +44,10 @@
   {#if !version}
     <p>{$t(spec.missingKey || 'errors.toolNotFound', { values: { tool: spec.id } })}</p>
     {#if profile.id === 'cpp'}<FirstRunCppHint {spec} />{/if}
+    {#if profile.id === 'rust'}<FirstRunRustHint {spec} />{/if}
+  {/if}
+  {#if profile.id === 'rust' && lldbMissing}
+    <p>{$t('errors.lldbDapNotFound')}</p>
   {/if}
 {/each}
 

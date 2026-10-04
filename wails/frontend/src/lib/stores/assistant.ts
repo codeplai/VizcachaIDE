@@ -9,10 +9,10 @@ import { lastRunConfiguration, runLines, stoppedByUser } from './run'
 /** The problems Go printed in the last run, as the backend parsed them (compiler, vet or panic). */
 export const runDiagnostics = writable<Diagnostic[]>([])
 
-/** How many compiler or vet problems the last run reported (a panic is not a compile failure). */
+/** How many compiler or vet problems the last run reported (a panic or a crash is not a compile failure). */
 export const compileProblemCount = derived(
   runDiagnostics,
-  (items) => items.filter((item) => item.source !== 'panic').length
+  (items) => items.filter((item) => item.source !== 'panic' && item.source !== 'runtime').length
 )
 
 /**

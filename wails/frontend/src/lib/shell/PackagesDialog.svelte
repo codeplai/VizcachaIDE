@@ -23,11 +23,21 @@
   const actions = $derived($capabilities?.packageActions ?? [])
   const isGo = $derived($activeCodeLanguage === 'go')
   const isPython = $derived($activeCodeLanguage === 'python')
+  const isRust = $derived($activeCodeLanguage === 'rust')
+  const hint = $derived.by(() => {
+    if (isGo) return $t('shell.modulesIntro')
+    if (isPython) return $t('packages.pipHint')
+    return isRust ? $t('packages.cargoHint') : undefined
+  })
+  const placeholder = $derived(isGo ? 'github.com/user/pkg' : isRust ? 'serde' : 'requests')
   const project = $derived.by(() => {
     const found = $lastRunConfiguration?.project
     return found && found.kind !== 'folder' ? found : null
   })
 
+  const invalidKey = $derived(
+    isGo ? 'shell.modulesPackageInvalid' : isRust ? 'packages.cargoNameInvalid' : 'packages.invalid'
+  )
   const packageOk = $derived(isValidPackage(packageName, $activeCodeLanguage))
   const needsInit = $derived(actions.includes('init') && !$hasProject)
 </script>
@@ -35,7 +45,7 @@
 <Modal
   open={$openDialog === 'packages'}
   title={$t(isGo ? 'shell.goModules' : 'packages.title')}
-  description={isGo ? $t('shell.modulesIntro') : isPython ? $t('packages.pipHint') : undefined}
+  description={hint}
   onClose={() => openDialog.set(null)}
 >
   {#if project && isGo}
@@ -84,7 +94,7 @@
             id="module-package"
             type="text"
             bind:value={packageName}
-            placeholder={isGo ? 'github.com/user/pkg' : 'requests'}
+            {placeholder}
             aria-invalid={packageName !== '' && !packageOk}
           />
           <button
@@ -106,9 +116,7 @@
           {/if}
         </div>
         {#if packageName !== '' && !packageOk}
-          <span class="hint bad"
-            >{$t(isGo ? 'shell.modulesPackageInvalid' : 'packages.invalid')}</span
-          >
+          <span class="hint bad">{$t(invalidKey)}</span>
         {/if}
         {#if isGo}
           <button class="link" type="button" onclick={() => bridge.system.openUrl(PKG_GO_DEV)}>

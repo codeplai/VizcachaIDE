@@ -9,6 +9,7 @@ import { assistantOpen, cursor } from './layout'
 import { showNotice } from './notice'
 import { programArguments } from './programArguments'
 import { lastRunConfiguration, pushRunText, resetRun, stoppedByUser } from './run'
+import { runOrChooseMember } from './runMember'
 import { withToolErrors } from './toolErrors'
 import { isUntitled } from './untitled'
 
@@ -37,7 +38,7 @@ export const runActiveFile = async (bridge: Bridge): Promise<void> => {
   await withToolErrors(bridge, codeLanguageOf(path), () =>
     isUntitled(path)
       ? bridge.run.runUntitled(path, get(buffers)[path] ?? '', args)
-      : bridge.run.run(path, args)
+      : runOrChooseMember(path, args, () => bridge.run.run(path, args))
   )
 }
 

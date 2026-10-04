@@ -1,17 +1,12 @@
-// The three language profiles as the backend declares them (adapters/golang/profile.go,
-// adapters/python/profile.go and adapters/cpp/profile.go).
+// The language profiles as the backend declares them (adapters/golang/profile.go, python, cpp and
+// rust).
 // The mock serves them; the Wails bridge uses them only until bridge.CodeLanguagesService exists
 // (track N5), then this file serves the mock alone.
-import type { LanguageProfile, ToolSpec } from '../domain'
+import type { LanguageProfile } from '../domain'
+import { rustProfile } from './languageProfileRust'
+import { tool } from './toolSpec'
 
-const tool = (spec: Partial<ToolSpec> & Pick<ToolSpec, 'id' | 'role'>): ToolSpec => ({
-  labelKey: '',
-  missingKey: '',
-  installUrl: '',
-  installCommand: '',
-  providedBy: '',
-  ...spec
-})
+export { rustProfile }
 
 export const goProfile: LanguageProfile = {
   id: 'go',
@@ -147,4 +142,9 @@ export const cppProfile: LanguageProfile = {
   ]
 }
 
-export const languageProfiles: LanguageProfile[] = [goProfile, pythonProfile, cppProfile]
+export const languageProfiles: LanguageProfile[] = [
+  goProfile,
+  pythonProfile,
+  cppProfile,
+  rustProfile
+]

@@ -8,14 +8,17 @@ import { openDialog } from './layout'
 import { requestCloseTab } from './saving'
 import { updateSettings } from './settings'
 
-const EXTENSIONS: Record<string, string> = { python: '.py', cpp: '.cpp' }
+const EXTENSIONS: Record<string, string> = { python: '.py', cpp: '.cpp', rust: '.rs' }
 
 /** The file to open at start: the project's `main` of the demo's language, else its first file. */
 const firstFile = (tree: FileNode, codeLanguage: string): FileNode | undefined => {
   const extension = EXTENSIONS[codeLanguage] ?? '.go'
+  // A Cargo project keeps its sources in src/.
+  const folders = [tree, ...tree.children.filter((node) => node.isDir && node.name === 'src')]
+  const files = folders.flatMap((folder) => folder.children)
   return (
-    tree.children.find((node) => node.name === `main${extension}`) ??
-    tree.children.find((node) => node.name.endsWith(extension))
+    files.find((node) => node.name === `main${extension}`) ??
+    files.find((node) => !node.isDir && node.name.endsWith(extension))
   )
 }
 

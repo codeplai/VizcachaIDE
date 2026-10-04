@@ -11,7 +11,8 @@ const PROJECT_MARKERS: Partial<
   Record<CodeLanguage, { kind: ProjectContext['kind']; file: string }>
 > = {
   go: { kind: 'gomod', file: 'go.mod' },
-  python: { kind: 'pyproject', file: 'pyproject.toml' }
+  python: { kind: 'pyproject', file: 'pyproject.toml' },
+  rust: { kind: 'cargo', file: 'Cargo.toml' }
 }
 
 /** The project the dialog knows about. A package command's own run must not make it forget. */
@@ -55,21 +56,30 @@ export const hasProject = derived(
 )
 
 /** Suggested project name: the folder's name, made safe for a module path. */
-export const suggestedProjectName = derived(packagesFolder, (folder) =>
-  baseName(folder)
-    .toLowerCase()
-    .replace(/[^a-z0-9._/-]+/g, '-')
-    .replace(/^[-.]+|-+$/g, '')
+export const suggestedProjectName = derived(
+  [packagesFolder, activeCodeLanguage],
+  ([folder, codeLanguage]) => {
+    const name = baseName(folder).toLowerCase()
+    if (codeLanguage === 'rust') {
+      return name.replace(/[^a-z0-9_-]+/g, '-').replace(/^[^a-z]+|-+$/g, '')
+    }
+    return name.replace(/[^a-z0-9._/-]+/g, '-').replace(/^[-.]+|-+$/g, '')
+  }
 )
 
 const PROJECT_NAME = /^[A-Za-z0-9][A-Za-z0-9._~/-]*$/
+/** A Cargo package name: letters, digits, - and _, starting with a letter. */
+const CRATE_NAME = /^[A-Za-z][A-Za-z0-9_-]*$/
 const PACKAGE_NAMES: Partial<Record<CodeLanguage, RegExp>> = {
   go: /^[A-Za-z0-9][A-Za-z0-9._~/-]*(@[A-Za-z0-9._+-]+)?$/,
-  python: /^[A-Za-z0-9][A-Za-z0-9._-]*(\[[A-Za-z0-9,_-]+\])?([=<>~!]=?[A-Za-z0-9._*+-]+)?$/
+  python: /^[A-Za-z0-9][A-Za-z0-9._-]*(\[[A-Za-z0-9,_-]+\])?([=<>~!]=?[A-Za-z0-9._*+-]+)?$/,
+  // `cargo add serde` or `cargo add serde@1.0`
+  rust: /^[A-Za-z][A-Za-z0-9_-]*(@[A-Za-z0-9._+*^~=<>-]+)?$/
 }
 
-/** True when `init` can take the text as a project name (a Go module path). */
-export const isValidProjectName = (name: string): boolean => PROJECT_NAME.test(name.trim())
+/** True when `init` can take the text as a project name (a Go module path, a Cargo package name). */
+export const isValidProjectName = (name: string, codeLanguage: CodeLanguage = 'go'): boolean =>
+  (codeLanguage === 'rust' ? CRATE_NAME : PROJECT_NAME).test(name.trim())
 
 /** True when the language's package manager can take the text as a package (with its version). */
 export const isValidPackage = (name: string, codeLanguage: CodeLanguage = 'go'): boolean =>
