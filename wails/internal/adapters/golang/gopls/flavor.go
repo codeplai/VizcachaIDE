@@ -100,3 +100,7 @@ func moduleRoot(file string) string {
 		}
 	}
 }
+
+// Manifests are the module files gopls must hear about when "go get" changes them
+// (lsp.ManifestFiles).
+func (Flavor) Manifests() []string { return []string{"go.mod", "go.sum", "go.work"} }

@@ -107,9 +107,10 @@ func (l *Locator) Toolchain(ctx context.Context) (Toolchain, error) {
 }
 
 // Environment is the environment of every Rust process: Environment(base) with the folder of
-// cargo first in PATH, so cargo, rustc and the proxies find each other.
+// cargo first in PATH, so cargo, rustc and the proxies find each other, and on a Windows GNU host
+// the linker and dlltool cargo must use (windowsgnu.go).
 func (l *Locator) Environment() []string {
-	env := Environment(l.options.BaseEnvironment)
+	env := append(Environment(l.options.BaseEnvironment), l.gnuVariables()...)
 	cargo := l.Tool(ToolCargo)
 	if cargo.Source == domain.ToolMissing {
 		return env

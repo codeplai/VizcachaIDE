@@ -119,3 +119,7 @@ func cut(entry string) (name, value string, ok bool) {
 	i++
 	return entry[:i], entry[i+1:], true
 }
+
+// Manifests are the Cargo files rust-analyzer must hear about when "cargo add" changes them
+// (lsp.ManifestFiles).
+func (f *Flavor) Manifests() []string { return []string{"Cargo.toml", "Cargo.lock"} }

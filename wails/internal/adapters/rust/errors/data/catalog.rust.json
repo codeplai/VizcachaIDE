@@ -659,6 +659,23 @@
   }
  },
  {
+  "id": "RS-DLLTOOL",
+  "patterns": [
+   "error calling dlltool",
+   "dlltool could not create import library"
+  ],
+  "en": {
+   "title": "Rust needs llvm-mingw to build this library",
+   "body": "Some libraries (rand, through getrandom, and others that call Windows directly) make rustc build small \"import libraries\" with a tool called dlltool. The GNU toolchain of rustup does not bring a dlltool that works on its own, so the build stops before your program runs.",
+   "fix": "Install llvm-mingw (free; the full-cpp and full downloads of VizcachaIDE already include it) or put its bin folder in the PATH: VizcachaIDE then passes its llvm-dlltool to rustc. Run again afterwards; nothing in your code has to change."
+  },
+  "es": {
+   "title": "Rust necesita llvm-mingw para compilar esta biblioteca",
+   "body": "Algunas bibliotecas (rand, a través de getrandom, y otras que llaman directamente a Windows) hacen que rustc genere pequeñas \"bibliotecas de importación\" con una herramienta llamada dlltool. El toolchain GNU de rustup no trae un dlltool que funcione por sí solo, así que la compilación se detiene antes de que tu programa se ejecute.",
+   "fix": "Instala llvm-mingw (gratis; las descargas full-cpp y full de VizcachaIDE ya lo incluyen) o pon su carpeta bin en el PATH: VizcachaIDE le pasará entonces su llvm-dlltool a rustc. Vuelve a ejecutar después; no hay que cambiar nada en tu código."
+  }
+ },
+ {
   "id": "RS-NETWORK",
   "patterns": [
    "failed to (?:download|get)|network failure|Could not resolve host|Could not connect to server|unable to update registry"

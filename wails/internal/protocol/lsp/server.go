@@ -74,6 +74,7 @@ type Server struct {
 	idle    idleShutdown
 	// settingsSent is the JSON of the last settings a pulling server heard of (pulled.go).
 	settingsSent string
+	manifests    manifestWatch // go.mod, Cargo.toml... changed outside the editor (manifests.go)
 }
 
 var _ app.LanguageServer = (*Server)(nil)

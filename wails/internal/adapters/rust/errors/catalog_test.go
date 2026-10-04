@@ -47,6 +47,7 @@ var fixtureOf = map[string]string{
 	"W-RS-DEAD-CODE":        "json/warnings",
 	"RS-LINKER-MISSING":     "json/linker_missing",
 	"RS-NETWORK":            "cargo/network",
+	"RS-DLLTOOL":            "cargo/dlltool_missing",
 	"RS-PANIC-INDEX":        "runtime/panic_index",
 	"RS-PANIC-UNWRAP-NONE":  "runtime/panic_unwrap_none",
 	"RS-PANIC-UNWRAP-ERR":   "runtime/panic_unwrap_err",

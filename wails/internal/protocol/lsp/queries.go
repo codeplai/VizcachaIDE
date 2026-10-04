@@ -43,6 +43,7 @@ func (s *Server) requestIf(ctx context.Context, method string, params any, needs
 	if conn, usable = s.readyConnection(conn); !usable || (needs != nil && !needs.Load()) {
 		return nil, false
 	}
+	s.noticeManifests(ctx, conn)
 	result, err := conn.call(ctx, method, params)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {

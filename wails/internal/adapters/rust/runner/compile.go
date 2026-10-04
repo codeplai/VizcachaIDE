@@ -63,6 +63,9 @@ func (r *Runner) rustcBuild(ctx context.Context, config domain.RunConfiguration,
 	if linker := r.linkerFor(toolchain); linker != "" {
 		args = append(args, "-C", "linker="+linker)
 	}
+	if dlltool := r.locator.Dlltool(toolchain); dlltool != "" {
+		args = append(args, "-C", "dlltool="+dlltool)
+	}
 	args = append(args, "-o", out, config.Target)
 	return compilation{
 		command: toolchain.Rustc, args: args, dir: config.WorkingDir, env: env, executable: out,

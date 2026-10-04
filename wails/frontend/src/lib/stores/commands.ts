@@ -13,11 +13,18 @@ import { runOrChooseMember } from './runMember'
 import { withToolErrors } from './toolErrors'
 import { isUntitled } from './untitled'
 
-const breakpointsOf = (file: string): Breakpoint[] =>
-  (get(breakpoints)[file] ?? []).map((line) => ({
-    location: { file, line, column: 1 },
-    condition: ''
-  }))
+/**
+ * The breakpoints a debug session of `file` starts with: those of every file of its language, so
+ * a breakpoint in another file of the project (a function main calls) stops too.
+ */
+const breakpointsOf = (file: string): Breakpoint[] => {
+  const language = codeLanguageOf(file)
+  return Object.entries(get(breakpoints))
+    .filter(([other]) => codeLanguageOf(other) === language)
+    .flatMap(([other, lines]) =>
+      lines.map((line) => ({ location: { file: other, line, column: 1 }, condition: '' }))
+    )
+}
 
 /** The "Program arguments" text split like a shell, or null (after saying why) if it is invalid. */
 const splitProgramArguments = async (bridge: Bridge, text: string): Promise<string[] | null> => {

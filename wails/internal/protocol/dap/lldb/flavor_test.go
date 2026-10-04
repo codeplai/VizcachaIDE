@@ -113,7 +113,9 @@ func TestKeepFrameWithRoots(t *testing.T) {
 	if !flavor.KeepFrame(frame(filepath.Join(root, "main.cpp"))) || !flavor.KeepFrame(frame(filepath.Join(root, "src", "a.cpp"))) {
 		t.Error("user frames must be kept")
 	}
-	for _, path := range []string{"", filepath.Join(filepath.Dir(root), "proj2", "x.cpp"), "/mingw64/include/c++/string", filepath.Join(filepath.Dir(root), "other.cpp")} {
+	for _, path := range []string{"", filepath.Join(filepath.Dir(root), "proj2", "x.cpp"), "/mingw64/include/c++/string", filepath.Join(filepath.Dir(root), "other.cpp"),
+		// a frame without source: the program, built inside the user's folder, plus "`symbol"
+		filepath.Join(root, "target", "debug", "tienda.exe") + "`main"} {
 		if flavor.KeepFrame(frame(path)) {
 			t.Errorf("%q must be hidden", path)
 		}

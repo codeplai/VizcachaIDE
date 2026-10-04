@@ -14,7 +14,7 @@ var plainText = []string{"plaintext"}
 // clientCapabilities mirrors the 1.0 client: plain text, no snippets, hierarchical symbols.
 func clientCapabilities() map[string]any {
 	return map[string]any{
-		"workspace": map[string]any{"workspaceFolders": true},
+		"workspace": map[string]any{"workspaceFolders": true, "didChangeWatchedFiles": map[string]any{"dynamicRegistration": false}},
 		"general":   map[string]any{"positionEncodings": []string{"utf-16"}},
 		"textDocument": map[string]any{
 			"synchronization":    map[string]any{"didSave": false},
@@ -43,7 +43,10 @@ func workspaceFolder(root string) map[string]any {
 func initializeParams(root string, initializationOptions any, pullsConfiguration bool) map[string]any {
 	capabilities := clientCapabilities()
 	if pullsConfiguration { // the server may ask workspace/configuration (pulled.go)
-		capabilities["workspace"] = map[string]any{"workspaceFolders": true, "configuration": true}
+		capabilities["workspace"] = map[string]any{
+			"workspaceFolders": true, "configuration": true,
+			"didChangeWatchedFiles": map[string]any{"dynamicRegistration": false},
+		}
 	}
 	params := map[string]any{
 		"processId":        os.Getpid(),

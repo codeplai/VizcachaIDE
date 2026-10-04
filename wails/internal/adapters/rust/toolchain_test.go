@@ -125,3 +125,21 @@ func TestRealToolchainLinksWithItsOwnMinGW(t *testing.T) {
 		}
 	}
 }
+
+func TestWindowsGnuGetsLLVMDlltoolAndItsOwnLinker(t *testing.T) {
+	llvm := filepath.Join(t.TempDir(), "llvm mingw", "bin")
+	if err := os.MkdirAll(llvm, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(llvm, "llvm-dlltool.exe"), nil, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	locator := rust.NewLocator(rust.Options{AppDir: t.TempDir(), BaseEnvironment: []string{"PATH=" + llvm}})
+	gnu := rust.Toolchain{Host: "x86_64-pc-windows-gnu", Sysroot: t.TempDir()}
+	if got := locator.Dlltool(gnu); got != filepath.Join(llvm, "llvm-dlltool.exe") {
+		t.Errorf("dlltool = %q", got)
+	}
+	if got := locator.Dlltool(rust.Toolchain{Host: "x86_64-unknown-linux-gnu"}); got != "" {
+		t.Errorf("linux dlltool = %q, want none", got)
+	}
+}

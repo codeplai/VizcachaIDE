@@ -55,7 +55,9 @@ func (Flavor) StopReason(event *dap.StoppedEvent) (domain.StopReason, string) {
 
 // KeepFrame hides frames without a source file and, when there are roots, frames outside them.
 func (f Flavor) KeepFrame(frame dap.StackFrame) bool {
-	if frame.Source == nil || frame.Source.Path == "" {
+	// A frame without source has a disassembly pseudo-path, "<module>`<symbol>"
+	// (target/debug/tienda.exe`main): the module may sit inside the user's folder.
+	if frame.Source == nil || frame.Source.Path == "" || strings.Contains(frame.Source.Path, "`") {
 		return false
 	}
 	if len(f.roots) == 0 {
