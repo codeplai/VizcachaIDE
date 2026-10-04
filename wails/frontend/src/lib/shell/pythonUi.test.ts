@@ -97,8 +97,8 @@ describe('Settings > Tools for Python', () => {
       expect(screen.getByText(`${module} module`)).toBeTruthy()
       expect(screen.queryByLabelText(`${module} module`)).toBeNull()
     }
-    // One per executable: go, dlv and gopls, and python. The modules have no path of their own.
-    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(4)
+    // One per executable: go, dlv, gopls, python and the four of C++. The modules have none.
+    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(8)
     expect(screen.getByText(/Version 3\.12\.4/)).toBeTruthy()
   })
 

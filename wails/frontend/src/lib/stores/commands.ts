@@ -41,6 +41,15 @@ export const runActiveFile = async (bridge: Bridge): Promise<void> => {
   )
 }
 
+/** Compiles the open saved file without running it (the More menu's Build); the output is a run's. */
+export const buildActiveFile = async (bridge: Bridge): Promise<void> => {
+  const path = get(activePath)
+  const args = await splitProgramArguments(bridge, get(programArguments))
+  if (!path || !args || isUntitled(path)) return
+  resetRun()
+  await withToolErrors(bridge, codeLanguageOf(path), () => bridge.run.build(path, args))
+}
+
 export const stopProgram = (bridge: Bridge): Promise<void> => {
   stoppedByUser.set(true)
   return bridge.run.stop()

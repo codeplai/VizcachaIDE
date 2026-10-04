@@ -5,8 +5,8 @@ import type { DialogName } from './stores/layout'
 export interface DevQuery {
   scenario: Scenario
   language: LanguageSetting | null
-  /** `language=python` opens the Python sample project (`lang` is the interface language). */
-  codeLanguage: Extract<CodeLanguage, 'go' | 'python'> | null
+  /** `language=python|cpp` opens that sample project (`lang` is the interface language). */
+  codeLanguage: Extract<CodeLanguage, 'go' | 'python' | 'cpp'> | null
   theme: ThemeSetting | null
   /** `folder=none` starts with no folder open (the empty state of the Files panel). */
   noFolder: boolean
@@ -28,9 +28,10 @@ const pick = <T extends string>(value: string | null, allowed: readonly T[]): T 
 export const parseDevQuery = (search: string): DevQuery => {
   const params = new URLSearchParams(search)
   return {
-    scenario: pick(params.get('scenario'), ['write', 'error', 'debug'] as const) ?? 'write',
+    scenario:
+      pick(params.get('scenario'), ['write', 'error', 'debug', 'crash'] as const) ?? 'write',
     language: pick(params.get('lang'), ['en', 'es'] as const),
-    codeLanguage: pick(params.get('language'), ['go', 'python'] as const),
+    codeLanguage: pick(params.get('language'), ['go', 'python', 'cpp'] as const),
     theme: pick(params.get('theme'), ['light', 'dark'] as const),
     noFolder: params.get('folder') === 'none',
     firstRun: params.get('firstrun') === '1',
@@ -39,5 +40,8 @@ export const parseDevQuery = (search: string): DevQuery => {
   }
 }
 
-/** The line the dev bar's "debug" state pauses on: the sample's own (see bridge/mockPython.ts). */
-export const demoBreakpointLine = (path: string): number => (path.endsWith('.py') ? 8 : 6)
+/** The line the dev bar's "debug" state pauses on: the sample's own (bridge/mockPython.ts, mockCpp.ts). */
+export const demoBreakpointLine = (path: string): number => {
+  if (path.endsWith('.py')) return 8
+  return path.endsWith('.cpp') ? 11 : 6
+}

@@ -111,9 +111,12 @@ describe('a missing tool while running', () => {
   })
 })
 
-describe('a language without an adapter yet', () => {
+describe('a language without an adapter', () => {
   it('says the action is not available for C++', async () => {
     activePath.set('C:/work/app.cpp')
+    vi.spyOn(bridge.run, 'run').mockRejectedValue(
+      new Error('this language does not support the action')
+    )
     await runActiveFile(bridge)
     const shown = get(notice)
     expect(shown?.messageKey).toBe('errors.unsupportedAction')

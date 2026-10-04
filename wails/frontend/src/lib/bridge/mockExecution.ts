@@ -1,14 +1,17 @@
 // Run and debug of the mock bridge: the sample of the file's language plays the three scenarios.
-import type { CodeLanguage, RunConfiguration, Settings } from '../domain'
+import type { CodeLanguage, FrameVariables, RunConfiguration, Settings } from '../domain'
 import { TERMINATED_BY_USER } from '../events'
 import { resolveLanguage, systemLanguage, type Language } from '../language'
 import { codeLanguageOfPath } from './mockCodeLanguages'
 import { SAMPLE_STRUCT_REFERENCE, sampleStructFields } from './mockData'
 import { sampleFrameVariables } from './mockFrames'
+import { CPP_BREAKPOINT_LINE, CPP_LAST_LINE, cppFrameVariables } from './mockCpp'
 import { PYTHON_BREAKPOINT_LINE, PYTHON_LAST_LINE, pythonFrameVariables } from './mockPython'
 import {
+  emitCrashedRun,
   emitDebugStart,
   emitFailedRun,
+  emitSuccessfulBuild,
   emitSuccessfulRun,
   sampleOf,
   type Emit,
@@ -26,26 +29,20 @@ export interface MockState {
   debugging: boolean
 }
 
-/** The text of app.ErrUnsupported: the language's adapter does not exist yet. */
-const UNSUPPORTED_ACTION = 'this language does not support the action'
 const FIELDS_DELAY_MS = 250
 
 /** Where the demo pauses first and where it ends, per language. */
 const DEBUG_LINES: Record<SampleLanguage, { first: number; last: number }> = {
   go: { first: 6, last: 7 },
-  python: { first: PYTHON_BREAKPOINT_LINE, last: PYTHON_LAST_LINE }
+  python: { first: PYTHON_BREAKPOINT_LINE, last: PYTHON_LAST_LINE },
+  cpp: { first: CPP_BREAKPOINT_LINE, last: CPP_LAST_LINE }
 }
 
 /** The language of a path; the demo's own sample when the path is empty (the dev bar). */
 const languageOf = (state: MockState, path: string): CodeLanguage =>
   path ? codeLanguageOfPath(path) : state.sampleLanguage
 
-/** Like the backend: C++ has a profile but no adapter yet. */
-const sampleFor = (state: MockState, path: string): SampleLanguage => {
-  const codeLanguage = languageOf(state, path)
-  if (codeLanguage === 'cpp') throw new Error(UNSUPPORTED_ACTION)
-  return codeLanguage
-}
+const sampleFor = (state: MockState, path: string): SampleLanguage => languageOf(state, path)
 
 const configurationFor = (state: MockState, path: string): RunConfiguration => {
   const { configuration } = sampleOf(sampleFor(state, path))
@@ -57,13 +54,20 @@ export const mockRun = (state: MockState, emit: Emit): RunApi => {
   const run: RunApi['run'] = async (path) => {
     const sample = sampleFor(state, path)
     if (state.scenario === 'error') emitFailedRun(emit, language(), sample)
+    else if (state.scenario === 'crash' && sample === 'cpp') emitCrashedRun(emit, language())
     else emitSuccessfulRun(emit, sample)
+    return configurationFor(state, path)
+  }
+  const build: RunApi['build'] = async (path) => {
+    const sample = sampleFor(state, path)
+    if (state.scenario === 'error') emitFailedRun(emit, language(), sample)
+    else emitSuccessfulBuild(emit, sample)
     return configurationFor(state, path)
   }
   return {
     run,
     runUntitled: (path, _source, args) => run(path, args),
-    build: async (path) => configurationFor(state, path),
+    build,
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
     check: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
@@ -73,6 +77,12 @@ export const mockRun = (state: MockState, emit: Emit): RunApi => {
         ? text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4))
         : text
   }
+}
+
+const frameVariablesOf: Record<SampleLanguage, (frameId: number) => FrameVariables> = {
+  go: sampleFrameVariables,
+  python: pythonFrameVariables,
+  cpp: cppFrameVariables
 }
 
 export const mockDebug = (state: MockState, emit: Emit): DebugApi => {
@@ -104,8 +114,7 @@ export const mockDebug = (state: MockState, emit: Emit): DebugApi => {
       const variables = goStruct ? sampleStructFields() : []
       setTimeout(() => emit('debug:variables', { reference, variables }), FIELDS_DELAY_MS)
     },
-    frameVariables: async (frameId) =>
-      sample === 'python' ? pythonFrameVariables(frameId) : sampleFrameVariables(frameId),
+    frameVariables: async (frameId) => frameVariablesOf[sample](frameId),
     stop: async () => finish(TERMINATED_BY_USER)
   }
 }

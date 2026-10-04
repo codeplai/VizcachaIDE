@@ -18,11 +18,6 @@ describe('Python in the mock bridge', () => {
     expect(config).toMatchObject({ codeLanguage: 'python', echo: true })
   })
 
-  it('still refuses C++, which has no adapter yet', async () => {
-    const { bridge } = python()
-    await expect(bridge.run.run('main.cpp', [])).rejects.toThrow(/does not support/)
-  })
-
   it.each([
     ['en', 'Python doesn’t know the name'],
     ['es', 'Python no conoce el nombre']

@@ -1,4 +1,5 @@
 // The CodeMirror extensions that depend on a file's programming language.
+import { cpp } from '@codemirror/lang-cpp'
 import { go } from '@codemirror/lang-go'
 import { python } from '@codemirror/lang-python'
 import { indentUnit } from '@codemirror/language'
@@ -8,13 +9,11 @@ import type { CodeLanguage, IndentStyle, LanguageProfile } from '../domain'
 /** Go's indentation when no profile is known (before they load, or a file of no language). */
 const GO_INDENT: IndentStyle = { useTabs: true, size: 4 }
 
-/**
- * Syntax highlighting per language. C++ would be cpp() from @codemirror/lang-cpp, which is not
- * installed yet: its files are plain text until it is.
- */
+/** Syntax highlighting per language (the cpp profile owns .h and .hpp too). */
 const syntaxFor = (codeLanguage: CodeLanguage | undefined): Extension => {
   if (codeLanguage === 'go') return go()
   if (codeLanguage === 'python') return python()
+  if (codeLanguage === 'cpp') return cpp()
   return []
 }
 
