@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
 )
 
 // These tests start the real rust-analyzer (they skip without the toolchain of
@@ -123,6 +124,42 @@ func TestRealRustAnalyzerServesASecondLooseFile(t *testing.T) {
 	// "    v.push(1);" is line 7.
 	members := eventually(t, func() ([]domain.CompletionItem, bool) {
 		items, _ := s.server.Completion(context.Background(), domain.SourceLocation{File: second, Line: 7, Column: 7})
+		return items, len(items) > 0
+	})
+	if !hasLabel(members, "push") {
+		t.Errorf("no push in %d members", len(members))
+	}
+}
+
+// rust-analyzer started on a loose file does not load a crate opened later (found in the M3 QA):
+// the Router gives the crate its own rust-analyzer.
+func TestRouterServesACrateOpenedAfterALooseFile(t *testing.T) {
+	loose := filepath.Join(t.TempDir(), "main.rs")
+	folder := t.TempDir()
+	// Registered after the folders: cleanups run last first, rust-analyzer must stop before they go.
+	router := NewRouter(&recordingSink{diagnostics: map[string][]domain.Diagnostic{}}, Config{Locator: locatorForTests(t)}, lsp.Options{})
+	t.Cleanup(func() { _ = router.Shutdown(context.Background()) })
+	looseText := readTestdata(t, "loose.rs")
+	if err := os.WriteFile(loose, []byte(looseText), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := router.OpenDocument(context.Background(), loose, looseText); err != nil {
+		t.Fatal(err)
+	}
+	writeManifest(t, folder, readTestdata(t, filepath.Join("crate", "Cargo.toml")))
+	crate := filepath.Join(folder, "src", "main.rs")
+	crateText := readTestdata(t, filepath.Join("crate", "src", "main.rs"))
+	if err := os.MkdirAll(filepath.Dir(crate), 0o750); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(crate, []byte(crateText), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := router.OpenDocument(context.Background(), crate, crateText); err != nil {
+		t.Fatal(err)
+	}
+	members := eventually(t, func() ([]domain.CompletionItem, bool) {
+		items, _ := router.Completion(context.Background(), afterVecDot(crate))
 		return items, len(items) > 0
 	})
 	if !hasLabel(members, "push") {

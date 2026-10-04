@@ -60,8 +60,9 @@ func fakeDebugger(t *testing.T, locator *rust.Locator) (*Debugger, *eventSink) {
 
 func TestInitCommandsLoadTheFormattersAndStopAtPanic(t *testing.T) {
 	toolchain := rust.Toolchain{Sysroot: `C:\Users\Ana María\rust`}
-	commands := InitCommands(toolchain, true)
-	if len(commands) != 2 || commands[0] != "breakpoint set --name rust_panic" {
+	commands := InitCommands(toolchain, true, `C:\cache\vizcacha_rust_enums.py`)
+	if len(commands) != 3 || commands[0] != "breakpoint set --name rust_panic" ||
+		commands[2] != `command script import "C:/cache/vizcacha_rust_enums.py"` {
 		t.Fatalf("commands = %q", commands)
 	}
 	// Forward slashes and quotes: LLDB would eat backslashes and break at the space.
@@ -72,7 +73,7 @@ func TestInitCommandsLoadTheFormattersAndStopAtPanic(t *testing.T) {
 }
 
 func TestInitCommandsWithoutPythonOnlyStopAtPanic(t *testing.T) {
-	commands := InitCommands(rust.Toolchain{Sysroot: "/sysroot"}, false)
+	commands := InitCommands(rust.Toolchain{Sysroot: "/sysroot"}, false, "/cache/fix.py")
 	if len(commands) != 1 || !strings.Contains(commands[0], "rust_panic") {
 		t.Errorf("commands = %q", commands)
 	}
@@ -177,5 +178,14 @@ func TestExecutableIsReadFromCargoMessages(t *testing.T) {
 `
 	if got := executableFrom(messages, "demo"); got != `C:\t\debug\demo.exe` {
 		t.Errorf("executable = %q", got)
+	}
+}
+
+func TestTheIteratorOfAForLoopIsHidden(t *testing.T) {
+	f := newFlavor(lldb.Options{}, nil)
+	loop := dap.Variable{Name: "iter", Type: "core::ops::range::RangeInclusive<u64>"}
+	mine := dap.Variable{Name: "iter", Type: "i32"}
+	if f.KeepVariable(loop) || !f.KeepVariable(mine) || !f.KeepVariable(dap.Variable{Name: "n", Type: "u64"}) {
+		t.Error("only rustc's loop iterator must be hidden")
 	}
 }

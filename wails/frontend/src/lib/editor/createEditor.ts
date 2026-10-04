@@ -24,6 +24,8 @@ export interface EditorHandle {
   setFontSize: (pixels: number) => void
   /** Shows or hides the inlay hints (inferred types and parameter names). */
   setInlayHints: (enabled: boolean) => void
+  /** Asks the language server for the inlay hints again (it finished analysing the file). */
+  refreshInlayHints: () => void
   goTo: (line: number, column: number) => void
   destroy: () => void
 }
@@ -82,6 +84,7 @@ export const createEditor = (
     },
     setFontSize: (pixels) => parent.style.setProperty('--editor-font-size', `${pixels}px`),
     setInlayHints: (enabled) => inlay?.setEnabled(enabled),
+    refreshInlayHints: () => inlay?.refresh(),
     goTo: (line, column) => {
       const pos = offsetOf(view.state, line, column)
       view.dispatch({

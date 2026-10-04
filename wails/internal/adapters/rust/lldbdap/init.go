@@ -21,12 +21,18 @@ const panicBreakpoint = "rust_panic"
 // `rust-lldb` loads: rustc 1.99 has no lldb_commands file, lldb_lookup.py registers every
 // synthetic provider and summary itself in __lldb_init_module, so one "command script import"
 // is all it takes. They need the Python of LLDB: python=false skips them (the values then
-// show raw). The breakpoint on rust_panic is independent of Python.
-func InitCommands(toolchain rust.Toolchain, python bool) []string {
+// show raw). enumsFix, when not "", is the IDE's script that corrects the enum payloads of LLDB 23
+// (enums.go); it patches lldb_lookup's providers, so it is imported after them. The breakpoint on
+// rust_panic is independent of Python.
+func InitCommands(toolchain rust.Toolchain, python bool, enumsFix string) []string {
 	commands := []string{"breakpoint set --name " + panicBreakpoint}
-	if python {
-		lookup := filepath.ToSlash(filepath.Join(toolchain.FormattersDir(), "lldb_lookup.py"))
-		commands = append(commands, `command script import "`+lookup+`"`)
+	if !python {
+		return commands
+	}
+	lookup := filepath.ToSlash(filepath.Join(toolchain.FormattersDir(), "lldb_lookup.py"))
+	commands = append(commands, `command script import "`+lookup+`"`)
+	if enumsFix != "" {
+		commands = append(commands, `command script import "`+filepath.ToSlash(enumsFix)+`"`)
 	}
 	return commands
 }

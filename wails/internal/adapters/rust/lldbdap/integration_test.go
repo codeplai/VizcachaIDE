@@ -80,7 +80,10 @@ func TestRealStdTypesWithFormatters(t *testing.T) {
 	if !strings.Contains(locals["numbers"].Value, "3") || len(children) < 3 {
 		t.Errorf("Vec<i32> shows %q with %d children", locals["numbers"].Value, len(children))
 	}
-	t.Logf("Option Some value %q none %q", locals["maybe"].Value, locals["none"].Value)
+	// LLDB 23 read Some(7) as garbage on *-gnu until data/vizcacha_rust_enums.py.
+	if locals["maybe"].Value != "Some(7)" || locals["none"].Value != "None" {
+		t.Errorf("Option shows %q and %q, want Some(7) and None", locals["maybe"].Value, locals["none"].Value)
+	}
 }
 
 func TestRealStdinThroughSupervisor(t *testing.T) {

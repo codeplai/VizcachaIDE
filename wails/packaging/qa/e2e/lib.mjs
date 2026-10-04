@@ -22,6 +22,13 @@ export const DEV_CXX = path.join(
   process.env.VIZCACHA_TEST_LLVM_BIN || path.join(WAILS_DIR, '.toolchain-dev', 'llvm-mingw-20260922-ucrt-x86_64', 'bin'),
   process.platform === 'win32' ? 'clang++.exe' : 'clang++'
 )
+/** The development rustup (docs/PLAN_RUST.md section 3.3): CARGO_HOME and RUSTUP_HOME for wails dev. */
+export const DEV_RUST = {
+  CARGO_HOME: process.env.VIZCACHA_TEST_CARGO_HOME || path.join(WAILS_DIR, '.toolchain-dev', 'cargo'),
+  RUSTUP_HOME: process.env.VIZCACHA_TEST_RUSTUP_HOME || path.join(WAILS_DIR, '.toolchain-dev', 'rustup')
+}
+/** lldb-dap for the Rust steps: chosen in Settings, never on PATH (it would shadow rustc's MinGW linker). */
+export const DEV_LLDB_DAP = path.join(path.dirname(DEV_CXX), process.platform === 'win32' ? 'lldb-dap.exe' : 'lldb-dap')
 export const PROJECT = path.join(WQ, 'proj')
 export const SETTINGS_DIR = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'VizcachaIDE')
 export const SETTINGS_FILE = path.join(SETTINGS_DIR, 'settings.json')

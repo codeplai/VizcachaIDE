@@ -62,6 +62,19 @@ describe('inlayHints', () => {
     expect(view.state.doc.toString()).toBe('x := 5\ny := 6\n') // the code is untouched
   })
 
+  it('asks again on refresh: a server still loading answered with none', async () => {
+    let ready = false
+    const ask = vi.fn(async () => (ready ? [typeHint(1, 2, ': Vec<i32>')] : []))
+    const hints = setup(ask)
+    await settle()
+    expect(shown()).toEqual([])
+    ready = true
+    hints.refresh()
+    await settle()
+    expect(ask).toHaveBeenCalledTimes(2)
+    expect(shown()).toEqual([': Vec<i32>'])
+  })
+
   it('debounces a burst of edits into one request', async () => {
     const ask = vi.fn(async () => [] as InlayHint[])
     setup(ask)

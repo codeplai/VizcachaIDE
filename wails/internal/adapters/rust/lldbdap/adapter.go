@@ -120,7 +120,7 @@ func (d *Debugger) launch(adapter, exe string, toolchain rust.Toolchain, config 
 	events := lldb.NewEvents(panics)
 	options := lldb.Options{
 		Program: exe, Dir: workingDirectory(config), Roots: []string{folder}, RunInTerminal: terminal,
-		InitCommands: InitCommands(toolchain, python),
+		InitCommands: InitCommands(toolchain, python, enumsFixPath()),
 	}
 	started := protodap.NewSession(protodap.SessionDeps{
 		Sink: d.sink, Book: d.book, Tracker: d.tracker,

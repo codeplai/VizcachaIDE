@@ -88,6 +88,11 @@ export interface InlayHints {
   extension: Extension
   /** Turns the hints on or off; effective at once, in every open editor state. */
   setEnabled: (enabled: boolean) => void
+  /**
+   * Asks again: a language server that was still loading answered with no hints, and its new
+   * diagnostics (or its ready status) say it has analysed the file now.
+   */
+  refresh: () => void
 }
 
 /** The lines on screen, as a request for the server (end column 1: whole last line). */
@@ -177,5 +182,8 @@ export const inlayHints = (language: LanguageApi, file: DocumentContext): InlayH
     board.enabled = value
     board.listeners.forEach((listener) => listener())
   }
-  return { extension: [hintsField, plugin, inlayTheme], setEnabled }
+  const refresh = (): void => {
+    if (board.enabled) board.listeners.forEach((listener) => listener())
+  }
+  return { extension: [hintsField, plugin, inlayTheme], setEnabled, refresh }
 }

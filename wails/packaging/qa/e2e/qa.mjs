@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | rust
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -17,6 +17,7 @@ import { steps } from './steps.mjs'
 import { persistenceSteps, firstRunSteps } from './settings-steps.mjs'
 import { pythonSteps } from './steps-python.mjs'
 import { cppSteps } from './steps-cpp.mjs'
+import { rustSteps } from './steps-rust.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -106,6 +107,14 @@ const main = async () => {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`cpp-${lang}`, { language: lang, toolPaths: { cxx: L.DEV_CXX } }, (ctx) => cppSteps(ctx, lang))
+      }
+    }
+    // Rust (M3): the development rustup of docs/PLAN_RUST.md section 3.3, inherited by wails dev.
+    if (wants('rust')) {
+      Object.assign(process.env, L.DEV_RUST)
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`rust-${lang}`, { language: lang, toolPaths: { 'lldb-dap': L.DEV_LLDB_DAP } }, (ctx) => rustSteps(ctx, lang))
       }
     }
   } finally {

@@ -37,6 +37,21 @@ func (f flavor) StopReason(event *dap.StoppedEvent) (domain.StopReason, string) 
 	return domain.StopException, f.panics.description()
 }
 
+// KeepVariable hides the iterator rustc creates for a for loop ("iter", a Range or a slice
+// iterator): a beginner never wrote it (found in the M3 QA). A variable of the student named iter
+// with another type stays.
+func (f flavor) KeepVariable(variable dap.Variable) bool {
+	if variable.Name != "iter" {
+		return f.Flavor.KeepVariable(variable)
+	}
+	for _, hidden := range []string{"core::ops::range::", "core::slice::iter::", "alloc::vec::into_iter::", "core::iter::"} {
+		if strings.HasPrefix(variable.Type, hidden) {
+			return false
+		}
+	}
+	return f.Flavor.KeepVariable(variable)
+}
+
 func hitPanic(event *dap.StoppedEvent) bool {
 	for _, id := range event.Body.HitBreakpointIds {
 		if id == panicBreakpointID {

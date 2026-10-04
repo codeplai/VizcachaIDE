@@ -43,7 +43,7 @@ func newRustSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts 
 		Profile:  rust.Profile,
 		Runner:   rustRunner,
 		Debugger: debugger,
-		LanguageServer: analyzer.New(sink, analyzer.Config{Locator: locator},
+		LanguageServer: analyzer.NewRouter(sink, analyzer.Config{Locator: locator},
 			lsp.Options{IdleTimeout: languageServerIdle}),
 		Explainer: explainer,
 		Formatter: rustfmt.New(locator),
