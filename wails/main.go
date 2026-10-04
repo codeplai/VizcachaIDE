@@ -14,13 +14,14 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -89,7 +90,7 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 // newGoTools creates the Delve and gopls adapters. Tool paths are resolved when a debug
 // session or gopls starts (configured -> bundled -> PATH), so changing them in Settings
 // needs no restart.
-func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
+func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, texts *backendTexts) (*delve.Debugger, *lsp.Server) {
 	debugger := delve.New(sink, delve.Options{
 		DelvePath:   func() string { return goToolchain.Locate(toolchain.ToolDelve).Path },
 		Environment: goToolchain.Environment,
@@ -98,7 +99,7 @@ func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, t
 	languageServer := gopls.New(sink, gopls.Config{
 		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
 		Environment: goToolchain.Environment,
-	})
+	}, lsp.Options{})
 	return debugger, languageServer
 }
 

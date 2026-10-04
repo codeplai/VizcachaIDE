@@ -1,7 +1,6 @@
-package gopls
+package lsp
 
 import (
-	"context"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -21,13 +20,4 @@ func TestDidChangeSendsTheWholeTextWithoutARange(t *testing.T) {
 	if !strings.Contains(body, `"text":"package main\n"`) || !strings.Contains(body, `"version":2`) {
 		t.Errorf("didChange = %s", body)
 	}
-}
-
-func TestRealGoplsReplacesTheDocumentWhenItChanges(t *testing.T) {
-	session := startSession(t)
-	fixed := "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(1)\n}\n"
-	if err := session.server.ChangeDocument(context.Background(), session.file, fixed, 1); err != nil {
-		t.Fatal(err)
-	}
-	waitUntil(t, queryTimeout, func() bool { return len(session.sink.diagnosticsOf(session.file)) == 0 })
 }

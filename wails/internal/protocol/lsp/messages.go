@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"os"
@@ -7,10 +7,7 @@ import (
 	"go.lsp.dev/protocol"
 )
 
-const (
-	clientName = "VizcachaIDE"
-	languageID = "go"
-)
+const clientName = "VizcachaIDE"
 
 var plainText = []string{"plaintext"}
 
@@ -41,14 +38,19 @@ func workspaceFolder(root string) map[string]any {
 	return map[string]any{"uri": string(pathToURI(root)), "name": name}
 }
 
-func initializeParams(root string) map[string]any {
-	return map[string]any{
+// initializeParams builds the handshake; initializationOptions are the flavor's (nil: none).
+func initializeParams(root string, initializationOptions any) map[string]any {
+	params := map[string]any{
 		"processId":        os.Getpid(),
 		"clientInfo":       map[string]any{"name": clientName},
 		"rootUri":          string(pathToURI(root)),
 		"workspaceFolders": []any{workspaceFolder(root)},
 		"capabilities":     clientCapabilities(),
 	}
+	if initializationOptions != nil {
+		params["initializationOptions"] = initializationOptions
+	}
+	return params
 }
 
 func addFolderParams(root string) map[string]any {
@@ -57,9 +59,9 @@ func addFolderParams(root string) map[string]any {
 	}}
 }
 
-func didOpenParams(doc document) protocol.DidOpenTextDocumentParams {
+func didOpenParams(doc document, languageID string) protocol.DidOpenTextDocumentParams {
 	return protocol.DidOpenTextDocumentParams{TextDocument: protocol.TextDocumentItem{
-		URI: pathToURI(doc.path), LanguageID: languageID, Version: doc.version, Text: doc.text,
+		URI: pathToURI(doc.path), LanguageID: protocol.LanguageIdentifier(languageID), Version: doc.version, Text: doc.text,
 	}}
 }
 

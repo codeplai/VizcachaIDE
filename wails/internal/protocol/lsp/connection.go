@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"context"
@@ -16,10 +16,10 @@ import (
 
 const exitGrace = 2 * time.Second
 
-// notificationHandler receives the notifications gopls sends (publishDiagnostics...).
+// notificationHandler receives the notifications the server sends (publishDiagnostics...).
 type notificationHandler func(method string, params json.RawMessage)
 
-// connection is a running "gopls serve" process and its JSON-RPC link.
+// connection is a running language server process and its JSON-RPC link.
 type connection struct {
 	conn jsonrpc2.Conn
 	cmd  *exec.Cmd
@@ -33,22 +33,22 @@ type stdio struct {
 
 func (s stdio) Close() error { return s.WriteCloser.Close() }
 
-// startConnection launches gopls and starts reading its messages.
-func startConnection(executable string, env map[string]string, dir string, handle notificationHandler) (*connection, error) {
-	cmd := exec.Command(executable, "serve")
+// startConnection launches the server and starts reading its messages.
+func startConnection(executable string, args []string, env map[string]string, dir string, handle notificationHandler) (*connection, error) {
+	cmd := exec.Command(executable, args...)
 	cmd.Dir = dir
 	cmd.Env = mergedEnvironment(env)
 	hideWindow(cmd)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, fmt.Errorf("gopls stdin: %w", err)
+		return nil, fmt.Errorf("language server stdin: %w", err)
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("gopls stdout: %w", err)
+		return nil, fmt.Errorf("language server stdout: %w", err)
 	}
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("start gopls: %w: %w", app.ErrToolNotFound, err)
+		return nil, fmt.Errorf("start language server: %w: %w", app.ErrToolNotFound, err)
 	}
 	conn := jsonrpc2.NewConn(jsonrpc2.NewStream(stdio{Reader: stdout, WriteCloser: stdin}))
 	conn.Go(context.Background(), func(ctx context.Context, reply jsonrpc2.Replier, req jsonrpc2.Request) error {
@@ -89,19 +89,19 @@ func mergedEnvironment(overrides map[string]string) []string {
 func (c *connection) call(ctx context.Context, method string, params any) (json.RawMessage, error) {
 	var result json.RawMessage
 	if _, err := c.conn.Call(ctx, method, params, &result); err != nil {
-		return nil, fmt.Errorf("gopls %s: %w", method, err)
+		return nil, fmt.Errorf("language server %s: %w", method, err)
 	}
 	return result, nil
 }
 
 func (c *connection) notify(ctx context.Context, method string, params any) error {
 	if err := c.conn.Notify(ctx, method, params); err != nil {
-		return fmt.Errorf("gopls %s: %w", method, err)
+		return fmt.Errorf("language server %s: %w", method, err)
 	}
 	return nil
 }
 
-// close asks gopls to exit and kills the process if it does not.
+// close asks the server to exit and kills the process if it does not.
 func (c *connection) close(ctx context.Context) {
 	shutdownCtx, cancel := context.WithTimeout(ctx, exitGrace)
 	defer cancel()

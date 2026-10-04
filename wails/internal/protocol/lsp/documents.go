@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"os"

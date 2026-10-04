@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"context"
@@ -45,15 +45,20 @@ func (r *recordingSink) lastStatus() domain.ServerStatus {
 	return r.statuses[len(r.statuses)-1]
 }
 
-func (r *recordingSink) diagnosticsOf(path string) []domain.Diagnostic {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return r.diagnostics[path]
-}
+// missingToolFlavor is a language server whose tool is not installed.
+type missingToolFlavor struct{}
 
-func TestMissingGoplsIsUnavailableAndQueriesAreEmpty(t *testing.T) {
+func (missingToolFlavor) Command(map[string]string) (string, []string, error) {
+	return "", nil, app.MissingTool("fake-ls")
+}
+func (missingToolFlavor) RootOf(path string) string      { return filepath.Dir(path) }
+func (missingToolFlavor) InitializationOptions() any     { return nil }
+func (missingToolFlavor) Configuration() any             { return nil }
+func (missingToolFlavor) Environment() map[string]string { return nil }
+
+func TestMissingToolIsUnavailableAndQueriesAreEmpty(t *testing.T) {
 	sink := newRecordingSink()
-	server := New(sink, Config{Executable: func() string { return filepath.Join(t.TempDir(), "no-gopls") }})
+	server := New(sink, missingToolFlavor{}, Options{})
 	ctx := context.Background()
 	file := filepath.Join(t.TempDir(), "main.go")
 
@@ -87,7 +92,7 @@ func TestMissingGoplsIsUnavailableAndQueriesAreEmpty(t *testing.T) {
 }
 
 func TestQueriesOnUnopenedDocumentsAreEmpty(t *testing.T) {
-	server := New(newRecordingSink(), Config{})
+	server := New(newRecordingSink(), missingToolFlavor{}, Options{})
 	at := domain.SourceLocation{File: "nunca-abierto.go", Line: 1, Column: 1}
 	if items, err := server.Completion(context.Background(), at); err != nil || len(items) != 0 {
 		t.Errorf("Completion = %v, %v", items, err)

@@ -1,4 +1,4 @@
-package gopls
+package lsp
 
 import (
 	"context"
@@ -11,10 +11,10 @@ import (
 
 const (
 	requestTimeout = 1500 * time.Millisecond
-	busyTimeout    = 150 * time.Millisecond // after a timeout gopls is probably still loading
+	busyTimeout    = 150 * time.Millisecond // after a timeout the server is probably still loading
 )
 
-// request sends a query and returns its raw result. ok is false when gopls is missing,
+// request sends a query and returns its raw result. ok is false when the server is missing,
 // not ready in time, failed or timed out: callers then answer with an empty result.
 func (s *Server) request(ctx context.Context, method string, params any) (raw json.RawMessage, ok bool) {
 	limit := requestTimeout

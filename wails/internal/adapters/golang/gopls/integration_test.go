@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
 )
 
 const integrationSource = `package main
@@ -33,7 +34,7 @@ const (
 )
 
 type goplsSession struct {
-	server *Server
+	server *lsp.Server
 	sink   *recordingSink
 	file   string
 }
@@ -42,7 +43,7 @@ type goplsSession struct {
 // It skips the test when gopls or go are not installed.
 func startSession(t *testing.T) goplsSession {
 	t.Helper()
-	if _, err := locateGopls("", nil); err != nil {
+	if _, _, err := NewFlavor(Config{}).Command(nil); err != nil {
 		t.Skip("gopls is not installed")
 	}
 	if _, err := exec.LookPath("go"); err != nil {
@@ -57,7 +58,7 @@ func startSession(t *testing.T) goplsSession {
 		t.Fatal(err)
 	}
 	sink := newRecordingSink()
-	server := New(sink, Config{})
+	server := New(sink, Config{}, lsp.Options{})
 	t.Cleanup(func() { _ = server.Shutdown(context.Background()) })
 	if err := server.OpenDocument(context.Background(), file, integrationSource); err != nil {
 		t.Fatal(err)
@@ -134,7 +135,7 @@ func TestRealGoplsFindsTheLocalDefinitionAndSymbols(t *testing.T) {
 		target, _ := session.server.Definition(context.Background(), call)
 		return target, target != nil
 	})
-	if target.Line != 5 || target.Column != 6 || pathKey(target.File) != pathKey(session.file) {
+	if target.Line != 5 || target.Column != 6 || !strings.EqualFold(filepath.Clean(target.File), filepath.Clean(session.file)) {
 		t.Errorf("definition = %+v, want 5:6 in main.go", target)
 	}
 	symbols := eventually(t, func() ([]domain.DocumentSymbol, bool) {
@@ -152,4 +153,13 @@ func TestRealGoplsFindsTheLocalDefinitionAndSymbols(t *testing.T) {
 	if len(ranges) != 2 {
 		t.Errorf("highlights = %+v", ranges)
 	}
+}
+
+func TestRealGoplsReplacesTheDocumentWhenItChanges(t *testing.T) {
+	session := startSession(t)
+	fixed := "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(1)\n}\n"
+	if err := session.server.ChangeDocument(context.Background(), session.file, fixed, 1); err != nil {
+		t.Fatal(err)
+	}
+	waitUntil(t, queryTimeout, func() bool { return len(session.sink.diagnosticsOf(session.file)) == 0 })
 }
