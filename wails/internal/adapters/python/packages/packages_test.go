@@ -82,9 +82,17 @@ func TestPackageNameIsValidated(t *testing.T) {
 }
 
 func TestMissingPython(t *testing.T) {
-	manager, _ := newManager(t, "")
-	if err := manager.List(context.Background(), t.TempDir()); err != nil && !errors.Is(err, app.ErrToolNotFound) {
+	manager, events := newManager(t, "")
+	err := manager.List(context.Background(), t.TempDir())
+	if err != nil && !errors.Is(err, app.ErrToolNotFound) {
 		t.Fatalf("List = %v", err)
+	}
+	if err == nil { // a Python on PATH ran pip: wait for it, Windows cannot delete a folder in use
+		select {
+		case <-events.finished:
+		case <-time.After(90 * time.Second):
+			t.Fatal("pip list did not finish in time")
+		}
 	}
 }
 

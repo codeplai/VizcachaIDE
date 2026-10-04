@@ -103,3 +103,29 @@ func hasLabel(items []domain.CompletionItem, label string) bool {
 	}
 	return false
 }
+
+// A second loose file in another folder is a new detached file: the client tells rust-analyzer
+// its settings changed (lsp.PulledConfiguration) and it serves that file too.
+func TestRealRustAnalyzerServesASecondLooseFile(t *testing.T) {
+	first := filepath.Join(t.TempDir(), "uno", "main.rs")
+	s := openIn(t, NewFlavor(Config{Locator: locatorForTests(t)}), first, readTestdata(t, "loose.rs"))
+	waitUntil(t, func() bool { _, found := s.sink.withCode(first, "E0308"); return found })
+	second := filepath.Join(t.TempDir(), "dos", "main.rs")
+	if err := os.MkdirAll(filepath.Dir(second), 0o750); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(second, []byte(s.text), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.server.OpenDocument(context.Background(), second, s.text); err != nil {
+		t.Fatal(err)
+	}
+	// "    v.push(1);" is line 7.
+	members := eventually(t, func() ([]domain.CompletionItem, bool) {
+		items, _ := s.server.Completion(context.Background(), domain.SourceLocation{File: second, Line: 7, Column: 7})
+		return items, len(items) > 0
+	})
+	if !hasLabel(members, "push") {
+		t.Errorf("no push in %d members", len(members))
+	}
+}

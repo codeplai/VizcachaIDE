@@ -26,8 +26,8 @@ type rawEntry struct {
 	// Codes are stable error codes of the compiler (rustc's "E0382", a lint name): a diagnostic
 	// whose Code is one of them is recognised whatever its wording.
 	Codes []string `json:"codes"`
-	EN       texts    `json:"en"`
-	ES       texts    `json:"es"`
+	EN    texts    `json:"en"`
+	ES    texts    `json:"es"`
 }
 
 // entry recognises one kind of message. The first entry whose code or pattern matches wins.

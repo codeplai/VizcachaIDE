@@ -72,6 +72,8 @@ type Server struct {
 	folders map[string]bool
 	ready   chan struct{} // closed when the server is ready or unavailable
 	idle    idleShutdown
+	// settingsSent is the JSON of the last settings a pulling server heard of (pulled.go).
+	settingsSent string
 }
 
 var _ app.LanguageServer = (*Server)(nil)

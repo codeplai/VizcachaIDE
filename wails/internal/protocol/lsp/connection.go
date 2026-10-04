@@ -19,6 +19,9 @@ const exitGrace = 2 * time.Second
 // notificationHandler receives the notifications the server sends (publishDiagnostics...).
 type notificationHandler func(method string, params json.RawMessage)
 
+// requestHandler answers a request the server sends to the client (nil means null).
+type requestHandler func(method string, params json.RawMessage) any
+
 // connection is a running language server process and its JSON-RPC link.
 type connection struct {
 	conn jsonrpc2.Conn
@@ -34,7 +37,7 @@ type stdio struct {
 func (s stdio) Close() error { return s.WriteCloser.Close() }
 
 // startConnection launches the server and starts reading its messages.
-func startConnection(executable string, args []string, env map[string]string, dir string, handle notificationHandler) (*connection, error) {
+func startConnection(executable string, args []string, env map[string]string, dir string, handle notificationHandler, answer requestHandler) (*connection, error) {
 	cmd := exec.Command(executable, args...)
 	cmd.Dir = dir
 	cmd.Env = mergedEnvironment(env)
@@ -53,7 +56,7 @@ func startConnection(executable string, args []string, env map[string]string, di
 	conn := jsonrpc2.NewConn(jsonrpc2.NewStream(stdio{Reader: stdout, WriteCloser: stdin}))
 	conn.Go(context.Background(), func(ctx context.Context, reply jsonrpc2.Replier, req jsonrpc2.Request) error {
 		if _, isCall := req.(*jsonrpc2.Call); isCall {
-			return reply(ctx, nil, nil) // server-to-client requests: nothing to offer
+			return reply(ctx, answer(req.Method(), req.Params()), nil)
 		}
 		handle(req.Method(), req.Params())
 		return nil

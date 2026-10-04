@@ -40,13 +40,17 @@ func workspaceFolder(root string) map[string]any {
 }
 
 // initializeParams builds the handshake; initializationOptions are the flavor's (nil: none).
-func initializeParams(root string, initializationOptions any) map[string]any {
+func initializeParams(root string, initializationOptions any, pullsConfiguration bool) map[string]any {
+	capabilities := clientCapabilities()
+	if pullsConfiguration { // the server may ask workspace/configuration (pulled.go)
+		capabilities["workspace"] = map[string]any{"workspaceFolders": true, "configuration": true}
+	}
 	params := map[string]any{
 		"processId":        os.Getpid(),
 		"clientInfo":       map[string]any{"name": clientName},
 		"rootUri":          string(pathToURI(root)),
 		"workspaceFolders": []any{workspaceFolder(root)},
-		"capabilities":     clientCapabilities(),
+		"capabilities":     capabilities,
 	}
 	if initializationOptions != nil {
 		params["initializationOptions"] = initializationOptions

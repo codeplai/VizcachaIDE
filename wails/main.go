@@ -94,29 +94,33 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 func newRegistry(sink *bridge.WailsEventSink, store app.SettingsStore, texts *backendTexts) (*app.LanguageRegistry, func(context.Context), error) {
 	// One supervisor for the whole IDE: a single program runs at a time, whatever its language.
 	supervisor := process.New(sink)
-	goSupport, closeGo, err := newGoSupport(sink, store, texts, supervisor)
-	if err != nil {
-		return nil, nil, err
+	var supports []app.LanguageSupport
+	var closers []func(context.Context)
+	for _, create := range languageConstructors {
+		support, release, err := create(sink, store, texts, supervisor)
+		if err != nil {
+			return nil, nil, err
+		}
+		supports, closers = append(supports, support), append(closers, release)
 	}
-	pythonSupport, closePython, err := newPythonSupport(sink, store, texts, supervisor)
-	if err != nil {
-		return nil, nil, err
-	}
-	cppSupport, closeCpp, err := newCppSupport(sink, store, texts, supervisor)
-	if err != nil {
-		return nil, nil, err
-	}
-	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, goSupport, pythonSupport, cppSupport)
+	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, supports...)
 	if err != nil {
 		return nil, nil, err
 	}
 	closeAll := func(ctx context.Context) {
-		closeGo(ctx)
-		closePython(ctx)
-		closeCpp(ctx)
+		for _, release := range closers {
+			release(ctx)
+		}
 	}
 	return registry, closeAll, nil
 }
+
+// languageConstructor creates the adapters of one language; the function it returns releases
+// what they hold beyond what shutdownLanguages stops.
+type languageConstructor func(*bridge.WailsEventSink, app.SettingsStore, *backendTexts, *process.Supervisor) (app.LanguageSupport, func(context.Context), error)
+
+// languageConstructors are the languages of the IDE, in the order the menus list them.
+var languageConstructors = []languageConstructor{newGoSupport, newPythonSupport, newCppSupport, newRustSupport}
 
 // shutdownLanguages stops what every language may have running: the user's program, a debug
 // session and the language server.

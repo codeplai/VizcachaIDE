@@ -34,7 +34,14 @@ type Flavor struct {
 	loose []string
 }
 
-var _ lsp.Flavor = (*Flavor)(nil)
+var (
+	_ lsp.Flavor              = (*Flavor)(nil)
+	_ lsp.PulledConfiguration = (*Flavor)(nil)
+)
+
+// PullsConfiguration is true: rust-analyzer asks for its settings, and a new loose file must
+// make it ask again (lsp.PulledConfiguration).
+func (f *Flavor) PullsConfiguration() bool { return true }
 
 // NewFlavor creates the rust-analyzer flavor.
 func NewFlavor(cfg Config) *Flavor { return &Flavor{cfg: cfg} }
