@@ -1,0 +1,178 @@
+{
+ "completion": {
+  "isIncomplete": false,
+  "items": [
+   {
+    "data": {
+     "doc_uri": "{DOC_URI}"
+    },
+    "insertText": "print",
+    "kind": 3,
+    "label": "print(values, sep, end, file, flush)",
+    "sortText": "aprint"
+   }
+  ]
+ },
+ "definition": [
+  {
+   "range": {
+    "end": {
+     "character": 9,
+     "line": 0
+    },
+    "start": {
+     "character": 4,
+     "line": 0
+    }
+   },
+   "uri": "{DOC_URI}"
+  }
+ ],
+ "documentSymbol": [
+  {
+   "containerName": null,
+   "kind": 12,
+   "location": {
+    "range": {
+     "end": {
+      "character": 0,
+      "line": 2
+     },
+     "start": {
+      "character": 0,
+      "line": 0
+     }
+    },
+    "uri": "{DOC_URI}"
+   },
+   "name": "greet"
+  }
+ ],
+ "hover": {
+  "contents": {
+   "kind": "plaintext",
+   "value": "len(obj: Sized, /) -> int\n\nReturn the number of items in a container."
+  }
+ },
+ "initialize": {
+  "capabilities": {
+   "codeActionProvider": true,
+   "codeLensProvider": {
+    "resolveProvider": false
+   },
+   "completionProvider": {
+    "resolveProvider": true,
+    "triggerCharacters": [
+     "."
+    ]
+   },
+   "definitionProvider": true,
+   "documentFormattingProvider": true,
+   "documentHighlightProvider": true,
+   "documentRangeFormattingProvider": true,
+   "documentSymbolProvider": true,
+   "executeCommandProvider": {
+    "commands": []
+   },
+   "experimental": {},
+   "foldingRangeProvider": true,
+   "hoverProvider": true,
+   "notebookDocumentSync": {
+    "notebookSelector": [
+     {
+      "cells": [
+       {
+        "language": "python"
+       }
+      ]
+     }
+    ]
+   },
+   "referencesProvider": true,
+   "renameProvider": true,
+   "signatureHelpProvider": {
+    "triggerCharacters": [
+     "(",
+     ",",
+     "="
+    ]
+   },
+   "textDocumentSync": {
+    "change": 2,
+    "openClose": true,
+    "save": {
+     "includeText": true
+    }
+   },
+   "typeDefinitionProvider": true,
+   "workspace": {
+    "workspaceFolders": {
+     "changeNotifications": true,
+     "supported": true
+    }
+   }
+  },
+  "serverInfo": {
+   "name": "pylsp",
+   "version": "1.15.0"
+  }
+ },
+ "publishDiagnostics": {
+  "diagnostics": [
+   {
+    "message": "undefined name 'x'",
+    "range": {
+     "end": {
+      "character": 9,
+      "line": 5
+     },
+     "start": {
+      "character": 6,
+      "line": 5
+     }
+    },
+    "severity": 1,
+    "source": "pyflakes"
+   },
+   {
+    "message": "undefined name 'pri'",
+    "range": {
+     "end": {
+      "character": 4,
+      "line": 7
+     },
+     "start": {
+      "character": 0,
+      "line": 7
+     }
+    },
+    "severity": 1,
+    "source": "pyflakes"
+   }
+  ],
+  "uri": "{DOC_URI}",
+  "version": 1
+ },
+ "signatureHelp": {
+  "activeParameter": 0,
+  "activeSignature": 0,
+  "signatures": [
+   {
+    "documentation": {
+     "kind": "plaintext",
+     "value": ""
+    },
+    "label": "greet(name)",
+    "parameters": [
+     {
+      "documentation": {
+       "kind": "plaintext",
+       "value": ""
+      },
+      "label": "name"
+     }
+    ]
+   }
+  ]
+ }
+}
