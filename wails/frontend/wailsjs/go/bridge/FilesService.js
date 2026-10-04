@@ -46,6 +46,10 @@ export function SaveFileDialog(arg1, arg2) {
   return window['go']['bridge']['FilesService']['SaveFileDialog'](arg1, arg2);
 }
 
+export function UseLanguages(arg1) {
+  return window['go']['bridge']['FilesService']['UseLanguages'](arg1);
+}
+
 export function UseShell(arg1) {
   return window['go']['bridge']['FilesService']['UseShell'](arg1);
 }

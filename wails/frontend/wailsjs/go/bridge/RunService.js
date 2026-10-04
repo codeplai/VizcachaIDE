@@ -6,28 +6,20 @@ export function Build(arg1, arg2) {
   return window['go']['bridge']['RunService']['Build'](arg1, arg2);
 }
 
-export function Format(arg1) {
-  return window['go']['bridge']['RunService']['Format'](arg1);
+export function Check(arg1) {
+  return window['go']['bridge']['RunService']['Check'](arg1);
 }
 
-export function ModGet(arg1, arg2) {
-  return window['go']['bridge']['RunService']['ModGet'](arg1, arg2);
-}
-
-export function ModInit(arg1, arg2) {
-  return window['go']['bridge']['RunService']['ModInit'](arg1, arg2);
-}
-
-export function ModTidy(arg1) {
-  return window['go']['bridge']['RunService']['ModTidy'](arg1);
+export function Format(arg1, arg2) {
+  return window['go']['bridge']['RunService']['Format'](arg1, arg2);
 }
 
 export function Run(arg1, arg2) {
   return window['go']['bridge']['RunService']['Run'](arg1, arg2);
 }
 
-export function RunUntitled(arg1, arg2) {
-  return window['go']['bridge']['RunService']['RunUntitled'](arg1, arg2);
+export function RunUntitled(arg1, arg2, arg3) {
+  return window['go']['bridge']['RunService']['RunUntitled'](arg1, arg2, arg3);
 }
 
 export function SplitArguments(arg1) {
@@ -36,14 +28,6 @@ export function SplitArguments(arg1) {
 
 export function Stop() {
   return window['go']['bridge']['RunService']['Stop']();
-}
-
-export function Toolchain() {
-  return window['go']['bridge']['RunService']['Toolchain']();
-}
-
-export function Vet(arg1) {
-  return window['go']['bridge']['RunService']['Vet'](arg1);
 }
 
 export function WriteInput(arg1) {

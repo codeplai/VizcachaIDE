@@ -18,6 +18,6 @@ export function Save(arg1) {
   return window['go']['bridge']['SettingsService']['Save'](arg1);
 }
 
-export function UseTools(arg1, arg2) {
-  return window['go']['bridge']['SettingsService']['UseTools'](arg1, arg2);
+export function UseTools(arg1) {
+  return window['go']['bridge']['SettingsService']['UseTools'](arg1);
 }

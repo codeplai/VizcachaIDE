@@ -21,6 +21,7 @@ type FilesService struct {
 	settings  app.SettingsStore
 	watcher   app.FileWatcher
 	translate Translator
+	registry  *app.LanguageRegistry
 
 	operations *app.FileOperations
 }

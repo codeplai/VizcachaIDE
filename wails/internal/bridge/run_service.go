@@ -3,57 +3,85 @@ package bridge
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// RunService runs the user's program. It decides what to run (app.ConfigurationForFile)
-// and delegates the process to app.Toolchain, which emits run:started, run:output
-// and run:finished.
+// RunService runs the user's program. The language comes from the extension of the file: its
+// runner decides what to run (Configure) and emits run:started, run:output and run:finished.
+// Every runner shares one process slot, so there is only one program running in the whole IDE.
 type RunService struct {
-	toolchain app.Toolchain
+	supportRouter
+
+	mu     sync.Mutex
+	active app.ProgramRunner // runner of the last program started
 }
 
 // NewRunService creates the service.
-func NewRunService(toolchain app.Toolchain) *RunService {
-	return &RunService{toolchain: toolchain}
+func NewRunService(registry *app.LanguageRegistry) *RunService {
+	return &RunService{supportRouter: supportRouter{registry: registry}}
 }
 
 // Run compiles and runs one file and returns the configuration it used.
 // The program outlives this call, so it runs on its own context.
 func (s *RunService) Run(path string, programArgs []string) (domain.RunConfiguration, error) {
-	config := app.ConfigurationForFile(path, programArgs)
-	if err := s.toolchain.Run(context.Background(), config); err != nil {
+	support, err := s.supportFor(path)
+	if err != nil {
+		return domain.RunConfiguration{}, fmt.Errorf("run %s: %w", path, err)
+	}
+	config := support.Runner.Configure(path, programArgs)
+	if err := support.Runner.Run(context.Background(), config); err != nil {
 		return config, fmt.Errorf("run %s: %w", path, err)
 	}
+	s.remember(support.Runner)
 	return config, nil
 }
 
-// Build compiles one file without running it.
+// Build compiles one file without running it. Languages without a build step answer
+// app.ErrUnsupported.
 func (s *RunService) Build(path string, programArgs []string) (domain.RunConfiguration, error) {
-	config := app.ConfigurationForFile(path, programArgs)
-	if err := s.toolchain.Build(context.Background(), config); err != nil {
+	support, err := s.supportFor(path)
+	if err != nil {
+		return domain.RunConfiguration{}, fmt.Errorf("build %s: %w", path, err)
+	}
+	config := support.Runner.Configure(path, programArgs)
+	if err := support.Runner.Build(context.Background(), config); err != nil {
 		return config, fmt.Errorf("build %s: %w", path, err)
 	}
+	s.remember(support.Runner)
 	return config, nil
 }
 
-// RunUntitled runs unsaved source from a temporary folder.
-func (s *RunService) RunUntitled(source string, programArgs []string) (domain.RunConfiguration, error) {
-	config, err := s.toolchain.RunUntitled(context.Background(), source, programArgs)
+// RunUntitled runs unsaved source from a temporary folder. The extension of the untitled name
+// ("untitled-1.py") decides the language.
+func (s *RunService) RunUntitled(path, source string, programArgs []string) (domain.RunConfiguration, error) {
+	support, err := s.supportFor(path)
 	if err != nil {
-		return config, fmt.Errorf("run untitled: %w", err)
+		return domain.RunConfiguration{}, fmt.Errorf("run untitled %s: %w", path, err)
 	}
+	config, err := support.Runner.RunUntitled(context.Background(), path, source, programArgs)
+	if err != nil {
+		return config, fmt.Errorf("run untitled %s: %w", path, err)
+	}
+	s.remember(support.Runner)
 	return config, nil
 }
 
-// Vet runs "go vet" on the target of a finished run and returns its output. It works
-// in the background: it neither blocks Run nor emits run events.
-func (s *RunService) Vet(config domain.RunConfiguration) (string, error) {
-	output, err := s.toolchain.Vet(context.Background(), config)
+// Check runs the checker of config.CodeLanguage (go vet) on the target of a finished run and
+// returns its output. It works in the background: it neither blocks Run nor emits run events.
+func (s *RunService) Check(config domain.RunConfiguration) (string, error) {
+	support, err := s.supportOf(config.CodeLanguage)
 	if err != nil {
-		return "", fmt.Errorf("vet %s: %w", config.Target, err)
+		return "", fmt.Errorf("check %s: %w", config.Target, err)
+	}
+	if support.Checker == nil {
+		return "", fmt.Errorf("check %s: %w", config.Target, app.ErrUnsupported)
+	}
+	output, err := support.Checker.Check(context.Background(), config)
+	if err != nil {
+		return "", fmt.Errorf("check %s: %w", config.Target, err)
 	}
 	return output, nil
 }
@@ -65,45 +93,43 @@ func (s *RunService) SplitArguments(text string) ([]string, error) {
 
 // Stop asks the running program to finish (so its defers and signal handlers run) and
 // kills it and everything it started if it does not within about two seconds.
-func (s *RunService) Stop() error { return s.toolchain.Stop() }
+func (s *RunService) Stop() error { return s.activeRunner().Stop() }
 
 // WriteInput sends text, followed by Enter, to the stdin of the running program.
-func (s *RunService) WriteInput(text string) error { return s.toolchain.WriteInput(text) }
+func (s *RunService) WriteInput(text string) error { return s.activeRunner().WriteInput(text) }
 
-// Format returns the gofmt-formatted text.
-func (s *RunService) Format(text string) (string, error) { return s.toolchain.FormatSource(text) }
-
-// Toolchain reports which Go tools were found and their versions.
-func (s *RunService) Toolchain() domain.ToolchainInfo {
-	return s.toolchain.Info(context.Background())
-}
-
-// ModInit runs "go mod init <modulePath>" in workingDir.
-func (s *RunService) ModInit(workingDir, modulePath string) error {
-	args, err := app.ModInitArguments(modulePath)
+// Format returns the formatted text of a file, in the language of its extension.
+func (s *RunService) Format(path, text string) (string, error) {
+	support, err := s.supportFor(path)
 	if err != nil {
-		return err
+		return "", fmt.Errorf("format %s: %w", path, err)
 	}
-	return s.goCommand(workingDir, args)
+	if support.Formatter == nil {
+		return "", fmt.Errorf("format %s: %w", path, app.ErrUnsupported)
+	}
+	return support.Formatter.Format(path, text)
 }
 
-// ModGet runs "go get <pkg>" in workingDir.
-func (s *RunService) ModGet(workingDir, pkg string) error {
-	args, err := app.GetArguments(pkg)
-	if err != nil {
-		return err
-	}
-	return s.goCommand(workingDir, args)
+// remember keeps the runner of a program that did start; a refused run (busy, unsupported)
+// must not hide the runner that is really running.
+func (s *RunService) remember(runner app.ProgramRunner) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.active = runner
 }
 
-// ModTidy runs "go mod tidy" in workingDir.
-func (s *RunService) ModTidy(workingDir string) error {
-	return s.goCommand(workingDir, app.ModTidyArguments())
-}
-
-func (s *RunService) goCommand(workingDir string, args []string) error {
-	if err := s.toolchain.RunGoCommand(context.Background(), workingDir, args); err != nil {
-		return fmt.Errorf("go %v: %w", args, err)
+// activeRunner is the runner of the last program started. All runners share the process slot,
+// so before any run the one that reports a running program (or the default) serves as well.
+func (s *RunService) activeRunner() app.ProgramRunner {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.active != nil {
+		return s.active
 	}
-	return nil
+	for _, support := range s.registry.All() {
+		if support.Runner.IsRunning() {
+			return support.Runner
+		}
+	}
+	return s.registry.Default().Runner
 }

@@ -6,21 +6,6 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// fakeExplainer parses every line as a diagnostic and explains it as "<language>:<message>".
-type fakeExplainer struct{}
-
-func (fakeExplainer) Parse(rawOutput, _ string) []domain.Diagnostic {
-	return []domain.Diagnostic{
-		{Severity: domain.SeverityError, Message: rawOutput},
-		{Severity: domain.SeverityError, Message: rawOutput},
-		{Severity: domain.SeverityHint, Message: "hint"},
-	}
-}
-
-func (fakeExplainer) Explain(d domain.Diagnostic, language string) *domain.ErrorExplanation {
-	return &domain.ErrorExplanation{ExplanationID: "X", Title: language + ":" + d.Message}
-}
-
 type explainedSink struct {
 	recordingSink
 	items []domain.ExplainedDiagnostic
@@ -34,11 +19,11 @@ func TestAssistantExplainsInTheSettingsLanguage(t *testing.T) {
 		t.Fatal(err)
 	}
 	sink := &explainedSink{}
-	items, err := NewAssistantService(sink, fakeExplainer{}, NewLanguageResolver(store, nil)).Explain("boom", "")
+	items, err := NewAssistantService(sink, newTestRegistry(t), NewLanguageResolver(store, nil)).Explain("go", "boom", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(items) != 1 || items[0].Explanation.Title != "es:boom" {
+	if len(items) != 1 || items[0].Explanation.Title != "go:es:boom" {
 		t.Fatalf("items = %+v, want one deduplicated Spanish explanation", items)
 	}
 	if len(sink.items) != 1 {
@@ -52,7 +37,7 @@ func TestAssistantExplainsParsedDiagnostics(t *testing.T) {
 	if err := store.Save(domain.Settings{Language: domain.LanguageEN}); err != nil {
 		t.Fatal(err)
 	}
-	service := NewAssistantService(sink, fakeExplainer{}, NewLanguageResolver(store, nil))
+	service := NewAssistantService(sink, newTestRegistry(t), NewLanguageResolver(store, nil))
 	items, err := service.ExplainDiagnostics([]domain.Diagnostic{
 		{Severity: domain.SeverityWarning, Message: "w"},
 		{Severity: domain.SeverityInfo, Message: "i"},
@@ -60,7 +45,7 @@ func TestAssistantExplainsParsedDiagnostics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(items) != 1 || items[0].Explanation.Title != "en:w" || len(sink.items) != 1 {
+	if len(items) != 1 || items[0].Explanation.Title != "go:en:w" || len(sink.items) != 1 {
 		t.Errorf("items = %+v", items)
 	}
 }

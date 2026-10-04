@@ -9,15 +9,11 @@ import (
 	"embed"
 	"log"
 
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/gopls"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/toolchain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate"
+	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
@@ -86,20 +82,30 @@ func newWindowKeeper() (*bridge.WindowKeeper, error) {
 	return bridge.NewWindowKeeper(store), nil
 }
 
-// newGoTools creates the Delve and gopls adapters. Tool paths are resolved when a debug
-// session or gopls starts (configured -> bundled -> PATH), so changing them in Settings
-// needs no restart.
-func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, texts *backendTexts) (*delve.Debugger, *gopls.Server) {
-	debugger := delve.New(sink, delve.Options{
-		DelvePath:   func() string { return goToolchain.Locate(toolchain.ToolDelve).Path },
-		Environment: goToolchain.Environment,
-		Translate:   texts.text,
-	})
-	languageServer := gopls.New(sink, gopls.Config{
-		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
-		Environment: goToolchain.Environment,
-	})
-	return debugger, languageServer
+// newRegistry creates the language supports and the registry that maps files to them. It
+// fails at start-up when a profile and its ports disagree, never in the middle of a lesson.
+// The returned function releases what the supports hold beyond what shutdownLanguages stops.
+func newRegistry(sink *bridge.WailsEventSink, store app.SettingsStore, texts *backendTexts) (*app.LanguageRegistry, func(context.Context), error) {
+	goSupport, closeGo, err := newGoSupport(sink, store, texts)
+	if err != nil {
+		return nil, nil, err
+	}
+	supports := append([]app.LanguageSupport{goSupport}, newUnavailableSupports()...)
+	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, supports...)
+	if err != nil {
+		return nil, nil, err
+	}
+	return registry, closeGo, nil
+}
+
+// shutdownLanguages stops what every language may have running: the user's program, a debug
+// session and the language server.
+func shutdownLanguages(ctx context.Context, registry *app.LanguageRegistry) {
+	for _, support := range registry.All() {
+		_ = support.Runner.Stop() // never leave the user's program running
+		_ = support.Debugger.Stop()
+		_ = support.LanguageServer.Shutdown(ctx)
+	}
 }
 
 // newBackend creates the adapters and the services that use them.
@@ -113,18 +119,10 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	if err != nil {
 		return nil, err
 	}
-	explainer, err := errorcatalog.NewExplainer()
+	registry, closeSupports, err := newRegistry(sink, store, texts)
 	if err != nil {
 		return nil, err
 	}
-
-	goToolchain := toolchain.New(toolchain.Options{
-		Sink:             sink,
-		Settings:         store,
-		FirstBuildNotice: func() string { return texts.text("run.firstBuild") },
-	})
-	debugger, languageServer := newGoTools(sink, goToolchain, texts)
-
 	watcher, err := filewatch.New(sink, filewatch.DefaultDebounce)
 	if err != nil {
 		return nil, err
@@ -132,19 +130,21 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 
 	return &backend{
 		services: []any{
-			bridge.NewRunService(goToolchain),
-			bridge.NewConsoleService(console.New(0)),
-			bridge.NewDebugService(debugger),
-			bridge.NewLanguageService(languageServer),
-			bridge.NewAssistantService(sink, explainer, language),
-			bridge.NewFilesServiceWithTexts(sink, store, watcher, texts.withData).UseShell(filesystem.New()),
-			bridge.NewSettingsService(sink, store, language).
-				UseTools(goToolchain, bridge.NewExecutableDialog(sink, texts.withData)),
+			bridge.NewRunService(registry),
+			bridge.NewPackagesService(registry),
+			bridge.NewCodeLanguagesService(registry),
+			bridge.NewConsoleService(registry),
+			bridge.NewDebugService(registry),
+			bridge.NewLanguageService(registry),
+			bridge.NewAssistantService(sink, registry, language),
+			bridge.NewFilesServiceWithTexts(sink, store, watcher, texts.withData).
+				UseShell(filesystem.New()).UseLanguages(registry),
+			bridge.NewSettingsService(sink, store, language, registry).
+				UseTools(bridge.NewExecutableDialog(sink, texts.withData)),
 		},
 		shutdown: func(ctx context.Context) {
-			_ = goToolchain.Stop() // never leave the user's program running
-			_ = debugger.Stop()
-			_ = languageServer.Shutdown(ctx)
+			shutdownLanguages(ctx, registry)
+			closeSupports(ctx)
 			_ = watcher.Close()
 		},
 	}, nil
