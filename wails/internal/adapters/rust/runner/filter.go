@@ -26,15 +26,16 @@ type jsonLine struct {
 	} `json:"target"`
 }
 
-// Filter is process.Job.OutputFilter: the rendered text of a diagnostic, nothing for the other
+// Filter is process.Job.OutputFilter: the rendered text of a diagnostic on stderr (cargo prints
+// its JSON on stdout, but the Assistant reads compiler errors from stderr), nothing for the other
 // JSON lines and the line itself when it is not JSON.
-func (d *diagnostics) Filter(_, line string) (string, bool) {
+func (d *diagnostics) Filter(stream, line string) (string, string, bool) {
 	if !strings.HasPrefix(strings.TrimSpace(line), "{") {
-		return line, true
+		return stream, line, true
 	}
 	var parsed jsonLine
 	if err := json.Unmarshal([]byte(line), &parsed); err != nil {
-		return line, true
+		return stream, line, true
 	}
 	switch parsed.Reason {
 	case "":
@@ -44,20 +45,20 @@ func (d *diagnostics) Filter(_, line string) (string, bool) {
 			Rendered *string `json:"rendered"`
 		}
 		if json.Unmarshal(parsed.Message, &inner) != nil {
-			return "", false
+			return stream, "", false
 		}
 		return rendered(inner.Rendered)
 	case "compiler-artifact":
 		d.remember(parsed)
 	}
-	return "", false
+	return stream, "", false
 }
 
-func rendered(text *string) (string, bool) {
+func rendered(text *string) (string, string, bool) {
 	if text == nil || *text == "" {
-		return "", false
+		return "stderr", "", false
 	}
-	return *text, true // it ends with its own line break and a blank line
+	return "stderr", *text, true // it ends with its own line break and a blank line
 }
 
 func (d *diagnostics) remember(parsed jsonLine) {
@@ -83,7 +84,7 @@ func (d *diagnostics) text(captured string) string {
 		if line == "" {
 			continue
 		}
-		if text, keep := d.Filter("", line); keep {
+		if _, text, keep := d.Filter("", line); keep {
 			shown.WriteString(text)
 			if !strings.HasSuffix(text, "\n") {
 				shown.WriteString("\n")

@@ -12,6 +12,10 @@ import (
 	"strings"
 	"unicode"
 
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/rust"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/rust/runner"
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
@@ -124,7 +128,7 @@ var reserved = map[string]bool{
 // "-", not starting with a digit and never a Rust keyword ("Mi Programa" gives "mi_programa").
 func CrateName(folder string) string {
 	var name strings.Builder
-	for _, letter := range strings.ToLower(folder) {
+	for _, letter := range strings.ToLower(withoutAccents(folder)) {
 		switch {
 		case letter < unicode.MaxASCII && (unicode.IsLetter(letter) || unicode.IsDigit(letter) || letter == '-'):
 			name.WriteRune(letter)
@@ -140,4 +144,14 @@ func CrateName(folder string) string {
 		return "app_" + clean
 	}
 	return clean
+}
+
+// withoutAccents turns "Ñandú" into "Nandu": cargo accepts only ASCII crate names, and a student's
+// folder name should still be recognisable.
+func withoutAccents(text string) string {
+	plain, _, err := transform.String(transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC), text)
+	if err != nil {
+		return text
+	}
+	return plain
 }

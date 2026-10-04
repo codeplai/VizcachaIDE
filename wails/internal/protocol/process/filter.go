@@ -6,9 +6,10 @@ import (
 )
 
 // OutputFilter transforms or drops one line a stage prints (without its line break). It returns
-// the text to show and whether to show it. Rust compiles with --error-format=json and shows each
-// diagnostic's "rendered" text instead of the JSON (docs/PLAN_RUST.md sections 3.1 and 3.2).
-type OutputFilter func(stream, line string) (string, bool)
+// the stream to show it on ("stdout" or "stderr"), the text and whether to show it. Rust compiles
+// with --error-format=json and shows each diagnostic's "rendered" text instead of the JSON, on
+// stderr even when cargo printed the JSON on stdout (docs/PLAN_RUST.md sections 3.1 and 3.2).
+type OutputFilter func(stream, line string) (shownStream, text string, keep bool)
 
 // filteredEvents passes the output of a Pipes stage through an OutputFilter one complete line at
 // a time; start and end go through unchanged.
@@ -54,12 +55,12 @@ func (f *filteredEvents) emit(stream, line string) {
 		return
 	}
 	body := strings.TrimRight(line, "\r\n")
-	shown, keep := f.filter(stream, body)
+	shownStream, shown, keep := f.filter(stream, body)
 	if !keep {
 		return
 	}
 	if strings.HasSuffix(line, "\n") && !strings.HasSuffix(shown, "\n") {
 		shown += "\n"
 	}
-	f.JobEvents.RunOutput(stream, shown)
+	f.JobEvents.RunOutput(shownStream, shown)
 }

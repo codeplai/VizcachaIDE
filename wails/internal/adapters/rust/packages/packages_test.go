@@ -168,7 +168,7 @@ func TestOutsideACrateTheVerbsAskForAProject(t *testing.T) {
 func TestCrateNameIsAlwaysValid(t *testing.T) {
 	tests := map[string]string{
 		"Mi Programa": "mi_programa", "hola-mundo": "hola-mundo", "3d": "app_3d", "test": "app_test",
-		"___": "app", "": "app", "Ñandú": "and",
+		"___": "app", "": "app", "Ñandú": "nandu", "Programación": "programacion",
 	}
 	for folder, want := range tests {
 		if got := packages.CrateName(folder); got != want {

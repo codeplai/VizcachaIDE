@@ -22,9 +22,13 @@ func TestFilterShowsRenderedTextAndDropsTheRest(t *testing.T) {
 		{"broken json", `{"reason": `, `{"reason": `, true},
 	}
 	for _, test := range tests {
-		got, keep := d.Filter("stderr", test.line)
+		stream, got, keep := d.Filter("stdout", test.line)
 		if got != test.want || keep != test.keep {
 			t.Errorf("%s: got (%q, %v), want (%q, %v)", test.name, got, keep, test.want, test.keep)
+		}
+		// A diagnostic goes to stderr even when cargo printed its JSON on stdout.
+		if keep && got != test.line && stream != "stderr" {
+			t.Errorf("%s: stream = %s, want stderr", test.name, stream)
 		}
 	}
 }
