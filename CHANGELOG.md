@@ -33,6 +33,9 @@ see `docs/wails/QA_WAILS.md`).
   Settings → Tools show only those (Settings → General changes it).
 - Packages `full-python` (IDE + Python) and `full` (Go + Python). The Go-only package is now
   `full-go`.
+- **Hide the side panel and the Assistant** for more editor room: click the active rail icon, use
+  the two buttons in the title bar, or press Ctrl+B / Ctrl+Alt+B. The Assistant opens again when you
+  start debugging, and its button shows the number of problems while it is hidden.
 
 ### Changed
 - The status bar shows the open file's language and version ("Python 3.12.14") and says
@@ -195,6 +198,10 @@ inglés y español, ver `docs/wails/QA_WAILS.md`).
   de…* y Ajustes → Herramientas muestran sólo esos (se cambia en Ajustes → General).
 - Paquetes `full-python` (IDE + Python) y `full` (Go + Python). El paquete sólo con Go pasa a
   llamarse `full-go`.
+- **Oculta el panel lateral y el Asistente** para tener más espacio en el editor: pulsa el icono
+  activo de la barra lateral, usa los dos botones de la barra de título o pulsa Ctrl+B / Ctrl+Alt+B.
+  El Asistente vuelve a abrirse al empezar a depurar, y su botón muestra el número de problemas
+  mientras está oculto.
 
 ### Cambiado
 - La barra de estado muestra el lenguaje del archivo abierto y su versión ("Python 3.12.14") y dice
