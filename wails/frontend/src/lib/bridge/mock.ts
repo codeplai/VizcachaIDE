@@ -23,7 +23,7 @@ import {
 } from './mockScenarios'
 import { sampleFrameVariables } from './mockFrames'
 import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
-import { mockSettings, toolchainFor } from './mockSettings'
+import { mockSettings } from './mockSettings'
 import type { Bridge, DebugApi, LanguageApi, RunApi } from './types'
 
 export interface MockControls {
@@ -73,15 +73,11 @@ const mockRun = (state: MockState, emit: Emit): RunApi => {
     runUntitled: (path, _source, args) => run(path, args),
     build: async (path) => configurationFor(path),
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
-    modInit: async () => {},
-    modGet: async () => {},
-    modTidy: async () => {},
     check: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
     writeInput: async () => {},
     format: async (_path, text) =>
-      text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4)),
-    toolchain: async () => toolchainFor(state.settings)
+      text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4))
   }
 }
 

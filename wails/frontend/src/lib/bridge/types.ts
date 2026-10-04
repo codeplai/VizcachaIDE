@@ -14,7 +14,6 @@ import type {
   SignatureHelp,
   SourceLocation,
   SourceRange,
-  ToolchainInfo,
   ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
@@ -34,14 +33,6 @@ export interface RunApi {
   stop: () => Promise<void>
   writeInput: (text: string) => Promise<void>
   format: (path: string, text: string) => Promise<string>
-  /** Transitional (M0): use codeLanguages.tools(). Deleted when N4 and N5 are integrated. */
-  toolchain: () => Promise<ToolchainInfo>
-  /** Transitional (M0): use packages.*. Deleted when N4 and N5 are integrated. */
-  modInit: (workingDir: string, modulePath: string) => Promise<void>
-  /** Transitional (M0): use packages.add. */
-  modGet: (workingDir: string, pkg: string) => Promise<void>
-  /** Transitional (M0): use packages.tidy. */
-  modTidy: (workingDir: string) => Promise<void>
 }
 
 /** Mirrors bridge.PackagesService (Go). Verbs a language lacks reject with "unsupported". */
@@ -133,10 +124,10 @@ export interface SettingsApi {
   get: () => Promise<Settings>
   save: (settings: Settings) => Promise<void>
   /**
-   * Native file dialog for a tool (a ToolSpec.id); saves the path and returns the tools
-   * detected again. Transitional (M0): the result becomes ToolStatus[] with N4 and N5.
+   * Native file dialog for a tool (a ToolSpec.id); saves the path and returns the tools of
+   * every language detected again.
    */
-  pickExecutable: (toolId: ToolId) => Promise<ToolchainInfo>
+  pickExecutable: (toolId: ToolId) => Promise<ToolStatus[]>
   /** The language the backend resolved ("auto" becomes the system language). */
   resolvedLanguage: () => Promise<'en' | 'es'>
 }

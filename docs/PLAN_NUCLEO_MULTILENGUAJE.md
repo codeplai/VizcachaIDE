@@ -686,6 +686,25 @@ N0 (orquestador, secuencial) ──► N1 · N2 · N3 · N4 · N5 en paralelo �
 
 Orden de integración: N3 → N1 → N2 → N5 → N4. Después, QA.
 
+### 10.0 Estado (2026-10-03): N0–N5 integrados, falta QA
+
+Todos los tracks están fusionados en `m0-nucleo-multilenguaje` y **todas las piezas transitorias
+de la tabla 10.1 están retiradas** (puerto `app.Toolchain`, `ToolchainInfo` en Go y TS,
+`app/go_project.go`, `app/go_commands.go`, los miembros `toolchain`/`mod*` del bridge TS, las
+reglas depguard de las carpetas viejas). La validación neutral de argumentos es
+`app.SingleWordArgument` / `app.ErrInvalidArgument`. Verificado: `go vet`, `go test ./...`,
+`golangci-lint` (0 issues), `npm run check`, `npm run test` (251), `wails build` y arranque del
+ejecutable. Queda **QA** (§11): la matriz de `docs/wails/QA_WAILS.md` §2 a mano, con capturas EN/ES.
+
+Decisiones tomadas al integrar:
+- `packages.remove` y `packages.list` usan los textos de M1 ("Uninstall"/"Desinstalar", "Show
+  installed packages"/"Ver paquetes instalados") para no cambiarlos después.
+- `@codemirror/lang-python` y `lang-cpp` no se añaden en M0: los traen P5 (M1) y C5 (M2); hasta
+  entonces esos archivos se ven como texto plano con la sangría del perfil.
+- El lenguaje por defecto del registro es siempre Go; `Settings.DefaultCodeLanguage` sólo decide el
+  lenguaje de los archivos nuevos en el frontend. M1 puede leerlo al arrancar si hace falta.
+- La UI de 2.0 no tiene botón Build: `capabilities.build` queda listo para cuando se añada.
+
 ### 10.1 Estado tras N0 (lo que queda transitorio y quién lo retira)
 
 N0 dejó el contrato v3 compilando con todo 2.0 en verde. Para eso hay piezas marcadas

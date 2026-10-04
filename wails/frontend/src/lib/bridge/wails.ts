@@ -13,13 +13,7 @@ import {
   EventsOn
 } from '../../../wailsjs/runtime/runtime'
 import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
-import {
-  createCodeLanguagesApi,
-  createPackagesApi,
-  goPackages,
-  goToolchain,
-  toolchainInfoOf
-} from './wailsCodeLanguages'
+import { createCodeLanguagesApi, createPackagesApi } from './wailsCodeLanguages'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -37,12 +31,7 @@ const createRunApi = (): RunApi => ({
   check: (config) => RunService.Check(toWire(config)),
   stop: () => RunService.Stop(),
   writeInput: (text) => RunService.WriteInput(text),
-  format: (path, text) => RunService.Format(path, text),
-  // Transitional (M0): N4 uses codeLanguages.tools() and packages.* instead.
-  toolchain: goToolchain,
-  modInit: goPackages.modInit,
-  modGet: goPackages.modGet,
-  modTidy: goPackages.modTidy
+  format: (path, text) => RunService.Format(path, text)
 })
 
 const createConsoleApi = (): ConsoleApi => ({
@@ -109,9 +98,7 @@ export const createWailsBridge = (): Bridge => ({
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),
-    // Transitional (M0): the Go service returns ToolStatus[]; N4 switches the type.
-    pickExecutable: async (tool) =>
-      toolchainInfoOf(fromWire(await SettingsService.PickExecutable(tool))),
+    pickExecutable: async (tool) => fromWire(await SettingsService.PickExecutable(tool)),
     resolvedLanguage: async () =>
       (await SettingsService.ResolvedLanguage()) === 'es' ? 'es' : 'en'
   },

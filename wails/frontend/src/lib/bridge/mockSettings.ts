@@ -1,5 +1,5 @@
-// Settings and toolchain part of the mock bridge (see mock.ts).
-import type { Settings, ToolchainInfo, ToolSource, ToolStatus } from '../domain'
+// Settings and detected tools of the mock bridge (see mock.ts).
+import type { Settings, ToolSource, ToolStatus } from '../domain'
 import { resolveLanguage, systemLanguage } from '../language'
 import type { Emit } from './mockScenarios'
 import type { Bridge } from './types'
@@ -11,16 +11,6 @@ export interface SettingsHolder {
 
 const sourceOf = (settings: Settings, toolId: string, found: ToolSource): ToolSource =>
   settings.toolPaths[toolId] ? 'configured' : found
-
-/** Transitional (M0): the old shape of the detected tools; see toolsFor. */
-export const toolchainFor = (settings: Settings): ToolchainInfo => ({
-  goVersion: '1.25.5',
-  delveVersion: '1.27.2',
-  goplsVersion: '0.21.1',
-  goSource: sourceOf(settings, 'go', 'bundled'),
-  delveSource: sourceOf(settings, 'dlv', 'bundled'),
-  goplsSource: sourceOf(settings, 'gopls', 'path')
-})
 
 const goTool = (
   settings: Settings,
@@ -55,7 +45,7 @@ export const mockSettings = (state: SettingsHolder, emit: Emit): Bridge['setting
     pickExecutable: async (tool) => {
       const toolPaths = { ...state.settings.toolPaths, [tool]: `C:\\tools\\${tool}.exe` }
       await save({ ...state.settings, toolPaths })
-      return toolchainFor(state.settings)
+      return toolsFor(state.settings)
     },
     resolvedLanguage: async () => resolveLanguage(state.settings.language, systemLanguage())
   }

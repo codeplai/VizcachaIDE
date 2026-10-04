@@ -58,15 +58,3 @@ export interface ToolStatus {
   source: ToolSource
   path: string
 }
-
-/**
- * Transitional (M0): replaced by ToolStatus[]. Deleted when N3, N4 and N5 are integrated.
- */
-export interface ToolchainInfo {
-  goVersion: string
-  delveVersion: string
-  goplsVersion: string
-  goSource: ToolSource
-  delveSource: ToolSource
-  goplsSource: ToolSource
-}

@@ -216,6 +216,13 @@
   "errors.toolCopyCommand": { "en": "Copy the command", "es": "Copiar el comando" },
   "errors.unsupportedAction": { "en": "This isn't available for {codeLanguage}.", "es": "Esto no está disponible para {codeLanguage}." },
   "packages.title": { "en": "Packages", "es": "Paquetes" },
+  "files.newFileOfMenu": { "en": "New file of…", "es": "Nuevo archivo de…" },
+  "packages.remove": { "en": "Uninstall", "es": "Desinstalar" },
+  "packages.list": { "en": "Show installed packages", "es": "Ver paquetes instalados" },
+  "packages.done": { "en": "✓ Done.", "es": "✓ Listo." },
+  "packages.failed": { "en": "The command failed. Read the output above.", "es": "El comando falló. Lee la salida de arriba." },
+  "panels.thread": { "en": "Thread {id}", "es": "Hilo {id}" },
+  "panels.threadsEmpty": { "en": "No threads to show yet.", "es": "Todavía no hay hilos para mostrar." },
 
   "confirm.delete": { "en": "Move {name} to the Recycle Bin?", "es": "¿Mover {name} a la Papelera de reciclaje?" },
   "confirm.deleteFolder": { "en": "{count, plural, one {Move {name} and its # file to the Recycle Bin?} other {Move {name} and its # files to the Recycle Bin?}}", "es": "{count, plural, one {¿Mover {name} y su # archivo a la Papelera de reciclaje?} other {¿Mover {name} y sus # archivos a la Papelera de reciclaje?}}" },
