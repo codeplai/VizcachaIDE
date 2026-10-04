@@ -19,9 +19,12 @@
 
   /** A tool that lives inside another one (debugpy in python) has no path of its own. */
   const hasOwnPath = (spec: ToolSpec): boolean => spec.providedBy === ''
+
+  // A language without tools yet (Python and C++ in 2.1) would show an empty heading.
+  const withTools = $derived($profiles.filter((profile) => profile.tools.length > 0))
 </script>
 
-{#each $profiles as profile (profile.id)}
+{#each withTools as profile (profile.id)}
   <h3 class="group">{$t('settings.toolsOf', { values: { codeLanguage: $t(profile.nameKey) } })}</h3>
   {#each profile.tools as spec (spec.id)}
     {@const status = toolStatus(spec.id, $tools)}

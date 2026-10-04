@@ -251,10 +251,12 @@ export const steps = (ctx, lang) => {
   })
 
   add('format-save', 'Ctrl+S formats with gofmt; closing a tab with changes asks (Save / Don\'t save / Cancel)', async () => {
+    const file = path.join(L.PROJECT, 'qa', 'fmt', 'main.go')
+    // The EN and ES phases share the project: put the unformatted file back before each run.
+    fs.writeFileSync(file, L.QA_FILES['qa/fmt/main.go'])
     await L.go(page, 'FilesService', 'ListTree', path.join(L.PROJECT, 'qa', 'fmt'))
     await U.reload(page, url)
     await U.openByName(page, 'main.go')
-    const file = path.join(L.PROJECT, 'qa', 'fmt', 'main.go')
     const before = fs.readFileSync(file, 'utf8')
     await page.evaluate(() => document.querySelector('.cm-content').focus())
     await page.keyboard.down('Control')

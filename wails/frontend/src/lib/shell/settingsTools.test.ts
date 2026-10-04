@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/svelte'
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { goProfile, pythonProfile } from '../bridge/languageProfiles'
+import { cppProfile, goProfile, pythonProfile } from '../bridge/languageProfiles'
 import type { LanguageProfile, ToolSpec } from '../domain'
 import { setupI18n } from '../i18n'
 import { profiles, tools } from '../stores'
@@ -24,7 +24,7 @@ const python: LanguageProfile = {
 beforeAll(() => setupI18n('en'))
 
 beforeEach(() => {
-  profiles.set([goProfile, python])
+  profiles.set([goProfile, python, cppProfile])
   tools.set([
     {
       id: 'python',
@@ -52,8 +52,9 @@ afterEach(() => {
 })
 
 describe('Settings tools', () => {
-  it('has one group per profile and one row per tool', () => {
+  it('has one group per profile with tools and one row per tool', () => {
     render(SettingsTools)
+    // C++ declares no tools in the fixture: no empty group for it.
     expect(screen.getAllByRole('heading')).toHaveLength(2)
     expect(document.getElementById('setting-go')).not.toBeNull()
     expect(document.getElementById('setting-dlv')).not.toBeNull()

@@ -686,7 +686,7 @@ N0 (orquestador, secuencial) ──► N1 · N2 · N3 · N4 · N5 en paralelo �
 
 Orden de integración: N3 → N1 → N2 → N5 → N4. Después, QA.
 
-### 10.0 Estado (2026-10-03): N0–N5 integrados, falta QA
+### 10.0 Estado (2026-10-03): N0–N5 integrados y QA en verde (34/34)
 
 Todos los tracks están fusionados en `m0-nucleo-multilenguaje` y **todas las piezas transitorias
 de la tabla 10.1 están retiradas** (puerto `app.Toolchain`, `ToolchainInfo` en Go y TS,
@@ -694,7 +694,9 @@ de la tabla 10.1 están retiradas** (puerto `app.Toolchain`, `ToolchainInfo` en 
 reglas depguard de las carpetas viejas). La validación neutral de argumentos es
 `app.SingleWordArgument` / `app.ErrInvalidArgument`. Verificado: `go vet`, `go test ./...`,
 `golangci-lint` (0 issues), `npm run check`, `npm run test` (251), `wails build` y arranque del
-ejecutable. Queda **QA** (§11): la matriz de `docs/wails/QA_WAILS.md` §2 a mano, con capturas EN/ES.
+ejecutable. **QA hecha** (§11): 34/34 pasos del arnés E2E en EN, ES, persistencia y primer arranque,
+con capturas en `docs/wails/qa-2.1/`; detalle en `docs/wails/QA_WAILS.md` (sección 2.1.0). Falta:
+fusionar a `main`, `CHANGELOG.md` 2.1.0 y notas EN/ES en `docs/release/`.
 
 Decisiones tomadas al integrar:
 - `packages.remove` y `packages.list` usan los textos de M1 ("Uninstall"/"Desinstalar", "Show
