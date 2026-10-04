@@ -30,3 +30,65 @@ version = "v1.27.2"
 package = "golang.org/x/tools/gopls"
 module = "golang.org/x/tools/gopls"
 version = "v0.21.1"
+
+# ---------------------------------------------------------------------------------------------
+# Python (M1). CPython comes from python-build-standalone (astral-sh) "install_only" archives, the
+# same builds `uv` uses. The sha256 values are copied from the SHA256SUMS asset of the release:
+#   https://github.com/astral-sh/python-build-standalone/releases/download/<release>/SHA256SUMS
+# To bump: pick a release that has the new 3.12.x, change version/release, and paste the five
+# lines of SHA256SUMS that end in "<triple>-install_only.tar.gz". Never invent a hash.
+# Every platform uses a .tar.gz, Windows included.
+
+[python]
+version = "3.12.15"
+release = "20261003"
+url_template = "https://github.com/astral-sh/python-build-standalone/releases/download/{release}/cpython-{version}+{release}-{triple}-install_only.tar.gz"
+# Folders and globs (relative to toolchain/python) dropped to save space. The size target is 50 to 70 MB
+# compressed for the full-python variant; see wails/packaging/README.md for the measured sizes.
+# tkinter (and with it turtle) is KEPT on purpose: turtle graphics are a classic beginner exercise.
+prune = [
+  "include",
+  "Lib/test",
+  "Lib/idlelib",
+  "Lib/turtledemo",
+  "Lib/lib2to3",
+  "lib/python3.12/test",
+  "lib/python3.12/idlelib",
+  "lib/python3.12/turtledemo",
+  "lib/python3.12/lib2to3",
+  "*.pdb",
+]
+
+[python.triples]
+windows-amd64 = "x86_64-pc-windows-msvc"
+darwin-arm64 = "aarch64-apple-darwin"
+darwin-amd64 = "x86_64-apple-darwin"
+linux-amd64 = "x86_64-unknown-linux-gnu"
+linux-arm64 = "aarch64-unknown-linux-gnu"
+
+[python.sha256]
+windows-amd64 = "4b6f0beebbb695a0f3ea237b8c3eaa5bd424f47a7bc25b2fbe3a43390c770f08"
+darwin-arm64 = "316a463172740e71d8dca1f2730784e325f3f720941137b5d674d5801a632213"
+darwin-amd64 = "a8fd7a91852f19b6d959793ef41fad048631ccb2a334a9ecdf573255298f7978"
+linux-amd64 = "f937814031eab4698ca6d07ec606ede1825768f3f3e99af76d9db3900bee03c5"
+linux-arm64 = "95c01982c9fcb9d95b0acfdb5eb8a6e0099dd11edf062314a474228d93f2b765"
+
+# Wheels installed into the bundled interpreter (PyPI, exact versions; all support 3.12).
+[python.wheels]
+debugpy = "1.8.22"
+python-lsp-server = "1.15.0"
+# Without pyflakes, pylsp publishes no diagnostics. 3.2.x is what python-lsp-server 1.15 requires.
+pyflakes = "3.2.0"
+ruff = "0.16.10"
+
+# Optional extras of the wheels above (pyflakes powers the diagnostics of python-lsp-server).
+[python.extras]
+python-lsp-server = ["pyflakes"]
+
+# `pip download --platform` tags per target (a list: pip accepts several, the first match wins).
+[python.pip_platforms]
+windows-amd64 = ["win_amd64"]
+darwin-arm64 = ["macosx_11_0_arm64"]
+darwin-amd64 = ["macosx_10_13_x86_64", "macosx_10_9_x86_64", "macosx_11_0_x86_64"]
+linux-amd64 = ["manylinux_2_28_x86_64", "manylinux_2_17_x86_64", "manylinux2014_x86_64"]
+linux-arm64 = ["manylinux_2_28_aarch64", "manylinux_2_17_aarch64", "manylinux2014_aarch64"]
