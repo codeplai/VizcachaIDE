@@ -8,6 +8,7 @@ import (
 	"context"
 	"embed"
 	"log"
+	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
@@ -99,7 +100,7 @@ func newGoTools(sink *bridge.WailsEventSink, goToolchain *toolchain.Toolchain, t
 	languageServer := gopls.New(sink, gopls.Config{
 		Executable:  func() string { return goToolchain.Locate(toolchain.ToolGopls).Path },
 		Environment: goToolchain.Environment,
-	}, lsp.Options{})
+	}, lsp.Options{IdleTimeout: 5 * time.Minute})
 	return debugger, languageServer
 }
 

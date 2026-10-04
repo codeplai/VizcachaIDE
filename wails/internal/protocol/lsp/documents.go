@@ -74,6 +74,13 @@ func (d *openDocuments) all() []document {
 	return docs
 }
 
+// empty reports whether no document is open.
+func (d *openDocuments) empty() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return len(d.byKey) == 0
+}
+
 // textOf is the text of an open document, or the file on disk, or "".
 func (d *openDocuments) textOf(path string) string {
 	if doc, ok := d.get(path); ok {
