@@ -95,9 +95,8 @@ func (s *Server) OpenDocument(_ context.Context, path, text string) error {
 	}
 	// The server already has a reopened file: a second didOpen would be ignored (clangd) and
 	// its diagnostics not published again, so they are sent from what it published last.
-	if reopened { // a reloaded window lost the status too
-		s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerReady)
-	}
+	// A window that reloaded (or a status bar that switched language) learns the server is ready.
+	s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerReady)
 	switch {
 	case !reopened:
 		s.openLocked(doc)

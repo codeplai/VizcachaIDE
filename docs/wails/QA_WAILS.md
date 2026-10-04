@@ -1,5 +1,34 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
+## 2.3.0 (M2, C++): QA, 2026-10-04
+
+Same environment and harness, branch `m2-cpp`, with llvm-mingw 20260922 (clang++, lldb-dap, clangd
+and clang-format 23.1.2) from `wails/.toolchain-dev`; the adapter tests also use WinLibs GCC 16.2.0.
+
+- **Result: 62/62 steps pass.** Go (34 steps) and Python (12) have no regressions, and the new C++
+  phase (`steps-cpp.mjs`, 8 steps × EN/ES) passes: compile and run with `std::cin` in a terminal, the
+  undeclared name explained in the IDE language, a null-pointer crash ending with "Segmentation
+  fault" and explained, live problems from clangd, *More → Build* leaving `main.exe` without running
+  it, the debugger (breakpoint, variables `n`/`resultado`/`i`, no C runtime frames), keyboard input
+  **while debugging** and clang-format on save.
+- **Fixed during QA** (all found by the new steps):
+  - A crash line has no file, so the Assistant explained it with the Go catalog (no card text):
+    `ExplainDiagnostics` now takes the language of the last run for diagnostics without a file.
+  - Two explain requests could answer out of order and the older one replaced the newer cards; the
+    frontend now sends them one at a time.
+  - A crash ended with "Your program didn't run: there is 1 problem" instead of `run.crashed`.
+  - The More menu failed for C++ (`packageActions` was `null`), so *Build* was missing.
+  - A reopened file (reloaded window) got a second `didOpen` that clangd ignores, so its problems
+    and the "ready" status never came back; the last diagnostics and the status are sent again.
+  - clangd writes clang's messages capitalised and with " (fix available)": the C++ catalog now
+    reads them.
+  - What a debugged program printed vanished from Output when the session ended.
+- **Known limitations:** the NSIS installers of `full-cpp` and `full` were not built on this
+  machine, only the portable zips (smoke-tested: `full-cpp` 107 MB before lldb's Python was kept,
+  `full` 247 MB). macOS and Linux use the system compiler and are built only by CI. Without
+  lldb-dap (GCC alone) C++ runs but does not debug.
+- Evidence: [qa-2.3/](qa-2.3/).
+
 ## 2.2.0 (M1, Python): QA, 2026-10-04
 
 Same environment and harness, branch `m1-python`, with Python 3.12.14 (debugpy 1.8.22,

@@ -8,7 +8,33 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-10-04
+
+Wails edition. **C++** is the third language: write, compile and run, understand errors and crashes,
+debug with the keyboard working, and format, with the same experience as Go and Python. Go and
+Python work as in 2.2.0 (62/62 QA steps in English and Spanish, see `docs/wails/QA_WAILS.md`).
+
 ### Added
+- **Compile and run C++** (F5) with g++ or clang++ (C++17, warnings on): the program runs in a
+  terminal, so `std::cin` reads what you type in Output. A folder with several `.cpp` files is
+  compiled as one program; *More → Build* leaves the executable next to the source without running it.
+- **Crashes are named**: a program that dies prints "Segmentation fault", "Stack overflow",
+  "Floating point exception" or "Aborted", and the run ends with "The program crashed. Debug it with
+  F6 to see the line."
+- **The Assistant explains 27 common C++ errors** in English and Spanish, for both GCC and Clang:
+  undeclared names (and `cout` without `#include <iostream>` or `std::`), missing `;` or `}`, wrong
+  arguments, conversions, linker errors (`undefined reference`), crashes, uncaught exceptions,
+  `.at()` out of range and the most useful warnings.
+- **Debugger for C++** (lldb-dap): breakpoints, steps, variables (`std::string` and `std::vector`
+  readable), call stack without the C runtime, stop on a crash at the right line, and **keyboard
+  input while debugging**.
+- **Code intelligence for C++** (clangd): live problems, completion, hover, signature help, go to
+  definition and the Outline, also with g++'s headers.
+- **Format on save** with clang-format (4 spaces; a teacher's `.clang-format` wins).
+- **First run** shows how to get a compiler on each system (bundled on Windows, `xcode-select
+  --install` on macOS, `apt install` on Linux).
+- New download **`full-cpp`** for Windows (IDE + llvm-mingw: clang, lldb, clangd, clang-format; about
+  120 MB). `full` now bundles Go, Python and C++.
 - **Automatic updates.** Once a day, when it opens, VizcachaIDE looks for a new version on its
   GitHub releases (only `wails-v*`), downloads the file of this installation (same variant, system,
   installed or portable) in the background and checks its SHA-256 against the release's checksum
@@ -16,6 +42,28 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   IDE closes) or *Show the file* (portable, macOS, Linux). Settings → *Updates* shows the version,
   the progress and the last check, has *Check now* and turns the automatic check off; the *More*
   menu has *Check for updates…*.
+
+### Changed
+- The Output panel keeps what a debugged program printed after the session ends ("Debugging
+  finished."), until the next run.
+- "Your program didn't run" no longer says "Go found N problems" for every language.
+- The call stack hides the start-up frames below `main` (C runtime, Go's `runtime.main`).
+- A program killed by a signal on macOS and Linux reports which one (exact crash line).
+
+### Fixed
+- Crash lines and other problems without a file were explained with the Go catalog; they now use
+  the language of the last run.
+- An older Assistant answer could replace a newer one (cards disappearing after a run).
+- After the window reloaded, an open file lost its live problems and the status bar stayed on
+  "Code helper starting…".
+
+### Notes
+- The C++ compiler is found in this order: the one chosen in Settings, the bundled one
+  (`toolchain/cpp`), and `g++`, `clang++`, `c++` on PATH; lldb-dap, clangd and clang-format are
+  looked for next to it. On Windows programs are linked with `-static`.
+- For developers: `process.Job.Finished`, `lsp:status` per language, the shared LLDB flavor in
+  `protocol/dap/lldb` (Rust will use it) and the C++ adapter in `wails/internal/adapters/cpp` (see
+  `docs/PLAN_CPP.md`).
 
 ## [2.2.0] - 2026-10-04
 
@@ -182,7 +230,34 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 
 ## [Sin publicar]
 
+## [2.3.0] - 2026-10-04
+
+Edición Wails. **C++** es el tercer lenguaje: escribir, compilar y ejecutar, entender los errores y
+las caídas, depurar con el teclado funcionando y formatear, con la misma experiencia que Go y Python.
+Go y Python funcionan como en 2.2.0 (62/62 pasos de QA en inglés y español, ver
+`docs/wails/QA_WAILS.md`).
+
 ### Añadido
+- **Compilar y ejecutar C++** (F5) con g++ o clang++ (C++17, con avisos): el programa corre en una
+  terminal, así que `std::cin` lee lo que escribes en Salida. Una carpeta con varios `.cpp` se
+  compila como un solo programa; *Más → Compilar* deja el ejecutable junto al código sin ejecutarlo.
+- **Las caídas tienen nombre**: un programa que se cae muestra "Segmentation fault", "Stack
+  overflow", "Floating point exception" o "Aborted", y la ejecución termina con "El programa se cayó.
+  Depúralo con F6 para ver la línea."
+- **El Asistente explica 27 errores comunes de C++** en inglés y español, para GCC y Clang: nombres
+  no declarados (y `cout` sin `#include <iostream>` o sin `std::`), `;` o `}` que faltan, argumentos
+  equivocados, conversiones, errores del enlazador (`undefined reference`), caídas, excepciones no
+  capturadas, `.at()` fuera de rango y los avisos más útiles.
+- **Depurador de C++** (lldb-dap): puntos de interrupción, pasos, variables (`std::string` y
+  `std::vector` legibles), pila de llamadas sin el arranque de C, parada en la línea de una caída y
+  **entrada por teclado mientras depuras**.
+- **Inteligencia de código para C++** (clangd): problemas en vivo, completado, información al pasar
+  el ratón, ayuda de firmas, ir a la definición y el Esquema, también con los encabezados de g++.
+- **Formato al guardar** con clang-format (4 espacios; manda el `.clang-format` del profesor).
+- **Primer arranque** indica cómo conseguir un compilador en cada sistema (incluido en Windows,
+  `xcode-select --install` en macOS, `apt install` en Linux).
+- Nueva descarga **`full-cpp`** para Windows (IDE + llvm-mingw: clang, lldb, clangd, clang-format;
+  unos 120 MB). `full` ahora incluye Go, Python y C++.
 - **Actualizaciones automáticas.** Una vez al día, al abrirse, VizcachaIDE busca una versión nueva
   en sus releases de GitHub (sólo `wails-v*`), descarga en segundo plano el archivo de esta
   instalación (misma variante, sistema, instalada o portable) y verifica su SHA-256 con el archivo
@@ -191,6 +266,29 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   Ajustes → *Actualizaciones* muestra la versión, el progreso y la última comprobación, tiene
   *Buscar ahora* y permite apagar la búsqueda automática; el menú *Más* tiene *Buscar
   actualizaciones…*.
+
+### Cambiado
+- El panel Salida conserva lo que imprimió un programa depurado cuando termina la sesión
+  ("Depuración terminada."), hasta la siguiente ejecución.
+- "No se pudo ejecutar" ya no dice "Go encontró N problemas" en todos los lenguajes.
+- La pila de llamadas oculta los marcos de arranque bajo `main` (arranque de C, `runtime.main` de Go).
+- Un programa terminado por una señal en macOS y Linux dice cuál (línea de caída exacta).
+
+### Corregido
+- Las líneas de caída y otros problemas sin archivo se explicaban con el catálogo de Go; ahora usan
+  el lenguaje de la última ejecución.
+- Una respuesta vieja del Asistente podía reemplazar a una nueva (tarjetas que desaparecían tras
+  ejecutar).
+- Tras recargar la ventana, un archivo abierto perdía sus problemas en vivo y la barra de estado se
+  quedaba en "Ayudante de código iniciando…".
+
+### Notas
+- El compilador de C++ se busca en este orden: el elegido en Ajustes, el empaquetado
+  (`toolchain/cpp`) y `g++`, `clang++`, `c++` en el PATH; lldb-dap, clangd y clang-format se buscan
+  junto a él. En Windows los programas se enlazan con `-static`.
+- Para desarrolladores: `process.Job.Finished`, `lsp:status` por lenguaje, el flavor de LLDB
+  compartido en `protocol/dap/lldb` (lo usará Rust) y el adaptador de C++ en
+  `wails/internal/adapters/cpp` (ver `docs/PLAN_CPP.md`).
 
 ## [2.2.0] - 2026-10-04
 
@@ -354,8 +452,9 @@ arquitectura en capas, y casi todo lo que prometía el README de la 0.1 ahora ex
 - Una interfaz de depurador **simulada** (paneles de Variables y Pila de llamadas) que no usaba
   Delve.
 
-[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...HEAD
-[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...HEAD
+[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.3.0...HEAD
+[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.3.0...HEAD
+[2.3.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...wails-v2.3.0
 [2.2.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...wails-v2.2.0
 [2.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/wails-v2.1.0
 [1.0.0-rc1]: https://github.com/codeplai/VizcachaIDE/compare/v0.1.0...v1.0.0-rc1
