@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-dap"
 )
 
-// errConnectionClosed is returned to requests that were waiting when Delve hung up.
+// errConnectionClosed is returned to requests that were waiting when the adapter hung up.
 var errConnectionClosed = errors.New("debug connection closed")
 
 // Client speaks DAP over one connection. Responses are matched to requests by
@@ -22,6 +22,7 @@ type Client struct {
 	reader  *bufio.Reader
 	onEvent func(dap.EventMessage)
 	onClose func()
+	reverse ReverseHandler
 
 	writeMu sync.Mutex
 	mu      sync.Mutex
@@ -30,13 +31,15 @@ type Client struct {
 	closed  bool
 }
 
-// NewClient starts reading from conn. onClose runs once when the connection ends.
-func NewClient(conn io.ReadWriteCloser, onEvent func(dap.EventMessage), onClose func()) *Client {
+// NewClient starts reading from conn. onClose runs once when the connection ends. reverse
+// answers the requests the adapter sends (nil answers all of them "unsupported").
+func NewClient(conn io.ReadWriteCloser, onEvent func(dap.EventMessage), onClose func(), reverse ReverseHandler) *Client {
 	client := &Client{
 		conn:    conn,
 		reader:  bufio.NewReader(conn),
 		onEvent: onEvent,
 		onClose: onClose,
+		reverse: reverse,
 		pending: map[int]chan dap.ResponseMessage{},
 	}
 	go client.readLoop()
@@ -108,6 +111,8 @@ func (c *Client) readLoop() {
 			c.deliver(typed)
 		case dap.EventMessage:
 			c.onEvent(typed)
+		case dap.RequestMessage:
+			go c.answerReverse(typed) // may take long: never block the reading goroutine
 		}
 	}
 }
@@ -135,7 +140,7 @@ func (c *Client) shutdown() {
 	c.onClose()
 }
 
-// responseError turns a failed response into an error with Delve's own message.
+// responseError turns a failed response into an error with the adapter's own message.
 func responseError(response dap.ResponseMessage) error {
 	base := response.GetResponse()
 	if base.Success {

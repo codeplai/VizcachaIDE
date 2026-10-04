@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"testing"
@@ -13,12 +13,12 @@ func TestScopeReferencesFindsArgumentsAndLocals(t *testing.T) {
 		{Name: "Globals", VariablesReference: 1003},
 	}
 
-	arguments, locals := scopeReferences(scopes)
+	arguments, locals := scopeReferences(scopes, testFlavor{})
 
 	if arguments != 1001 || locals != 1002 {
 		t.Errorf("references = %d, %d; want 1001, 1002", arguments, locals)
 	}
-	if a, l := scopeReferences(nil); a != 0 || l != 0 {
+	if a, l := scopeReferences(nil, testFlavor{}); a != 0 || l != 0 {
 		t.Error("no scopes means references 0")
 	}
 }

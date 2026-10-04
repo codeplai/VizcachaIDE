@@ -11,6 +11,7 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
+	protodap "github.com/codeplai/VizcachaIDE/wails/internal/protocol/dap"
 )
 
 // Options configures the adapter. Every field is optional.
@@ -38,7 +39,7 @@ type Debugger struct {
 	tracker *app.ChangeTracker
 
 	mu      sync.Mutex
-	current *session
+	current *protodap.Session
 }
 
 var _ app.Debugger = (*Debugger)(nil)
@@ -93,16 +94,22 @@ func (d *Debugger) Start(_ context.Context, config domain.RunConfiguration, brea
 	}
 	d.book.Reset(breakpoints)
 	d.tracker.Reset()
-	started := newSession(d.sink, d.book, d.tracker, process)
-	started.text = d.text
-	started.onFinish = func() { d.ended(started) }
+	started := protodap.NewSession(protodap.SessionDeps{
+		Sink:      d.sink,
+		Book:      d.book,
+		Tracker:   d.tracker,
+		Transport: tcpTransport{process: process},
+		Flavor:    flavor{debugBinary: debugBinaryPath(os.Getpid())},
+		Texts:     d.text,
+	})
+	started.OnFinish(func() { d.ended(started) })
 	d.current = started
 	d.sink.DebugOutput(d.text("run.debugStdin")+"\n", "console")
-	go started.begin(config, environment)
+	go started.Begin(config, environment)
 	return nil
 }
 
-func (d *Debugger) ended(finished *session) {
+func (d *Debugger) ended(finished *protodap.Session) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if d.current == finished {
@@ -110,7 +117,7 @@ func (d *Debugger) ended(finished *session) {
 	}
 }
 
-func (d *Debugger) active() *session {
+func (d *Debugger) active() *protodap.Session {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	return d.current
@@ -119,7 +126,7 @@ func (d *Debugger) active() *session {
 // SetBreakpoints replaces the breakpoints of one file, also while running.
 func (d *Debugger) SetBreakpoints(file string, lines []int) error {
 	if current := d.active(); current != nil {
-		return current.setBreakpoints(file, lines)
+		return current.SetBreakpoints(file, lines)
 	}
 	d.book.Replace(file, lines)
 	return nil
@@ -142,7 +149,7 @@ func (d *Debugger) execute(command string) error {
 	if current == nil {
 		return app.ErrNoSession
 	}
-	return current.execute(command)
+	return current.Execute(command)
 }
 
 // RunTo runs until the given location.
@@ -151,7 +158,7 @@ func (d *Debugger) RunTo(location domain.SourceLocation) error {
 	if current == nil {
 		return app.ErrNoSession
 	}
-	return current.runTo(location)
+	return current.RunTo(location)
 }
 
 // RequestVariables asks for the children of a variable; the answer is debug:variables.
@@ -161,7 +168,7 @@ func (d *Debugger) RequestVariables(reference int) error {
 		d.sink.DebugVariables(reference, []domain.Variable{})
 		return nil
 	}
-	current.requestVariables(reference)
+	current.RequestVariables(reference)
 	return nil
 }
 
@@ -171,7 +178,7 @@ func (d *Debugger) FrameVariables(frameID int) (domain.FrameVariables, error) {
 	if current == nil {
 		return domain.FrameVariables{Arguments: []domain.Variable{}, Locals: []domain.Variable{}}, nil
 	}
-	return current.frameVariables(frameID), nil
+	return current.FrameVariables(frameID), nil
 }
 
 // Stop ends the session; debug:terminated carries domain.TerminatedByUser.
@@ -180,7 +187,7 @@ func (d *Debugger) Stop() error {
 	if current == nil {
 		return app.ErrNoSession
 	}
-	current.finish(domain.TerminatedByUser)
+	current.Finish(domain.TerminatedByUser)
 	return nil
 }
 

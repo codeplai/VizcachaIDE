@@ -11,33 +11,9 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
-	"github.com/google/go-dap"
 )
 
-const (
-	clientID        = "vizcacha"
-	debugBinaryName = "vizcacha_debug_bin"
-)
-
-// newRequest builds the header every DAP request starts with.
-func newRequest(command string) dap.Request {
-	return dap.Request{ProtocolMessage: dap.ProtocolMessage{Type: "request"}, Command: command}
-}
-
-func initializeRequest() *dap.InitializeRequest {
-	return &dap.InitializeRequest{
-		Request: newRequest("initialize"),
-		Arguments: dap.InitializeRequestArguments{
-			ClientID:             clientID,
-			ClientName:           "VizcachaIDE",
-			AdapterID:            "go",
-			LinesStartAt1:        true,
-			ColumnsStartAt1:      true,
-			PathFormat:           "path",
-			SupportsVariableType: true,
-		},
-	}
-}
+const debugBinaryName = "vizcacha_debug_bin"
 
 // launchArguments are the fields Delve reads from the DAP "launch" request.
 type launchArguments struct {
@@ -52,7 +28,8 @@ type launchArguments struct {
 	StopOnEntry bool              `json:"stopOnEntry"`
 }
 
-func launchRequest(config domain.RunConfiguration, environment map[string]string, output string) (*dap.LaunchRequest, error) {
+// launchRaw encodes the launch arguments Delve reads.
+func launchRaw(config domain.RunConfiguration, environment map[string]string, output string) (json.RawMessage, error) {
 	arguments := launchArguments{
 		Request:    "launch",
 		Mode:       "debug",
@@ -67,7 +44,7 @@ func launchRequest(config domain.RunConfiguration, environment map[string]string
 	if err != nil {
 		return nil, fmt.Errorf("encoding launch arguments: %w", err)
 	}
-	return &dap.LaunchRequest{Request: newRequest("launch"), Arguments: raw}, nil
+	return raw, nil
 }
 
 func workingDirectory(config domain.RunConfiguration) string {
@@ -84,20 +61,6 @@ func programPath(config domain.RunConfiguration) string {
 		return absolute
 	}
 	return path
-}
-
-func setBreakpointsRequest(file string, points []domain.Breakpoint) *dap.SetBreakpointsRequest {
-	wanted := make([]dap.SourceBreakpoint, 0, len(points))
-	for _, point := range points {
-		wanted = append(wanted, dap.SourceBreakpoint{Line: point.Location.Line, Condition: point.Condition})
-	}
-	return &dap.SetBreakpointsRequest{
-		Request: newRequest("setBreakpoints"),
-		Arguments: dap.SetBreakpointsArguments{
-			Source:      dap.Source{Name: filepath.Base(file), Path: file},
-			Breakpoints: wanted,
-		},
-	}
 }
 
 // debugBinaryPath is where Delve writes the debug build, so it never litters

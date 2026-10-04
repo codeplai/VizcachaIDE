@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"encoding/json"

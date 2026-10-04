@@ -36,13 +36,13 @@ func TestLaunchArgumentsRunTheProgramRemotelyFromItsFolder(t *testing.T) {
 	dir := t.TempDir()
 	config := domain.NewFileRunConfiguration(domain.CodeLanguageGo, filepath.Join(dir, "functions.go"), []string{"-n", "3"})
 
-	request, err := launchRequest(config, map[string]string{"GOFLAGS": "-mod=mod"}, "out.exe")
+	raw, err := launchRaw(config, map[string]string{"GOFLAGS": "-mod=mod"}, "out.exe")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	var got map[string]any
-	if err := json.Unmarshal(request.Arguments, &got); err != nil {
+	if err := json.Unmarshal(raw, &got); err != nil {
 		t.Fatal(err)
 	}
 	if got["mode"] != "debug" || got["outputMode"] != "remote" || got["cwd"] != dir || got["output"] != "out.exe" {

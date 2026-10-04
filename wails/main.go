@@ -10,7 +10,7 @@ import (
 	"log"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/console"
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/errorcatalog"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
