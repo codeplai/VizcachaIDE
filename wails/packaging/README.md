@@ -94,9 +94,11 @@ runtime; all free software). `packaging/fetch_cpp.py` does, from `[cpp.windows]`
    asset (confirmed by hashing the download). To bump, change `release` and `llvm_version` and replace the
    hash the same way; never invent one.
 2. **Prunes while extracting**: only the members that match `keep` (and not `drop`) are written, so the
-   i686, armv7 and aarch64 sysroots (and the uwp and arm64ec wrappers), busybox, the Python that lldb
-   embeds, `share/`, the Linux sanitizer runtimes and the `*.idl` sources never reach the disk. Unpacked
-   the zip is 735 MB; the pruned `toolchain/cpp` is 372 MB. What stays: `clang`/`clang++` and the
+   i686, armv7 and aarch64 sysroots (and the uwp and arm64ec wrappers), busybox,
+   `share/`, the Linux sanitizer runtimes and the `*.idl` sources never reach the disk. Unpacked
+   the zip is 735 MB; the pruned `toolchain/cpp` is 411 MB. The Python that lldb embeds is kept (minus its
+   headers, idlelib, tkinter, ensurepip and tests): LLDB's data formatters are Python scripts, and Rust's
+   `std` formatters need them (docs/PLAN_RUST.md section 3.2). What stays: `clang`/`clang++` and the
    `g++`/`gcc`/`c++` wrappers, `clang-23.exe`, `ld.lld`, `lldb`, `lldb-dap`, `lldb-server`, `clangd`,
    `clang-format`, a few `llvm-*` tools, all the DLLs of `bin/` (`libclang-cpp.dll` is needed even by
    `clang++`, and `libpython3.14.dll` by `liblldb.dll`), the two `x86_64-*-windows-gnu.cfg` files
@@ -116,7 +118,8 @@ python wails/packaging/smoke_test.py --cxx <stage>/toolchain/cpp/bin/clang++.exe
 # lldb-dap --version, clangd --version and clang-format --version
 ```
 
-Measured sizes, Windows amd64 (2026-10-04): pruned `toolchain/cpp` 372 MB on disk (4777 files);
+Measured sizes, Windows amd64 (2026-10-04): pruned `toolchain/cpp` 372 MB on disk (4777 files) before lldb's Python was kept,
+411 MB (5485 files) with it, which adds roughly 12 MB to the zips below;
 `full-cpp` portable zip (IDE + C++) **107.3 MB** at zip level 9, so the target of 200 MB is met with room.
 `full` (Go + Python + C++) portable zip: **246.8 MB**, over the 200 MB target. Proposal (plan section 7): publish
 `full` separately from the smaller variants and let the website recommend `full-cpp` (107 MB) or `full-python`
