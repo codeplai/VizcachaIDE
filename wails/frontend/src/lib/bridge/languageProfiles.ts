@@ -88,7 +88,7 @@ export const pythonProfile: LanguageProfile = {
       providedBy: 'python',
       labelKey: 'settings.modulePython',
       missingKey: 'errors.pylspMissing',
-      installCommand: 'python -m pip install python-lsp-server'
+      installCommand: 'python -m pip install "python-lsp-server[pyflakes]"'
     }),
     tool({
       id: 'ruff',

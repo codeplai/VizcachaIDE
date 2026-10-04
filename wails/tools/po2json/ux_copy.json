@@ -103,7 +103,7 @@
   "editor.search.replacedMatch": { "en": "Replaced match on line $", "es": "Se reemplazó una coincidencia en la línea $" },
   "editor.completions": { "en": "Suggestions", "es": "Sugerencias" },
   "editor.hover.loading": { "en": "Loading…", "es": "Cargando…" },
-  "firstRun.welcome": { "en": "Welcome to VizcachaIDE. Let's get you writing Go in under a minute.", "es": "Te damos la bienvenida a VizcachaIDE. En menos de un minuto estarás escribiendo Go." },
+  "firstRun.welcome": { "en": "Welcome to VizcachaIDE. Let's get you writing code in under a minute.", "es": "Te damos la bienvenida a VizcachaIDE. En menos de un minuto estarás escribiendo código." },
   "firstRun.step1": { "en": "Choose your language", "es": "Elige tu idioma" },
   "firstRun.step2": { "en": "Checking Go… Go {version} is ready.", "es": "Revisando Go… Go {version} está listo." },
   "firstRun.step3": { "en": "Open your first program", "es": "Abre tu primer programa" },
@@ -331,5 +331,14 @@
   "packages.pipHint": { "en": "Packages are installed with pip into the Python VizcachaIDE uses.", "es": "Los paquetes se instalan con pip en el Python que usa VizcachaIDE." },
   "firstRun.languages": { "en": "Which programming languages will you use?", "es": "¿Qué lenguajes de programación vas a usar?" },
   "run.pythonVenv": { "en": "Using the project's .venv", "es": "Usando el .venv del proyecto" },
-  "settings.enabledCodeLanguages": { "en": "Languages you use", "es": "Lenguajes que usas" }
+  "settings.enabledCodeLanguages": { "en": "Languages you use", "es": "Lenguajes que usas" },
+  "console.emptyPython": { "en": "Type Python code and press Enter to run it right away. Try 2 + 3 or x = 10.", "es": "Escribe código Python y pulsa Enter para ejecutarlo al instante. Prueba 2 + 3 o x = 10." },
+  "console.notePython": { "en": "Runs with the Python interpreter VizcachaIDE uses.", "es": "Se ejecuta con el intérprete de Python que usa VizcachaIDE." },
+  "console.inputLabelPython": { "en": "Type Python code", "es": "Escribe código Python" },
+  "console.inputPlaceholderPython": { "en": "Python code (Shift+Enter for a new line)", "es": "Código Python (Shift+Enter para una línea nueva)" },
+  "packages.invalid": { "en": "Write the package name, like requests or numpy==2.0, with no spaces.", "es": "Escribe el nombre del paquete, como requests o numpy==2.0, sin espacios." },
+  "packages.noFolder": { "en": "Open a folder or a file first. Packages are installed for a project folder.", "es": "Abre primero una carpeta o un archivo. Los paquetes se instalan para una carpeta de proyecto." },
+  "packages.working": { "en": "Working… this can take a moment if pip needs to download something.", "es": "Trabajando… puede tardar si pip necesita descargar algo." },
+  "packages.output": { "en": "Package output", "es": "Salida de los paquetes" },
+  "packages.startFailed": { "en": "The package command couldn't start. Another program may still be running: stop it and try again.", "es": "No se pudo iniciar el comando de paquetes. Puede que otro programa siga en marcha: deténlo e inténtalo de nuevo." }
 }
