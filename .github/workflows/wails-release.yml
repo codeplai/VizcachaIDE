@@ -1,7 +1,8 @@
 name: wails-release
 
-# Push a tag like wails-v2.0.0-rc1 to build the lite, full-go, full-python and full (Go + Python) packages of the Wails variant on
-# Windows, macOS (arm64 + x86_64) and Linux, and create a DRAFT GitHub Release (EN/ES notes).
+# Push a tag like wails-v2.0.0-rc1 to build the lite, full-go, full-python and full (Go + Python, plus C++ on Windows)
+# packages of the Wails variant on Windows, macOS (arm64 + x86_64) and Linux, plus full-cpp (llvm-mingw) on Windows only,
+# and create a DRAFT GitHub Release (EN/ES notes). macOS and Linux have no bundled C++ compiler: they use the system one.
 # workflow_dispatch builds the same artifacts without creating a release (dry run).
 # The PyQt 1.x line keeps its own workflow (release.yml, tags v*).
 on:
@@ -105,20 +106,23 @@ jobs:
             packaging/cache/wheels
           key: wails-toolchain-${{ matrix.label }}-${{ hashFiles('packaging/versions.toml') }}
 
-      - name: Build lite, full-go, full-python and full
+      - name: Build lite, full-go, full-python, full-cpp (Windows) and full
         run: python wails/packaging/build_release.py --variant all --target ${{ matrix.target }}
 
-      - name: Smoke test (the app stays alive, bundled go and python work)
+      - name: Smoke test (the app stays alive, bundled go, python and C++ work)
         run: |
           cd wails/dist
           python_smoke="python ../packaging/smoke_test.py"
-          for variant in lite full-go full-python full; do
+          variants="lite full-go full-python full"
+          if [ "${{ runner.os }}" = "Windows" ]; then variants="lite full-go full-python full-cpp full"; fi
+          for variant in $variants; do
             work=$(mktemp -d)
             case "${{ runner.os }}" in
               Windows)
                 python -m zipfile -e "$(ls release/VizcachaIDE-*-windows-amd64-${variant}-portable.zip)" "$work"
                 root="$work/VizcachaIDE"; exe="$root/VizcachaIDE.exe"
-                go="$root/toolchain/go/bin/go.exe"; py="$root/toolchain/python/python.exe" ;;
+                go="$root/toolchain/go/bin/go.exe"; py="$root/toolchain/python/python.exe"
+                cxx="$root/toolchain/cpp/bin/clang++.exe" ;;
               macOS)
                 app=$(ls -d work/VizcachaIDE-*-macos-*-${variant}/VizcachaIDE.app)
                 exe="$app/Contents/MacOS/vizcacha"
@@ -135,6 +139,9 @@ jobs:
             esac
             case "$variant" in
               full-python|full) extra="$extra --python $py" ;;
+            esac
+            case "$variant" in
+              full-cpp|full) [ "${{ runner.os }}" = "Windows" ] && extra="$extra --cxx $cxx" ;;
             esac
             $python_smoke "$exe" --seconds 8 $extra
           done
@@ -183,9 +190,10 @@ jobs:
 
           | Download | Contents |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve, gopls and Python (debugpy, python-lsp-server, ruff): nothing else to install |
+          | \`*-full-*\` | IDE + Go, Delve, gopls and Python (debugpy, python-lsp-server, ruff); on Windows also C++ (clang, lldb-dap, clangd, clang-format): nothing else to install |
           | \`*-full-go-*\` | IDE + Go, Delve and gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 with debugger, completion and formatter |
+          | \`*-windows-amd64-full-cpp-*\` | Windows only: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format). On macOS and Linux C++ uses the compiler of the system |
           | \`*-lite-*\` | IDE only; uses the Go / Python installed on your system |
           | \`*-windows-amd64-*-setup.exe\` | Windows installer (per user, no administrator) |
           | \`*-portable.zip\` | Windows, no installation needed |
@@ -200,9 +208,10 @@ jobs:
 
           | Descarga | Contenido |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve, gopls y Python (debugpy, python-lsp-server, ruff): no hace falta instalar nada más |
+          | \`*-full-*\` | IDE + Go, Delve, gopls y Python (debugpy, python-lsp-server, ruff); en Windows también C++ (clang, lldb-dap, clangd, clang-format): no hace falta instalar nada más |
           | \`*-full-go-*\` | IDE + Go, Delve y gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 con depurador, autocompletado y formateador |
+          | \`*-windows-amd64-full-cpp-*\` | Sólo Windows: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format). En macOS y Linux C++ usa el compilador del sistema |
           | \`*-lite-*\` | Sólo el IDE; usa el Go o el Python instalado en tu sistema |
           | \`*-windows-amd64-*-setup.exe\` | Instalador de Windows (por usuario, sin administrador) |
           | \`*-portable.zip\` | Windows, sin instalación |

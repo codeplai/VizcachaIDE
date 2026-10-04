@@ -4,21 +4,24 @@ Variants (what goes under `toolchain/`, next to the executable):
 
 | Variant | Bundles | Notes |
 |---|---|---|
-| `lite` | nothing | uses the Go / Python installed on the system |
+| `lite` | nothing | uses the Go / Python / C++ installed on the system |
 | `full-go` | Go, Delve, gopls | the old Go-only `full` (renamed) |
 | `full-python` | CPython 3.12, debugpy, python-lsp-server (+ pyflakes), ruff | Python only |
-| `full` | all of the above | nothing else to install |
+| `full-cpp` | llvm-mingw (clang/clang++, lld, lldb-dap, clangd, clang-format), x86_64 only | **Windows only**; macOS and Linux use the system compiler |
+| `full` | Go + Python + C++ | nothing else to install. On macOS and Linux there is no C++ part, so `full` = Go + Python |
 
 All pins live in `packaging/versions.toml`. The Go part is the PyQt one: `build_release.py` imports
 `packaging/fetch_toolchain.py` and `packaging/go_tools.py`; the Python part is
-`packaging/fetch_python.py` (see "How Python is bundled"). The rename changes the file names of the
-Go-only packages: `full` now means Go + Python. Stages live in `wails/dist/stage/<os>-<arch>/{go,python}`
-and `full` is merged into `.../full` (licenses and `VERSIONS.txt` merged).
+`packaging/fetch_python.py` (see "How Python is bundled"); the C++ part is `packaging/fetch_cpp.py`
+(see "How C++ is bundled"). `full` now means Go + Python + C++ (it was Go + Python in 2.2). Stages live
+in `wails/dist/stage/<os>-<arch>/{go,python,cpp}` and `full` is merged into `.../full` (licenses and
+`VERSIONS.txt` merged). `full-cpp` is skipped, with a note, when the target is not Windows.
 
 ```bash
-python wails/packaging/build_release.py --variant all                      # the four variants
+python wails/packaging/build_release.py --variant all                      # every variant (full-cpp only on Windows)
 python wails/packaging/build_release.py --variant both                     # lite + full-go (default)
 python wails/packaging/build_release.py --variant full-python --target windows/amd64
+python wails/packaging/build_release.py --variant full-cpp --target windows/amd64 --no-installer
 python wails/packaging/build_release.py --variant lite,full --target darwin/arm64
 python wails/packaging/build_release.py --cache-dir /path/to/packaging/cache   # reuse downloads
 ```
@@ -80,6 +83,48 @@ python wails/packaging/smoke_test.py --python <stage>/toolchain/python/python.ex
 Measured sizes, Windows amd64 (2026-10-03): staged `toolchain/python` about 200 MB on disk; the `full-python` portable zip (IDE + Python) is 68.2 MB, of which the toolchain alone is about 60 MB at zip level 9 (target 50 to 70 MB). The NSIS `-setup.exe` of `full-python` reached the LZMA stage (223 MB of install data) but its final size was not measured (solid LZMA is very slow on a loaded machine).
 
 macOS and Linux bundles use the same code but were not run on those systems (CI only).
+
+## How C++ is bundled (Windows only)
+
+C++ comes from [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (clang, lld, libc++ and the MinGW-w64
+runtime; all free software). `packaging/fetch_cpp.py` does, from `[cpp.windows]` of `versions.toml`:
+
+1. Downloads `llvm-mingw-<release>-ucrt-x86_64.zip` (release 20260922, LLVM 23.1.2, 191 MB) into
+   `packaging/cache/downloads/` and verifies the sha256, which is the digest GitHub shows for the release
+   asset (confirmed by hashing the download). To bump, change `release` and `llvm_version` and replace the
+   hash the same way; never invent one.
+2. **Prunes while extracting**: only the members that match `keep` (and not `drop`) are written, so the
+   i686, armv7 and aarch64 sysroots (and the uwp and arm64ec wrappers), busybox, the Python that lldb
+   embeds, `share/`, the Linux sanitizer runtimes and the `*.idl` sources never reach the disk. Unpacked
+   the zip is 735 MB; the pruned `toolchain/cpp` is 372 MB. What stays: `clang`/`clang++` and the
+   `g++`/`gcc`/`c++` wrappers, `clang-23.exe`, `ld.lld`, `lldb`, `lldb-dap`, `lldb-server`, `clangd`,
+   `clang-format`, a few `llvm-*` tools, all the DLLs of `bin/` (`libclang-cpp.dll` is needed even by
+   `clang++`, and `libpython3.14.dll` by `liblldb.dll`), the two `x86_64-*-windows-gnu.cfg` files
+   (without `x86_64-w64-windows-gnu.cfg` clang falls back to libstdc++ and `<iostream>` is not found),
+   `x86_64-w64-mingw32/`, `lib/clang/` (x86_64 runtimes) and `include/`.
+3. Copies `LICENSE.TXT` and the MinGW-w64 `COPYING*` files to `toolchain/licenses/llvm-mingw-*` and merges
+   `cpp = llvm-mingw <release>` and `llvm = <version>` into `toolchain/VERSIONS.txt`.
+
+Layout (what `wails/internal/adapters/cpp/locator.go` expects): `toolchain/cpp/bin/clang++.exe`,
+`lldb-dap.exe`, `clangd.exe`, `clang-format.exe`. The IDE compiles with `-static` (the programs of the
+students must run outside the IDE without `libc++.dll`). NSIS is unchanged: everything is under `toolchain/`.
+
+```bash
+python packaging/fetch_cpp.py --dest wails/dist/stage/windows-amd64/cpp     # stage only
+python wails/packaging/smoke_test.py --cxx <stage>/toolchain/cpp/bin/clang++.exe
+# compiles and runs hola.cpp with -static from a folder with spaces and accents in its name, then runs
+# lldb-dap --version, clangd --version and clang-format --version
+```
+
+Measured sizes, Windows amd64 (2026-10-04): pruned `toolchain/cpp` 372 MB on disk (4777 files);
+`full-cpp` portable zip (IDE + C++) **107.3 MB** at zip level 9, so the target of 200 MB is met with room.
+`full` (Go + Python + C++) portable zip: **246.8 MB**, over the 200 MB target. Proposal (plan section 7): publish
+`full` separately from the smaller variants and let the website recommend `full-cpp` (107 MB) or `full-python`
+(68 MB) for people who need one language; Windows users who only write C++ never download Go. The NSIS
+`-setup.exe` of `full-cpp` and `full` was not built (LZMA of such stages took over an hour in M1); the
+installers are built by CI. Smoke-tested from the unpacked zips: the app starts, bundled go, python and C++ answer.
+
+The antivirus caveat of MinGW binaries (rare false positives) is covered by `SHA256SUMS` and the release notes.
 
 ## Windows installer (NSIS)
 
