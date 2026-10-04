@@ -1,7 +1,8 @@
-"""Build the VizcachaIDE Wails release packages (full and lite) for one platform.
+"""Build the VizcachaIDE Wails release packages (lite and the full variants) for one platform.
 
-    python wails/packaging/build_release.py --variant both
-    python wails/packaging/build_release.py --variant full --target darwin/arm64
+    python wails/packaging/build_release.py --variant all
+    python wails/packaging/build_release.py --variant full-python --target windows/amd64
+    python wails/packaging/build_release.py --variant full,lite --target darwin/arm64
     python wails/packaging/build_release.py --variant lite --cache-dir D:/shared/cache
 
 Outputs go to ``wails/dist/release/VizcachaIDE-<version>-<os>-<arch>-<variant>...``:
@@ -10,8 +11,17 @@ Outputs go to ``wails/dist/release/VizcachaIDE-<version>-<os>-<arch>-<variant>..
     macos    .dmg (VizcachaIDE.app inside)
     linux    .AppImage and .tar.gz
 
-The "full" variant bundles Go, Delve and gopls with the same code as the PyQt packaging:
-``packaging/fetch_toolchain.py`` and ``packaging/go_tools.py`` are imported, not copied.
+Variants (what goes under ``toolchain/``):
+
+    lite         nothing, the IDE uses the Go / Python installed on the system
+    full-go      Go, Delve and gopls (this was called "full" before Python was bundled)
+    full-python  CPython + debugpy, python-lsp-server and ruff
+    full         both (Go and Python)
+
+The Go part uses the same code as the PyQt packaging: ``packaging/fetch_toolchain.py`` and
+``packaging/go_tools.py`` are imported, not copied. The Python part is
+``packaging/fetch_python.py``. ``--variant both`` (lite + full-go) and ``--variant all`` (the four)
+are shortcuts, and a comma list such as ``lite,full-python`` also works.
 The toolchain is placed next to the executable, which is where ``toolchain.Locator`` looks
 (``filepath.Dir(os.Executable())/toolchain/go/bin`` and ``.../toolchain/bin``):
 
@@ -28,6 +38,7 @@ Python 3.11+ (tomllib in packaging/versions.py). ``wails`` must be on PATH; on W
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -36,6 +47,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -48,6 +60,14 @@ BIN_DIR = WAILS_DIR / "build" / "bin"
 DIST_DIR = WAILS_DIR / "dist"
 RELEASE_DIR = DIST_DIR / "release"
 STAGE_DIR = DIST_DIR / "stage"
+# Which toolchain parts each variant bundles. Order matters for ``--variant all``.
+VARIANT_PARTS = {
+    "lite": (),
+    "full-go": ("go",),
+    "full-python": ("python",),
+    "full": ("go", "python"),
+}
+VARIANT_SHORTCUTS = {"both": ["lite", "full-go"], "all": list(VARIANT_PARTS)}
 PRODUCT = "VizcachaIDE"
 
 _OS = {"win32": "windows", "darwin": "darwin", "linux": "linux"}
@@ -58,7 +78,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     host_os = next((v for k, v in _OS.items() if sys.platform.startswith(k)), "linux")
     host_arch = _ARCH.get(platform.machine().lower(), "amd64")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--variant", choices=["lite", "full", "both"], default="both")
+    parser.add_argument(
+        "--variant",
+        default="both",
+        help="lite, full-go, full-python, full (Go + Python), both (lite + full-go), all, "
+        "or a comma list; default both",
+    )
     parser.add_argument(
         "--target", default=f"{host_os}/{host_arch}", help="os/arch (default: host)"
     )
@@ -94,20 +119,66 @@ def load_legacy(cache_dir: Path | None):
     return versions, fetch_toolchain, go_tools
 
 
-def stage_toolchain(target: str, args: argparse.Namespace) -> Path:
-    """Return the folder that contains ``toolchain/`` for ``target``."""
+def parse_variants(text: str) -> list[str]:
+    names: list[str] = []
+    for item in text.split(","):
+        names += VARIANT_SHORTCUTS.get(item.strip(), [item.strip()])
+    unknown = [name for name in names if name not in VARIANT_PARTS]
+    if unknown:
+        known = ", ".join(VARIANT_PARTS)
+        raise SystemExit(f"Unknown variant(s): {', '.join(unknown)}. Known: {known}")
+    return list(dict.fromkeys(names))
+
+
+def stage_part(part: str, target: str, args: argparse.Namespace) -> Path:
+    """Fetch one toolchain part ("go" or "python"); return the folder that contains toolchain/."""
     versions, fetch_toolchain, _ = load_legacy(args.cache_dir)
     os_name, arch = target.split("/")
-    stage = STAGE_DIR / f"{os_name}-{arch}"
+    stage = STAGE_DIR / f"{os_name}-{arch}" / part
     if args.skip_fetch and (stage / "toolchain" / "VERSIONS.txt").is_file():
         print(f"[stage] reusing {stage}")
         return stage
     if stage.exists():
         shutil.rmtree(stage)
     stage.mkdir(parents=True)
-    options = argparse.Namespace(skip_go=False, skip_tools=False, go=args.go)
-    fetch_toolchain.fetch_toolchain(versions.Target(os_name, arch), stage, options)
+    if part == "go":
+        options = argparse.Namespace(skip_go=False, skip_tools=False, go=args.go)
+        fetch_toolchain.fetch_toolchain(versions.Target(os_name, arch), stage, options)
+    else:
+        import fetch_python  # noqa: PLC0415
+
+        fetch_python.fetch_python(versions.Target(os_name, arch), stage)
     return stage
+
+
+def merge_stages(parts: list[Path], destination: Path) -> Path:
+    """Copy several staged toolchains into one folder, merging licenses and VERSIONS.txt."""
+    if destination.exists():
+        shutil.rmtree(destination)
+    lines: list[str] = []
+    for part in parts:
+        copy_tree(part / "toolchain", destination / "toolchain")
+        text = (part / "toolchain" / "VERSIONS.txt").read_text(encoding="utf-8")
+        lines += [line for line in text.splitlines() if line not in lines]
+    manifest = destination / "toolchain" / "VERSIONS.txt"
+    manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return destination
+
+
+def stage_variants(target: str, variants: list[str], args: argparse.Namespace) -> dict[str, Path]:
+    """Return {variant: folder containing toolchain/} for every variant that bundles something."""
+    needed = {part for variant in variants for part in VARIANT_PARTS[variant]}
+    parts = {part: stage_part(part, target, args) for part in ("go", "python") if part in needed}
+    stages: dict[str, Path] = {}
+    for variant in variants:
+        wanted = [parts[part] for part in VARIANT_PARTS[variant]]
+        if len(wanted) == 1:
+            stages[variant] = wanted[0]
+        elif wanted:
+            os_name, arch = target.split("/")
+            merged = STAGE_DIR / f"{os_name}-{arch}" / variant
+            stages[variant] = merge_stages(wanted, merged)
+    return stages
 
 
 # ---------------------------------------------------------------- helpers
@@ -166,6 +237,24 @@ def write_license_notice() -> Path:
     return target
 
 
+@contextlib.contextmanager
+def short_source_path(path: Path):
+    """Yield a short path for ``path`` (NSIS ``File /r`` fails on paths over 260 characters).
+
+    debugpy ships paths of about 150 characters; in a deep checkout the staged copy goes over
+    MAX_PATH. On Windows a directory junction in the temp folder (no administrator needed) gives
+    NSIS a short name; elsewhere, or when the path is already short, ``path`` is yielded as is."""
+    if os.name != "nt" or len(str(path)) < 90:
+        yield path
+        return
+    junction = Path(tempfile.gettempdir()) / f"vz-{hashlib.sha256(str(path).encode()).hexdigest()[:8]}"
+    subprocess.run(["cmd", "/c", "mklink", "/J", str(junction), str(path)], check=True)
+    try:
+        yield junction
+    finally:
+        junction.rmdir()  # removes the junction only, never the target's content
+
+
 def copy_tree(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination, symlinks=True, dirs_exist_ok=True)
 
@@ -196,7 +285,7 @@ def build_app(target: str, args: argparse.Namespace) -> None:
 
 
 def package_windows(
-    target: str, variants: list[str], args, version: str, stage: Path | None
+    target: str, variants: list[str], args, version: str, stages: dict[str, Path]
 ) -> list[Path]:
     arch = target.split("/")[1]
     exe = BIN_DIR / f"{output_filename()}.exe"  # "outputfilename" in wails.json
@@ -209,8 +298,8 @@ def package_windows(
             shutil.rmtree(with_tmp)
         with_tmp.mkdir(parents=True)
         shutil.copy2(exe, with_tmp / f"{PRODUCT}.exe")
-        if variant == "full":
-            copy_tree(stage / "toolchain", with_tmp / "toolchain")
+        if variant in stages:
+            copy_tree(stages[variant] / "toolchain", with_tmp / "toolchain")
         portable = RELEASE_DIR / f"{base}-portable.zip"
         zip_folder(with_tmp, portable, PRODUCT)
         shutil.rmtree(with_tmp)
@@ -224,18 +313,19 @@ def package_windows(
         else:
             # Same template; re-run makensis with the toolchain folder. wails_tools.nsh and
             # tmp/MicrosoftEdgeWebview2Setup.exe were generated by the wails build above.
-            run(
-                [
-                    find_makensis(),
-                    f"-DARG_WAILS_{arch.upper()}_BINARY={exe}",
-                    "-DREQUEST_EXECUTION_LEVEL=user",
-                    "-DWAILS_INSTALL_SCOPE=user",
-                    f"-DARG_TOOLCHAIN_DIR={stage}",
-                    f"-DARG_OUTFILE={setup}",
-                    "project.nsi",
-                ],
-                cwd=INSTALLER_DIR,
-            )
+            with short_source_path(stages[variant]) as toolchain_source:
+                run(
+                    [
+                        find_makensis(),
+                        f"-DARG_WAILS_{arch.upper()}_BINARY={exe}",
+                        "-DREQUEST_EXECUTION_LEVEL=user",
+                        "-DWAILS_INSTALL_SCOPE=user",
+                        f"-DARG_TOOLCHAIN_DIR={toolchain_source}",
+                        f"-DARG_OUTFILE={setup}",
+                        "project.nsi",
+                    ],
+                    cwd=INSTALLER_DIR,
+                )
         outputs.append(setup)
     return outputs
 
@@ -248,7 +338,7 @@ def adhoc_sign(app: Path) -> None:
 
 
 def package_macos(
-    target: str, variants: list[str], args, version: str, stage: Path | None
+    target: str, variants: list[str], args, version: str, stages: dict[str, Path]
 ) -> list[Path]:
     arch = target.split("/")[1]
     built = next(BIN_DIR.glob("*.app"))
@@ -261,9 +351,9 @@ def package_macos(
         work.mkdir(parents=True)
         app = work / f"{PRODUCT}.app"
         run(["ditto", built, app])  # keeps symlinks, xattrs and signatures
-        if variant == "full":
+        if variant in stages:
             resources = app / "Contents" / "Resources"
-            copy_tree(stage / "toolchain", resources / "toolchain")
+            copy_tree(stages[variant] / "toolchain", resources / "toolchain")
             # os.Executable() is Contents/MacOS/<exe>, so the locator looks in
             # Contents/MacOS/toolchain.
             link = app / "Contents" / "MacOS" / "toolchain"
@@ -281,7 +371,7 @@ def package_macos(
 
 
 def package_linux(
-    target: str, variants: list[str], args, version: str, stage: Path | None
+    target: str, variants: list[str], args, version: str, stages: dict[str, Path]
 ) -> list[Path]:
     arch = target.split("/")[1]
     built = BIN_DIR / output_filename()
@@ -294,8 +384,8 @@ def package_linux(
         app_dir = work / PRODUCT
         app_dir.mkdir(parents=True)
         shutil.copy2(built, app_dir / PRODUCT)
-        if variant == "full":
-            copy_tree(stage / "toolchain", app_dir / "toolchain")
+        if variant in stages:
+            copy_tree(stages[variant] / "toolchain", app_dir / "toolchain")
         # tar.gz: unpack anywhere and run ./VizcachaIDE/VizcachaIDE.
         extras = work / "tar" / PRODUCT
         copy_tree(app_dir, extras)
@@ -321,16 +411,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     target = args.target
     os_name = target.split("/")[0]
-    variants = ["lite", "full"] if args.variant == "both" else [args.variant]
+    variants = parse_variants(args.variant)
     version = product_version()
     print(f"[release] {PRODUCT} {version} for {target}, variants: {', '.join(variants)}")
 
     RELEASE_DIR.mkdir(parents=True, exist_ok=True)
-    stage = stage_toolchain(target, args) if "full" in variants else None
+    stages = stage_variants(target, variants, args)
     if not args.skip_app_build:
         build_app(target, args)
     packagers = {"windows": package_windows, "darwin": package_macos, "linux": package_linux}
-    outputs = packagers[os_name](target, variants, args, version, stage)
+    outputs = packagers[os_name](target, variants, args, version, stages)
 
     print("\n[release] artifacts")
     sums = []

@@ -1,0 +1,20 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   def promedio(notas):
+#       return sum(notas) / len(notas)
+#   
+#   def main():
+#       print(promedio([]))
+#   
+#   main()
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\nested_traceback.py", line 7, in <module>
+    main()
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\nested_traceback.py", line 5, in main
+    print(promedio([]))
+          ^^^^^^^^^^^^
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\nested_traceback.py", line 2, in promedio
+    return sum(notas) / len(notas)
+           ~~~~~~~~~~~^~~~~~~~~~~~
+ZeroDivisionError: division by zero

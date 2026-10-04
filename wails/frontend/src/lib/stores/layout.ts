@@ -32,3 +32,23 @@ export const toggleFolder = (path: string): void =>
     if (!next.delete(path)) next.add(path)
     return next
   })
+
+/**
+ * Whether the side panel (Files, Outline, Search) and the Assistant are shown. Hiding them gives
+ * the editor more room; the panes remember it between sessions (paneforge saves collapsed panes).
+ */
+export const sidebarOpen = writable(true)
+export const assistantOpen = writable(true)
+
+export const toggleSidebar = (): void => sidebarOpen.update((open) => !open)
+export const toggleAssistant = (): void => assistantOpen.update((open) => !open)
+
+/** A click on a rail icon: the active one hides or shows the panel, another one switches to it. */
+export const selectSidebarView = (view: SidebarView): void => {
+  if (get(sidebarView) === view && get(sidebarOpen)) {
+    sidebarOpen.set(false)
+    return
+  }
+  sidebarView.set(view)
+  sidebarOpen.set(true)
+}

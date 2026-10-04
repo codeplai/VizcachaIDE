@@ -1,4 +1,5 @@
 // The one door to the backend. Components and stores import from here, never from wailsjs.
+import { parseDevQuery } from '../devQuery'
 import { createMockBridge, type MockControls } from './mock'
 import type { Bridge } from './types'
 import { createWailsBridge, hasWailsBackend } from './wails'
@@ -16,7 +17,10 @@ export interface BridgeSelection {
 /** Picks the Wails backend when `window.go` exists, the mock otherwise. */
 export const selectBridge = (): BridgeSelection => {
   if (hasWailsBackend()) return { bridge: createWailsBridge(), mockControls: null }
-  const mock = createMockBridge()
+  const sampleLanguage = parseDevQuery(
+    typeof location === 'undefined' ? '' : location.search
+  ).codeLanguage
+  const mock = createMockBridge({ sampleLanguage: sampleLanguage ?? 'go' })
   return { bridge: mock.bridge, mockControls: mock.controls }
 }
 

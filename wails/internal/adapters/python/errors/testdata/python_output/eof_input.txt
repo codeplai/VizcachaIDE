@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   nombre = input("Nombre: ")
+# output:
+Nombre: Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\eof_input.py", line 1, in <module>
+    nombre = input("Nombre: ")
+             ^^^^^^^^^^^^^^^^^
+EOFError: EOF when reading a line

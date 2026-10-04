@@ -32,10 +32,13 @@ type IndentStyle struct {
 // Capabilities says which buttons and panels apply to a language. The language registry checks
 // that they match the ports of the language support, so they can never disagree.
 type Capabilities struct {
-	Build          bool            `json:"build"`
-	Console        bool            `json:"console"`
-	Format         bool            `json:"format"`
-	Check          bool            `json:"check"`
+	Build   bool `json:"build"`
+	Console bool `json:"console"`
+	Format  bool `json:"format"`
+	Check   bool `json:"check"`
+	// DebugInput says whether the program can read the keyboard while it is debugged (Python
+	// through debugpy's runInTerminal in a pseudoterminal); Delve cannot, so Go says false.
+	DebugInput     bool            `json:"debugInput"`
 	PackageActions []PackageAction `json:"packageActions"` // empty = no package manager
 	ThreadsLabel   string          `json:"threadsLabel"`   // i18n key: "debug.goroutines" or "debug.threads"
 }

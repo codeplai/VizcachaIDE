@@ -1,17 +1,30 @@
 # Packaging the Wails variant
 
-Variants: **lite** (IDE only, uses the Go on the user's system) and **full** (adds Go, Delve and
-gopls, pinned in `packaging/versions.toml`). The toolchain code is the PyQt one:
-`build_release.py` imports `packaging/fetch_toolchain.py` and `packaging/go_tools.py`.
+Variants (what goes under `toolchain/`, next to the executable):
+
+| Variant | Bundles | Notes |
+|---|---|---|
+| `lite` | nothing | uses the Go / Python installed on the system |
+| `full-go` | Go, Delve, gopls | the old Go-only `full` (renamed) |
+| `full-python` | CPython 3.12, debugpy, python-lsp-server (+ pyflakes), ruff | Python only |
+| `full` | all of the above | nothing else to install |
+
+All pins live in `packaging/versions.toml`. The Go part is the PyQt one: `build_release.py` imports
+`packaging/fetch_toolchain.py` and `packaging/go_tools.py`; the Python part is
+`packaging/fetch_python.py` (see "How Python is bundled"). The rename changes the file names of the
+Go-only packages: `full` now means Go + Python. Stages live in `wails/dist/stage/<os>-<arch>/{go,python}`
+and `full` is merged into `.../full` (licenses and `VERSIONS.txt` merged).
 
 ```bash
-python wails/packaging/build_release.py --variant both                     # host platform
-python wails/packaging/build_release.py --variant full --target darwin/arm64
+python wails/packaging/build_release.py --variant all                      # the four variants
+python wails/packaging/build_release.py --variant both                     # lite + full-go (default)
+python wails/packaging/build_release.py --variant full-python --target windows/amd64
+python wails/packaging/build_release.py --variant lite,full --target darwin/arm64
 python wails/packaging/build_release.py --cache-dir /path/to/packaging/cache   # reuse downloads
 ```
 
 Output: `wails/dist/release/VizcachaIDE-<version>-<os>-<arch>-<variant>…` + `SHA256SUMS-*.txt`.
-Version = `info.productVersion` in `wails/wails.json` (`2.1.0`). Wails cannot cross-compile
+Version = `info.productVersion` in `wails/wails.json` (`2.2.0`). Wails cannot cross-compile
 with CGO targets, so each OS/arch is built on its own machine (see `.github/workflows/wails-release.yml`,
 tags `wails-v*`).
 
@@ -32,6 +45,41 @@ The Go runner (`internal/adapters/golang/runner`, through `internal/protocol/too
   `Contents/MacOS/toolchain`. The real files live in `Contents/Resources/toolchain` and
   `Contents/MacOS/toolchain` is a relative symlink to them (as in the PyQt packaging; `codesign`
   seals Resources). **No Go change is needed.**
+
+## How Python is bundled
+
+`packaging/fetch_python.py` (also usable alone: `python packaging/fetch_python.py --os windows --arch amd64 --dest <stage>`):
+
+1. Downloads the `install_only` archive of **python-build-standalone** (astral-sh) pinned in
+   `[python]` of `versions.toml` (CPython 3.12.15, release 20261003), verifies its sha256 (values copied
+   from the release's `SHA256SUMS`, never invented) and extracts it to `toolchain/python/`. It reuses
+   `download()` and `extract_archive()` of `fetch_toolchain.py`.
+2. Prunes `include`, `Lib/test`, `idlelib`, `turtledemo`, `lib2to3`, `*.pdb` and every `__pycache__`
+   (list in `[python].prune`). **tkinter (and turtle) is kept**: it is cheap (about 8 MB on disk,
+   less than 3 MB compressed) and turtle graphics are a classic beginner exercise. `pip` and `venv`
+   stay too (Packages, `.venv`).
+3. `pip download --only-binary=:all: --platform <tag> --python-version 3.12` for the target, then
+   `pip install --no-index --find-links <cache>/wheels/<target> --target <site-packages>`, so a
+   Windows host can stage the macOS and Linux bundles. `[python.wheels]` pins debugpy,
+   python-lsp-server (extra `pyflakes`, also pinned explicitly: without it pylsp publishes no diagnostics) and ruff; their dependencies come along (jedi, black, ...).
+   Platform tags per target: `[python.pip_platforms]`.
+4. Copies the licenses of CPython and of every installed wheel to `toolchain/licenses/python-*` and
+   merges `python = ...` and the wheel versions into `toolchain/VERSIONS.txt`.
+
+Layout (what `wails/internal/adapters/python/locator.go` expects): `toolchain/python/python.exe` on
+Windows, `toolchain/python/bin/python3` elsewhere. NSIS and the dmg did not change: everything is
+under `toolchain/`, and on macOS the existing `Contents/MacOS/toolchain` symlink covers Python too.
+
+Smoke test of the bundled interpreter (no app needed; CI also passes it together with the exe):
+
+```bash
+python wails/packaging/smoke_test.py --python <stage>/toolchain/python/python.exe
+# imports debugpy, pylsp and ruff (prints ok) and runs "python -m ruff --version"
+```
+
+Measured sizes, Windows amd64 (2026-10-03): staged `toolchain/python` about 200 MB on disk; the `full-python` portable zip (IDE + Python) is 68.2 MB, of which the toolchain alone is about 60 MB at zip level 9 (target 50 to 70 MB). The NSIS `-setup.exe` of `full-python` reached the LZMA stage (223 MB of install data) but its final size was not measured (solid LZMA is very slow on a loaded machine).
+
+macOS and Linux bundles use the same code but were not run on those systems (CI only).
 
 ## Windows installer (NSIS)
 

@@ -10,7 +10,7 @@ var Profile = domain.LanguageProfile{
 	ID: domain.CodeLanguageGo, NameKey: "codeLanguage.go", Extensions: []string{".go"},
 	Indent: domain.IndentStyle{UseTabs: true, Size: 4},
 	Capabilities: domain.Capabilities{
-		Build: true, Console: true, Format: true, Check: true,
+		Build: true, Console: true, Format: true, Check: true, DebugInput: false,
 		PackageActions: []domain.PackageAction{domain.PackageInit, domain.PackageAdd, domain.PackageTidy},
 		ThreadsLabel:   "debug.goroutines",
 	},

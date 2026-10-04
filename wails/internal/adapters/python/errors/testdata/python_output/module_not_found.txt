@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   import numpyy
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\module_not_found.py", line 1, in <module>
+    import numpyy
+ModuleNotFoundError: No module named 'numpyy'

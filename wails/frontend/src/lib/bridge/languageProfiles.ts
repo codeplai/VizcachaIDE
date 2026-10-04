@@ -1,5 +1,5 @@
-// The three language profiles as the backend declares them (adapters/golang/profile.go and the
-// provisional profiles of Python and C++, docs/PLAN_PYTHON.md and docs/PLAN_CPP.md section 4.1).
+// The three language profiles as the backend declares them (adapters/golang/profile.go and
+// adapters/python/profile.go; C++ is still provisional, docs/PLAN_CPP.md section 4.1).
 // The mock serves them; the Wails bridge uses them only until bridge.CodeLanguagesService exists
 // (track N5), then this file serves the mock alone.
 import type { LanguageProfile, ToolSpec } from '../domain'
@@ -23,6 +23,7 @@ export const goProfile: LanguageProfile = {
     console: true,
     format: true,
     check: true,
+    debugInput: false,
     packageActions: ['init', 'add', 'tidy'],
     threadsLabel: 'debug.goroutines'
   },
@@ -61,10 +62,43 @@ export const pythonProfile: LanguageProfile = {
     console: true,
     format: true,
     check: true,
+    debugInput: true,
     packageActions: ['add', 'remove', 'list'],
     threadsLabel: 'debug.threads'
   },
-  tools: []
+  tools: [
+    tool({
+      id: 'python',
+      role: 'runtime',
+      labelKey: 'settings.toolPython',
+      missingKey: 'errors.pythonNotFound',
+      installUrl: 'https://www.python.org/downloads/'
+    }),
+    tool({
+      id: 'debugpy',
+      role: 'debugAdapter',
+      providedBy: 'python',
+      labelKey: 'settings.modulePython',
+      missingKey: 'errors.debugpyMissing',
+      installCommand: 'python -m pip install debugpy'
+    }),
+    tool({
+      id: 'pylsp',
+      role: 'languageServer',
+      providedBy: 'python',
+      labelKey: 'settings.modulePython',
+      missingKey: 'errors.pylspMissing',
+      installCommand: 'python -m pip install "python-lsp-server[pyflakes]"'
+    }),
+    tool({
+      id: 'ruff',
+      role: 'formatter',
+      providedBy: 'python',
+      labelKey: 'settings.modulePython',
+      missingKey: 'errors.ruffMissing',
+      installCommand: 'python -m pip install ruff'
+    })
+  ]
 }
 
 export const cppProfile: LanguageProfile = {
@@ -77,6 +111,7 @@ export const cppProfile: LanguageProfile = {
     console: false,
     format: true,
     check: false,
+    debugInput: false,
     packageActions: [],
     threadsLabel: 'debug.threads'
   },

@@ -1,16 +1,21 @@
 import type { Bridge, MockControls, Unsubscribe } from '../bridge'
-import type { DevQuery } from '../devQuery'
+import { demoBreakpointLine, type DevQuery } from '../devQuery'
 import type { FileNode } from '../domain'
 import { editBuffer, fileTree, openFile } from './files'
-import { toggleBreakpoint } from './debug'
+import { debuggedPath, toggleBreakpoint } from './debug'
 import { connectStores } from './index'
 import { openDialog } from './layout'
 import { requestCloseTab } from './saving'
 import { updateSettings } from './settings'
 
-const firstGoFile = (tree: FileNode): FileNode | undefined =>
-  tree.children.find((node) => node.name === 'main.go') ??
-  tree.children.find((node) => node.name.endsWith('.go'))
+/** The file to open at start: the project's `main` of the demo's language, else its first file. */
+const firstFile = (tree: FileNode, codeLanguage: string): FileNode | undefined => {
+  const extension = codeLanguage === 'python' ? '.py' : '.go'
+  return (
+    tree.children.find((node) => node.name === `main${extension}`) ??
+    tree.children.find((node) => node.name.endsWith(extension))
+  )
+}
 
 const applyDevQuery = async (
   bridge: Bridge,
@@ -26,7 +31,10 @@ const applyDevQuery = async (
     editBuffer(path, '// edited\n')
     void requestCloseTab(bridge, path)
   }
-  if (query.scenario === 'debug' && path) await toggleBreakpoint(bridge, path, 6)
+  if (query.scenario === 'debug' && path) {
+    debuggedPath.set(path)
+    await toggleBreakpoint(bridge, path, demoBreakpointLine(path))
+  }
   await mock.play(query.scenario)
 }
 
@@ -50,7 +58,7 @@ export const startApp = async (
   const stop = await connectStores(bridge)
   const tree = await initialTree(bridge, query)
   fileTree.set(tree)
-  const first = tree ? firstGoFile(tree) : undefined
+  const first = tree ? firstFile(tree, query.codeLanguage ?? 'go') : undefined
   if (first) await openFile(bridge, first.path)
   if (mock) await applyDevQuery(bridge, mock, query, first?.path)
   return stop

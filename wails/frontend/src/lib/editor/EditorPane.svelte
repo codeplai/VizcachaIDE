@@ -52,7 +52,8 @@
       />
     {/if}
   </div>
-  {#if $debugActive}<DebugToolbar />{/if}
+  <!-- The step buttons only make sense while the program is paused. -->
+  {#if $debugActive && $debugState}<DebugToolbar />{/if}
 </section>
 
 <style>

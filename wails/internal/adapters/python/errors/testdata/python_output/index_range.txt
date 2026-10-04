@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   lista = [1, 2, 3]
+#   print(lista[5])
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\index_range.py", line 2, in <module>
+    print(lista[5])
+          ~~~~~^^^
+IndexError: list index out of range

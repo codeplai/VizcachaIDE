@@ -1,10 +1,12 @@
 import type { Scenario } from './bridge'
-import type { LanguageSetting, ThemeSetting } from './domain'
+import type { CodeLanguage, LanguageSetting, ThemeSetting } from './domain'
 import type { DialogName } from './stores/layout'
 
 export interface DevQuery {
   scenario: Scenario
   language: LanguageSetting | null
+  /** `language=python` opens the Python sample project (`lang` is the interface language). */
+  codeLanguage: Extract<CodeLanguage, 'go' | 'python'> | null
   theme: ThemeSetting | null
   /** `folder=none` starts with no folder open (the empty state of the Files panel). */
   noFolder: boolean
@@ -28,6 +30,7 @@ export const parseDevQuery = (search: string): DevQuery => {
   return {
     scenario: pick(params.get('scenario'), ['write', 'error', 'debug'] as const) ?? 'write',
     language: pick(params.get('lang'), ['en', 'es'] as const),
+    codeLanguage: pick(params.get('language'), ['go', 'python'] as const),
     theme: pick(params.get('theme'), ['light', 'dark'] as const),
     noFolder: params.get('folder') === 'none',
     firstRun: params.get('firstrun') === '1',
@@ -35,3 +38,6 @@ export const parseDevQuery = (search: string): DevQuery => {
     dialog: pick(params.get('dialog'), ['settings', 'about', 'packages'] as const)
   }
 }
+
+/** The line the dev bar's "debug" state pauses on: the sample's own (see bridge/mockPython.ts). */
+export const demoBreakpointLine = (path: string): number => (path.endsWith('.py') ? 8 : 6)

@@ -24,7 +24,7 @@ type pipeSession struct {
 	ended  chan struct{}
 }
 
-func startPipes(ctx context.Context, job Job, sink app.EventSink) (session, error) {
+func startPipes(ctx context.Context, job Job, sink JobEvents) (session, error) {
 	output := &atomic.Bool{}
 	pipes := &pipeSession{
 		stdout: newStreamWriter(sink, "stdout", output),

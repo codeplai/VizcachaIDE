@@ -1,6 +1,6 @@
 name: wails-release
 
-# Push a tag like wails-v2.0.0-rc1 to build the full and lite packages of the Wails variant on
+# Push a tag like wails-v2.0.0-rc1 to build the lite, full-go, full-python and full (Go + Python) packages of the Wails variant on
 # Windows, macOS (arm64 + x86_64) and Linux, and create a DRAFT GitHub Release (EN/ES notes).
 # workflow_dispatch builds the same artifacts without creating a release (dry run).
 # The PyQt 1.x line keeps its own workflow (release.yml, tags v*).
@@ -102,34 +102,41 @@ jobs:
           path: |
             packaging/cache/downloads
             packaging/cache/tools
+            packaging/cache/wheels
           key: wails-toolchain-${{ matrix.label }}-${{ hashFiles('packaging/versions.toml') }}
 
-      - name: Build lite and full
-        run: python wails/packaging/build_release.py --variant both --target ${{ matrix.target }}
+      - name: Build lite, full-go, full-python and full
+        run: python wails/packaging/build_release.py --variant all --target ${{ matrix.target }}
 
-      - name: Smoke test (the app stays alive, bundled go works)
+      - name: Smoke test (the app stays alive, bundled go and python work)
         run: |
           cd wails/dist
           python_smoke="python ../packaging/smoke_test.py"
-          for variant in lite full; do
+          for variant in lite full-go full-python full; do
             work=$(mktemp -d)
             case "${{ runner.os }}" in
               Windows)
                 python -m zipfile -e "$(ls release/VizcachaIDE-*-windows-amd64-${variant}-portable.zip)" "$work"
-                exe="$work/VizcachaIDE/VizcachaIDE.exe"; go="$work/VizcachaIDE/toolchain/go/bin/go.exe" ;;
+                root="$work/VizcachaIDE"; exe="$root/VizcachaIDE.exe"
+                go="$root/toolchain/go/bin/go.exe"; py="$root/toolchain/python/python.exe" ;;
               macOS)
                 app=$(ls -d work/VizcachaIDE-*-macos-*-${variant}/VizcachaIDE.app)
-                exe="$app/Contents/MacOS/vizcacha"; go="$app/Contents/MacOS/toolchain/go/bin/go" ;;
+                exe="$app/Contents/MacOS/vizcacha"
+                go="$app/Contents/MacOS/toolchain/go/bin/go"; py="$app/Contents/MacOS/toolchain/python/bin/python3" ;;
               Linux)
                 tar -xzf release/VizcachaIDE-*-linux-amd64-${variant}.tar.gz -C "$work"
-                exe="$work/VizcachaIDE/VizcachaIDE"; go="$work/VizcachaIDE/toolchain/go/bin/go"
+                root="$work/VizcachaIDE"; exe="$root/VizcachaIDE"
+                go="$root/toolchain/go/bin/go"; py="$root/toolchain/python/bin/python3"
                 python_smoke="xvfb-run -a python ../packaging/smoke_test.py" ;;
             esac
-            if [ "$variant" = "full" ]; then
-              $python_smoke "$exe" --seconds 8 --go "$go"
-            else
-              $python_smoke "$exe" --seconds 8
-            fi
+            extra=""
+            case "$variant" in
+              full-go|full) extra="$extra --go $go" ;;
+            esac
+            case "$variant" in
+              full-python|full) extra="$extra --python $py" ;;
+            esac
+            $python_smoke "$exe" --seconds 8 $extra
           done
 
       - name: List artifacts
@@ -176,8 +183,10 @@ jobs:
 
           | Download | Contents |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve and gopls: nothing else to install |
-          | \`*-lite-*\` | IDE only; uses the Go installed on your system |
+          | \`*-full-*\` | IDE + Go, Delve, gopls and Python (debugpy, python-lsp-server, ruff): nothing else to install |
+          | \`*-full-go-*\` | IDE + Go, Delve and gopls |
+          | \`*-full-python-*\` | IDE + Python 3.12 with debugger, completion and formatter |
+          | \`*-lite-*\` | IDE only; uses the Go / Python installed on your system |
           | \`*-windows-amd64-*-setup.exe\` | Windows installer (per user, no administrator) |
           | \`*-portable.zip\` | Windows, no installation needed |
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |
@@ -191,8 +200,10 @@ jobs:
 
           | Descarga | Contenido |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve y gopls: no hace falta instalar nada más |
-          | \`*-lite-*\` | Sólo el IDE; usa el Go instalado en tu sistema |
+          | \`*-full-*\` | IDE + Go, Delve, gopls y Python (debugpy, python-lsp-server, ruff): no hace falta instalar nada más |
+          | \`*-full-go-*\` | IDE + Go, Delve y gopls |
+          | \`*-full-python-*\` | IDE + Python 3.12 con depurador, autocompletado y formateador |
+          | \`*-lite-*\` | Sólo el IDE; usa el Go o el Python instalado en tu sistema |
           | \`*-windows-amd64-*-setup.exe\` | Instalador de Windows (por usuario, sin administrador) |
           | \`*-portable.zip\` | Windows, sin instalación |
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |

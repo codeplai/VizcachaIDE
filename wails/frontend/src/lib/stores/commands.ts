@@ -2,10 +2,10 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { Breakpoint } from '../domain'
-import { breakpoints, debugActive, debugStarting } from './debug'
+import { breakpoints, debugActive, debuggedPath, debugStarting } from './debug'
 import { codeLanguageOf } from './codeLanguages'
 import { activePath, buffers } from './files'
-import { cursor } from './layout'
+import { assistantOpen, cursor } from './layout'
 import { showNotice } from './notice'
 import { programArguments } from './programArguments'
 import { lastRunConfiguration, pushRunText, resetRun, stoppedByUser } from './run'
@@ -51,7 +51,9 @@ export const startDebugging = async (bridge: Bridge): Promise<void> => {
   if (!path || get(debugActive) || isUntitled(path)) return
   const argsText = get(programArguments)
   if (!(await splitProgramArguments(bridge, argsText))) return
+  debuggedPath.set(path)
   debugStarting.set(true)
+  assistantOpen.set(true) // the variables and the call stack live in the Assistant
   await withToolErrors(bridge, codeLanguageOf(path), () =>
     bridge.debug.start(path, breakpointsOf(path), argsText)
   )
@@ -63,9 +65,13 @@ export const stepInto = (bridge: Bridge): Promise<void> => bridge.debug.stepInto
 export const stepOut = (bridge: Bridge): Promise<void> => bridge.debug.stepOut()
 export const resumeDebugging = (bridge: Bridge): Promise<void> => bridge.debug.resume()
 
-/** Sends one typed line to the program; shows it in Output unless the program echoes it (a PTY does). */
+/**
+ * Sends one typed line to the program; shows it in Output unless the program echoes it (a PTY
+ * does). While debugging, the program runs in a terminal and always echoes.
+ */
 export const sendProgramInput = async (bridge: Bridge, text: string): Promise<void> => {
-  if (!get(lastRunConfiguration)?.echo) pushRunText('stdout', `${text}\n`)
+  const echoed = get(debugActive) || get(debugStarting) || get(lastRunConfiguration)?.echo
+  if (!echoed) pushRunText('stdout', `${text}\n`)
   await bridge.run.writeInput(text)
 }
 

@@ -1,6 +1,7 @@
 // Demo data of the mock bridge. It matches the approved prototype and the Go stubs
 // (internal/bridge/sample_data.go).
 import type {
+  CodeLanguage,
   DebugState,
   Diagnostic,
   DocumentSymbol,
@@ -153,12 +154,12 @@ export const sampleSymbols = (): DocumentSymbol[] => [
   }
 ]
 
-export const defaultSettings = (): Settings => ({
+export const defaultSettings = (defaultCodeLanguage: CodeLanguage = 'go'): Settings => ({
   language: 'auto',
   theme: 'system',
   fontSize: 14,
   toolPaths: {},
-  defaultCodeLanguage: 'go',
+  defaultCodeLanguage,
   enabledCodeLanguages: [],
   firstRun: false,
   lastFolder: '',

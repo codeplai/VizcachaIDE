@@ -24,7 +24,9 @@
       </span>
     {:else}
       <span class="chip run">
-        {$t('assistant.chipPaused', { values: { line: $currentLine ?? 0 } })}
+        {$currentLine === null
+          ? $t('assistant.chipRunning')
+          : $t('assistant.chipPaused', { values: { line: $currentLine } })}
       </span>
     {/if}
   </div>

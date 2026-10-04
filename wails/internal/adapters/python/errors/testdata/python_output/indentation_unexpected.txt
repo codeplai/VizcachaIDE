@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   x = 1
+#       y = 2
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\indentation_unexpected.py", line 2
+    y = 2
+IndentationError: unexpected indent

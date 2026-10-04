@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   d = {"a": 1}
+#   print(d["b"])
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\key_error.py", line 2, in <module>
+    print(d["b"])
+          ~^^^^^
+KeyError: 'b'

@@ -3,6 +3,7 @@
   import type { CodeLanguage, LanguageSetting, ThemeSetting } from '../domain'
   import { t } from '../i18n'
   import { profiles, settings, updateSettings } from '../stores'
+  import CodeLanguageChoices from './CodeLanguageChoices.svelte'
 
   const languages: { id: LanguageSetting; label: string }[] = [
     { id: 'auto', label: 'settings.languageAuto' },
@@ -42,6 +43,11 @@
       <option value={profile.id}>{$t(profile.nameKey)}</option>
     {/each}
   </select>
+</div>
+
+<div class="field">
+  <span class="label">{$t('settings.enabledCodeLanguages')}</span>
+  <CodeLanguageChoices label={$t('settings.enabledCodeLanguages')} />
 </div>
 
 <div class="field">

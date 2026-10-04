@@ -141,9 +141,13 @@ export const firstRunSteps = (ctx) => {
     await page.waitForFunction(() => document.querySelector('[role=dialog]')?.innerText.includes('Elige tu idioma'), { timeout: 5000 })
     await L.shot(page, 'firstrun-02-language-es')
     await pressText(page, '[role=dialog] button', 'Siguiente')
+    // Step 2 (M1): the programming languages the student will use; keep the default (all).
+    await page.waitForFunction(() => document.querySelector('[role=dialog]')?.innerText.includes('¿Qué lenguajes de programación vas a usar?'), { timeout: 5000 })
+    await L.shot(page, 'firstrun-03-code-languages')
+    await pressText(page, '[role=dialog] button', 'Siguiente')
     await page.waitForFunction(() => /Go .* está listo/.test(document.querySelector('[role=dialog]')?.innerText ?? ''), { timeout: 20000 })
     text = await page.$eval('[role=dialog]', (e) => e.innerText)
-    await L.shot(page, 'firstrun-03-go-ready')
+    await L.shot(page, 'firstrun-04-go-ready')
     await pressText(page, '[role=dialog] button', 'Siguiente')
     await pressText(page, '[role=dialog] button', 'Abrir el ejemplo')
     await page.waitForFunction(() => !document.querySelector('[role=dialog]'), { timeout: 10000 })
@@ -159,7 +163,7 @@ export const firstRunSteps = (ctx) => {
     await U.waitOutput(page, 'Terminó bien')
     const output = await U.outputText(page)
     must(output.includes('Hola, Go'), `untitled run: ${output}`)
-    await L.shot(page, 'firstrun-04-hello-run')
+    await L.shot(page, 'firstrun-05-hello-run')
     return `${text.split('\n').find((l) => l.includes('está listo'))}; untitled tab ran: ${output.split('\n').slice(-2).join(' / ')}; firstRun=${saved.firstRun}`
   })
   return list

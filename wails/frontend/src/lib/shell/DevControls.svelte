@@ -1,8 +1,15 @@
 <script lang="ts">
   import { bridge, mockControls, type Scenario } from '../bridge'
-  import { parseDevQuery } from '../devQuery'
+  import { demoBreakpointLine, parseDevQuery } from '../devQuery'
   import { t } from '../i18n'
-  import { activePath, settings, toggleBreakpoint, updateSettings, breakpoints } from '../stores'
+  import {
+    activePath,
+    breakpoints,
+    debuggedPath,
+    settings,
+    toggleBreakpoint,
+    updateSettings
+  } from '../stores'
   import { get } from 'svelte/store'
 
   const states: { scenario: Scenario; label: string }[] = [
@@ -23,7 +30,10 @@
     current = scenario
     const path = get(activePath)
     const set = path ? (get(breakpoints)[path] ?? []) : []
-    if (scenario === 'debug' && path && !set.includes(6)) await toggleBreakpoint(bridge, path, 6)
+    if (scenario === 'debug' && path) debuggedPath.set(path)
+    const line = path ? demoBreakpointLine(path) : 0
+    if (scenario === 'debug' && path && !set.includes(line))
+      await toggleBreakpoint(bridge, path, line)
     await mockControls?.play(scenario)
   }
 </script>

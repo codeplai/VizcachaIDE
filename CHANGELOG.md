@@ -8,6 +8,46 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-10-04
+
+Wails edition. **Python** is the second language: write, run, understand errors, debug and use a
+console, with the same experience as Go. Go works as in 2.1.0 (46/46 QA steps in English and Spanish,
+see `docs/wails/QA_WAILS.md`).
+
+### Added
+- **Run Python** (F5) in a terminal, so `input()` reads what you type in Output and what a program
+  prints before crashing is never lost; program arguments and untitled files work too.
+- **The Assistant explains about 30 common Python errors** in English and Spanish (NameError,
+  IndentationError, TypeError, missing colon, unclosed bracket, ZeroDivisionError and more), with
+  the line underlined and the original message kept.
+- **Debugger for Python** (debugpy): breakpoints, steps, variables marked "just changed" (without
+  Python's internal variables), call stack, stop on an uncaught exception, and **keyboard input while
+  debugging**.
+- **Code intelligence for Python** (python-lsp-server with pyflakes): live problems, completion,
+  hover, signature help, go to definition and the Outline.
+- **Format on save** and checks after a run with ruff (only syntax errors and pyflakes warnings,
+  ignoring any personal ruff configuration of the machine).
+- **Python console** (>>>) that remembers variables between entries.
+- **Packages** dialog for Python: install, uninstall and list packages with pip.
+- The first-run wizard asks **which programming languages** you will use; *New file of…* and
+  Settings → Tools show only those (Settings → General changes it).
+- Packages `full-python` (IDE + Python) and `full` (Go + Python). The Go-only package is now
+  `full-go`.
+- **Hide the side panel and the Assistant** for more editor room: click the active rail icon, use
+  the two buttons in the title bar, or press Ctrl+B / Ctrl+Alt+B. The Assistant opens again when you
+  start debugging, and its button shows the number of problems while it is hidden.
+
+### Changed
+- The status bar shows the open file's language and version ("Python 3.12.14") and says
+  "Code helper …" instead of "gopls …".
+- The Go format error now names the line ("errors.formatRejected" said "line ?").
+
+### Notes
+- Python is found in this order: the one chosen in Settings, the bundled one, the folder's
+  `.venv`, the `py` launcher (Windows) and PATH; it must be 3.10 or newer.
+- For developers: `process.Job.Events`, `Capabilities.DebugInput`, `dap.StdioTransport` and the
+  Python adapter in `wails/internal/adapters/python` (see `docs/PLAN_PYTHON.md`).
+
 ## [2.1.0] - 2026-10-03
 
 Wails edition. The IDE is now built around **language profiles**, so Python and C++ can be added
@@ -133,6 +173,47 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 
 ## [Sin publicar]
 
+## [2.2.0] - 2026-10-04
+
+Edición Wails. **Python** es el segundo lenguaje: escribir, ejecutar, entender los errores, depurar
+y usar una consola, con la misma experiencia que Go. Go funciona como en 2.1.0 (46/46 pasos de QA en
+inglés y español, ver `docs/wails/QA_WAILS.md`).
+
+### Añadido
+- **Ejecutar Python** (F5) en una terminal: `input()` lee lo que escribes en Salida y nunca se
+  pierde lo que el programa imprime antes de caerse; también argumentos y archivos sin título.
+- **El Asistente explica unos 30 errores comunes de Python** en inglés y español (NameError,
+  IndentationError, TypeError, falta de dos puntos, paréntesis sin cerrar, ZeroDivisionError y más),
+  con la línea subrayada y el mensaje original intacto.
+- **Depurador de Python** (debugpy): puntos de interrupción, pasos, variables marcadas "acaba de
+  cambiar" (sin las variables internas de Python), pila de llamadas, parada en una excepción no
+  capturada y **entrada por teclado mientras depuras**.
+- **Inteligencia de código para Python** (python-lsp-server con pyflakes): problemas en vivo,
+  completado, ayuda al pasar el ratón, firma, ir a la definición y la Estructura.
+- **Formato al guardar** y revisión tras ejecutar con ruff (sólo errores de sintaxis y avisos de
+  pyflakes, sin la configuración personal de ruff que tenga la máquina).
+- **Consola de Python** (>>>) que recuerda las variables entre entradas.
+- Diálogo **Paquetes** para Python: instalar, desinstalar y listar paquetes con pip.
+- El asistente de primer arranque pregunta **qué lenguajes de programación** usarás; *Nuevo archivo
+  de…* y Ajustes → Herramientas muestran sólo esos (se cambia en Ajustes → General).
+- Paquetes `full-python` (IDE + Python) y `full` (Go + Python). El paquete sólo con Go pasa a
+  llamarse `full-go`.
+- **Oculta el panel lateral y el Asistente** para tener más espacio en el editor: pulsa el icono
+  activo de la barra lateral, usa los dos botones de la barra de título o pulsa Ctrl+B / Ctrl+Alt+B.
+  El Asistente vuelve a abrirse al empezar a depurar, y su botón muestra el número de problemas
+  mientras está oculto.
+
+### Cambiado
+- La barra de estado muestra el lenguaje del archivo abierto y su versión ("Python 3.12.14") y dice
+  "Ayudante de código …" en vez de "gopls …".
+- El error de formato de Go ahora dice la línea ("errors.formatRejected" decía "línea ?").
+
+### Notas
+- Python se busca en este orden: el elegido en Ajustes, el empaquetado, el `.venv` de la carpeta,
+  el lanzador `py` (Windows) y el PATH; debe ser 3.10 o más nuevo.
+- Para desarrolladores: `process.Job.Events`, `Capabilities.DebugInput`, `dap.StdioTransport` y el
+  adaptador de Python en `wails/internal/adapters/python` (ver `docs/PLAN_PYTHON.md`).
+
 ## [2.1.0] - 2026-10-03
 
 Edición Wails. El IDE se organiza ahora en torno a **perfiles de lenguaje**, así que Python y C++
@@ -254,8 +335,9 @@ arquitectura en capas, y casi todo lo que prometía el README de la 0.1 ahora ex
 - Una interfaz de depurador **simulada** (paneles de Variables y Pila de llamadas) que no usaba
   Delve.
 
-[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...HEAD
-[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...HEAD
+[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...HEAD
+[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...HEAD
+[2.2.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...wails-v2.2.0
 [2.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/wails-v2.1.0
 [1.0.0-rc1]: https://github.com/codeplai/VizcachaIDE/compare/v0.1.0...v1.0.0-rc1
 [0.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/v0.1.0

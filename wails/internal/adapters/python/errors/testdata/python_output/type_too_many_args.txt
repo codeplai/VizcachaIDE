@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   def f(a):
+#       return a
+#   f(1, 2)
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\type_too_many_args.py", line 3, in <module>
+    f(1, 2)
+TypeError: f() takes 1 positional argument but 2 were given

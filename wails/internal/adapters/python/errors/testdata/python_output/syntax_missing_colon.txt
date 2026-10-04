@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   for i in range(3)
+#       print(i)
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\syntax_missing_colon.py", line 1
+    for i in range(3)
+                     ^
+SyntaxError: expected ':'

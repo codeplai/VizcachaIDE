@@ -44,9 +44,13 @@ const refreshExplanations = async (bridge: Bridge): Promise<void> => {
   await bridge.assistant.explainDiagnostics([...lsp, ...get(runDiagnostics)])
 }
 
-const stderrOfRun = (): string =>
+/**
+ * The output the explainer reads after a failed run: stderr, or everything when the program ran
+ * in a terminal (a PTY merges stderr into stdout, so a Python traceback arrives as stdout).
+ */
+const failureOutputOfRun = (inTerminal: boolean): string =>
   get(runLines)
-    .filter((line) => line.kind === 'stderr')
+    .filter((line) => line.kind === 'stderr' || (inTerminal && line.kind === 'stdout'))
     .map((line) => line.text)
     .join('\n')
 
@@ -77,7 +81,7 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
   const items = failed
     ? await bridge.assistant.explain(
         config?.codeLanguage ?? 'go',
-        stderrOfRun(),
+        failureOutputOfRun(config?.echo ?? false),
         config?.workingDir ?? ''
       )
     : []

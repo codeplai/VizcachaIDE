@@ -14,8 +14,12 @@
    [`docs/wails/UX_COPY.md`](wails/UX_COPY.md); y el adaptador de Go en `wails/internal/adapters/golang/`
    como ejemplo de cada pieza.
 3. Para desarrollar y probar hace falta un Python 3.10 o más en la máquina con `debugpy`,
-   `python-lsp-server` y `ruff` instalados (`pip install debugpy python-lsp-server ruff`). Los tests de
-   integración se saltan solos si faltan.
+   `python-lsp-server` con **pyflakes** y `ruff` instalados (`pip install debugpy "python-lsp-server[pyflakes]" ruff`;
+   sin pyflakes pylsp no publica ningún diagnóstico, hallazgo de P3). Los tests de
+   integración se saltan solos si faltan. **Usar CPython 3.12** (la versión que se empaqueta): jedi, que
+   usa pylsp, no garantiza 3.14. En la máquina de desarrollo hay un 3.12 de Astral (`py -V:Astral/CPython3.12.14`);
+   P0 crea con él el venv `wails/.venv-py312` (ignorado por git) y los tests lo encuentran con la
+   variable `VIZCACHA_TEST_PYTHON`.
 4. Verificación antes de cada commit:
    ```sh
    cd wails && go vet ./... && go test ./... && golangci-lint run
@@ -25,7 +29,12 @@
 5. Reglas de siempre: archivos de menos de 200 líneas, funciones de menos de 50, retorno temprano,
    nombres de dominio, library-first, textos sólo por i18n. Commits locales en inglés, sin push salvo
    indicación.
-6. Resultado esperado: **versión 2.2.0** con Python como segundo lenguaje y la variante
+6. Rama `m1-python`, creada desde `main` (2.1.0). El **orquestador** (P0, integración, CCR, textos, QA)
+   es **Opus**; los **coders** de P1 a P6 son **Sonnet** (`Agent` con `model: "sonnet"` e
+   `isolation: "worktree"`), con el prompt de §12. Reparto como en M0 (`PLAN_NUCLEO_MULTILENGUAJE.md`
+   §10.1): `go.mod`, `.golangci.yml`, `ux_copy.json` y los locales son del orquestador; nadie borra una
+   pieza transitoria que otro track usa.
+7. Resultado esperado: **versión 2.2.0** con Python como segundo lenguaje y la variante
    `full-python` empaquetada.
 
 ## 1. Objetivo
@@ -71,6 +80,56 @@ Alternativas descartadas por ahora: pyright o basedpyright (mejor análisis, per
 paquete pesado), IPython o ipykernel para la consola (demasiado grandes para el paquete), cling no
 aplica.
 
+## 3.0 Estado (2026-10-04): P0–P6 integrados y QA en verde (46/46)
+
+Todo M1 está en la rama `m1-python`: P0 (contrato y base, orquestador) y P1–P6 (coders Sonnet)
+integrados, con los CCR aplicados (`SupportsRunInTerminalRequest`, `StdioTransport` sin contexto,
+saltar eventos DAP desconocidos, `process.PrepareTree/KillTree`, símbolos planos en `protocol/lsp`,
+pylsp con pyflakes). La QA (`docs/wails/QA_WAILS.md`, sección 2.2.0) pasa 46/46: la paridad de Go y
+la fase de Python del arnés E2E en EN/ES. Arreglos de la QA: depuración sin pausas, tracebacks en
+terminal, catálogo con los mensajes de pyflakes, espacios de los prompts en ConPTY y barra de estado.
+Versión 2.2.0 en `wails.json`, CHANGELOG y `docs/release/notes-2.2.0.{en,es}.md`. Pendiente: fusionar
+en `main`; instalador NSIS de `full-python` y paquetes de macOS/Linux sólo en el CI. Limitación
+conocida: `lsp:status` aún no lleva el lenguaje (M2 puede añadirlo al contrato).
+
+## 3.1 Decisiones de la revisión (2026-10-03, antes de ejecutar)
+
+Contrastado el plan con el código real de M0, se fijaron estos cambios. Los hace **P0** antes de
+lanzar los tracks:
+
+1. **Salida y teclado del programa depurado.** Con `runInTerminal` el programa depurado corre en el
+   `Supervisor` compartido (PTY), pero el Supervisor emite `run:*` y el frontend los trataría como una
+   ejecución normal (Output de ejecución, `running`, `ruff check` al terminar). Cambio de contrato:
+   - `process.Job` gana `Events JobEvents` (opcional), con los mismos métodos que `app.EventSink`:
+     `RunStarted(config)`, `RunOutput(stream, text)`, `RunFinished(exitCode, durationMs)` (así el
+     sink los cumple sin adaptador). Si es nil se emiten los `run:*` de siempre. El
+     `ReverseHandler` de debugpy pasa uno que reenvía la salida como `debug:output` (categoría
+     `stdout`/`stderr`) y no emite inicio ni fin.
+   - `domain.Capabilities` gana `DebugInput bool` (`debugInput`): Go `false` (Delve no da teclado),
+     Python `true` cuando hay PTY. El frontend deja escribir en Output durante la depuración sólo si
+     `capabilities.debugInput`; lo escrito va por `RunService.WriteInput`, que llega al mismo
+     Supervisor. Sin PTY, el runner de Python pone `console: internalConsole` y el aviso
+     `run.debugStdin` de siempre.
+2. **Transporte stdio de DAP** en `protocol/dap` (`StdioTransport`: arranca un comando y habla DAP
+   por su stdin/stdout). Lo usan debugpy (M1) y lldb-dap (M2); N1 sólo escribió el TCP de Delve.
+3. **Lenguajes elegidos por el alumno.** El paso nuevo del asistente de primer arranque escribe
+   `Settings.EnabledCodeLanguages`; el frontend filtra con él *Nuevo archivo de…* y Ajustes →
+   Herramientas (vacío = todos). Ajustes → General permite cambiar la elección.
+4. **APIs reales de M0** (en vez de las de este plan donde difieran): `lsp.New(sink, flavor,
+   lsp.Options{Name: "pylsp", LanguageID: "python", IdleTimeout: 5 * time.Minute})`;
+   `toollocator.Tool{Spec, Language, Name, BundledDirectories}` (un solo nombre: el locator de Python
+   prueba `python3` y luego `python`); `dap.NewSession(dap.SessionDeps{...})`;
+   `errorcatalog.NewExplainer(catalogJSON, parse)`; `process.Job{..., Mode: process.Terminal}`.
+5. **depguard:** regla `python-adapter-stays-in-python` (un `deny` por carpeta hermana: golang, cpp y
+   los adaptadores neutrales, porque depguard no aplica la coincidencia más específica) y exclusión de
+   `adapters/python/**` en `adapters-are-independent`.
+6. **ruff aislado** (decidido en P0): `ruff check --isolated --select E9,F` y `ruff format --isolated`.
+   Sin `--isolated`, una configuración de ruff del usuario de la máquina se cuela (en la de desarrollo
+   activaba `I001`, orden de imports); el alumno sólo debe ver errores de sintaxis y de pyflakes, como
+   con pylsp. El fixture `ruff_check.json` está grabado así.
+7. **QA:** además de la lista de §10, el arnés E2E (`wails/packaging/qa/e2e`) gana pasos de Python
+   (ejecutar con `input()`, error explicado, depurar con variables) en EN y ES.
+
 ## 4. Diseño: `wails/internal/adapters/python/`
 
 ```
@@ -93,7 +152,7 @@ adapters/python/
 var Profile = domain.LanguageProfile{
     ID: domain.CodeLanguagePython, NameKey: "codeLanguage.python", Extensions: []string{".py", ".pyw"},
     Indent: domain.IndentStyle{UseTabs: false, Size: 4},
-    Capabilities: domain.Capabilities{Build: false, Console: true, Format: true, Check: true,
+    Capabilities: domain.Capabilities{Build: false, Console: true, Format: true, Check: true, DebugInput: true,
         PackageActions: []domain.PackageAction{domain.PackageAdd, domain.PackageRemove, domain.PackageList},
         ThreadsLabel: "debug.threads"},
     Tools: []domain.ToolSpec{
@@ -145,16 +204,17 @@ empaquetado, además `PYTHONNOUSERSITE=1` para no mezclar paquetes de otro Pytho
 - `Build`: `ErrUnsupported`.
 - `Check` y `Format` no son del runner: los implementa `ruff/` como `app.CodeChecker` y
   `app.CodeFormatter` (M0 §3.5):
-  - `Check`: `python -m ruff check --output-format json <target>`; devuelve el JSON (el parser de
+  - `Check`: `python -m ruff check --isolated --select E9,F --output-format json <target>`; devuelve el JSON (el parser de
     §4.9 lo entiende); `""` si no hay nada o ruff no está.
-  - `Format(path, text)`: `python -m ruff format --stdin-filename <nombre de path> -` con el texto
+  - `Format(path, text)`: `python -m ruff format --isolated --stdin-filename <nombre de path> -` con el texto
     por stdin; errores de sintaxis → `ErrFormat` con la línea (el frontend ya muestra
     `errors.formatRejected`).
 - `Stop`: lo hace `protocol/process` (Ctrl+C por la PTY, luego árbol de procesos).
 
 ### 4.5 Depurador (`debugpy/`)
 
-- Transport: stdio sobre `python -m debugpy.adapter` (sin `--port` habla DAP por stdin/stdout).
+- Transport: `dap.StdioTransport` (§3.1) sobre `python -m debugpy.adapter` (sin `--port` habla DAP por
+  stdin/stdout).
 - `Flavor.AdapterID()` = `"python"`. `Launch` produce:
   ```json
   {"request":"launch","type":"python","name":"VizcachaIDE","program":"<path>","cwd":"<dir>",
@@ -163,8 +223,9 @@ empaquetado, además `PYTHONNOUSERSITE=1` para no mezclar paquetes de otro Pytho
   ```
 - `console: integratedTerminal` hace que el adaptador envíe la petición inversa **`runInTerminal`**
   con el comando del lanzador de debugpy. El `ReverseHandler` del adaptador la contesta arrancando
-  ese comando con `protocol/process` en modo PTY (misma salida y entrada que Ejecutar) y devolviendo
-  el pid. Así `input()` funciona depurando. Si la PTY no existe, `console: internalConsole`
+  ese comando con el `Supervisor` compartido en modo PTY, con un `Job.Events` que reenvía la salida
+  como `debug:output` (§3.1), y devuelve el pid. Lo que el alumno escribe en Output va por
+  `RunService.WriteInput` al mismo Supervisor. Así `input()` funciona depurando. Si la PTY no existe, `console: internalConsole`
   y el aviso `run.debugStdin` de Go (sin teclado al depurar).
 - `ExceptionFilters()` = `["uncaught"]`: una excepción no capturada para el programa en la línea
   culpable con `StopException` y la descripción `NameError: name 'x' is not defined`. Al continuar,
@@ -275,7 +336,7 @@ errores reales de alumnos para ajustar los patrones.
 ### 4.10 `support_python.go` (en `wails/`, paquete `main`)
 
 ```go
-func newPythonSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts *backendTexts) (app.LanguageSupport, func(ctx context.Context))
+func newPythonSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts *backendTexts, supervisor *process.Supervisor) (app.LanguageSupport, func(ctx context.Context), error)
 ```
 
 Recibe también el `Supervisor` compartido. Crea locator, runner, debugpy, pylsp, ruff (asignado a
@@ -295,7 +356,10 @@ y borra el perfil provisional de Python de `support_unavailable.go`. `.golangci.
 | `lib/bridge/mock*.ts` | escenarios de Python: ejecución correcta (`Hola, Python`), error (`NameError` explicado en EN/ES), depuración (frames y variables de ejemplo de una función `factorial(n)` en Python); `?lang=…&language=python` en la barra de desarrollo |
 | `lib/stores/commands.ts` | nada específico: `missingToolIn` ya es genérico desde M0 |
 | `lib/panels/ConsolePanel.svelte` | prompt `>>>` cuando el lenguaje activo es Python (hoy `>` para Go); `errors.consoleNoInput` |
-| `lib/shell/PackagesDialog.svelte` | verbos `add`, `remove`, `list` (pip) con los textos de §6 |
+| `lib/shell/PackagesDialog.svelte` | verbos `add`, `remove`, `list` (pip) con los textos de §6; hoy sólo tiene los textos de Go (N4) |
+| `lib/stores/commands.ts`, `panels/OutputPanel.svelte` | durante la depuración, la caja de entrada de Output se habilita si `capabilities.debugInput` y envía por `bridge.run.writeInput`; si no, el aviso `run.debugStdin` |
+| `lib/stores/codeLanguages.ts`, `shell/NewFileMenu.svelte`, `shell/SettingsTools.svelte`, `shell/SettingsGeneral.svelte` | `enabledProfiles` derivado de `settings.enabledCodeLanguages` (vacío = todos); el menú *Nuevo archivo de…* y Herramientas lo usan; General permite marcar los lenguajes |
+| `lib/editor/languageSupport.ts` | caso `python` en `syntaxFor` con `python()` de `@codemirror/lang-python` |
 | `lib/shell/FirstRunWizard.svelte` | paso nuevo "¿Qué lenguajes vas a usar?" que escribe `EnabledLanguages`; el paso de herramientas comprueba las de los lenguajes elegidos |
 | `lib/shell/AboutDialog.svelte` | créditos: CPython, debugpy, python-lsp-server, ruff |
 
@@ -308,14 +372,16 @@ y borra el perfil provisional de Python de `support_unavailable.go`. `.golangci.
 | `errors.pythonNotFound` | Python isn't available. Install it or choose it in Settings. | Python no está disponible. Instálalo o elígelo en Ajustes. |
 | `errors.debugpyMissing` | The debugger for Python (debugpy) isn't installed in this Python. Install it with the command below. | El depurador de Python (debugpy) no está instalado en este Python. Instálalo con el comando de abajo. |
 | `errors.pylspMissing` | The code helper for Python (python-lsp-server) isn't installed. Suggestions and live problems are off. | El ayudante de código de Python (python-lsp-server) no está instalado. No habrá sugerencias ni problemas en vivo. |
-| `errors.ruffMissing` | The formatter for Python (ruff) isn't installed, so the file was saved as it is. | El formateador de Python (ruff) no está instalado, así que el archivo se guardó tal cual. |
 | `errors.consoleNoInput` | The console can't read the keyboard. Try it in a file with F5. | La consola no puede leer el teclado. Pruébalo en un archivo con F5. |
 | `packages.add` | Install a package | Instalar un paquete |
-| `packages.remove` | Uninstall | Desinstalar |
-| `packages.list` | Show installed packages | Ver paquetes instalados |
 | `packages.pipHint` | Packages are installed with pip into the Python VizcachaIDE uses. | Los paquetes se instalan con pip en el Python que usa VizcachaIDE. |
 | `firstRun.languages` | Which languages will you use? | ¿Qué lenguajes vas a usar? |
 | `run.pythonVenv` | Using the project's .venv | Usando el .venv del proyecto |
+| `settings.enabledCodeLanguages` | Languages you use | Lenguajes que usas |
+
+Ya existen desde M0 y no se repiten: `packages.remove`, `packages.list`, `errors.ruffMissing`,
+`codeLanguage.python`. **Dueño:** P0 añade todas las claves de esta tabla; las que pidan los tracks
+las fusiona el orquestador al integrar.
 
 ## 7. Empaquetado
 
@@ -373,7 +439,7 @@ P0 (orquestador) ──► P1 · P2 · P3 · P4 · P5 · P6 en paralelo ──�
 
 | Track | Dueño de | Entrega | Hecho cuando |
 |---|---|---|---|
-| **P0 · Preparación** | `adapters/python/profile.go`, `locator.go`, `environment.go`, fixtures | perfil, localizador con tests, entorno, `testdata/python_output` grabado de un Python real | los demás tracks compilan contra el locator |
+| **P0 · Preparación y contrato** (orquestador, secuencial) | §3.1 completo: `process.Job.Events`, `Capabilities.DebugInput` (Go y TS), `dap.StdioTransport`, reglas depguard, claves de §6; `adapters/python/profile.go`, `locator.go`, `environment.go`, fixtures; el venv 3.12 de desarrollo | contrato compilando, perfil y localizador con tests, entorno, `testdata/python_output` grabado de un Python 3.12 real | `go test`, `golangci-lint`, `npm run check/test` en verde; un commit del que parten los demás |
 | **P1 · Ejecutor y paquetes** | `adapters/python/runner`, `packages` | §4.4 y §4.8 | ejecutar `hola.py` con `input()` por la PTY, stop, untitled, pip install por el diálogo |
 | **P2 · Depurador** | `adapters/python/debugpy` | §4.5 | breakpoints, pasos, variables con "acaba de cambiar", pila, excepción no capturada; `input()` depurando si hay PTY |
 | **P3 · Inteligencia y formato** | `adapters/python/pylsp`, `ruff` | §4.6, `Format`, `Check` | diagnósticos de pyflakes en vivo, completado, hover, definición, símbolos; formato al guardar |
@@ -424,8 +490,8 @@ instalado, en EN y ES:
 ```text
 You are a coder on VizcachaIDE (wails/: Go 1.25 + Wails v2 + Svelte 5 + CodeMirror 6), a beginner IDE,
 bilingual EN/ES, that now has a multi-language core (docs/PLAN_NUCLEO_MULTILENGUAJE.md). You work in an
-isolated git worktree on track <P?> of docs/PLAN_PYTHON.md. First read that plan (sections 0, 3, 4 and
-your track in 9), docs/EXTENSION_MULTILENGUAJE.md section 4, wails/README.md, docs/wails/PLAN_WAILS.md
+isolated git worktree, branched from m1-python, on track <P?> of docs/PLAN_PYTHON.md. First read that
+plan (sections 0, 3, 3.1, 4 and your track in 9), docs/EXTENSION_MULTILENGUAJE.md section 4, wails/README.md, docs/wails/PLAN_WAILS.md
 sections 2 and 4, and the Go adapter in wails/internal/adapters/golang as the reference implementation.
 - Edit ONLY your track's folders. The v3 contract (internal/domain, internal/app/ports.go,
   internal/bridge/events.go, frontend/src/lib/{events,domain}.ts, bridge/types.ts) and internal/protocol

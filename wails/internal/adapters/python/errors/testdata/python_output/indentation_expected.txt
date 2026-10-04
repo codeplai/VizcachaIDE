@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú
+# program:
+#   def f():
+#   return 1
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmp24rrzbyl\mis programas ñandú\indentation_expected.py", line 2
+    return 1
+    ^^^^^^
+IndentationError: expected an indented block after function definition on line 1

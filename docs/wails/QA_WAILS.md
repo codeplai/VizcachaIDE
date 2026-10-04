@@ -1,5 +1,33 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
+## 2.2.0 (M1, Python): QA, 2026-10-04
+
+Same environment and harness, branch `m1-python`, with Python 3.12.14 (debugpy 1.8.22,
+python-lsp-server 1.15.0 + pyflakes 3.2.0, ruff 0.16.10) from the development venv.
+
+- **Result: 46/46 steps pass.** The Go parity matrix (34 steps: EN, ES, settings persistence, first
+  run) has no regressions, and the new Python phase (`steps-python.mjs`, 6 steps × EN/ES) passes:
+  run with `input()` in a terminal, the NameError explained in the IDE language, live problems from
+  pyflakes, the debugger (breakpoint, variables `n`/`resultado`/`i`, no internal variables), keyboard
+  input **while debugging** (`input()` reads what is typed in Output), and the console (`>>>`,
+  `2 + 2`, a remembered `x`).
+- **Fixed during QA** (all found by the new steps):
+  - A debug session that never pauses stayed on "Starting the debugger" and hid the program's
+    output; it is now "Debugging <file> · running", with a "Running" chip, no step toolbar and no
+    empty "Variables in ()".
+  - Tracebacks were not explained after a run in a terminal: a PTY merges stderr into stdout, so the
+    Assistant now reads the whole output when the run had `echo: true`.
+  - pyflakes (live) messages were not in the Python catalog (only ruff's wording).
+  - ConPTY writes a prompt's trailing space as a cursor move: `input("Nombre: ")` showed
+    `Nombre:Ana`. `pty.Clean` turns cursor-forward into spaces.
+  - The status bar said "gopls ..." and "Go 1.25.5" for Python files: it now says "Code helper ..."
+    and shows the active language's runtime ("Python 3.12.14").
+- **Known limitations:** `lsp:status` carries no language yet, so with Go and Python files open the
+  status shows the last server that reported. The NSIS installer of `full-python` was not built on
+  this machine (LZMA of 223 MB was too slow); the portable zip (68.2 MB) was built and smoke-tested.
+  macOS and Linux packages are built only by CI.
+- Evidence: [qa-2.2/](qa-2.2/).
+
 ## 2.1.0 (M0, multi-language core): parity QA, 2026-10-03
 
 Same environment and harness as below (Windows 10, `wails dev`, Go 1.25.5 / dlv 1.27.2 /

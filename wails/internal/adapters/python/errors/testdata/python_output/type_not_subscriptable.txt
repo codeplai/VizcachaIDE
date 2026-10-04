@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   n = 5
+#   print(n[0])
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\type_not_subscriptable.py", line 2, in <module>
+    print(n[0])
+          ~^^^
+TypeError: 'int' object is not subscriptable

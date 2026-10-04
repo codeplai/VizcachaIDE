@@ -103,6 +103,10 @@ func (c *Client) readLoop() {
 	for {
 		message, err := dap.ReadProtocolMessage(c.reader)
 		if err != nil {
+			var unknown *dap.DecodeProtocolMessageFieldError
+			if errors.As(err, &unknown) {
+				continue // an event or request this client does not know (debugpySockets): skip it
+			}
 			c.shutdown()
 			return
 		}

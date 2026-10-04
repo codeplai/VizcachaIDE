@@ -1,0 +1,95 @@
+{
+  "workingDir": "D:\\Users\\mcalderon\\AppData\\Local\\Temp\\tmp24rrzbyl\\mis programas ñandú",
+  "source": "import os\n\ndef main():\n    total = 5\n    print(valor)\n",
+  "report": [
+    {
+      "cell": null,
+      "code": "F401",
+      "end_location": {
+        "column": 10,
+        "row": 1
+      },
+      "filename": "D:\\Users\\mcalderon\\AppData\\Local\\Temp\\tmp24rrzbyl\\mis programas ñandú\\ruff_case.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "",
+            "end_location": {
+              "column": 1,
+              "row": 2
+            },
+            "location": {
+              "column": 1,
+              "row": 1
+            }
+          }
+        ],
+        "message": "Remove unused import: `os`"
+      },
+      "location": {
+        "column": 8,
+        "row": 1
+      },
+      "message": "`os` imported but unused",
+      "name": "unused-import",
+      "noqa_row": 1,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unused-import"
+    },
+    {
+      "cell": null,
+      "code": "F841",
+      "end_location": {
+        "column": 10,
+        "row": 4
+      },
+      "filename": "D:\\Users\\mcalderon\\AppData\\Local\\Temp\\tmp24rrzbyl\\mis programas ñandú\\ruff_case.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "",
+            "end_location": {
+              "column": 1,
+              "row": 5
+            },
+            "location": {
+              "column": 1,
+              "row": 4
+            }
+          }
+        ],
+        "message": "Remove assignment to unused variable `total`"
+      },
+      "location": {
+        "column": 5,
+        "row": 4
+      },
+      "message": "Local variable `total` is assigned to but never used",
+      "name": "unused-variable",
+      "noqa_row": 4,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+    },
+    {
+      "cell": null,
+      "code": "F821",
+      "end_location": {
+        "column": 16,
+        "row": 5
+      },
+      "filename": "D:\\Users\\mcalderon\\AppData\\Local\\Temp\\tmp24rrzbyl\\mis programas ñandú\\ruff_case.py",
+      "fix": null,
+      "location": {
+        "column": 11,
+        "row": 5
+      },
+      "message": "Undefined name `valor`",
+      "name": "undefined-name",
+      "noqa_row": 5,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/undefined-name"
+    }
+  ]
+}

@@ -112,12 +112,12 @@ describe('a missing tool while running', () => {
 })
 
 describe('a language without an adapter yet', () => {
-  it('says the action is not available for Python', async () => {
-    activePath.set('C:/work/app.py')
+  it('says the action is not available for C++', async () => {
+    activePath.set('C:/work/app.cpp')
     await runActiveFile(bridge)
     const shown = get(notice)
     expect(shown?.messageKey).toBe('errors.unsupportedAction')
-    expect(shown?.values['codeLanguage']).toBe('Python')
+    expect(shown?.values['codeLanguage']).toBe('C++')
   })
 })
 

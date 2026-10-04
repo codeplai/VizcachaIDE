@@ -4,8 +4,6 @@ import (
 	"sync/atomic"
 	"time"
 	"unicode/utf8"
-
-	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 )
 
 const (
@@ -16,13 +14,13 @@ const (
 // streamWriter sends what a process prints to the EventSink as it arrives.
 // It never splits a UTF-8 character between two events.
 type streamWriter struct {
-	sink    app.EventSink
+	sink    JobEvents
 	stream  string
 	seen    *atomic.Bool
 	pending []byte
 }
 
-func newStreamWriter(sink app.EventSink, stream string, seen *atomic.Bool) *streamWriter {
+func newStreamWriter(sink JobEvents, stream string, seen *atomic.Bool) *streamWriter {
 	return &streamWriter{sink: sink, stream: stream, seen: seen}
 }
 

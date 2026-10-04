@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -15,6 +15,7 @@ import * as L from './lib.mjs'
 import * as U from './ui.mjs'
 import { steps } from './steps.mjs'
 import { persistenceSteps, firstRunSteps } from './settings-steps.mjs'
+import { pythonSteps } from './steps-python.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -92,6 +93,13 @@ const main = async () => {
     }
     if (wants('persist') && !onlyLang) await session('persist', { language: 'en' }, (ctx) => persistenceSteps(ctx))
     if (wants('firstrun') && !onlyLang) await session('firstrun', { language: 'en', firstRun: true }, (ctx) => firstRunSteps(ctx))
+    // Python (M1): the development interpreter of docs/PLAN_PYTHON.md section 0, or VIZCACHA_TEST_PYTHON.
+    if (wants('python')) {
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`python-${lang}`, { language: lang, toolPaths: { python: L.DEV_PYTHON } }, (ctx) => pythonSteps(ctx, lang))
+      }
+    }
   } finally {
     L.killLeftovers()
     L.restoreSettings()
