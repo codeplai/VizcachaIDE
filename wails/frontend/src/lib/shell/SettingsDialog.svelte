@@ -5,11 +5,13 @@
   import SettingsEditor from './SettingsEditor.svelte'
   import SettingsGeneral from './SettingsGeneral.svelte'
   import SettingsTools from './SettingsTools.svelte'
+  import SettingsUpdates from './SettingsUpdates.svelte'
 
   const tabs: { id: SettingsTab; label: string }[] = [
     { id: 'general', label: 'settings.general' },
     { id: 'editor', label: 'settings.editor' },
-    { id: 'tools', label: 'settings.tools' }
+    { id: 'tools', label: 'settings.tools' },
+    { id: 'updates', label: 'updates.title' }
   ]
 </script>
 
@@ -37,8 +39,10 @@
       <SettingsGeneral />
     {:else if $settingsTab === 'editor'}
       <SettingsEditor />
-    {:else}
+    {:else if $settingsTab === 'tools'}
       <SettingsTools />
+    {:else}
+      <SettingsUpdates />
     {/if}
   </div>
 </Modal>

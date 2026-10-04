@@ -1,6 +1,6 @@
 module github.com/codeplai/VizcachaIDE/wails
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/aymanbagabas/go-pty v0.2.3
@@ -12,6 +12,7 @@ require (
 	go.lsp.dev/jsonrpc2 v0.10.0
 	go.lsp.dev/protocol v0.12.0
 	go.lsp.dev/uri v0.3.0
+	golang.org/x/mod v0.41.0
 	golang.org/x/text v0.39.0
 )
 

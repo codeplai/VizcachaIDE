@@ -9,6 +9,7 @@ import { mockFiles } from './mockFiles'
 import { mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
 import { mockSettings } from './mockSettings'
+import { mockUpdates } from './mockUpdates'
 import type { Bridge, LanguageApi } from './types'
 
 export interface MockControls {
@@ -91,6 +92,7 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
     console: mockConsole(),
     files: mockFiles(sampleLanguage),
     settings: mockSettings(state, emit),
+    updates: mockUpdates(emit),
     system: {
       openUrl: (url) => void window.open(url, '_blank', 'noopener'),
       readClipboard: () => navigator.clipboard.readText(),

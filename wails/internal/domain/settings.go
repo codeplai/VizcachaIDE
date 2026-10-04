@@ -41,6 +41,10 @@ type Settings struct {
 	EnabledCodeLanguages []CodeLanguage `json:"enabledCodeLanguages"`
 	// FormatOnSave formats a file every time it is saved, when its language can format.
 	FormatOnSave bool `json:"formatOnSave"`
+	// CheckUpdates looks for a new version at start (at most once a day) and downloads it.
+	CheckUpdates bool `json:"checkUpdates"`
+	// LastUpdateCheck is the RFC 3339 time of the last successful check ("" if never).
+	LastUpdateCheck string `json:"lastUpdateCheck"`
 	// RecentFiles are the last opened files, newest first (at most MaxRecentFiles).
 	RecentFiles []string `json:"recentFiles"`
 }
@@ -53,6 +57,6 @@ func DefaultSettings() Settings {
 	return Settings{
 		Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, ToolPaths: map[string]string{},
 		FirstRun: true, DefaultCodeLanguage: CodeLanguageGo, EnabledCodeLanguages: []CodeLanguage{},
-		FormatOnSave: true, RecentFiles: []string{},
+		FormatOnSave: true, RecentFiles: []string{}, CheckUpdates: true,
 	}
 }

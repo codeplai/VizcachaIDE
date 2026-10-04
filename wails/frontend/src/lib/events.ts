@@ -7,7 +7,8 @@ import type {
   ServerStatus,
   Settings,
   Variable,
-  Diagnostic
+  Diagnostic,
+  UpdateState
 } from './domain'
 
 export const Events = {
@@ -22,7 +23,8 @@ export const Events = {
   lspStatus: 'lsp:status',
   assistantExplained: 'assistant:explained',
   settingsChanged: 'settings:changed',
-  fileChanged: 'file:changed'
+  fileChanged: 'file:changed',
+  updateState: 'update:state'
 } as const
 
 export type EventName = (typeof Events)[keyof typeof Events]
@@ -77,4 +79,5 @@ export interface EventPayloads {
   'assistant:explained': ExplainedDiagnostic[]
   'settings:changed': Settings
   'file:changed': FileChangedPayload
+  'update:state': UpdateState
 }

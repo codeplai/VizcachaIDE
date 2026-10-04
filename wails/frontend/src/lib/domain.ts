@@ -7,6 +7,7 @@
 import type { CodeLanguage } from './domainCodeLanguage'
 
 export * from './domainCodeLanguage'
+export * from './domainSettings'
 
 export type Severity = 'error' | 'warning' | 'info' | 'hint'
 
@@ -166,26 +167,6 @@ export interface FileNode {
 }
 
 export type ServerStatus = 'starting' | 'ready' | 'unavailable'
-export type LanguageSetting = 'auto' | 'en' | 'es'
-export type ThemeSetting = 'system' | 'light' | 'dark'
-
-export interface Settings {
-  language: LanguageSetting
-  theme: ThemeSetting
-  fontSize: number
-  /** Executables chosen in Settings, by ToolSpec.id; missing or '' = find it automatically. */
-  toolPaths: Record<string, string>
-  firstRun: boolean
-  lastFolder: string
-  /** Language of new files. */
-  defaultCodeLanguage: CodeLanguage
-  /** Languages chosen in the first-run wizard; empty = all. */
-  enabledCodeLanguages: CodeLanguage[]
-  formatOnSave: boolean
-  /** Last opened files, newest first (at most 10). */
-  recentFiles: string[]
-}
-
 /** What the interactive console answers to one snippet. */
 export interface ConsoleResult {
   /** Value of an expression, formatted like a REPL (strings quoted). Empty for statements. */
