@@ -40,7 +40,7 @@ func (e *eventSink) DebugOutput(text, category string) {
 	e.debug = append(e.debug, category+":"+text)
 	e.outputs.WriteString(text)
 }
-func (e *eventSink) DebugVariables(_ int, variables []domain.Variable) { e.children <- variables }
+func (e *eventSink) DebugVariables(_ int, variables []domain.Variable)             { e.children <- variables }
 func (e *eventSink) RunOutput(string, string)                                      { e.countRun() }
 func (e *eventSink) RunStarted(domain.RunConfiguration)                            { e.countRun() }
 func (e *eventSink) RunFinished(int, int64)                                        { e.countRun() }

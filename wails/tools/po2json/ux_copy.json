@@ -11,6 +11,7 @@
   "actions.continue": { "en": "Continue", "es": "Continuar" },
   "actions.runToHere": { "en": "Run to here", "es": "Ejecutar hasta aquí" },
   "actions.more": { "en": "More ▾", "es": "Más ▾" },
+  "actions.build": { "en": "Build", "es": "Compilar" },
 
   "tooltips.run": { "en": "Run your program (F5)", "es": "Ejecuta tu programa (F5)" },
   "tooltips.debug": { "en": "Run step by step and see your variables (F6)", "es": "Ejecuta paso a paso y mira tus variables (F6)" },
@@ -51,8 +52,8 @@
   "run.finished": { "en": "✓ Finished in {seconds} s", "es": "✓ Terminó bien en {seconds} s" },
   "run.exitCode": { "en": "✗ Your program ended with code {code}.", "es": "✗ Tu programa terminó con código {code}." },
   "run.compileFailed": {
-    "en": "✗ Your program didn't run: Go found {count, plural, one {# problem} other {# problems}}. See the explanation on the right.",
-    "es": "✗ No se pudo ejecutar: Go encontró {count, plural, one {# problema} other {# problemas}}. Mira la explicación a la derecha."
+    "en": "✗ Your program didn't run: there {count, plural, one {is # problem} other {are # problems}}. See the explanation on the right.",
+    "es": "✗ No se pudo ejecutar: {count, plural, one {hay # problema} other {hay # problemas}}. Mira la explicación a la derecha."
   },
   "run.inputPlaceholder": { "en": "Type here and press Enter to answer your program", "es": "Escribe aquí y pulsa Enter para responder a tu programa" },
   "run.stopped": { "en": "■ Stopped.", "es": "■ Detenido." },
@@ -201,6 +202,7 @@
   "dev.stateWrite": { "en": "1 · Write", "es": "1 · Escribir" },
   "dev.stateError": { "en": "2 · Error explained", "es": "2 · Error explicado" },
   "dev.stateDebug": { "en": "3 · Debug", "es": "3 · Depurar" },
+  "dev.stateCrash": { "en": "4 · Crash", "es": "4 · Caída" },
   "dev.themeSystem": { "en": "System", "es": "Sistema" },
   "dev.themeLight": { "en": "Light", "es": "Claro" },
   "dev.themeDark": { "en": "Dark", "es": "Oscuro" },

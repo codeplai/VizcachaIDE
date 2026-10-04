@@ -111,7 +111,7 @@ describe('Output panel', () => {
     await fireEvent.click(link)
     await waitFor(() => expect(get(revealRequest)?.location).toMatchObject({ line: 11, column: 5 }))
     expect(get(activePath)).toBe('hola-go/main.go')
-    expect(screen.getByText(/Go found 1 problem/)).toBeTruthy()
+    expect(screen.getByText(/there is 1 problem/)).toBeTruthy()
   })
 
   it('says it was stopped when the user stops the program', async () => {

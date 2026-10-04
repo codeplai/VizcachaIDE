@@ -54,10 +54,10 @@ func TestPlurals(t *testing.T) {
 	en := NewTranslator(bundle, "en")
 	one := en.Plural("run.compileFailed", 1, nil)
 	many := en.Plural("run.compileFailed", 3, nil)
-	if one != "✗ Your program didn't run: Go found 1 problem. See the explanation on the right." {
+	if one != "✗ Your program didn't run: there is 1 problem. See the explanation on the right." {
 		t.Errorf("one = %q", one)
 	}
-	if many != "✗ Your program didn't run: Go found 3 problems. See the explanation on the right." {
+	if many != "✗ Your program didn't run: there are 3 problems. See the explanation on the right." {
 		t.Errorf("many = %q", many)
 	}
 }

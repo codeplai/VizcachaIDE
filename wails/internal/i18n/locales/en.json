@@ -9,6 +9,7 @@
   "a11y.settingsTabs": "Settings sections",
   "a11y.sidebar": "Sidebar",
   "a11y.windowState": "Window state",
+  "actions.build": "Build",
   "actions.continue": "Continue",
   "actions.debug": "Debug",
   "actions.goIntoFunction": "Go into function",
@@ -65,6 +66,7 @@
   "debug.goroutines": "Goroutines",
   "debug.threads": "Threads",
   "dev.mockBadge": "Demo data (no backend)",
+  "dev.stateCrash": "4 · Crash",
   "dev.stateDebug": "3 · Debug",
   "dev.stateError": "2 · Error explained",
   "dev.stateWrite": "1 · Write",
@@ -533,8 +535,8 @@
   "recent.missing": "{{.file}} no longer exists, so it was removed from Recent files.",
   "recent.title": "Open recent",
   "run.compileFailed": {
-    "one": "✗ Your program didn't run: Go found {{.count}} problem. See the explanation on the right.",
-    "other": "✗ Your program didn't run: Go found {{.count}} problems. See the explanation on the right."
+    "one": "✗ Your program didn't run: there is {{.count}} problem. See the explanation on the right.",
+    "other": "✗ Your program didn't run: there are {{.count}} problems. See the explanation on the right."
   },
   "run.compiling": "Compiling…",
   "run.crashed": "The program crashed. Debug it with F6 to see the line.",

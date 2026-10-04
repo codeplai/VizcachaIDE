@@ -9,6 +9,7 @@
   "a11y.settingsTabs": "Secciones de la configuración",
   "a11y.sidebar": "Barra lateral",
   "a11y.windowState": "Estado de la ventana",
+  "actions.build": "Compilar",
   "actions.continue": "Continuar",
   "actions.debug": "Depurar",
   "actions.goIntoFunction": "Entrar en la función",
@@ -65,6 +66,7 @@
   "debug.goroutines": "Goroutines",
   "debug.threads": "Hilos",
   "dev.mockBadge": "Datos de ejemplo (sin backend)",
+  "dev.stateCrash": "4 · Caída",
   "dev.stateDebug": "3 · Depurar",
   "dev.stateError": "2 · Error explicado",
   "dev.stateWrite": "1 · Escribir",
@@ -533,8 +535,8 @@
   "recent.missing": "{{.file}} ya no existe, así que se quitó de Archivos recientes.",
   "recent.title": "Abrir reciente",
   "run.compileFailed": {
-    "one": "✗ No se pudo ejecutar: Go encontró {{.count}} problema. Mira la explicación a la derecha.",
-    "other": "✗ No se pudo ejecutar: Go encontró {{.count}} problemas. Mira la explicación a la derecha."
+    "one": "✗ No se pudo ejecutar: hay {{.count}} problema. Mira la explicación a la derecha.",
+    "other": "✗ No se pudo ejecutar: hay {{.count}} problemas. Mira la explicación a la derecha."
   },
   "run.compiling": "Compilando…",
   "run.crashed": "El programa se cayó. Depúralo con F6 para ver la línea.",

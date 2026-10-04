@@ -55,7 +55,7 @@ func TestCrashLineMapping(t *testing.T) {
 		{"linux", 0, ""}, {"linux", 3, ""}, {"linux", 139, "Segmentation fault"}, {"linux", 135, "Segmentation fault"},
 		{"linux", 136, "Floating point exception"}, {"linux", 134, "Aborted"},
 		{"linux", -11, "Segmentation fault"}, {"linux", -8, "Floating point exception"}, {"linux", -6, "Aborted"},
-		{"linux", -1, "Segmentation fault"}, {"linux", 1, ""},
+		{"linux", -1, ""}, {"linux", 1, ""},
 	}
 	for _, c := range cases {
 		if got := crashLineFor(c.goos, c.code); got != c.want {

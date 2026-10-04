@@ -169,7 +169,7 @@ func exitCode(err error) int {
 	}
 	var exit *exec.ExitError
 	if errors.As(err, &exit) {
-		return exit.ExitCode()
+		return exitCodeOf(exit.ProcessState)
 	}
 	return 1
 }

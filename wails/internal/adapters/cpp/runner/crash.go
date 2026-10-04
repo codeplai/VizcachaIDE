@@ -37,11 +37,9 @@ func windowsCrash(status uint32) string {
 	return ""
 }
 
-// unixCrash maps a death by signal. The supervisor only has os/exec's exit code, which for a
-// program killed by a signal is -1 whatever the signal was (the signal is lost), and 128+signal
-// when a shell reported it. -signal is accepted too. Plain -1 is therefore read as the most common
-// crash, a segmentation fault (docs/PLAN_CPP.md section 4.3: SIGSEGV with an exhausted stack is
-// not distinguishable either).
+// unixCrash maps a death by signal: the supervisor reports it as -signal, and a shell as
+// 128+signal. SIGSEGV with an exhausted stack is a segmentation fault too (docs/PLAN_CPP.md
+// section 4.3).
 func unixCrash(exitCode int) string {
 	const (
 		sigabrt, sigbus, sigfpe, sigsegv = 6, 7, 8, 11
@@ -58,9 +56,6 @@ func unixCrash(exitCode int) string {
 		return lineFloatingPoint
 	case sigabrt:
 		return lineAborted
-	}
-	if exitCode == -1 {
-		return lineSegfault
 	}
 	return ""
 }

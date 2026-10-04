@@ -125,6 +125,8 @@ func toCompletionItems(raw json.RawMessage) []domain.CompletionItem {
 }
 
 func toCompletionItem(item completionWire) domain.CompletionItem {
+	// clangd's detailed style pads the label with a space (or a "•" when it would add an include).
+	item.Label = strings.TrimLeft(item.Label, " •")
 	insert := item.InsertText
 	if item.TextEdit != nil && item.TextEdit.NewText != "" {
 		insert = item.TextEdit.NewText

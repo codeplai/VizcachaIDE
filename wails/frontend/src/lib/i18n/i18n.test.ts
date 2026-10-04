@@ -64,8 +64,8 @@ describe('language', () => {
     applyLanguage('en')
     await Promise.resolve()
     const text = (count: number) => get(t)('run.compileFailed', { values: { count } })
-    expect(text(1)).toContain('found 1 problem.')
-    expect(text(2)).toContain('found 2 problems.')
+    expect(text(1)).toContain('there is 1 problem.')
+    expect(text(2)).toContain('there are 2 problems.')
   })
 
   it('formats seconds by language', () => {

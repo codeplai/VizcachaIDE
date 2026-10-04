@@ -57,6 +57,7 @@ func mapFrames(raw []dap.StackFrame, flavor Flavor, skipHidden bool) []domain.St
 	if skipHidden {
 		raw = withoutLeadingHidden(raw, flavor)
 	}
+	raw = withoutTrailingHidden(raw, flavor)
 	frames := make([]domain.StackFrame, 0, len(raw))
 	for _, item := range raw {
 		frames = append(frames, domain.StackFrame{
@@ -66,6 +67,17 @@ func mapFrames(raw []dap.StackFrame, flavor Flavor, skipHidden bool) []domain.St
 		})
 	}
 	return frames
+}
+
+// withoutTrailingHidden drops the hidden frames below the last kept one: the start-up code that
+// calls main (the C runtime, Go's runtime.main) means nothing to a beginner.
+func withoutTrailingHidden(raw []dap.StackFrame, flavor Flavor) []dap.StackFrame {
+	for index := len(raw) - 1; index >= 0; index-- {
+		if flavor.KeepFrame(raw[index]) {
+			return raw[:index+1]
+		}
+	}
+	return raw
 }
 
 func withoutLeadingHidden(raw []dap.StackFrame, flavor Flavor) []dap.StackFrame {
