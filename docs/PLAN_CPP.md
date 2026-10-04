@@ -15,8 +15,11 @@
    [`docs/wails/UX_COPY.md`](wails/UX_COPY.md); el adaptador de Go en `wails/internal/adapters/golang/`
    y, si existe, el de Python en `adapters/python/`.
 3. Para desarrollar y probar hace falta en la máquina un compilador (`g++` o `clang++`), `lldb-dap`,
-   `clangd` y `clang-format`. En Windows, un llvm-mingw o un WinLibs descomprimido y en el PATH. Los
-   tests de integración se saltan solos si faltan.
+   `clangd` y `clang-format`. En la máquina de desarrollo están en `wails/.toolchain-dev/` (ignorado por
+   git): **llvm-mingw 20260922** (LLVM 23.1.2, con clang++, lldb-dap, clangd y clang-format) y
+   **WinLibs GCC 16.2.0** (`mingw64/bin/g++.exe`, GCC real: el `g++.exe` de llvm-mingw es clang). Los
+   tests los encuentran con `VIZCACHA_TEST_LLVM_BIN` y `VIZCACHA_TEST_GCC_BIN` (carpetas `bin`) a
+   través de `adapters/cpp/cpptest`, y se saltan solos si faltan.
 4. Verificación antes de cada commit:
    ```sh
    cd wails && go vet ./... && go test ./... && golangci-lint run
@@ -26,8 +29,11 @@
 5. Reglas de siempre: archivos de menos de 200 líneas, funciones de menos de 50, retorno temprano,
    nombres de dominio, library-first, textos sólo por i18n. Commits locales en inglés, sin push salvo
    indicación.
-6. Resultado esperado: **versión 2.3.0** (o 3.0.0 si cierra la serie) con C++ como lenguaje y la
-   variante `full-cpp` para Windows.
+6. Rama `m2-cpp` desde `main`. Orquestador **Opus** (C0, integración, CCR, textos, QA); coders
+   **Sonnet** en worktrees (C1–C6), con el prompt de §12 y el reparto de M0/M1 (`go.mod`,
+   `.golangci.yml`, `ux_copy.json` y locales son del orquestador).
+7. Resultado esperado: **versión 2.3.0** con C++ como lenguaje, la variante `full-cpp` para Windows y
+   las actualizaciones automáticas (ya en `main`).
 
 ## 1. Objetivo
 
@@ -70,6 +76,42 @@ que diga el spike C2b.
 Sobre la GPL: si se empaqueta GCC o GDB van como programas aparte con sus licencias en
 `toolchain/licenses/`; el IDE sigue siendo MIT y los programas de los alumnos no se ven afectados.
 
+## 3.1 Decisiones de la revisión (2026-10-04, antes de ejecutar)
+
+Contrastado con el código de M0 y M1. C0 hace los cambios de contrato antes de lanzar los tracks:
+
+1. **Línea de caída.** El Supervisor no puede añadir texto tras la última etapa. `process.Job` gana
+   `Finished func(exitCode int) string`: si devuelve texto, se emite como `stderr` antes de
+   `run:finished` (la línea `Segmentation fault`… de §4.3 la produce el runner con ella).
+2. **Comprobador.** C++ tiene `CodeChecker`: `<cxx> -fsyntax-only <flags> <fuentes>` con los mismos
+   avisos que la compilación (`-Wall -Wextra`). `Capabilities.Check` = true. Así los avisos llegan a
+   Problemas explicados tras una ejecución correcta, igual que `go vet` y `ruff check`. El parser de
+   §4.7 ya entiende esa salida.
+3. **Estado del ayudante de código por lenguaje.** El evento `lsp:status` pasa a llevar
+   `{codeLanguage, status}` (contrato). `app.EventSink.LanguageServerStatus(codeLanguage, status)`,
+   `lsp.Options.CodeLanguage`, y en el frontend un estado por lenguaje: la barra muestra el del
+   archivo activo. Cierra la limitación conocida de M1.
+4. **Sin GDB en M2.** Se quita el spike C2b y `gdbdap/`. Con GCC y sin `lldb-dap` (copia `lite` con
+   Dev-C++ o Code::Blocks) se compila y ejecuta pero no se depura; el aviso `errors.lldbDapNotFound`
+   lo dice.
+5. **Teclado al depurar.** `Capabilities.DebugInput` = true: lldb-dap con `runInTerminal` arranca el
+   programa en el Supervisor (PTY) con `Job.Events` → `debug:output`, como debugpy. C0 lo comprueba
+   en Windows con la versión de llvm-mingw elegida (riesgo §11).
+6. **APIs reales:** `dap.StdioTransport`, `dap.NewSession(SessionDeps)`, `ReverseHandler`,
+   `lsp.New(sink, flavor, lsp.Options{Name: "clangd", LanguageID: "cpp", ...})`,
+   `errorcatalog.NewExplainer`, `toollocator.Tool`, `process.Job{Then, Events, Mode}`,
+   `process.PrepareTree/KillTree`. `lldbdap/` puede importar `adapters/cpp/runner` para compilar.
+7. **depguard:** regla `cpp-adapter-stays-in-cpp` (un `deny` por carpeta hermana) y exclusión de
+   `adapters/cpp/**` en `adapters-are-independent`.
+8. **Actualizaciones:** `updates.DetectInstallation` reconoce `toolchain/cpp`: variantes `full-cpp`
+   y `full` (Go + Python + C++). Una copia 2.2 `full` (Go + Python) se actualiza a la nueva `full`.
+9. **LLDB compartido (pensando en Rust, M3).** El flavor de lldb-dap (launch, `runInTerminal`, motivos
+   de parada, filtro de frames del sistema, descripciones de caída) vive en `protocol/dap/lldb`, no en
+   `adapters/cpp`: los adaptadores no pueden importarse entre sí y Rust usará el mismo depurador.
+   `adapters/cpp/lldbdap` sólo añade la etapa de compilación y lo propio de C++.
+10. **QA:** el arnés E2E gana una fase C++ (compilar y ejecutar con `cin`, error explicado, caída
+   explicada, depurar con variables y teclado, aviso de `-Wall` en Problemas) en EN/ES.
+
 ## 4. Diseño: `wails/internal/adapters/cpp/`
 
 ```
@@ -92,8 +134,8 @@ var Profile = domain.LanguageProfile{
     ID: domain.CodeLanguageCpp, NameKey: "codeLanguage.cpp",
     Extensions: []string{".cpp", ".cc", ".cxx", ".c++", ".h", ".hpp", ".hh"},
     Indent: domain.IndentStyle{UseTabs: false, Size: 4},
-    Capabilities: domain.Capabilities{Build: true, Console: false, Format: true, Check: false,
-        PackageActions: nil, ThreadsLabel: "debug.threads"},  // Console, Checker y Packages: nil
+    Capabilities: domain.Capabilities{Build: true, Console: false, Format: true, Check: true, DebugInput: true,
+        PackageActions: nil, ThreadsLabel: "debug.threads"},  // Console y Packages: nil
     Tools: []domain.ToolSpec{
         {ID: "cxx", Role: domain.RoleCompiler, LabelKey: "settings.toolCxx", MissingKey: "errors.cxxNotFound", InstallURL: "https://winlibs.com/"},
         {ID: "lldb-dap", Role: domain.RoleDebugAdapter, LabelKey: "settings.toolLldbDap", MissingKey: "errors.lldbDapNotFound"},
@@ -103,8 +145,8 @@ var Profile = domain.LanguageProfile{
 }
 ```
 
-`Check` está apagado: los avisos (`-Wall -Wextra`) salen del propio compilador en cada ejecución y
-el Assistant los convierte en Problemas. Los `InstallURL` cambian por sistema en `support_cpp.go`
+`Check` = `-fsyntax-only` con los mismos avisos (§3.1 punto 2): tras una ejecución correcta los avisos
+de `-Wall -Wextra` llegan a Problemas explicados. Los `InstallURL` cambian por sistema en `support_cpp.go`
 (macOS: `xcode-select --install` como `InstallCommand`; Linux: `sudo apt install g++ lldb clangd clang-format`).
 
 ### 4.2 Localizador y familia (`locator.go`, `family.go`)
@@ -144,8 +186,8 @@ el Assistant los convierte en Problemas. Los `InstallURL` cambian por sistema en
 - `RunUntitled`: escribe `main.cpp` en `<temp>/vizcacha_cpp_<pid>/` y ejecuta; `Cleanup` borra la
   carpeta.
 - **Caídas**: cuando el programa termina por señal o por código de excepción de Windows, el runner
-  escribe una última línea en `stderr` con el texto que mostraría una terminal y el Assistant la
-  reconoce:
+  escribe una última línea en `stderr` con el texto que mostraría una terminal (vía
+  `Job.Finished`, §3.1 punto 1) y el Assistant la reconoce:
 
   | Causa | Unix (`ProcessState` con señal) | Windows (código de salida) | Línea emitida |
   |---|---|---|---|
@@ -154,8 +196,9 @@ el Assistant los convierte en Problemas. Los `InstallURL` cambian por sistema en
   | división entera entre cero | SIGFPE | `0xC0000094` (3221225620) | `Floating point exception` |
   | `abort()` / `terminate` | SIGABRT | `0xC0000409`, `3` | `Aborted` (el mensaje `terminate called after throwing…` ya viene en stderr) |
 
-- No hay `CodeChecker` (`Checker: nil`). El formato lo da `clangformat/` como `app.CodeFormatter`
-  (§4.6).
+- `CodeChecker` (§3.1 punto 2): `<cxx> -fsyntax-only <flags> <fuentes>`, sin eventos y fuera del
+  Supervisor; devuelve la salida del compilador ("" si no hay avisos). El formato lo da
+  `clangformat/` como `app.CodeFormatter` (§4.6).
 
 ### 4.4 Depurador (`lldbdap/`)
 
@@ -181,7 +224,7 @@ el Assistant los convierte en Problemas. Los `InstallURL` cambian por sistema en
   lldb-dap resume con sus formateadores (libc++ completos; libstdc++ parciales, ver riesgos).
 - `Output`: `stdout`/`stderr` del programa; el resto a `console`.
 
-### 4.5 Spike C2b: GDB como DAP
+### 4.5 Spike C2b: GDB como DAP (descartado en M2, §3.1 punto 4)
 
 Dos días como máximo: con un WinLibs (GCC + GDB 14 o más) comprobar que `gdb -i=dap` arranca (su
 modo DAP está escrito en Python y necesita un GDB compilado con Python), que `launch` + breakpoints
@@ -263,8 +306,8 @@ conserva. Pedir a los profesores errores reales de alumnos antes de redactar.
 func newCppSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts *backendTexts) (app.LanguageSupport, func(ctx context.Context))
 ```
 
-Recibe también el `Supervisor` compartido. `Console`, `Checker` y `Packages` son `nil`; `Formatter`
-es `clangformat/`. `main.go` lo añade al registro después de Go (y de Python si existe) en lugar
+Recibe también el `Supervisor` compartido. `Console` y `Packages` son `nil`; `Formatter` es
+`clangformat/` y `Checker` el `-fsyntax-only` del runner. `main.go` lo añade al registro después de Go (y de Python si existe) en lugar
 del `app.UnavailableSupport` de 2.1, y borra el perfil provisional de C++ de
 `support_unavailable.go`. `.golangci.yml` gana la regla `cpp-adapter-stays-in-cpp` (copia de la de
 Go de M0 §4.6): `lldbdap/` puede importar `adapters/cpp/runner` para la etapa de compilación.
@@ -360,9 +403,9 @@ C0 (orquestador) ──► C1 · C2 (+C2b) · C3 · C4 · C5 · C6 en paralelo �
 
 | Track | Dueño de | Entrega | Hecho cuando |
 |---|---|---|---|
-| **C0 · Preparación** | `adapters/cpp/profile.go`, `locator.go`, `family.go`, fixtures | perfil, localizador y familia con tests, `testdata/cpp_output` grabado de g++ y clang++ reales (Windows y Linux) | los demás tracks compilan contra el locator |
+| **C0 · Preparación y contrato** (orquestador) | §3.1 (`Job.Finished`, `lsp:status` por lenguaje, depguard, detección de variantes del actualizador, claves de §6), `adapters/cpp/profile.go`, `locator.go`, `family.go`, `cpptest`, fixtures | contrato compilando; perfil, localizador y familia con tests; `testdata/cpp_output/{gcc,clang}` grabado de GCC 16.2 y clang 23.1 reales; `runInTerminal` de lldb-dap probado en Windows | los demás tracks compilan contra el locator |
 | **C1 · Compilar y ejecutar** | `adapters/cpp/runner` | §4.3 | `hola.cpp` con `cin` por la PTY; carpeta con dos `.cpp`; Build junto al fuente; caída → línea `Segmentation fault` |
-| **C2 · Depurador** | `adapters/cpp/lldbdap` (+ `gdbdap` si C2b) | §4.4 y el spike §4.5 con su conclusión escrita en el commit | breakpoints, pasos, variables con "acaba de cambiar", pila sin frames del sistema, parada en SIGSEGV con la línea |
+| **C2 · Depurador** | `adapters/cpp/lldbdap` | §4.4 (sin GDB, §3.1 punto 4) | breakpoints, pasos, variables con "acaba de cambiar", pila sin frames del sistema, parada en SIGSEGV con la línea |
 | **C3 · Inteligencia y formato** | `adapters/cpp/clangd`, `clangformat` | §4.6 | diagnósticos en vivo con g++ y con clang++ (query-driver), completado, hover, definición, símbolos anidados; formato al guardar |
 | **C4 · Assistant** | `adapters/cpp/errors` | §4.7 | 25 ids con fixtures de las dos familias y textos EN/ES; enlazador y caídas explicados |
 | **C5 · Frontend** | `frontend/src/lib/*` (§5) | editor, plantillas, mock, primer arranque, créditos | `npm run dev` muestra los cuatro escenarios de C++ sin backend |
