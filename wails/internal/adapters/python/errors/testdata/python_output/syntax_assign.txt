@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   5 = x
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\syntax_assign.py", line 1
+    5 = x
+    ^
+SyntaxError: cannot assign to literal here. Maybe you meant '==' instead of '='?
