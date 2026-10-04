@@ -164,7 +164,60 @@ Contrastado con el código de M0, M1 y el plan de M2. R0 hace estos cambios ante
     y con `2021` si no. Un proyecto usa la edición de su `Cargo.toml`.
 12. **Versión mínima.** `rustc` 1.70 o más: trae `cargo add` y `cargo remove` (1.62 y 1.66) y el protocolo
     `sparse` por defecto, que hace rápida la primera descarga de crates, y el formato actual de los
-    mensajes de `panic` (1.73) se soporta junto al anterior.
+    mensajes de `panic` (1.73) se soporta junto al anterior. **Sustituido por §3.2 punto 7.**
+
+## 3.2 Decisiones del usuario (2026-10-04)
+
+Respuestas a las preguntas abiertas. Mandan sobre lo que digan otras secciones de este plan.
+
+1. **Depurar en `lite`.** Se pide instalar `lldb-dap`. El aviso de herramienta ausente
+   (`errors.lldbDapNotFound`) enlaza a llvm-mingw en Windows y da `apt install lldb` en Linux y
+   `xcode-select --install` en macOS. Rust se compila y ejecuta igual sin `lldb-dap`.
+2. **Enlazador de llvm-mingw.** Es solo un respaldo: se usa cuando no hay `gcc` en el PATH (o en
+   `ToolPaths`) y sí hay un `clang` de llvm-mingw (empaquetado o en el PATH). Con un `gcc` presente,
+   rustc usa su enlazador de siempre.
+3. **Python de LLDB.** Los formateadores de `std` son obligatorios, no un extra. El `lldb` de llvm-mingw
+   20260922 ya trae Python 3.14 (`libpython3.14.dll` y `python/lib/python3.14`; `lldb -P` responde y
+   `script print(1+1)` funciona, comprobado el 2026-10-04). Por eso `full-cpp` y `full` los cargan sin
+   más pasos. Si el `lldb-dap` encontrado no tiene Python, la IDE lo dice y sugiere instalar llvm-mingw
+   o el LLVM oficial, que sí lo traen. El spike R2a ya no busca un respaldo: comprueba que `Vec<i32>`,
+   `String`, `Option` y `HashMap` se lean bien con los formateadores del sysroot.
+4. **`OutputFilter` en el Supervisor.** R0 añade `process.Job.OutputFilter` (§3.1 punto 3). El runner
+   compila con `--error-format=json` / `--message-format=json` y Output muestra el campo `rendered`. No
+   hay alternativa de texto.
+5. **Pistas en línea (inlay hints) en M3, para todos los lenguajes posibles.** R6 deja de ser opcional
+   y su soporte es genérico. Lo cubre un `protocol/lsp`, el puerto `CodeIntelligence` y el editor:
+   - **Rust**, con rust-analyzer: tipos, parámetros y encadenado apagado.
+   - **C++**, con clangd: `InlayHints` en `initializationOptions` / `.clangd`; tipos de `auto` y nombres de
+     parámetro.
+   - **Go**, con gopls: `hints` (`assignVariableTypes`, `parameterNames`, `rangeVariableTypes`).
+   - **Python:** pylsp no las implementa. Se activan solas si en el futuro se cambia a un servidor que
+     sí las dé (basedpyright). La capacidad se detecta por `inlayHintProvider` en el `initialize`, nunca
+     por el nombre del lenguaje.
+
+   Hay un interruptor en Ajustes, activado por defecto para todos los lenguajes. Su clave i18n es
+   `settings.inlayHints`.
+6. **`RUST_BACKTRACE=1` por defecto** en el entorno de ejecución y depuración, en lugar de `=0` (§4.2).
+   El parser de §4.7 usa la pila para dar la línea del `panic` en código del alumno y oculta los frames de
+   `std`/`core`/`/rustc/`. La línea `note: run with RUST_BACKTRACE=1…` ya no aparece.
+7. **Versión: el canal estable.** No hay un piso fijo como 1.70. Se exige el canal `stable` de rustup.
+   R0 fija como mínimo la estable vigente al iniciar M3 y la guarda en `adapters/rust/toolchain.go` con
+   su test. Si el `rustc` es más viejo, el aviso no bloqueante sugiere `rustup update stable`. Con
+   `nightly` o `beta` también se muestra un aviso, sin bloquear. El parser solo necesita el formato
+   actual de `panic` (desde 1.73), así que el formato anterior sale de §4.7 y de §11.
+8. **Workspaces de Cargo, dentro del alcance** (sustituye la exclusión de §2):
+   - `project.go` lee `[workspace] members` (con globs) y sabe a qué miembro pertenece el archivo
+     abierto.
+   - Ejecutar, Build y depurar usan `cargo run -p <miembro>`.
+   - Si el miembro tiene varios `[[bin]]` o `src/bin/*.rs`, se usa `--bin` del archivo abierto, o el
+     `default-run`.
+   - Abrir la raíz virtual (sin crate) muestra un selector de miembros ejecutables en lugar de
+     `errors.rustWorkspaceRoot`. Ese texto queda para el caso sin ningún binario.
+   - Paquetes (`cargo add/remove`) actúan sobre el miembro del archivo abierto.
+   - rust-analyzer se abre en la raíz del workspace.
+   - El `target/` es el compartido.
+   - Hacen falta textos nuevos para el selector: `run.chooseMember` y `errors.rustNoBinary`, que R0
+     añade a §6.
 
 ## 4. Diseño: `wails/internal/adapters/rust/`
 
@@ -221,7 +274,7 @@ lleva el host GNU).
 - `lldb-dap`: configurado → `toolchain/cpp/bin/` (cuando la variante lo trae, PLAN_CPP.md §7) → carpeta
   `bin` de `llvm-mingw` o LLVM en el PATH → PATH. Rustup no distribuye lldb-dap: sin él, Rust se compila y
   ejecuta pero no se depura, y el aviso lo dice (igual que GCC sin LLDB en M2).
-- Validación de `rustc`: `rustc --version` con 5 s de tiempo límite; se exige 1.70 o más (§3.1 punto 12).
+- Validación de `rustc`: `rustc --version` con 5 s de tiempo límite; se exige el canal estable (§3.2 punto 7).
   Un proxy de rustup sin toolchain instalado responde con error pidiendo `rustup default`: el candidato
   cuenta como ausente y el aviso lo explica con `errors.rustupNoToolchain`.
 - Triple del host (`toolchain.go`): `rustc -vV` da `host: x86_64-pc-windows-msvc`. En Windows con host
@@ -236,9 +289,9 @@ lleva el host GNU).
 - Enlazador: en Windows GNU, si no hay `gcc` en el PATH y existe el `clang` de llvm-mingw, el
   localizador devuelve `-C linker=<ruta>` (rustc) y la variable de entorno de Cargo
   `CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER` (§3). El resultado se decide con el spike de R0.
-- Entorno para todos los procesos de Rust: `CARGO_TERM_COLOR=never`, `NO_COLOR=1`, `RUST_BACKTRACE=0`
-  (el principiante ve el mensaje del `panic` sin pila de núcleo; `RUST_BACKTRACE=1` queda como opción en
-  una versión posterior) y `CARGO_INCREMENTAL=0` para ahorrar disco en `target/`.
+- Entorno para todos los procesos de Rust: `CARGO_TERM_COLOR=never`, `NO_COLOR=1`, `RUST_BACKTRACE=1` (§3.2 punto 6)
+  (el parser usa la pila para ubicar el `panic` en el código del alumno y oculta los frames de `std`;
+  antes era `=0`) y `CARGO_INCREMENTAL=0` para ahorrar disco en `target/`.
 
 ### 4.3 Ejecutor (`runner/`)
 
@@ -567,7 +620,7 @@ fusiona el orquestador al integrar.
 
 ```
 R0 (orquestador) ──► R1 · R2 · R3 · R4 · R5 en paralelo ──► integración (support_rust.go) ──► QA
-                                                       └──► R6 (opcional, genérico)
+                                                       └──► R6 (genérico, en M3 por §3.2 punto 5)
 ```
 
 | Track | Dueño de | Entrega | Hecho cuando |
@@ -578,7 +631,7 @@ R0 (orquestador) ──► R1 · R2 · R3 · R4 · R5 en paralelo ──► inte
 | **R3 · Inteligencia, comprobador y formato** | `adapters/rust/analyzer`, `clippy`, `rustfmt` | §4.5 | diagnósticos en vivo, completado, hover, definición, símbolos; avisos de clippy tras ejecutar en proyecto y en archivo suelto; formato al guardar |
 | **R4 · Assistant** | `adapters/rust/errors` | §4.7 | unas 30 entradas más 5 avisos con fixtures grabados de rustc real y textos EN/ES; panics y caídas explicados |
 | **R5 · Frontend** | `frontend/src/lib/*` (§5) | editor, plantillas, mock, primer arranque, paquetes, créditos | `npm run dev` muestra los cuatro escenarios de Rust sin backend |
-| **R6 · Pistas en línea** (opcional, genérico) | `protocol/lsp` (soporte de `textDocument/inlayHint`), puerto de `CodeIntelligence`, `lib/editor` | §9.1 | las pistas de tipo aparecen en Rust (y en Go, Python y C++ si el servidor las da); se apagan en Ajustes; no cambia el comportamiento sin ellas |
+| **R6 · Pistas en línea** (genérico, en M3) | `protocol/lsp` (soporte de `textDocument/inlayHint`), puerto de `CodeIntelligence`, `lib/editor` | §9.1 | las pistas de tipo aparecen en Rust (y en Go, Python y C++ si el servidor las da); se apagan en Ajustes; no cambia el comportamiento sin ellas |
 
 Integración: R0 → R1 → R4 → R2 → R3 → R5 (→ R6). Un commit por track; el orquestador escribe
 `support_rust.go`, resuelve los CCR y fusiona los textos.
@@ -590,8 +643,8 @@ oculta el tipo de `x`. rust-analyzer da esas pistas por LSP (`textDocument/inlay
 (con pyright) y clangd también. Propuesta: `protocol/lsp` pide las pistas del rango visible con
 debounce, el puerto `CodeIntelligence` gana `InlayHints(path, range)` con `domain.InlayHint{Line,
 Column, Label, Kind}` (la forma exacta la decide R0 mirando `app/ports.go`), y el editor las pinta con
-`Decoration.widget` de CodeMirror. Un interruptor en Ajustes (por defecto activado sólo para Rust; ver
-preguntas abiertas). Es un track pequeño e independiente: puede ir en M3, después o nunca, sin bloquear el
+`Decoration.widget` de CodeMirror. Un interruptor en Ajustes (activado por defecto en todos los lenguajes, §3.2 punto 5;
+antes era sólo Rust). Es un track pequeño e independiente que va en M3 sin bloquear el
 resto. Si no se hace, el campo `inlayHints` de §4.5 se envía igual y rust-analyzer lo ignora sin que el
 cliente lo declare.
 
