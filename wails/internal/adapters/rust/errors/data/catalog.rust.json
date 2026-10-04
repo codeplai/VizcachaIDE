@@ -1,0 +1,879 @@
+[
+ {
+  "id": "W-RS-CLIPPY",
+  "patterns": [
+   "^(?P<lint>clippy::[A-Za-z0-9_]+): "
+  ],
+  "en": {
+   "title": "Clippy has advice for you: {lint}",
+   "body": "Clippy is the style checker of Rust. Your program compiles, but clippy thinks this piece can be simpler, faster or less error-prone (the lint is called {lint}). It is advice, not an error.",
+   "fix": "Read the lines that start with help: under the message, they show the suggested code. To know why a lint exists, search its name at https://rust-lang.github.io/rust-clippy/ ."
+  },
+  "es": {
+   "title": "Clippy tiene un consejo para ti: {lint}",
+   "body": "Clippy es el revisor de estilo de Rust. Tu programa compila, pero clippy cree que esta parte puede ser más simple, más rápida o menos propensa a errores (el aviso se llama {lint}). Es un consejo, no un error.",
+   "fix": "Lee las líneas que empiezan por help: debajo del mensaje, muestran el código sugerido. Para saber por qué existe un aviso, busca su nombre en https://rust-lang.github.io/rust-clippy/ ."
+  }
+ },
+ {
+  "id": "RS-MOVED",
+  "patterns": [
+   "of (?:partially )?moved value: `(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "E0382"
+  ],
+  "en": {
+   "title": "You use \"{name}\" after giving it away",
+   "body": "In Rust every value has one single owner. When you write let t = s; (or pass s to a function) the value moves to the new owner and s stops being usable. Here \"{name}\" was moved before and it is used again afterwards.\nExample:\nlet s = String::from(\"hi\");\nlet t = s; // the String now belongs to t\nprintln!(\"{}\", s); // error: s was moved",
+   "fix": "If you only need to read it, give a reference: let t = &s; (or call f(&s)). If you need two independent copies, clone it: let t = s.clone(); (the rustc help shows the exact place). If the type is small and Copy (numbers, bool, char) there is no move at all."
+  },
+  "es": {
+   "title": "Usas \"{name}\" después de haberlo entregado",
+   "body": "En Rust cada valor tiene un único dueño. Cuando escribes let t = s; (o pasas s a una función) el valor se mueve al nuevo dueño y s deja de poder usarse. Aquí \"{name}\" se movió antes y se vuelve a usar después.\nEjemplo:\nlet s = String::from(\"hola\");\nlet t = s; // el String ahora es de t\nprintln!(\"{}\", s); // error: s se movió",
+   "fix": "Si solo necesitas leerlo, entrega una referencia: let t = &s; (o llama a f(&s)). Si necesitas dos copias independientes, clónalo: let t = s.clone(); (la ayuda de rustc muestra el lugar exacto). Si el tipo es pequeño y Copy (números, bool, char) no hay movimiento."
+  }
+ },
+ {
+  "id": "RS-BORROW-MUT-TWICE",
+  "patterns": [
+   "^cannot borrow `(?P<name>[^`]+)` as mutable more than once at a time"
+  ],
+  "codes": [
+   "E0499"
+  ],
+  "en": {
+   "title": "\"{name}\" is borrowed as mutable twice at the same time",
+   "body": "A mutable reference (&mut) is exclusive: while it is alive nobody else can use the value, not even another &mut. Two &mut of \"{name}\" alive together could change the data under each other's feet, so Rust forbids it.\nExample:\nlet mut v = vec![1];\nlet a = &mut v;\nlet b = &mut v; // error: a is still going to be used\na.push(2);",
+   "fix": "Finish using the first &mut before creating the second one (the borrow ends after its last use). Or do the changes through one single reference, or split the data in two separate parts."
+  },
+  "es": {
+   "title": "\"{name}\" se presta como mutable dos veces a la vez",
+   "body": "Una referencia mutable (&mut) es exclusiva: mientras está viva nadie más puede usar el valor, ni siquiera otro &mut. Dos &mut de \"{name}\" vivos a la vez podrían cambiar los datos bajo los pies del otro, así que Rust lo prohíbe.\nEjemplo:\nlet mut v = vec![1];\nlet a = &mut v;\nlet b = &mut v; // error: a todavía se va a usar\na.push(2);",
+   "fix": "Termina de usar el primer &mut antes de crear el segundo (el préstamo acaba tras su último uso). O haz los cambios con una sola referencia, o separa los datos en dos partes independientes."
+  }
+ },
+ {
+  "id": "RS-BORROW-CONFLICT",
+  "patterns": [
+   "^cannot borrow `(?P<name>[^`]+)` as (?:mutable|immutable) because it is also borrowed as (?:mutable|immutable)"
+  ],
+  "codes": [
+   "E0502"
+  ],
+  "en": {
+   "title": "\"{name}\" is read and modified at the same time",
+   "body": "While something holds a reference to \"{name}\" (a loop that goes through it, a variable that points to it) you cannot modify it: the change could invalidate what the reference points to.\nExample:\nlet mut v = vec![1, 2];\nfor x in &v { // the loop borrows v\n    v.push(*x); // error: v changes while it is borrowed\n}",
+   "fix": "Do not change the collection while you go through it. Save the changes in another variable and apply them after the loop, go by index (for i in 0..v.len()), or clone what you read first."
+  },
+  "es": {
+   "title": "\"{name}\" se lee y se modifica a la vez",
+   "body": "Mientras algo tenga una referencia a \"{name}\" (un bucle que lo recorre, una variable que lo apunta) no puedes modificarlo: el cambio podría invalidar lo que la referencia apunta.\nEjemplo:\nlet mut v = vec![1, 2];\nfor x in &v { // el bucle presta v\n    v.push(*x); // error: v cambia mientras está prestado\n}",
+   "fix": "No cambies la colección mientras la recorres. Guarda los cambios en otra variable y aplícalos después del bucle, recorre por índice (for i in 0..v.len()) o clona antes lo que lees."
+  }
+ },
+ {
+  "id": "RS-ASSIGN-BORROWED",
+  "patterns": [
+   "^cannot assign to `(?P<name>[^`]+)` because it is borrowed"
+  ],
+  "codes": [
+   "E0506"
+  ],
+  "en": {
+   "title": "You assign to \"{name}\" while it is borrowed",
+   "body": "Somebody holds a reference to \"{name}\" and uses it after this assignment. If the value changed under the reference, it would see something it did not expect, so Rust does not allow it.\nExample:\nlet mut x = 5;\nlet r = &x;\nx = 6; // error: r still points to x\nprintln!(\"{}\", r);",
+   "fix": "Use the reference before assigning, so its borrow ends first, or assign first and create the reference after. If you need the old value, copy it: let old = x;"
+  },
+  "es": {
+   "title": "Asignas a \"{name}\" mientras está prestado",
+   "body": "Alguien tiene una referencia a \"{name}\" y la usa después de esta asignación. Si el valor cambiara bajo la referencia, vería algo inesperado, así que Rust no lo permite.\nEjemplo:\nlet mut x = 5;\nlet r = &x;\nx = 6; // error: r todavía apunta a x\nprintln!(\"{}\", r);",
+   "fix": "Usa la referencia antes de asignar, para que su préstamo termine antes, o asigna primero y crea la referencia después. Si necesitas el valor antiguo, cópialo: let viejo = x;"
+  }
+ },
+ {
+  "id": "RS-MOVE-BORROWED",
+  "patterns": [
+   "^cannot move out of `(?P<name>[^`]+)` because it is borrowed"
+  ],
+  "codes": [
+   "E0505"
+  ],
+  "en": {
+   "title": "You move \"{name}\" while it is borrowed",
+   "body": "A reference to \"{name}\" is still going to be used, but here the value is moved to another owner. The reference would point to something that is no longer there.\nExample:\nlet s = String::from(\"a\");\nlet r = &s;\nlet t = s; // error: r is used below\nprintln!(\"{} {}\", r, t);",
+   "fix": "Use the reference before moving the value, or move a clone (s.clone()) instead of the original, or do not move: use a reference also in the new place."
+  },
+  "es": {
+   "title": "Mueves \"{name}\" mientras está prestado",
+   "body": "Una referencia a \"{name}\" todavía se va a usar, pero aquí el valor se mueve a otro dueño. La referencia apuntaría a algo que ya no está.\nEjemplo:\nlet s = String::from(\"a\");\nlet r = &s;\nlet t = s; // error: r se usa más abajo\nprintln!(\"{} {}\", r, t);",
+   "fix": "Usa la referencia antes de mover el valor, o mueve un clon (s.clone()) en vez del original, o no muevas: usa también una referencia en el sitio nuevo."
+  }
+ },
+ {
+  "id": "RS-MOVE-OUT-OF-REF",
+  "patterns": [
+   "^cannot move out of (?:index of|a (?:shared|mutable) reference|.+ which is behind)"
+  ],
+  "codes": [
+   "E0507"
+  ],
+  "en": {
+   "title": "You cannot take this value out of where it is",
+   "body": "Getting an item out of a Vec, a reference or a borrowed field with let s = v[0]; would move it, and the original would be left with a hole. Rust only lets you move something out when you own all of it.\nExample:\nlet v = vec![String::from(\"a\")];\nlet s = v[0]; // error: it would empty v[0]",
+   "fix": "Borrow it instead of moving it: let s = &v[0]; Or make a copy: let s = v[0].clone(); If you really want to take it out, use v.remove(0) or std::mem::take."
+  },
+  "es": {
+   "title": "No puedes sacar este valor de donde está",
+   "body": "Sacar un elemento de un Vec, de una referencia o de un campo prestado con let s = v[0]; lo movería y el original quedaría con un hueco. Rust solo deja mover algo cuando eres dueño de todo.\nEjemplo:\nlet v = vec![String::from(\"a\")];\nlet s = v[0]; // error: vaciaría v[0]",
+   "fix": "Préstalo en vez de moverlo: let s = &v[0]; O haz una copia: let s = v[0].clone(); Si de verdad quieres sacarlo, usa v.remove(0) o std::mem::take."
+  }
+ },
+ {
+  "id": "RS-DANGLING-REF",
+  "patterns": [
+   "^`(?P<name>[^`]+)` does not live long enough"
+  ],
+  "codes": [
+   "E0597"
+  ],
+  "en": {
+   "title": "\"{name}\" does not live long enough",
+   "body": "A reference lives longer than the variable it points to: \"{name}\" is dropped (for example at the end of its block { }) while the reference is still used afterwards. It would point to freed memory.\nExample:\nlet r;\n{\n    let x = 5;\n    r = &x; // x dies at the closing brace\n}\nprintln!(\"{}\", r); // error",
+   "fix": "Declare the variable in a place that lives as long as the reference (outside the inner block), or do not keep the reference: copy or clone the value so the new owner lives as long as needed."
+  },
+  "es": {
+   "title": "\"{name}\" no vive lo suficiente",
+   "body": "Una referencia vive más que la variable a la que apunta: \"{name}\" se destruye (por ejemplo al terminar su bloque { }) mientras la referencia se sigue usando después. Apuntaría a memoria liberada.\nEjemplo:\nlet r;\n{\n    let x = 5;\n    r = &x; // x muere en la llave que cierra\n}\nprintln!(\"{}\", r); // error",
+   "fix": "Declara la variable en un sitio que viva tanto como la referencia (fuera del bloque interior), o no guardes la referencia: copia o clona el valor para que el nuevo dueño viva el tiempo necesario."
+  }
+ },
+ {
+  "id": "RS-RETURN-LOCAL-REF",
+  "patterns": [
+   "^cannot return .+ local variable `(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "E0515"
+  ],
+  "en": {
+   "title": "You return a reference to the local \"{name}\"",
+   "body": "\"{name}\" is created inside the function and is destroyed when the function ends. Returning a reference to it would leave the caller with a reference to nothing.\nExample:\nfn crear() -> &'static str {\n    let s = String::from(\"hola\");\n    &s // error: s dies here\n}",
+   "fix": "Return the value itself (change the return type to String and return s without &), so the caller becomes its owner. Return a reference only when it points to something that comes from the parameters or lives forever (a literal \"text\")."
+  },
+  "es": {
+   "title": "Devuelves una referencia a la variable local \"{name}\"",
+   "body": "\"{name}\" se crea dentro de la función y se destruye cuando la función termina. Devolver una referencia a ella dejaría a quien llama con una referencia a nada.\nEjemplo:\nfn crear() -> &'static str {\n    let s = String::from(\"hola\");\n    &s // error: s muere aquí\n}",
+   "fix": "Devuelve el valor mismo (cambia el tipo de retorno a String y devuelve s sin &), así quien llama pasa a ser su dueño. Devuelve una referencia solo si apunta a algo que viene de los parámetros o vive siempre (un literal \"texto\")."
+  }
+ },
+ {
+  "id": "RS-MISSING-LIFETIME",
+  "patterns": [
+   "^missing lifetime specifier"
+  ],
+  "codes": [
+   "E0106"
+  ],
+  "en": {
+   "title": "Rust needs to know how long the returned reference lives",
+   "body": "A function that returns a reference with several references as parameters does not say which of them the result comes from, so the compiler cannot check that it will not outlive its data. You say it with a lifetime name ('a).\nExample:\nfn mayor(a: &str, b: &str) -> &str { ... } // error\nfn mayor<'a>(a: &'a str, b: &'a str) -> &'a str { ... } // ok",
+   "fix": "Add a lifetime: put <'a> after the function name and write &'a in the parameters the result can come from and in the return type. If the function should return a new value and not a reference, return String instead of &str."
+  },
+  "es": {
+   "title": "Rust necesita saber cuánto vive la referencia que devuelves",
+   "body": "Una función que devuelve una referencia y tiene varias referencias como parámetros no dice de cuál sale el resultado, así que el compilador no puede comprobar que no sobrevivirá a sus datos. Se dice con un nombre de tiempo de vida ('a).\nEjemplo:\nfn mayor(a: &str, b: &str) -> &str { ... } // error\nfn mayor<'a>(a: &'a str, b: &'a str) -> &'a str { ... } // bien",
+   "fix": "Añade un tiempo de vida: pon <'a> tras el nombre de la función y escribe &'a en los parámetros de los que puede salir el resultado y en el tipo de retorno. Si la función debe devolver un valor nuevo y no una referencia, devuelve String en vez de &str."
+  }
+ },
+ {
+  "id": "RS-MISMATCHED-TYPES",
+  "patterns": [
+   "^mismatched types"
+  ],
+  "codes": [
+   "E0308"
+  ],
+  "en": {
+   "title": "The types do not match",
+   "body": "Rust never converts types by itself: here a value of one type is used where another is expected (a text where a number goes, an i32 where an i64 goes, a function that ends with a ; and so returns nothing when it must return a value).\nExample:\nlet n: i32 = \"cinco\"; // error: a &str is not an i32",
+   "fix": "Read the line with expected ... found ...: it says what Rust wants and what you gave. Change the value to the expected type, convert it explicitly (x as i64, \"5\".parse::<i32>()), or fix the declared type. If the function should return a value, remove the ; of its last expression."
+  },
+  "es": {
+   "title": "Los tipos no coinciden",
+   "body": "Rust nunca convierte tipos por su cuenta: aquí se usa un valor de un tipo donde se espera otro (un texto donde va un número, un i32 donde va un i64, una función que termina con ; y por eso no devuelve nada cuando debe devolver un valor).\nEjemplo:\nlet n: i32 = \"cinco\"; // error: un &str no es un i32",
+   "fix": "Lee la línea con expected ... found ...: dice qué quiere Rust y qué le diste. Cambia el valor al tipo esperado, conviértelo de forma explícita (x as i64, \"5\".parse::<i32>()) o corrige el tipo declarado. Si la función debe devolver un valor, quita el ; de su última expresión."
+  }
+ },
+ {
+  "id": "RS-FAILED-RESOLVE",
+  "patterns": [
+   "^cannot find (?:type|trait|struct|enum|module|crate) `(?P<name>[^`]+)` in this scope",
+   "^failed to resolve: [^`]*`(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "E0433"
+  ],
+  "en": {
+   "title": "Rust does not know \"{name}\"",
+   "body": "The name \"{name}\" is used but it is not in scope. Almost always it is something of the standard library or of a crate that must be imported with use before using it.\nExample:\nlet m: HashMap<i32, i32> = HashMap::new(); // error: missing use",
+   "fix": "Add the import at the top of the file, for example use std::collections::HashMap; (the help of rustc shows the line). If it comes from an external crate, it must be in the [dependencies] of Cargo.toml. Check also that the name is well written."
+  },
+  "es": {
+   "title": "Rust no conoce \"{name}\"",
+   "body": "El nombre \"{name}\" se usa pero no está al alcance. Casi siempre es algo de la biblioteca estándar o de un crate que hay que importar con use antes de usarlo.\nEjemplo:\nlet m: HashMap<i32, i32> = HashMap::new(); // error: falta el use",
+   "fix": "Añade la importación al principio del archivo, por ejemplo use std::collections::HashMap; (la ayuda de rustc muestra la línea). Si viene de un crate externo, debe estar en [dependencies] de Cargo.toml. Comprueba también que el nombre está bien escrito."
+  }
+ },
+ {
+  "id": "RS-UNKNOWN-MACRO",
+  "patterns": [
+   "^cannot find macro `(?P<name>[^`]+)` in this scope"
+  ],
+  "en": {
+   "title": "The macro \"{name}\" does not exist",
+   "body": "Macros are called with a ! at the end (println!, vec!, format!). Either the name is misspelled, or it is a function called with a ! it does not need, or the macro comes from a crate that is not imported.",
+   "fix": "Check the spelling: println! (not printn! or print!ln). If it is from a crate, import it with use or add the crate to Cargo.toml. The help of rustc usually suggests the name that looks like yours."
+  },
+  "es": {
+   "title": "La macro \"{name}\" no existe",
+   "body": "Las macros se llaman con un ! al final (println!, vec!, format!). O el nombre está mal escrito, o es una función llamada con un ! que no necesita, o la macro viene de un crate que no está importado.",
+   "fix": "Revisa la ortografía: println! (no printn! ni print!ln). Si es de un crate, impórtala con use o añade el crate a Cargo.toml. La ayuda de rustc suele sugerir el nombre parecido al tuyo."
+  }
+ },
+ {
+  "id": "RS-UNRESOLVED-NAME",
+  "patterns": [
+   "^cannot find (?:value|function|constant|static|attribute|tuple struct|unit struct) `(?P<name>[^`]+)` in this scope"
+  ],
+  "codes": [
+   "E0425"
+  ],
+  "en": {
+   "title": "\"{name}\" is not defined here",
+   "body": "Rust does not find any variable, function or constant called \"{name}\" in this place. Common causes: a typo, the variable was declared inside another block ({ }) and does not exist here, or it was never declared.\nExample:\nlet total = 1;\nprintln!(\"{}\", totl); // error: it is total",
+   "fix": "Check the spelling (rustc usually suggests a similar name). Make sure it is declared before and in a block that includes this line. If it is a function of another file or module, bring it with use or write its path."
+  },
+  "es": {
+   "title": "\"{name}\" no está definido aquí",
+   "body": "Rust no encuentra ninguna variable, función o constante llamada \"{name}\" en este lugar. Causas comunes: una errata, la variable se declaró dentro de otro bloque ({ }) y aquí no existe, o nunca se declaró.\nEjemplo:\nlet total = 1;\nprintln!(\"{}\", totl); // error: es total",
+   "fix": "Revisa la ortografía (rustc suele sugerir un nombre parecido). Asegúrate de que está declarada antes y en un bloque que incluya esta línea. Si es una función de otro archivo o módulo, tráela con use o escribe su ruta."
+  }
+ },
+ {
+  "id": "RS-UNRESOLVED-IMPORT",
+  "patterns": [
+   "^unresolved import `(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "E0432"
+  ],
+  "en": {
+   "title": "The import \"{name}\" cannot be found",
+   "body": "A use line names something that does not exist. If it is an external library (a crate such as rand) it is not downloaded yet: it must be in the [dependencies] of Cargo.toml. Otherwise the path is misspelled or the item is private or in another module.",
+   "fix": "For an external crate, add it to Cargo.toml under [dependencies] (for example rand = \"0.8\" or the command cargo add rand) and compile again. For your own code, check the path from the crate root (crate::modulo::elemento) and that the module is declared with mod."
+  },
+  "es": {
+   "title": "No se encuentra lo que importas: \"{name}\"",
+   "body": "Una línea use nombra algo que no existe. Si es una biblioteca externa (un crate como rand) todavía no está descargada: debe estar en [dependencies] de Cargo.toml. Si no, la ruta está mal escrita o el elemento es privado o está en otro módulo.",
+   "fix": "Para un crate externo, añádelo a Cargo.toml bajo [dependencies] (por ejemplo rand = \"0.8\" o el comando cargo add rand) y compila otra vez. Para código propio, revisa la ruta desde la raíz (crate::modulo::elemento) y que el módulo esté declarado con mod."
+  }
+ },
+ {
+  "id": "RS-NO-METHOD",
+  "patterns": [
+   "^no method named `(?P<method>[^`]+)` found",
+   "^no (?:function or associated item|associated item|variant or associated item) named `(?P<method>[^`]+)` found"
+  ],
+  "codes": [
+   "E0599"
+  ],
+  "en": {
+   "title": "\"{method}\" does not exist for this type",
+   "body": "The value you call \"{method}\" on does not have a method or associated function with that name. Common causes: a typo, the method belongs to another type (a Vec is not a String), or it comes from a trait that you must bring into scope with use.\nExample:\nlet v = vec![1, 2];\nv.lenght(); // error: it is len()",
+   "fix": "Check the name (rustc suggests a similar one). Look in the documentation of the type for the methods it has. If it is a method of a trait (such as Write or Read), add use std::io::Write; at the top. The rustc note says the type that was found."
+  },
+  "es": {
+   "title": "\"{method}\" no existe para este tipo",
+   "body": "El valor sobre el que llamas \"{method}\" no tiene un método o función asociada con ese nombre. Causas comunes: una errata, el método es de otro tipo (un Vec no es un String), o viene de un trait que debes traer con use.\nEjemplo:\nlet v = vec![1, 2];\nv.lenght(); // error: es len()",
+   "fix": "Revisa el nombre (rustc sugiere uno parecido). Mira en la documentación del tipo qué métodos tiene. Si es un método de un trait (como Write o Read), añade use std::io::Write; arriba. La nota de rustc dice qué tipo encontró."
+  }
+ },
+ {
+  "id": "RS-NO-FIELD",
+  "patterns": [
+   "^no field `(?P<field>[^`]+)` on type `(?P<type>[^`]+)`"
+  ],
+  "codes": [
+   "E0609"
+  ],
+  "en": {
+   "title": "The type {type} has no field \"{field}\"",
+   "body": "The struct {type} does not declare a field named \"{field}\". Maybe it is misspelled, it has another name in the definition of the struct, or you are using a different struct than you thought.\nExample:\nstruct Punto { x: i32 }\nlet p = Punto { x: 1 };\np.y // error: Punto only has x",
+   "fix": "Look at the definition of {type} and use one of its fields (rustc lists them in the help). If the field is missing, add it to the struct. If it is a method, call it with parentheses."
+  },
+  "es": {
+   "title": "El tipo {type} no tiene el campo \"{field}\"",
+   "body": "La estructura {type} no declara ningún campo llamado \"{field}\". Quizá está mal escrito, tiene otro nombre en la definición, o usas una estructura distinta de la que pensabas.\nEjemplo:\nstruct Punto { x: i32 }\nlet p = Punto { x: 1 };\np.y // error: Punto solo tiene x",
+   "fix": "Mira la definición de {type} y usa uno de sus campos (rustc los lista en la ayuda). Si el campo falta, añádelo a la estructura. Si es un método, llámalo con paréntesis."
+  }
+ },
+ {
+  "id": "RS-ASSIGN-TWICE",
+  "patterns": [
+   "^cannot assign twice to immutable variable `(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "E0384"
+  ],
+  "en": {
+   "title": "\"{name}\" cannot change: it is not mutable",
+   "body": "In Rust variables are immutable by default: after let {name} = 5; its value cannot be assigned again. It is a protection, to change something you must say so.\nExample:\nlet x = 5;\nx = 6; // error: x is not mut",
+   "fix": "Declare it as mutable if it has to change: let mut {name} = 5; If it should not change, create a new variable (let nuevo = ...) or shadow it with another let."
+  },
+  "es": {
+   "title": "\"{name}\" no puede cambiar: no es mutable",
+   "body": "En Rust las variables son inmutables por defecto: tras let {name} = 5; su valor no se puede asignar otra vez. Es una protección, para cambiar algo hay que decirlo.\nEjemplo:\nlet x = 5;\nx = 6; // error: x no es mut",
+   "fix": "Decláralo mutable si tiene que cambiar: let mut {name} = 5; Si no debe cambiar, crea una variable nueva (let nuevo = ...) o sombréala con otro let."
+  }
+ },
+ {
+  "id": "RS-NOT-MUTABLE",
+  "patterns": [
+   "^cannot borrow `(?P<name>[^`]+)` as mutable, as it is not declared as mutable"
+  ],
+  "codes": [
+   "E0596"
+  ],
+  "en": {
+   "title": "\"{name}\" needs to be mut to be modified",
+   "body": "Calling a method that changes the value (push, insert, clear...) or taking a &mut needs the variable to be declared with mut. \"{name}\" is not, so Rust protects it.\nExample:\nlet v = Vec::new();\nv.push(1); // error: v is not mut",
+   "fix": "Add mut to the declaration: let mut {name} = ...; If it is a parameter, declare it as &mut Tipo and pass &mut variable."
+  },
+  "es": {
+   "title": "\"{name}\" tiene que ser mut para modificarse",
+   "body": "Llamar a un método que cambia el valor (push, insert, clear...) o tomar un &mut exige que la variable esté declarada con mut. \"{name}\" no lo está, así que Rust la protege.\nEjemplo:\nlet v = Vec::new();\nv.push(1); // error: v no es mut",
+   "fix": "Añade mut a la declaración: let mut {name} = ...; Si es un parámetro, decláralo como &mut Tipo y pasa &mut variable."
+  }
+ },
+ {
+  "id": "RS-TRAIT-BOUND",
+  "patterns": [
+   "doesn't implement `",
+   "^the trait bound ",
+   "^the `\\?` operator can only be used"
+  ],
+  "codes": [
+   "E0277"
+  ],
+  "en": {
+   "title": "A type does not do what this line asks of it",
+   "body": "Rust checks that every type used with an operation has the matching trait (a set of abilities). Common cases: printing with {} something without Display (your own struct needs {:?} and #[derive(Debug)]), adding or comparing types that do not support it, or using ? inside a function that does not return Result or Option (main included).\nExample:\nstruct Punto { x: i32 }\nprintln!(\"{}\", p); // error: Punto has no Display",
+   "fix": "Read the first line of the message: it says which type lacks which trait. To print your own type use {:?} and put #[derive(Debug)] above its struct. For ?, make the function return Result (fn main() -> Result<(), Box<dyn std::error::Error>>) or handle the error with match or unwrap."
+  },
+  "es": {
+   "title": "Un tipo no sabe hacer lo que pide esta línea",
+   "body": "Rust comprueba que cada tipo usado con una operación tenga el trait correspondiente (un conjunto de habilidades). Casos comunes: imprimir con {} algo sin Display (tu propia estructura necesita {:?} y #[derive(Debug)]), sumar o comparar tipos que no lo admiten, o usar ? dentro de una función que no devuelve Result ni Option (main incluida).\nEjemplo:\nstruct Punto { x: i32 }\nprintln!(\"{}\", p); // error: Punto no tiene Display",
+   "fix": "Lee la primera línea del mensaje: dice qué tipo no tiene qué trait. Para imprimir tu propio tipo usa {:?} y pon #[derive(Debug)] encima de su struct. Para ?, haz que la función devuelva Result (fn main() -> Result<(), Box<dyn std::error::Error>>) o maneja el error con match o unwrap."
+  }
+ },
+ {
+  "id": "RS-WRONG-ARGS",
+  "patterns": [
+   "^this (?:function|method) takes (?P<expected>\\d+) arguments? but (?P<given>\\d+) arguments? (?:was|were) supplied"
+  ],
+  "codes": [
+   "E0061"
+  ],
+  "en": {
+   "title": "The call gives {given} arguments and the function wants {expected}",
+   "body": "The function was defined with {expected} parameters, and the call passes {given}. Rust requires exactly as many arguments as parameters, in the same order and with the right types.",
+   "fix": "Add the missing arguments or remove the extra ones. The note of rustc points to the definition of the function, to compare."
+  },
+  "es": {
+   "title": "La llamada da {given} argumentos y la función quiere {expected}",
+   "body": "La función se definió con {expected} parámetros y la llamada pasa {given}. Rust exige tantos argumentos como parámetros, en el mismo orden y con los tipos correctos.",
+   "fix": "Añade los argumentos que faltan o quita los que sobran. La nota de rustc señala la definición de la función, para comparar."
+  }
+ },
+ {
+  "id": "RS-BINARY-OP",
+  "patterns": [
+   "^cannot (?:add|subtract|multiply|divide) `",
+   "^binary operation `.+` cannot be applied to type"
+  ],
+  "codes": [
+   "E0369"
+  ],
+  "en": {
+   "title": "This operator does not work with these types",
+   "body": "The operator (+, -, ==, <...) is not defined for the types you use. The classic case: adding two &str with +, which Rust does not allow because the first operand has to be a String it can extend.\nExample:\nlet a = \"ho\";\nlet b = \"la\";\na + b // error: &str + &str",
+   "fix": "To join texts use format!(\"{}{}\", a, b) or convert the first one: a.to_string() + b. To compare or add your own types implement the trait (PartialEq, Add) or derive it with #[derive(PartialEq)]."
+  },
+  "es": {
+   "title": "Este operador no funciona con estos tipos",
+   "body": "El operador (+, -, ==, <...) no está definido para los tipos que usas. El caso clásico: sumar dos &str con +, que Rust no permite porque el primer operando tiene que ser un String que se pueda ampliar.\nEjemplo:\nlet a = \"ho\";\nlet b = \"la\";\na + b // error: &str + &str",
+   "fix": "Para unir textos usa format!(\"{}{}\", a, b) o convierte el primero: a.to_string() + b. Para comparar o sumar tus propios tipos implementa el trait (PartialEq, Add) o derívalo con #[derive(PartialEq)]."
+  }
+ },
+ {
+  "id": "RS-DEREF",
+  "patterns": [
+   "cannot be dereferenced$"
+  ],
+  "codes": [
+   "E0614"
+  ],
+  "en": {
+   "title": "You use * on something that is not a reference",
+   "body": "The * operator follows a reference (or a Box) to the value it points to. Here the value is not a reference, it is the number or the value itself, so there is nothing to follow.\nExample:\nlet x = 5;\nprintln!(\"{}\", *x); // error: x is not a reference",
+   "fix": "Remove the *: use the value directly. You only need * when the variable is a reference (&i32) or comes from an iterator over references."
+  },
+  "es": {
+   "title": "Usas * en algo que no es una referencia",
+   "body": "El operador * sigue una referencia (o un Box) hasta el valor al que apunta. Aquí el valor no es una referencia, es el número o el valor mismo, así que no hay nada que seguir.\nEjemplo:\nlet x = 5;\nprintln!(\"{}\", *x); // error: x no es una referencia",
+   "fix": "Quita el *: usa el valor directamente. Solo necesitas * cuando la variable es una referencia (&i32) o viene de un iterador sobre referencias."
+  }
+ },
+ {
+  "id": "RS-NON-EXHAUSTIVE",
+  "patterns": [
+   "^non-exhaustive patterns: (?P<missing>.+) not covered"
+  ],
+  "codes": [
+   "E0004"
+  ],
+  "en": {
+   "title": "The match does not cover {missing}",
+   "body": "A match must handle every possible value. This one leaves out {missing}, and Rust refuses to compile because the program would not know what to do in that case.\nExample:\nmatch color {\n    Color::Rojo => ...,\n    Color::Verde => ...,\n} // error: Azul is missing",
+   "fix": "Add an arm for the missing case, or a final arm _ => ... that takes everything else. Use _ only when you really want the same behaviour for all the rest."
+  },
+  "es": {
+   "title": "El match no cubre {missing}",
+   "body": "Un match debe tratar todos los valores posibles. Este deja fuera {missing}, y Rust no compila porque el programa no sabría qué hacer en ese caso.\nEjemplo:\nmatch color {\n    Color::Rojo => ...,\n    Color::Verde => ...,\n} // error: falta Azul",
+   "fix": "Añade un brazo para el caso que falta, o un último brazo _ => ... que recoja todo lo demás. Usa _ solo cuando de verdad quieras el mismo comportamiento para el resto."
+  }
+ },
+ {
+  "id": "RS-PRIVATE",
+  "patterns": [
+   "^(?P<kind>[a-z ]+) `(?P<name>[^`]+)` is private"
+  ],
+  "codes": [
+   "E0603"
+  ],
+  "en": {
+   "title": "The {kind} \"{name}\" is private",
+   "body": "In Rust everything in a module is private by default: only the code of that module can use it. \"{name}\" exists, but it was not declared as public, so it cannot be used from outside.\nExample:\nmod banco {\n    fn saldo() -> i32 { 5 }\n}\nbanco::saldo(); // error: private",
+   "fix": "Put pub before the declaration to make it public: pub fn {name}() ... The same goes for the fields of a struct (pub campo) and for modules (pub mod)."
+  },
+  "es": {
+   "title": "El elemento \"{name}\" ({kind}) es privado",
+   "body": "En Rust todo lo de un módulo es privado por defecto: solo el código de ese módulo puede usarlo. \"{name}\" existe, pero no se declaró como público, así que no se puede usar desde fuera.\nEjemplo:\nmod banco {\n    fn saldo() -> i32 { 5 }\n}\nbanco::saldo(); // error: privado",
+   "fix": "Pon pub antes de la declaración para hacerla pública: pub fn {name}() ... Lo mismo vale para los campos de una estructura (pub campo) y para los módulos (pub mod)."
+  }
+ },
+ {
+  "id": "RS-TYPE-ANNOTATIONS",
+  "patterns": [
+   "^type annotations needed"
+  ],
+  "codes": [
+   "E0282",
+   "E0283",
+   "E0284"
+  ],
+  "en": {
+   "title": "Rust cannot guess a type, you have to write it",
+   "body": "Some functions (collect, parse, Vec::new, Default::default) can produce several types and nothing in the code says which one you want, so the compiler cannot choose.\nExample:\nlet v = \"1 2\".split(' ').map(|s| s.parse().unwrap()).collect(); // which type?",
+   "fix": "Write the type where the compiler points: let v: Vec<i32> = ... or use the turbofish: .collect::<Vec<i32>>(), \"5\".parse::<i32>()."
+  },
+  "es": {
+   "title": "Rust no puede adivinar un tipo, tienes que escribirlo",
+   "body": "Algunas funciones (collect, parse, Vec::new, Default::default) pueden producir varios tipos y nada en el código dice cuál quieres, así que el compilador no puede elegir.\nEjemplo:\nlet v = \"1 2\".split(' ').map(|s| s.parse().unwrap()).collect(); // ¿de qué tipo?",
+   "fix": "Escribe el tipo donde señala el compilador: let v: Vec<i32> = ... o usa el turbofish: .collect::<Vec<i32>>(), \"5\".parse::<i32>()."
+  }
+ },
+ {
+  "id": "RS-MISSING-ITEMS",
+  "patterns": [
+   "^not all trait items implemented, missing: (?P<missing>.+)"
+  ],
+  "codes": [
+   "E0046"
+  ],
+  "en": {
+   "title": "The impl does not define the required methods: {missing}",
+   "body": "A trait is a contract: whoever implements it must write all its required methods. This impl is missing {missing}.\nExample:\ntrait Forma { fn area(&self) -> f64; }\nimpl Forma for Cuadrado {} // error: area is missing",
+   "fix": "Write the missing methods inside the impl block with the same signature as in the trait (rustc shows a template in its help). Some methods of a trait already have a default body and are optional."
+  },
+  "es": {
+   "title": "El impl no define los métodos obligatorios: {missing}",
+   "body": "Un trait es un contrato: quien lo implementa debe escribir todos sus métodos obligatorios. A este impl le falta {missing}.\nEjemplo:\ntrait Forma { fn area(&self) -> f64; }\nimpl Forma for Cuadrado {} // error: falta area",
+   "fix": "Escribe los métodos que faltan dentro del bloque impl con la misma firma que en el trait (rustc muestra una plantilla en su ayuda). Algunos métodos de un trait ya tienen cuerpo por defecto y son opcionales."
+  }
+ },
+ {
+  "id": "RS-NO-MAIN",
+  "patterns": [
+   "^`main` function not found"
+  ],
+  "codes": [
+   "E0601"
+  ],
+  "en": {
+   "title": "The program has no main function",
+   "body": "Every Rust program starts in fn main(). The file has no function with that name, so there is nothing to run.",
+   "fix": "Add fn main() { ... } to the file you are running. If this file is a module of a bigger project, run the project (the file with main) instead."
+  },
+  "es": {
+   "title": "El programa no tiene la función main",
+   "body": "Todo programa en Rust empieza en fn main(). El archivo no tiene ninguna función con ese nombre, así que no hay nada que ejecutar.",
+   "fix": "Añade fn main() { ... } al archivo que ejecutas. Si este archivo es un módulo de un proyecto más grande, ejecuta el proyecto (el archivo con main)."
+  }
+ },
+ {
+  "id": "RS-EXPECTED-TOKEN",
+  "patterns": [
+   "^expected .+, found (?:`|keyword |reserved |doc comment|end of)"
+  ],
+  "en": {
+   "title": "Something is missing or misplaced in the syntax",
+   "body": "The compiler was reading a statement and found a symbol it did not expect. The most common reasons: a ; at the end of the previous line is missing (the error points to the next line), a ) or } is missing, or a comma is missing.\nExample:\nlet x = 5 // missing ;\nprintln!(\"{}\", x);",
+   "fix": "Look at the line before the one the error points to: most of the times it lacks the ;. Check that all parentheses and braces are balanced and that a , separates the items."
+  },
+  "es": {
+   "title": "Falta algo o hay algo fuera de lugar en la sintaxis",
+   "body": "El compilador leía una instrucción y encontró un símbolo que no esperaba. Los motivos más comunes: falta un ; al final de la línea anterior (el error señala la siguiente), falta un ) o un }, o falta una coma.\nEjemplo:\nlet x = 5 // falta ;\nprintln!(\"{}\", x);",
+   "fix": "Mira la línea anterior a la que señala el error: casi siempre le falta el ;. Comprueba que todos los paréntesis y llaves están equilibrados y que una , separa los elementos."
+  }
+ },
+ {
+  "id": "RS-UNCLOSED-DELIMITER",
+  "patterns": [
+   "^this file contains an unclosed delimiter",
+   "^unexpected closing delimiter"
+  ],
+  "en": {
+   "title": "A brace or parenthesis is not closed",
+   "body": "There is an opening { ( or [ without its closing one (or a closing one without opening). The compiler reaches the end of the file still waiting for it, so the error appears far from the real mistake.",
+   "fix": "Follow the marks of the message: it shows where each open delimiter starts. Indent the code well and check that every { has its }. An editor that highlights the matching brace helps a lot."
+  },
+  "es": {
+   "title": "Una llave o un paréntesis no está cerrado",
+   "body": "Hay un { ( o [ de apertura sin su cierre (o un cierre sin apertura). El compilador llega al final del archivo esperándolo todavía, por eso el error aparece lejos del fallo real.",
+   "fix": "Sigue las marcas del mensaje: muestran dónde empieza cada delimitador abierto. Sangra bien el código y comprueba que cada { tiene su }. Un editor que resalta la llave pareja ayuda mucho."
+  }
+ },
+ {
+  "id": "W-RS-UNUSED-VAR",
+  "patterns": [
+   "^unused variable: `(?P<name>[^`]+)`",
+   "^variable `(?P<name>[^`]+)` is assigned to, but never used"
+  ],
+  "codes": [
+   "unused_variables"
+  ],
+  "en": {
+   "title": "The variable \"{name}\" is never used",
+   "body": "You created \"{name}\" but nothing reads it afterwards. It is not an error, but it usually means a typo or code you forgot to finish.",
+   "fix": "Use it, or delete it. If you want to keep it on purpose (for example a parameter), start its name with an underscore: _{name} and the warning disappears."
+  },
+  "es": {
+   "title": "La variable \"{name}\" no se usa nunca",
+   "body": "Creaste \"{name}\" pero nada la lee después. No es un error, pero suele indicar una errata o código que olvidaste terminar.",
+   "fix": "Úsala o bórrala. Si quieres conservarla a propósito (por ejemplo un parámetro), empieza su nombre con un guion bajo: _{name} y el aviso desaparece."
+  }
+ },
+ {
+  "id": "W-RS-UNUSED-MUT",
+  "patterns": [
+   "^variable does not need to be mutable"
+  ],
+  "codes": [
+   "unused_mut"
+  ],
+  "en": {
+   "title": "This variable has mut but never changes",
+   "body": "It was declared with mut but nothing modifies it, so mut is not needed. Rust warns you to keep the code honest: mut says \"this will change\".",
+   "fix": "Remove the mut: let x = 1; If you thought it changed, check that you are really assigning to it later."
+  },
+  "es": {
+   "title": "Esta variable tiene mut pero nunca cambia",
+   "body": "Se declaró con mut pero nada la modifica, así que mut sobra. Rust te avisa para que el código sea honesto: mut dice \"esto va a cambiar\".",
+   "fix": "Quita el mut: let x = 1; Si creías que cambiaba, comprueba que de verdad le asignas algo más adelante."
+  }
+ },
+ {
+  "id": "W-RS-UNUSED-IMPORT",
+  "patterns": [
+   "^unused imports?: `(?P<name>[^`]+)`"
+  ],
+  "codes": [
+   "unused_imports"
+  ],
+  "en": {
+   "title": "The import \"{name}\" is not used",
+   "body": "A use line brings \"{name}\" but the file never mentions it. It is harmless, only noise.",
+   "fix": "Delete that use line (or the unused part of it). The help of rustc shows exactly what to remove."
+  },
+  "es": {
+   "title": "La importación \"{name}\" no se usa",
+   "body": "Una línea use trae \"{name}\" pero el archivo nunca lo menciona. No hace daño, solo estorba.",
+   "fix": "Borra esa línea use (o la parte que no se usa). La ayuda de rustc muestra exactamente qué quitar."
+  }
+ },
+ {
+  "id": "W-RS-DEAD-CODE",
+  "patterns": [
+   "^(?P<kind>function|method|associated function|struct|enum|field|constant|static|type alias|trait|variant|module) `(?P<name>[^`]+)` is never (?:used|read|constructed)"
+  ],
+  "codes": [
+   "dead_code"
+  ],
+  "en": {
+   "title": "The {kind} \"{name}\" is never used",
+   "body": "You wrote \"{name}\" but no part of the program uses it. The compiler warns because it is code that does nothing (or that you forgot to call).",
+   "fix": "Call it where it is needed, or delete it. If it is part of a library you will use later, start its name with _ or put #[allow(dead_code)] above it."
+  },
+  "es": {
+   "title": "{kind} \"{name}\" no se usa nunca",
+   "body": "Escribiste \"{name}\" pero ninguna parte del programa lo usa. El compilador avisa porque es código que no hace nada (o que olvidaste llamar).",
+   "fix": "Llámalo donde haga falta, o bórralo. Si es parte de una biblioteca que usarás luego, empieza su nombre con _ o pon #[allow(dead_code)] encima."
+  }
+ },
+ {
+  "id": "RS-LINKER-MISSING",
+  "patterns": [
+   "^linker `(?P<linker>[^`]+)` not found"
+  ],
+  "en": {
+   "title": "The linker \"{linker}\" was not found",
+   "body": "Compiling Rust has two steps: rustc translates the code, and a linker joins the pieces in the program. The linker called \"{linker}\" is not installed or is not in the PATH.",
+   "fix": "Install the tools that Rust needs to link (on Windows the Microsoft C++ Build Tools or the GNU toolchain of rustup; on Linux gcc or clang; on macOS the Xcode command line tools) or check the toolchain in the settings of VizcachaIDE."
+  },
+  "es": {
+   "title": "No se encuentra el enlazador \"{linker}\"",
+   "body": "Compilar Rust tiene dos pasos: rustc traduce el código y un enlazador junta las piezas en el programa. El enlazador llamado \"{linker}\" no está instalado o no está en el PATH.",
+   "fix": "Instala las herramientas que Rust necesita para enlazar (en Windows las Build Tools de C++ de Microsoft o el toolchain GNU de rustup; en Linux gcc o clang; en macOS las herramientas de línea de comandos de Xcode) o revisa el toolchain en los ajustes de VizcachaIDE."
+  }
+ },
+ {
+  "id": "RS-NETWORK",
+  "patterns": [
+   "failed to (?:download|get)|network failure|Could not resolve host|Could not connect to server|unable to update registry"
+  ],
+  "en": {
+   "title": "Cargo cannot download the dependencies",
+   "body": "Cargo needs the internet to download the crates your project uses (the [dependencies] of Cargo.toml) the first time. There was a network problem: no connection, a proxy, a firewall or the crates server was not reachable.",
+   "fix": "Check your internet connection (and the proxy or firewall of the school). Try again. Once the crates are downloaded, the project can be built without network (cargo build --offline)."
+  },
+  "es": {
+   "title": "Cargo no puede descargar las dependencias",
+   "body": "Cargo necesita internet para descargar los crates que usa tu proyecto (las [dependencies] de Cargo.toml) la primera vez. Hubo un problema de red: sin conexión, un proxy, un cortafuegos o el servidor de crates no estaba accesible.",
+   "fix": "Revisa tu conexión a internet (y el proxy o cortafuegos del colegio). Inténtalo de nuevo. Una vez descargados los crates, el proyecto se puede compilar sin red (cargo build --offline)."
+  }
+ },
+ {
+  "id": "RS-MAIN-ERR",
+  "patterns": [
+   "^Error: (?P<debug>.+)$"
+  ],
+  "en": {
+   "title": "main returned an error: {debug}",
+   "body": "The function main was declared returning a Result and it ended with Err, so Rust printed Error: and the error and ended the program with failure code 1. It is not a crash: the program itself decided to finish with that error ({debug}).",
+   "fix": "Find where that Err is created or passed up with ? and fix the cause (a missing file, a wrong data...). If an error is expected, handle it with match inside main to give a friendly message."
+  },
+  "es": {
+   "title": "main devolvió un error: {debug}",
+   "body": "La función main se declaró devolviendo un Result y terminó con Err, así que Rust escribió Error: y el error y terminó el programa con código de fallo 1. No es una caída: el propio programa decidió terminar con ese error ({debug}).",
+   "fix": "Busca dónde se crea ese Err o se pasa hacia arriba con ? y corrige la causa (un archivo que falta, un dato incorrecto...). Si el error es esperable, trátalo con match dentro de main para dar un mensaje amable."
+  }
+ },
+ {
+  "id": "RS-PANIC-INDEX",
+  "patterns": [
+   "index out of bounds: the len is (?P<len>\\d+) but the index is (?P<index>\\d+)"
+  ],
+  "en": {
+   "title": "Position {index} does not exist: there are only {len} elements",
+   "body": "The program asked for the item number {index}, but the Vec or array has {len} items. Positions start at 0, so the valid ones go from 0 to the length minus 1. Rust stops the program instead of reading memory that is not yours.",
+   "fix": "Check the index before using it (if i < v.len()), use v.get(i) that returns an Option, or fix the calculation of the index. Remember that the last valid position is len - 1."
+  },
+  "es": {
+   "title": "La posición {index} no existe: solo hay {len} elementos",
+   "body": "El programa pidió el elemento número {index}, pero el Vec o arreglo tiene {len} elementos. Las posiciones empiezan en 0, así que las válidas van de 0 a la longitud menos 1. Rust detiene el programa en vez de leer memoria que no es tuya.",
+   "fix": "Comprueba el índice antes de usarlo (if i < v.len()), usa v.get(i) que devuelve un Option, o corrige el cálculo del índice. Recuerda que la última posición válida es len - 1."
+  }
+ },
+ {
+  "id": "RS-PANIC-UNWRAP-NONE",
+  "patterns": [
+   "called `Option::unwrap\\(\\)` on a `None` value"
+  ],
+  "en": {
+   "title": "unwrap() on an empty value (None)",
+   "body": "An Option can hold a value (Some) or nothing (None). unwrap() takes the value out, and if there is nothing it stops the program. For example v.first().unwrap() on an empty Vec.",
+   "fix": "Do not use unwrap() when the value may not exist. Handle both cases with match or if let Some(x) = ..., give a default with unwrap_or(0), or check before (if !v.is_empty())."
+  },
+  "es": {
+   "title": "unwrap() sobre un valor vacío (None)",
+   "body": "Un Option puede tener un valor (Some) o nada (None). unwrap() saca el valor y, si no hay nada, detiene el programa. Por ejemplo v.first().unwrap() sobre un Vec vacío.",
+   "fix": "No uses unwrap() cuando el valor puede no existir. Trata los dos casos con match o if let Some(x) = ..., da un valor por defecto con unwrap_or(0), o comprueba antes (if !v.is_empty())."
+  }
+ },
+ {
+  "id": "RS-PANIC-UNWRAP-ERR",
+  "patterns": [
+   "called `Result::unwrap\\(\\)` on an `Err` value: (?P<error>.+)"
+  ],
+  "en": {
+   "title": "unwrap() on an error: {error}",
+   "body": "A Result is Ok(value) or Err(error). unwrap() takes the value out, and if it is an Err it stops the program showing the error: {error}. A typical case: parse() of a text that is not a number.",
+   "fix": "Do not use unwrap() when it can fail (reading, converting, opening files). Handle the error with match, if let Ok(x) = ..., unwrap_or(...) or pass it up with ?. First check the data that causes the error shown."
+  },
+  "es": {
+   "title": "unwrap() sobre un error: {error}",
+   "body": "Un Result es Ok(valor) o Err(error). unwrap() saca el valor y, si es un Err, detiene el programa mostrando el error: {error}. Un caso típico: parse() de un texto que no es un número.",
+   "fix": "No uses unwrap() cuando puede fallar (leer, convertir, abrir archivos). Trata el error con match, if let Ok(x) = ..., unwrap_or(...) o pásalo hacia arriba con ?. Revisa primero los datos que causan el error mostrado."
+  }
+ },
+ {
+  "id": "RS-PANIC-EXPECT",
+  "patterns": [
+   "^(?P<message>.+): (?P<error>[A-Z]\\w*(?: ?[{(].*)?)$"
+  ],
+  "en": {
+   "title": "expect() failed: {message}",
+   "body": "expect(\"...\") is an unwrap() with your own message. The call received an error ({error}) and the program stopped writing the message you chose: {message}.",
+   "fix": "The message tells you what you expected, and the error after it says what really happened. Fix the data or the code that produces the error, or handle it without stopping: match, if let, unwrap_or."
+  },
+  "es": {
+   "title": "Falló expect(): {message}",
+   "body": "expect(\"...\") es un unwrap() con tu propio mensaje. La llamada recibió un error ({error}) y el programa se detuvo escribiendo el mensaje que elegiste: {message}.",
+   "fix": "El mensaje dice qué esperabas y el error que va detrás dice qué pasó de verdad. Corrige los datos o el código que produce el error, o trátalo sin detenerte: match, if let, unwrap_or."
+  }
+ },
+ {
+  "id": "RS-PANIC-OVERFLOW",
+  "patterns": [
+   "^attempt to (?:add|subtract|multiply|negate|shift left|shift right) with overflow"
+  ],
+  "en": {
+   "title": "A number does not fit in its type (overflow)",
+   "body": "Integers have a maximum (u8 reaches 255, i32 about 2 billion). The operation went beyond it (or below the minimum, as 0 - 1 in an unsigned type). In debug mode Rust stops the program, in release it would wrap around silently.",
+   "fix": "Use a bigger type (u32, u64, i64), or check before operating. For a controlled behaviour use checked_add (returns Option), wrapping_add (goes around) or saturating_add (stays at the limit)."
+  },
+  "es": {
+   "title": "Un número no cabe en su tipo (desbordamiento)",
+   "body": "Los enteros tienen un máximo (u8 llega a 255, i32 a unos 2 mil millones). La operación se pasó (o bajó del mínimo, como 0 - 1 en un tipo sin signo). En modo debug Rust detiene el programa, en release daría la vuelta en silencio.",
+   "fix": "Usa un tipo más grande (u32, u64, i64), o comprueba antes de operar. Para un comportamiento controlado usa checked_add (devuelve Option), wrapping_add (da la vuelta) o saturating_add (se queda en el límite)."
+  }
+ },
+ {
+  "id": "RS-PANIC-DIV-ZERO",
+  "patterns": [
+   "^attempt to (?:divide by zero|calculate the remainder with a divisor of zero)"
+  ],
+  "en": {
+   "title": "Division by zero",
+   "body": "The program divided (or took the remainder, %) by zero, which is not defined for integers. Rust stops the program.",
+   "fix": "Check that the divisor is not zero before: if b != 0 { a / b }. Or use a.checked_div(b), that returns None when b is zero."
+  },
+  "es": {
+   "title": "División entre cero",
+   "body": "El programa dividió (o tomó el resto, %) entre cero, que no está definido para enteros. Rust detiene el programa.",
+   "fix": "Comprueba que el divisor no sea cero antes: if b != 0 { a / b }. O usa a.checked_div(b), que devuelve None cuando b es cero."
+  }
+ },
+ {
+  "id": "RS-PANIC-STR-BOUNDARY",
+  "patterns": [
+   "byte index (?P<index>\\d+) is not a char boundary"
+  ],
+  "en": {
+   "title": "The cut at byte {index} breaks a character in half",
+   "body": "A String is stored in UTF-8: letters such as ñ, é or an emoji take more than one byte. s[0..1] counts bytes, and the position {index} falls in the middle of one character, so Rust stops the program.",
+   "fix": "Do not slice text by byte positions. Go through the characters: s.chars().take(n).collect::<String>(), or check s.is_char_boundary(i) before cutting."
+  },
+  "es": {
+   "title": "El corte en el byte {index} parte un carácter por la mitad",
+   "body": "Un String se guarda en UTF-8: letras como ñ, é o un emoji ocupan más de un byte. s[0..1] cuenta bytes, y la posición {index} cae en medio de un carácter, así que Rust detiene el programa.",
+   "fix": "No cortes texto por posiciones de byte. Recorre los caracteres: s.chars().take(n).collect::<String>(), o comprueba s.is_char_boundary(i) antes de cortar."
+  }
+ },
+ {
+  "id": "RS-PANIC-REFCELL",
+  "patterns": [
+   "\\balready (?:mutably )?borrowed"
+  ],
+  "en": {
+   "title": "The RefCell is already borrowed",
+   "body": "A RefCell checks the borrowing rules while the program runs, not before. Two borrow_mut() alive at the same time (or one borrow() and one borrow_mut()) break the rule, and the program stops.",
+   "fix": "Make the first borrow end before the second one: use it inside a smaller block { } or call drop(variable). Check that you do not keep a borrow in a variable longer than needed."
+  },
+  "es": {
+   "title": "El RefCell ya está prestado",
+   "body": "Un RefCell comprueba las reglas de préstamo mientras el programa corre, no antes. Dos borrow_mut() vivos a la vez (o un borrow() y un borrow_mut()) rompen la regla y el programa se detiene.",
+   "fix": "Haz que el primer préstamo termine antes del segundo: úsalo dentro de un bloque { } más pequeño o llama a drop(variable). Comprueba que no guardas un préstamo en una variable más tiempo del necesario."
+  }
+ },
+ {
+  "id": "RS-PANIC-EXPLICIT",
+  "patterns": [
+   "^explicit panic",
+   "^not implemented",
+   "^not yet implemented",
+   "entered unreachable code",
+   "^assertion "
+  ],
+  "codes": [
+   "RS-PANIC-EXPLICIT"
+  ],
+  "en": {
+   "title": "The program stopped with panic!",
+   "body": "The program called panic! (directly, or through unreachable!, todo!, unimplemented!, assert! or a similar macro) and Rust stopped it, writing the message of the panic. It is the way Rust says \"this should never happen\".",
+   "fix": "Read the message of the panic, it is the reason chosen by the code. Go to the line shown and check why that situation was reached. If it was your own panic!, decide if it is really an error or something to handle."
+  },
+  "es": {
+   "title": "El programa se detuvo con panic!",
+   "body": "El programa llamó a panic! (directamente, o a través de unreachable!, todo!, unimplemented!, assert! o una macro parecida) y Rust lo detuvo escribiendo el mensaje del panic. Es la forma de Rust de decir \"esto nunca debería pasar\".",
+   "fix": "Lee el mensaje del panic, es la razón elegida por el código. Ve a la línea indicada y comprueba por qué se llegó a esa situación. Si era tu propio panic!, decide si de verdad es un error o algo que se debe tratar."
+  }
+ },
+ {
+  "id": "RS-STACK-OVERFLOW",
+  "patterns": [
+   "has overflowed its stack",
+   "^fatal runtime error: stack overflow",
+   "^Stack overflow$"
+  ],
+  "en": {
+   "title": "The program ran out of stack (infinite recursion?)",
+   "body": "Every function call takes some memory of the stack and gives it back when it returns. A function that calls itself without ever stopping (or with a stop that is never reached) fills the stack until the program is killed.\nExample:\nfn f(n: u64) -> u64 { f(n + 1) } // never ends",
+   "fix": "Check the stopping case of your recursive function: it must exist and the calls must get closer to it every time. If the recursion is legitimately very deep, rewrite it with a loop."
+  },
+  "es": {
+   "title": "El programa se quedó sin pila (¿recursión infinita?)",
+   "body": "Cada llamada a una función usa algo de memoria de la pila y la devuelve al terminar. Una función que se llama a sí misma sin parar nunca (o con una condición de parada que nunca se alcanza) llena la pila hasta que el programa muere.\nEjemplo:\nfn f(n: u64) -> u64 { f(n + 1) } // no termina nunca",
+   "fix": "Revisa el caso de parada de tu función recursiva: debe existir y las llamadas deben acercarse a él cada vez. Si la recursión es legítimamente muy profunda, reescríbela con un bucle."
+  }
+ },
+ {
+  "id": "RS-CRASH",
+  "patterns": [
+   "^(?:Segmentation fault|Aborted|Floating point exception)$",
+   "^fatal runtime error: "
+  ],
+  "en": {
+   "title": "The program crashed",
+   "body": "The program ended in an abnormal way (the system killed it, or the runtime of Rust aborted it). In safe Rust this is rare: it usually comes from unsafe code, from a native library, or from a panic that happened while another was being handled.",
+   "fix": "If you use unsafe, check the pointers and the sizes. Otherwise, run the program in the debugger to see the line where it falls, and reduce it to the shortest program that fails."
+  },
+  "es": {
+   "title": "El programa se cayó",
+   "body": "El programa terminó de forma anormal (el sistema lo mató, o el runtime de Rust lo abortó). En Rust seguro es raro: suele venir de código unsafe, de una biblioteca nativa, o de un panic ocurrido mientras se trataba otro.",
+   "fix": "Si usas unsafe, revisa los punteros y los tamaños. Si no, ejecuta el programa en el depurador para ver la línea donde cae, y redúcelo al programa más corto que falle."
+  }
+ }
+]

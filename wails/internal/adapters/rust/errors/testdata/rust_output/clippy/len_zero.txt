@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpq0s7uqa0\mis programas ñandú
+# command: clippy-driver --edition 2024 --crate-type bin --emit=metadata --out-dir build --error-format=json main.rs
+# exit: 0
+# program:
+#   fn main() {
+#       let v: Vec<i32> = Vec::new();
+#       if v.len() == 0 {
+#           println!("vacío");
+#       }
+#   }
+# output:
+{"$message_type":"diagnostic","message":"length comparison to zero","code":{"code":"clippy::len_zero","explanation":null},"level":"warning","spans":[{"file_name":"main.rs","byte_start":55,"byte_end":67,"line_start":3,"line_end":3,"column_start":8,"column_end":20,"is_primary":true,"text":[{"text":"    if v.len() == 0 {","highlight_start":8,"highlight_end":20}],"label":null,"suggested_replacement":null,"suggestion_applicability":null,"expansion":null}],"children":[{"message":"for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#len_zero","code":null,"level":"help","spans":[],"children":[],"rendered":null},{"message":"`#[warn(clippy::len_zero)]` on by default","code":null,"level":"note","spans":[],"children":[],"rendered":null},{"message":"using `is_empty` is clearer and more explicit","code":null,"level":"help","spans":[{"file_name":"main.rs","byte_start":55,"byte_end":67,"line_start":3,"line_end":3,"column_start":8,"column_end":20,"is_primary":true,"text":[{"text":"    if v.len() == 0 {","highlight_start":8,"highlight_end":20}],"label":null,"suggested_replacement":"v.is_empty()","suggestion_applicability":"MachineApplicable","expansion":null}],"children":[],"rendered":null}],"rendered":"warning: length comparison to zero\n --> main.rs:3:8\n  |\n3 |     if v.len() == 0 {\n  |        ^^^^^^^^^^^^ help: using `is_empty` is clearer and more explicit: `v.is_empty()`\n  |\n  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#len_zero\n  = note: `#[warn(clippy::len_zero)]` on by default\n\n"}
+{"$message_type":"diagnostic","message":"1 warning emitted","code":null,"level":"warning","spans":[],"children":[],"rendered":"warning: 1 warning emitted\n\n"}
