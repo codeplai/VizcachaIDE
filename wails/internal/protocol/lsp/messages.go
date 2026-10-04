@@ -24,6 +24,7 @@ func clientCapabilities() map[string]any {
 			"documentHighlight":  map[string]any{},
 			"documentSymbol":     map[string]any{"hierarchicalDocumentSymbolSupport": true},
 			"publishDiagnostics": map[string]any{},
+			"inlayHint":          map[string]any{},
 			"signatureHelp": map[string]any{"signatureInformation": map[string]any{
 				"documentationFormat":    plainText,
 				"parameterInformation":   map[string]any{"labelOffsetSupport": true},

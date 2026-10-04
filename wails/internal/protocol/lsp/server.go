@@ -64,6 +64,7 @@ type Server struct {
 	opts   Options
 	docs   *openDocuments
 	busy   atomic.Bool // the last query timed out: the next ones wait less
+	hints  atomic.Bool // the initialize result announced inlayHintProvider
 
 	mu      sync.Mutex
 	state   serverState
