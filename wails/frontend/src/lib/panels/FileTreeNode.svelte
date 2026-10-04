@@ -72,6 +72,7 @@
     {...props}
     type="button"
     class="file"
+    data-path={node.path}
     class:on={node.path === $activePath}
     class:sel={node.path === $selectedNode}
     style:padding-left={indent}

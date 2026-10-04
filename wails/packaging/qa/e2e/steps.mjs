@@ -202,7 +202,7 @@ export const steps = (ctx, lang) => {
   add('editor-intel', 'gopls: completion after "fmt.", hover and Ctrl+click to the definition', async () => {
     await L.go(page, 'FilesService', 'ListTree', path.join(L.PROJECT, 'qa', 'complete'))
     await U.reload(page, url)
-    await U.openByName(page, 'main.go')
+    await U.openByName(page, 'main.go', 'qa/complete/')
     await page.waitForSelector('.cm-content', { timeout: 10000 })
     await L.sleep(2500)
     // hover on Println (line 8)
