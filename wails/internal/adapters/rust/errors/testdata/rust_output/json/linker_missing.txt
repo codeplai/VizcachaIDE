@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpzttq5700\mis programas ñandú
+# command: rustc --edition 2024 -g --error-format=json -C linker=vizcacha-linker-que-no-existe -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       println!("hola");
+#   }
+# output:
+{"$message_type":"diagnostic","message":"linker `vizcacha-linker-que-no-existe` not found","code":null,"level":"error","spans":[],"children":[{"message":"program not found","code":null,"level":"note","spans":[],"children":[],"rendered":null}],"rendered":"error: linker `vizcacha-linker-que-no-existe` not found\n  |\n  = note: program not found\n\n"}
+{"$message_type":"diagnostic","message":"aborting due to 1 previous error","code":null,"level":"error","spans":[],"children":[],"rendered":"error: aborting due to 1 previous error\n\n"}

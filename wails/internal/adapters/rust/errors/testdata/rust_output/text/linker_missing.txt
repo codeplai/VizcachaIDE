@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpzttq5700\mis programas ñandú
+# command: rustc --edition 2024 -g -C linker=vizcacha-linker-que-no-existe -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       println!("hola");
+#   }
+# output:
+error: linker `vizcacha-linker-que-no-existe` not found
+  |
+  = note: program not found
+
+error: aborting due to 1 previous error
+

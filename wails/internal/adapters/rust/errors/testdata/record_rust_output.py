@@ -45,8 +45,12 @@ COMPILE = {
     "expected_token": "fn main() {\n    let x = 5\n    println!(\"{}\", x);\n}\n",
     "unclosed_delimiter": "fn main() {\n    println!(\"hola\");\n",
     "unknown_macro": "fn main() {\n    printn!(\"hola\");\n}\n",
+    "linker_missing": "fn main() {\n    println!(\"hola\");\n}\n",
     "warnings": "use std::collections::HashMap;\nfn nunca() {}\nfn main() {\n    let sin_usar = 3;\n    let mut x = 1;\n    println!(\"{}\", x);\n}\n",
 }
+
+# Extra rustc flags of a case (a linker that does not exist, to see what a missing linker looks like).
+EXTRA_FLAGS = {"linker_missing": ["-C", "linker=vizcacha-linker-que-no-existe"]}
 
 RUNTIME = {
     "panic_index": "fn main() {\n    let v = vec![1, 2, 3];\n    let i = v.len() + 2;\n    println!(\"{}\", v[i]);\n}\n",
@@ -66,7 +70,7 @@ RUNTIME = {
 
 CLIPPY = {
     "needless_range_loop": "fn main() {\n    let v = vec![1, 2, 3];\n    for i in 0..v.len() {\n        println!(\"{}\", v[i]);\n    }\n}\n",
-    "redundant_clone": "fn main() {\n    let s = String::from(\"a\");\n    let t = s.clone();\n    println!(\"{}\", t);\n}\n",
+    "len_zero": "fn main() {\n    let v: Vec<i32> = Vec::new();\n    if v.len() == 0 {\n        println!(\"vacío\");\n    }\n}\n",
 }
 
 
@@ -110,7 +114,7 @@ def record_loose(env, out, wanted):
         with open(os.path.join(work, "main.rs"), "w", encoding="utf-8") as f:
             f.write(source)
         for mode, extra in (("json", ["--error-format=json"]), ("text", [])):
-            args = ["rustc", "--edition", "2024", "-g", *extra, "-o", "main.exe", "main.rs"]
+            args = ["rustc", "--edition", "2024", "-g", *extra, *EXTRA_FLAGS.get(case, []), "-o", "main.exe", "main.rs"]
             code, text = run(args, work, env)
             meta = f"# compileExit: {code}\n"
             if case in RUNTIME and code == 0 and mode == "text":
@@ -143,6 +147,7 @@ def record_cargo(env, out, wanted):
     cases = {
         "build_error": ("src/main.rs", COMPILE["moved"], ["cargo", "build", "--message-format=json", "--quiet"]),
         "run_panic": ("src/main.rs", RUNTIME["panic_index"], ["cargo", "run", "--quiet"]),
+        "network": ("src/main.rs", "fn main() {}\n", ["cargo", "build", "--message-format=json", "--quiet"]),
         "clippy_project": ("src/main.rs", CLIPPY["needless_range_loop"], ["cargo", "clippy", "--message-format=json", "--quiet"]),
     }
     for case, (name, source, args) in cases.items():
@@ -150,7 +155,19 @@ def record_cargo(env, out, wanted):
             continue
         with open(os.path.join(project, name), "w", encoding="utf-8") as f:
             f.write(source)
-        code, text = run(args, project, env)
+        run_env = env
+        if case == "network":  # a dependency that cannot be downloaded: no proxy answers and the cache is empty
+            with open(os.path.join(project, "Cargo.toml"), "a", encoding="utf-8") as f:
+                f.write('rand = "0.8"\n')
+            run_env = {**env, "CARGO_HTTP_PROXY": "http://127.0.0.1:9", "CARGO_NET_RETRY": "0", "CARGO_HTTP_TIMEOUT": "5"}
+            run_env["CARGO_HOME"] = tempfile.mkdtemp()
+        code, text = run(args, project, run_env)
+        if case == "network":  # the other cases build without the dependency
+            manifest = os.path.join(project, "Cargo.toml")
+            with open(manifest, encoding="utf-8") as f:
+                kept = f.read().replace('rand = "0.8"\n', "")
+            with open(manifest, "w", encoding="utf-8") as f:
+                f.write(kept)
         write(os.path.join(out, "cargo"), case, header(project, " ".join(args), source, f"# exit: {code}\n") + text)
 
 
