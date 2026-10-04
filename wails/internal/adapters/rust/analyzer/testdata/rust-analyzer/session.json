@@ -1,0 +1,779 @@
+{
+ "definition": [
+  {
+   "range": {
+    "end": {
+     "character": 8,
+     "line": 10
+    },
+    "start": {
+     "character": 3,
+     "line": 10
+    }
+   },
+   "uri": "{DOC_URI}"
+  }
+ ],
+ "diagnosticsMoved": {
+  "diagnostics": [
+   {
+    "code": "E0382",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0382"
+    },
+    "data": {
+     "rendered": "error[E0382]: borrow of moved value: `s`\n  --> src\\main.rs:21:26\n   |\n19 |     let s = String::from(\"hi\");\n   |         - move occurs because `s` has type `std::string::String`, which does not implement the `Copy` trait\n20 |     let t = s;\n   |             - value moved here\n21 |     println!(\"{} {} {}\", s, t, y);\n   |                          ^ value borrowed here after move\n   |\nhelp: consider cloning the value if the performance cost is acceptable\n   |\n20 |     let t = s.clone();\n   |              ++++++++\n\n"
+    },
+    "message": "borrow of moved value: `s`\nvalue borrowed here after move",
+    "range": {
+     "end": {
+      "character": 33,
+      "line": 20
+     },
+     "start": {
+      "character": 4,
+      "line": 20
+     }
+    },
+    "relatedInformation": [
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 26,
+         "line": 20
+        },
+        "start": {
+         "character": 25,
+         "line": 20
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "Exact error occurred here"
+     }
+    ],
+    "severity": 4,
+    "source": "rustc"
+   },
+   {
+    "code": "E0382",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0382"
+    },
+    "data": {
+     "rendered": "error[E0382]: borrow of moved value: `s`\n  --> src\\main.rs:21:26\n   |\n19 |     let s = String::from(\"hi\");\n   |         - move occurs because `s` has type `std::string::String`, which does not implement the `Copy` trait\n20 |     let t = s;\n   |             - value moved here\n21 |     println!(\"{} {} {}\", s, t, y);\n   |                          ^ value borrowed here after move\n   |\nhelp: consider cloning the value if the performance cost is acceptable\n   |\n20 |     let t = s.clone();\n   |              ++++++++\n\n"
+    },
+    "message": "borrow of moved value: `s`\nvalue borrowed here after move",
+    "range": {
+     "end": {
+      "character": 26,
+      "line": 20
+     },
+     "start": {
+      "character": 25,
+      "line": 20
+     }
+    },
+    "relatedInformation": [
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 33,
+         "line": 20
+        },
+        "start": {
+         "character": 4,
+         "line": 20
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "Error originated from macro call here"
+     },
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 13,
+         "line": 19
+        },
+        "start": {
+         "character": 12,
+         "line": 19
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "value moved here"
+     },
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 9,
+         "line": 18
+        },
+        "start": {
+         "character": 8,
+         "line": 18
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "move occurs because `s` has type `std::string::String`, which does not implement the `Copy` trait"
+     },
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 13,
+         "line": 19
+        },
+        "start": {
+         "character": 13,
+         "line": 19
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "consider cloning the value if the performance cost is acceptable: `.clone()`"
+     }
+    ],
+    "severity": 1,
+    "source": "rustc"
+   },
+   {
+    "code": "E0382",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0382"
+    },
+    "message": "value moved here",
+    "range": {
+     "end": {
+      "character": 13,
+      "line": 19
+     },
+     "start": {
+      "character": 12,
+      "line": 19
+     }
+    },
+    "relatedInformation": [
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 26,
+         "line": 20
+        },
+        "start": {
+         "character": 25,
+         "line": 20
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "original diagnostic"
+     }
+    ],
+    "severity": 4,
+    "source": "rustc"
+   },
+   {
+    "code": "E0382",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0382"
+    },
+    "message": "move occurs because `s` has type `std::string::String`, which does not implement the `Copy` trait",
+    "range": {
+     "end": {
+      "character": 9,
+      "line": 18
+     },
+     "start": {
+      "character": 8,
+      "line": 18
+     }
+    },
+    "relatedInformation": [
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 26,
+         "line": 20
+        },
+        "start": {
+         "character": 25,
+         "line": 20
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "original diagnostic"
+     }
+    ],
+    "severity": 4,
+    "source": "rustc"
+   },
+   {
+    "code": "E0382",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0382"
+    },
+    "message": "consider cloning the value if the performance cost is acceptable: `.clone()`",
+    "range": {
+     "end": {
+      "character": 13,
+      "line": 19
+     },
+     "start": {
+      "character": 13,
+      "line": 19
+     }
+    },
+    "relatedInformation": [
+     {
+      "location": {
+       "range": {
+        "end": {
+         "character": 26,
+         "line": 20
+        },
+        "start": {
+         "character": 25,
+         "line": 20
+        }
+       },
+       "uri": "{DOC_URI}"
+      },
+      "message": "original diagnostic"
+     }
+    ],
+    "severity": 4,
+    "source": "rustc"
+   }
+  ],
+  "uri": "{DOC_URI}",
+  "version": 1
+ },
+ "diagnosticsUnresolved": {
+  "diagnostics": [
+   {
+    "code": "E0425",
+    "codeDescription": {
+     "href": "https://doc.rust-lang.org/error-index.html#E0425"
+    },
+    "data": {
+     "rendered": "error[E0425]: cannot find value `missing` in this scope\n  --> src\\main.rs:21:26\n   |\n21 |     println!(\"{} {} {}\", missing, t, y);\n   |                          ^^^^^^^ not found in this scope\n\n"
+    },
+    "message": "cannot find value `missing` in this scope\nnot found in this scope",
+    "range": {
+     "end": {
+      "character": 32,
+      "line": 20
+     },
+     "start": {
+      "character": 25,
+      "line": 20
+     }
+    },
+    "relatedInformation": [],
+    "severity": 1,
+    "source": "rustc"
+   }
+  ],
+  "uri": "{DOC_URI}",
+  "version": 2
+ },
+ "documentSymbol": [
+  {
+   "children": [
+    {
+     "deprecated": false,
+     "detail": "i32",
+     "kind": 8,
+     "name": "total",
+     "range": {
+      "end": {
+       "character": 14,
+       "line": 1
+      },
+      "start": {
+       "character": 4,
+       "line": 1
+      }
+     },
+     "selectionRange": {
+      "end": {
+       "character": 9,
+       "line": 1
+      },
+      "start": {
+       "character": 4,
+       "line": 1
+      }
+     },
+     "tags": []
+    }
+   ],
+   "deprecated": false,
+   "kind": 23,
+   "name": "Counter",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 2
+    },
+    "start": {
+     "character": 0,
+     "line": 0
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 14,
+     "line": 0
+    },
+    "start": {
+     "character": 7,
+     "line": 0
+    }
+   },
+   "tags": []
+  },
+  {
+   "children": [
+    {
+     "deprecated": false,
+     "detail": "fn(&mut self, n: i32)",
+     "kind": 6,
+     "name": "add",
+     "range": {
+      "end": {
+       "character": 5,
+       "line": 7
+      },
+      "start": {
+       "character": 4,
+       "line": 5
+      }
+     },
+     "selectionRange": {
+      "end": {
+       "character": 10,
+       "line": 5
+      },
+      "start": {
+       "character": 7,
+       "line": 5
+      }
+     },
+     "tags": []
+    }
+   ],
+   "deprecated": false,
+   "kind": 19,
+   "name": "impl Counter",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 8
+    },
+    "start": {
+     "character": 0,
+     "line": 4
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 12,
+     "line": 4
+    },
+    "start": {
+     "character": 5,
+     "line": 4
+    }
+   },
+   "tags": []
+  },
+  {
+   "deprecated": false,
+   "detail": "fn(x: i32) -> i32",
+   "kind": 12,
+   "name": "twice",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 12
+    },
+    "start": {
+     "character": 0,
+     "line": 10
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 8,
+     "line": 10
+    },
+    "start": {
+     "character": 3,
+     "line": 10
+    }
+   },
+   "tags": []
+  },
+  {
+   "deprecated": false,
+   "detail": "fn()",
+   "kind": 12,
+   "name": "main",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 21
+    },
+    "start": {
+     "character": 0,
+     "line": 14
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 7,
+     "line": 14
+    },
+    "start": {
+     "character": 3,
+     "line": 14
+    }
+   },
+   "tags": []
+  }
+ ],
+ "hover": {
+  "contents": {
+   "kind": "plaintext",
+   "value": "alloc::vec::Vec\n\nimpl<T, A> Vec<T, A>\npub fn push(&mut self, value: T)\nwhere\n    // Bounds from impl:\n    A: Allocator + Destruct,\n\n\nT = i32, A = Global\n\n\nAppends an element to the back of a collection.\n\nPanicsPanics if the new capacity exceeds isize::MAX bytes.\n\nExampleslet mut vec = vec![1, 2];\nvec.push(3);\nassert_eq!(vec, [1, 2, 3]);\n\nTime complexityTakes amortized O(1) time. If the vector's length would exceed its capacity after the push, O(capacity) time is taken to copy the vector's elements to a larger allocation. This expensive operation is offset by the capacity O(1) insertions it allows."
+  },
+  "range": {
+   "end": {
+    "character": 10,
+    "line": 16
+   },
+   "start": {
+    "character": 6,
+    "line": 16
+   }
+  }
+ },
+ "initialize": {
+  "capabilities": {
+   "callHierarchyProvider": true,
+   "codeActionProvider": true,
+   "codeLensProvider": {
+    "resolveProvider": true
+   },
+   "completionProvider": {
+    "completionItem": {
+     "labelDetailsSupport": false
+    },
+    "resolveProvider": false,
+    "triggerCharacters": [
+     ":",
+     ".",
+     "'",
+     "("
+    ]
+   },
+   "declarationProvider": true,
+   "definitionProvider": true,
+   "diagnosticProvider": {
+    "identifier": "rust-analyzer",
+    "interFileDependencies": true,
+    "workspaceDiagnostics": false
+   },
+   "documentFormattingProvider": true,
+   "documentHighlightProvider": true,
+   "documentOnTypeFormattingProvider": {
+    "firstTriggerCharacter": ".",
+    "moreTriggerCharacter": [
+     "=",
+     "<",
+     ">",
+     "{",
+     "(",
+     "|",
+     "+"
+    ]
+   },
+   "documentRangeFormattingProvider": false,
+   "documentSymbolProvider": true,
+   "experimental": {
+    "childModules": true,
+    "externalDocs": true,
+    "hoverRange": true,
+    "joinLines": true,
+    "matchingBrace": true,
+    "moveItem": true,
+    "onEnter": true,
+    "openCargoToml": true,
+    "parentModule": true,
+    "runnables": {
+     "kinds": [
+      "cargo"
+     ]
+    },
+    "ssr": true,
+    "workspaceSymbolScopeKindFiltering": true
+   },
+   "foldingRangeProvider": true,
+   "hoverProvider": true,
+   "implementationProvider": true,
+   "inlayHintProvider": {
+    "resolveProvider": false
+   },
+   "positionEncoding": "utf-16",
+   "referencesProvider": true,
+   "renameProvider": {
+    "prepareProvider": true
+   },
+   "selectionRangeProvider": true,
+   "semanticTokensProvider": {
+    "full": {
+     "delta": true
+    },
+    "legend": {
+     "tokenModifiers": [
+      "async",
+      "documentation",
+      "declaration",
+      "static",
+      "defaultLibrary",
+      "deprecated",
+      "associated",
+      "attribute",
+      "callable",
+      "constant",
+      "consuming",
+      "controlFlow",
+      "crateRoot",
+      "injected",
+      "intraDocLink",
+      "library",
+      "macro",
+      "mutable",
+      "procMacro",
+      "public",
+      "reference",
+      "trait",
+      "unsafe"
+     ],
+     "tokenTypes": [
+      "comment",
+      "decorator",
+      "enumMember",
+      "enum",
+      "function",
+      "interface",
+      "keyword",
+      "macro",
+      "method",
+      "namespace",
+      "number",
+      "operator",
+      "parameter",
+      "property",
+      "string",
+      "struct",
+      "typeParameter",
+      "variable",
+      "type",
+      "label",
+      "angle",
+      "arithmetic",
+      "attributeBracket",
+      "attribute",
+      "bitwise",
+      "boolean",
+      "brace",
+      "bracket",
+      "builtinAttribute",
+      "builtinType",
+      "character",
+      "colon",
+      "comma",
+      "comparison",
+      "constParameter",
+      "const",
+      "deriveHelper",
+      "derive",
+      "dot",
+      "escapeSequence",
+      "formatSpecifier",
+      "generic",
+      "invalidEscapeSequence",
+      "lifetime",
+      "logical",
+      "macroBang",
+      "negation",
+      "parenthesis",
+      "procMacro",
+      "punctuation",
+      "selfKeyword",
+      "selfTypeKeyword",
+      "semicolon",
+      "static",
+      "toolModule",
+      "typeAlias",
+      "union",
+      "unresolvedReference"
+     ]
+    },
+    "range": true
+   },
+   "signatureHelpProvider": {
+    "triggerCharacters": [
+     "(",
+     ",",
+     "<"
+    ]
+   },
+   "textDocumentSync": {
+    "change": 2,
+    "openClose": true,
+    "save": {}
+   },
+   "typeDefinitionProvider": true,
+   "workspace": {
+    "fileOperations": {
+     "willRename": {
+      "filters": [
+       {
+        "pattern": {
+         "glob": "**/*.rs",
+         "matches": "file"
+        },
+        "scheme": "file"
+       },
+       {
+        "pattern": {
+         "glob": "**",
+         "matches": "folder"
+        },
+        "scheme": "file"
+       }
+      ]
+     }
+    },
+    "workspaceFolders": {
+     "changeNotifications": true,
+     "supported": true
+    }
+   },
+   "workspaceSymbolProvider": true
+  },
+  "serverInfo": {
+   "name": "rust-analyzer",
+   "version": "1.99.0 (b940084d 2026-09-28)"
+  }
+ },
+ "memberCompletion": {
+  "isIncomplete": true,
+  "items": [
+   {
+    "detail": "const fn(&self) -> usize",
+    "documentation": {
+     "kind": "markdown",
+     "value": "Returns the number of elements in the vector, also referred to\nas its 'length'.\n\n# Examples\n\n```rust\nlet a = vec![1, 2, 3];\nassert_eq!(a.len(), 3);\n```"
+    },
+    "filterText": "len",
+    "kind": 2,
+    "label": "len",
+    "sortText": "7ffffff6",
+    "textEdit": {
+     "newText": "len",
+     "range": {
+      "end": {
+       "character": 6,
+       "line": 16
+      },
+      "start": {
+       "character": 6,
+       "line": 16
+      }
+     }
+    }
+   },
+   {
+    "detail": "fn(&mut self, T)",
+    "documentation": {
+     "kind": "markdown",
+     "value": "Appends an element to the back of a collection.\n\n# Panics\n\nPanics if the new capacity exceeds `isize::MAX` _bytes_.\n\n# Examples\n\n```rust\nlet mut vec = vec![1, 2];\nvec.push(3);\nassert_eq!(vec, [1, 2, 3]);\n```\n\n# Time complexity\n\nTakes amortized *O*(1) time. If the vector's length would exceed its\ncapacity after the push, *O*(*capacity*) time is taken to copy the\nvector's elements to a larger allocation. This expensive operation is\noffset by the *capacity* *O*(1) insertions it allows."
+    },
+    "filterText": "push",
+    "kind": 2,
+    "label": "push",
+    "sortText": "7ffffff6",
+    "textEdit": {
+     "newText": "push",
+     "range": {
+      "end": {
+       "character": 6,
+       "line": 16
+      },
+      "start": {
+       "character": 6,
+       "line": 16
+      }
+     }
+    }
+   },
+   {
+    "detail": "fn(&mut self) -> Option<T>",
+    "documentation": {
+     "kind": "markdown",
+     "value": "Removes the last element from a vector and returns it, or [`None`] if it\nis empty.\n\nIf you'd like to pop the first element, consider using\n[`VecDeque::pop_front`] instead.\n\n[`VecDeque::pop_front`]: crate::collections::VecDeque::pop_front\n\n# Examples\n\n```rust\nlet mut vec = vec![1, 2, 3];\nassert_eq!(vec.pop(), Some(3));\nassert_eq!(vec, [1, 2]);\n```\n\n# Time complexity\n\nTakes *O*(1) time."
+    },
+    "filterText": "pop",
+    "kind": 2,
+    "label": "pop",
+    "sortText": "7ffffff2",
+    "textEdit": {
+     "newText": "pop",
+     "range": {
+      "end": {
+       "character": 6,
+       "line": 16
+      },
+      "start": {
+       "character": 6,
+       "line": 16
+      }
+     }
+    }
+   }
+  ]
+ },
+ "signatureHelp": {
+  "activeParameter": 0,
+  "activeSignature": 0,
+  "signatures": [
+   {
+    "activeParameter": 0,
+    "label": "fn twice(x: i32) -> i32",
+    "parameters": [
+     {
+      "label": [
+       9,
+       15
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
