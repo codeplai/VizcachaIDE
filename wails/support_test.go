@@ -9,8 +9,8 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// The start-up check: the Go support and the provisional Python and C++ profiles must form a
-// consistent registry, with every extension routed to its language.
+// The start-up check: the Go, Python and C++ supports must form a consistent registry, with every
+// extension routed to its language.
 func TestRegistryOfTheApplicationIsConsistent(t *testing.T) {
 	texts, err := newBackendTexts(func() string { return domain.LanguageEN })
 	if err != nil {

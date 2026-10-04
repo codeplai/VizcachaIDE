@@ -316,7 +316,14 @@ y el mock ya expone tres perfiles aunque sólo uno tenga backend. Se publica com
 | C4 Assistant | parser GNU, errores del enlazador, caídas, `catalog.cpp.json` con patrones de GCC y Clang |
 | C5 Empaquetado | LLVM por plataforma (o WinLibs en Windows), variante `full-cpp`, prueba de humo |
 
-### M3 · Didáctica y release
+### Rust (planificado como M3)
+
+Rust se planifica como el milestone **M3** en [PLAN_RUST.md](PLAN_RUST.md), después de M2 y con la
+misma arquitectura (adaptador `adapters/rust/`, sin tocar el núcleo): rustc y cargo vía rustup (en
+Windows sólo el toolchain GNU, libre), rust-analyzer, clippy, rustfmt y el mismo `lldb-dap` de C++. No se
+empaqueta (pesa más de 600 MB). La fase "Didáctica y release" de abajo pasa a ser M4.
+
+### M4 · Didáctica y release
 
 Plantillas y ejemplos por lenguaje, documentación EN/ES por lenguaje, página web, matriz QA de
 tres sistemas por tres lenguajes, release **3.0**.

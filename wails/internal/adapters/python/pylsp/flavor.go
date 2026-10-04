@@ -9,6 +9,7 @@ import (
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/python"
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
 )
 
@@ -39,7 +40,7 @@ func NewFlavor(cfg Config) Flavor {
 
 // New creates the Python language server: pylsp starts on the first OpenDocument.
 func New(sink app.EventSink, cfg Config, options lsp.Options) *lsp.Server {
-	options.Name, options.LanguageID = serverName, languageID
+	options.Name, options.LanguageID, options.CodeLanguage = serverName, languageID, domain.CodeLanguagePython
 	return lsp.New(sink, NewFlavor(cfg), options)
 }
 

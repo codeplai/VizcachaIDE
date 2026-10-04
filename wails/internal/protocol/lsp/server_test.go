@@ -24,7 +24,7 @@ func newRecordingSink() *recordingSink {
 	return &recordingSink{diagnostics: map[string][]domain.Diagnostic{}}
 }
 
-func (r *recordingSink) LanguageServerStatus(status domain.ServerStatus) {
+func (r *recordingSink) LanguageServerStatus(_ domain.CodeLanguage, status domain.ServerStatus) {
 	r.mu.Lock()
 	r.statuses = append(r.statuses, status)
 	r.mu.Unlock()

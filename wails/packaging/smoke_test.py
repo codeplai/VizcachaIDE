@@ -5,11 +5,14 @@
         --go VizcachaIDE.app/Contents/MacOS/toolchain/go/bin/go
     xvfb-run -a python wails/packaging/smoke_test.py ./VizcachaIDE/VizcachaIDE --seconds 8
     python wails/packaging/smoke_test.py --python <stage>/toolchain/python/python.exe
+    python wails/packaging/smoke_test.py --cxx <stage>/toolchain/cpp/bin/clang++.exe
 
 Pass criteria: the process is alive after --seconds; with --go, ``go version`` of the bundled
 toolchain also works; with --python, the bundled interpreter must import debugpy, pylsp,
 pyflakes and ruff and ``python -m ruff --version`` must run (the executable may then be omitted, which
-checks only the interpreter). Only the PID started here is ever killed.
+checks only the interpreter); with --cxx, the bundled clang++ must compile and run a statically linked
+hello world from a folder whose name has spaces and accents, and lldb-dap, clangd and clang-format
+(next to it) must answer ``--version``. Only the PID started here is ever killed.
 """
 
 from __future__ import annotations
@@ -57,6 +60,48 @@ def bundled_python_check(python: Path) -> tuple[bool, str]:
     return ruff.returncode == 0, (ruff.stdout or ruff.stderr).strip()
 
 
+HELLO_CPP = """#include <iostream>
+int main() {
+    std::cout << "hola desde C++" << std::endl;
+    return 0;
+}
+"""
+HELLO_OUTPUT = "hola desde C++"
+CXX_TOOLS = ("lldb-dap", "clangd", "clang-format")
+
+
+def bundled_cxx_check(cxx: Path) -> tuple[bool, str]:
+    """Compile and run hola.cpp with -static from "<tmp>/prueba con espacios y acentos ñandú"."""
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = Path(tmp) / "prueba con espacios y acentos ñandú"
+        folder.mkdir()
+        source, program = folder / "hola.cpp", folder / "hola.exe"
+        source.write_text(HELLO_CPP, encoding="utf-8")
+        build = subprocess.run(
+            [str(cxx), "-std=c++17", "-static", str(source), "-o", str(program)],
+            capture_output=True, text=True, timeout=180, cwd=folder,
+        )
+        if build.returncode != 0:
+            return False, f"compile failed: {build.stderr.strip()}"
+        run = subprocess.run([str(program)], capture_output=True, text=True, timeout=30, cwd=folder)
+    if run.stdout.strip() != HELLO_OUTPUT:
+        return False, f"unexpected output {run.stdout!r} (exit {run.returncode})"
+    return True, f"compiled and ran: {run.stdout.strip()}"
+
+
+def bundled_cxx_tools_check(cxx: Path) -> tuple[bool, str]:
+    """lldb-dap, clangd and clang-format sit next to clang++ and answer --version."""
+    lines = []
+    for name in CXX_TOOLS:
+        tool = cxx.with_name(name + cxx.suffix)
+        result = subprocess.run([str(tool), "--version"], capture_output=True, text=True, timeout=60)
+        text = (result.stdout or result.stderr).strip()
+        if result.returncode != 0 or not text:
+            return False, f"{name} --version failed (exit {result.returncode}): {text}"
+        lines.append(f"{name}: {text.splitlines()[0]}")
+    return True, "; ".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("executable", type=Path, nargs="?", default=None)
@@ -65,14 +110,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--python", type=Path, default=None, help="bundled python to check (Python variants)"
     )
+    parser.add_argument(
+        "--cxx", type=Path, default=None, help="bundled clang++ to check (C++ variants)"
+    )
     args = parser.parse_args(argv)
-    if args.executable is None and args.python is None:
-        parser.error("give the executable, --python, or both")
+    if args.executable is None and args.python is None and args.cxx is None:
+        parser.error("give the executable, --python, --cxx, or a combination")
     if args.python is not None:
         ok, text = bundled_python_check(args.python)
         print(f"{'OK' if ok else 'FAIL'}: bundled python -> {text}")
         if not ok:
             return 1
+    if args.cxx is not None:
+        for check in (bundled_cxx_check, bundled_cxx_tools_check):
+            ok, text = check(args.cxx)
+            print(f"{'OK' if ok else 'FAIL'}: bundled c++ -> {text}")
+            if not ok:
+                return 1
     if args.executable is None:
         return 0
     if not args.executable.exists():

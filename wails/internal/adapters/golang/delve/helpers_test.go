@@ -20,17 +20,17 @@ func newEventSink() *eventSink {
 	return &eventSink{stops: make(chan domain.DebugState, 8), terminated: make(chan int, 4)}
 }
 
-func (e *eventSink) DebugStopped(state domain.DebugState)     { e.stops <- state }
-func (e *eventSink) DebugTerminated(code int)                 { e.terminated <- code }
-func (e *eventSink) DebugOutput(string, string)               {}
-func (e *eventSink) DebugVariables(int, []domain.Variable)    {}
-func (e *eventSink) RunOutput(string, string)                 {}
-func (e *eventSink) RunStarted(domain.RunConfiguration)       {}
-func (e *eventSink) RunFinished(int, int64)                   {}
-func (e *eventSink) Diagnostics(string, []domain.Diagnostic)  {}
-func (e *eventSink) LanguageServerStatus(domain.ServerStatus) {}
-func (e *eventSink) Explained([]domain.ExplainedDiagnostic)   {}
-func (e *eventSink) SettingsChanged(domain.Settings)          {}
+func (e *eventSink) DebugStopped(state domain.DebugState)                          { e.stops <- state }
+func (e *eventSink) DebugTerminated(code int)                                      { e.terminated <- code }
+func (e *eventSink) DebugOutput(string, string)                                    {}
+func (e *eventSink) DebugVariables(int, []domain.Variable)                         {}
+func (e *eventSink) RunOutput(string, string)                                      {}
+func (e *eventSink) RunStarted(domain.RunConfiguration)                            {}
+func (e *eventSink) RunFinished(int, int64)                                        {}
+func (e *eventSink) Diagnostics(string, []domain.Diagnostic)                       {}
+func (e *eventSink) LanguageServerStatus(domain.CodeLanguage, domain.ServerStatus) {}
+func (e *eventSink) Explained([]domain.ExplainedDiagnostic)                        {}
+func (e *eventSink) SettingsChanged(domain.Settings)                               {}
 
 func variablesOf(state domain.DebugState) map[string]domain.Variable {
 	byName := map[string]domain.Variable{}

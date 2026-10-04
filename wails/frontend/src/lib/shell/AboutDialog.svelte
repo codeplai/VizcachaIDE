@@ -13,8 +13,14 @@
     python: 'CPython',
     debugpy: 'debugpy',
     pylsp: 'python-lsp-server',
-    ruff: 'ruff'
+    ruff: 'ruff',
+    cxx: 'g++ / clang++',
+    'lldb-dap': 'lldb-dap',
+    clangd: 'clangd',
+    'clang-format': 'clang-format'
   }
+  /** Third-party projects the C++ toolchain comes from (product names are not translated). */
+  const toolchainCredits = 'LLVM (clang, lldb, clangd, clang-format) · MinGW-w64 · GCC'
   const author = { name: 'Marks Calderon', role: 'CEO Codeplai', email: 'hola@codeplai.pe' }
   const website = 'https://vizcacha.codeplai.pe'
   const licenseUrl = 'https://opensource.org/licenses/MIT'
@@ -62,6 +68,7 @@
     <p>{copyright}</p>
     <p>{$t('shell.aboutWarranty')}</p>
     <p>{$t('shell.aboutBundled')}</p>
+    <p>{toolchainCredits}</p>
     <button type="button" class="link" onclick={() => bridge.system.openUrl(licenseUrl)}>
       {$t('shell.aboutLicenseLink')}
     </button>

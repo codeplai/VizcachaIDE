@@ -83,7 +83,7 @@ describe('the Assistant receives the run output and the gopls problems', () => {
     const explain = vi.spyOn(bridge.assistant, 'explainDiagnostics')
     await controls.play('error')
     await waitFor(() => expect(explain).toHaveBeenCalled())
-    const sent = explain.mock.calls.at(-1)?.[0] ?? []
+    const sent = explain.mock.calls.at(-1)?.[1] ?? []
     expect(sent.some((item) => item.message.includes('resultado'))).toBe(true)
   })
 })

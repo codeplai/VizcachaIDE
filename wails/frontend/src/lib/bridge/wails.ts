@@ -91,8 +91,8 @@ export const createWailsBridge = (): Bridge => ({
   assistant: {
     explain: async (codeLanguage, raw, dir) =>
       fromWire(await AssistantService.Explain(toWire(codeLanguage), raw, dir)),
-    explainDiagnostics: async (diagnostics) =>
-      fromWire(await AssistantService.ExplainDiagnostics(toWire(diagnostics)))
+    explainDiagnostics: async (codeLanguage, diagnostics) =>
+      fromWire(await AssistantService.ExplainDiagnostics(codeLanguage, toWire(diagnostics)))
   },
   console: createConsoleApi(),
   files: createFilesApi(),

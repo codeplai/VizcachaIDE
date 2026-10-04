@@ -3,13 +3,16 @@ package lsp
 import (
 	"os"
 	"sync"
+
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
 // document is a file the editor has open.
 type document struct {
-	path    string
-	text    string
-	version int32
+	path        string
+	text        string
+	version     int32
+	diagnostics []domain.Diagnostic // the last ones the server published; nil before that
 }
 
 // openDocuments is the registry of open documents, safe for concurrent use.
@@ -22,13 +25,33 @@ func newOpenDocuments() *openDocuments {
 	return &openDocuments{byKey: map[string]*document{}}
 }
 
-// open registers (or replaces) a document at version 1.
-func (d *openDocuments) open(path, text string) document {
+// open registers a document at version 1. A document that is already open (the window
+// reloaded, the tab was opened again) keeps its version and diagnostics: reopened is true, and
+// changed says whether the text differs (then it gets the next version).
+func (d *openDocuments) open(path, text string) (doc document, reopened, changed bool) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	doc := &document{path: path, text: text, version: 1}
-	d.byKey[pathKey(path)] = doc
-	return *doc
+	current, found := d.byKey[pathKey(path)]
+	if !found {
+		stored := &document{path: path, text: text, version: 1}
+		d.byKey[pathKey(path)] = stored
+		return *stored, false, false
+	}
+	if current.text != text {
+		current.text = text
+		current.version++
+		return *current, true, true
+	}
+	return *current, true, false
+}
+
+// remember keeps the diagnostics the server published for an open document.
+func (d *openDocuments) remember(path string, diagnostics []domain.Diagnostic) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if current, found := d.byKey[pathKey(path)]; found {
+		current.diagnostics = diagnostics
+	}
 }
 
 // change stores the new text and the next version. ok is false when the file is not open.

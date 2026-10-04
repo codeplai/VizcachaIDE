@@ -1,0 +1,11 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# runExit: 3221226505 (0xC0000409)
+# program:
+#   #include <stdexcept>
+#   int main() {
+#       throw std::runtime_error("algo salio mal");
+#   }
+# output:
+libc++abi: terminating due to uncaught exception of type std::runtime_error: algo salio mal

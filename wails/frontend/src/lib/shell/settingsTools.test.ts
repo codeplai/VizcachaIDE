@@ -54,8 +54,8 @@ afterEach(() => {
 describe('Settings tools', () => {
   it('has one group per profile with tools and one row per tool', () => {
     render(SettingsTools)
-    // C++ declares no tools in the fixture: no empty group for it.
-    expect(screen.getAllByRole('heading')).toHaveLength(2)
+    // Go, Python and C++ each have a group.
+    expect(screen.getAllByRole('heading')).toHaveLength(3)
     expect(document.getElementById('setting-go')).not.toBeNull()
     expect(document.getElementById('setting-dlv')).not.toBeNull()
     expect(document.getElementById('setting-gopls')).not.toBeNull()
@@ -67,7 +67,7 @@ describe('Settings tools', () => {
     expect(screen.getByText('test.debugpy')).toBeTruthy()
     expect(screen.getByText(/1\.8\.9/)).toBeTruthy()
     expect(document.getElementById('setting-debugpy')).toBeNull()
-    // Go has three tools with their own path, Python one: the provided one has no button.
-    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(4)
+    // Go has three tools with their own path, Python one, C++ four: the provided one has none.
+    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(8)
   })
 })

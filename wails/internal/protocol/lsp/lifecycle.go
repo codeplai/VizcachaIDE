@@ -31,7 +31,7 @@ func (s *Server) ensureStartedLocked(path string) {
 	}
 	s.conn, s.state, s.ready = conn, stateStarting, make(chan struct{})
 	s.folders[pathKey(root)] = true
-	s.sink.LanguageServerStatus(domain.ServerStarting)
+	s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerStarting)
 	go s.initialize(conn, root)
 	go s.watchExit(conn)
 }
@@ -55,7 +55,7 @@ func (s *Server) initialize(conn *connection, root string) {
 	for _, doc := range s.docs.all() {
 		s.openLocked(doc)
 	}
-	s.sink.LanguageServerStatus(domain.ServerReady)
+	s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerReady)
 }
 
 // handshake sends initialize, initialized and, if the flavor has one, its configuration.
@@ -91,7 +91,7 @@ func (s *Server) makeUnavailableLocked(conn *connection) {
 		close(s.ready)
 	}
 	s.state, s.conn = stateUnavailable, nil
-	s.sink.LanguageServerStatus(domain.ServerUnavailable)
+	s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerUnavailable)
 	if conn != nil {
 		go conn.close(context.Background())
 	}
@@ -130,5 +130,7 @@ func (s *Server) onNotification(method string, raw json.RawMessage) {
 	if !open {
 		return
 	}
-	s.sink.Diagnostics(doc.path, toDiagnostics(params, doc.path, doc.text, s.opts.Name))
+	diagnostics := toDiagnostics(params, doc.path, doc.text, s.opts.Name)
+	s.docs.remember(doc.path, diagnostics)
+	s.sink.Diagnostics(doc.path, diagnostics)
 }

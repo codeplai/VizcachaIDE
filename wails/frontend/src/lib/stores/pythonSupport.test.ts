@@ -155,6 +155,18 @@ describe('debug input', () => {
     expect(texts).toEqual(['Name: Ada', 'Hello Ada'])
   })
 
+  it('keeps what the debuggee printed after the session ends, until the next run', () => {
+    start('app.py')
+    debugOutput.set([{ text: 'Te gusta el verde\n', category: 'stdout' }])
+    debugStarting.set(false)
+    debugActive.set(false)
+    const ended = get(outputLines)
+    expect(ended[0]?.key).toBe('run.debugEnded')
+    expect(ended.map((line) => line.text)).toContain('Te gusta el verde')
+    debugOutput.set([])
+    expect(get(outputLines).some((line) => line.key === 'run.debugEnded')).toBe(false)
+  })
+
   it('sends the typed line without repeating it: the terminal echoes it', async () => {
     const { bridge } = createMockBridge()
     const write = vi.spyOn(bridge.run, 'writeInput')

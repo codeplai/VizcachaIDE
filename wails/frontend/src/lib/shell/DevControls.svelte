@@ -12,10 +12,13 @@
   } from '../stores'
   import { get } from 'svelte/store'
 
+  const sampleLanguage = parseDevQuery(location.search).codeLanguage
   const states: { scenario: Scenario; label: string }[] = [
     { scenario: 'write', label: 'dev.stateWrite' },
     { scenario: 'error', label: 'dev.stateError' },
-    { scenario: 'debug', label: 'dev.stateDebug' }
+    { scenario: 'debug', label: 'dev.stateDebug' },
+    // Only C++ has a crash to show (Segmentation fault).
+    ...(sampleLanguage === 'cpp' ? [{ scenario: 'crash' as const, label: 'dev.stateCrash' }] : [])
   ]
   const languages = ['es', 'en'] as const
   const themes = [

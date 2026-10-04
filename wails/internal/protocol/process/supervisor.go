@@ -56,6 +56,10 @@ type Job struct {
 	// stage is followed by the program), or false to finish. run:finished carries the exit code
 	// of the last stage that ran.
 	Then func(exitCode int) (*Job, bool)
+	// Finished is called with the exit code of this stage when it is the last one; a non-empty
+	// result is emitted as stderr before run:finished. C++ uses it for the line a terminal prints
+	// after a crash ("Segmentation fault"). It is not called when the user stopped the run.
+	Finished func(exitCode int) string
 	// Events receives the start, output and end of the run instead of the supervisor's sink
 	// (run:started, run:output, run:finished). A debug adapter's runInTerminal passes one that
 	// turns the output into debug:output. Only the first stage's Events counts. Nil = the sink.

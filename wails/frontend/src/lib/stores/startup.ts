@@ -8,9 +8,11 @@ import { openDialog } from './layout'
 import { requestCloseTab } from './saving'
 import { updateSettings } from './settings'
 
+const EXTENSIONS: Record<string, string> = { python: '.py', cpp: '.cpp' }
+
 /** The file to open at start: the project's `main` of the demo's language, else its first file. */
 const firstFile = (tree: FileNode, codeLanguage: string): FileNode | undefined => {
-  const extension = codeLanguage === 'python' ? '.py' : '.go'
+  const extension = EXTENSIONS[codeLanguage] ?? '.go'
   return (
     tree.children.find((node) => node.name === `main${extension}`) ??
     tree.children.find((node) => node.name.endsWith(extension))

@@ -1,0 +1,17 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int main() {
+#       int total = 1;
+#       return totl;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:12: error: use of undeclared identifier 'totl'; did you mean 'total'?
+    3 |     return totl;
+      |            ^~~~
+      |            total
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:9: note: 'total' declared here
+    2 |     int total = 1;
+      |         ^
+1 error generated.

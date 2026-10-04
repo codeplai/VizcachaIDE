@@ -61,6 +61,12 @@ func (s *recordingSink) Stdout() string {
 	return s.stdout.String()
 }
 
+func (s *recordingSink) Stderr() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.stderr.String()
+}
+
 func (s *recordingSink) startedCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()

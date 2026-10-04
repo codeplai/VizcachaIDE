@@ -92,3 +92,42 @@ darwin-arm64 = ["macosx_11_0_arm64"]
 darwin-amd64 = ["macosx_10_13_x86_64", "macosx_10_9_x86_64", "macosx_11_0_x86_64"]
 linux-amd64 = ["manylinux_2_28_x86_64", "manylinux_2_17_x86_64", "manylinux2014_x86_64"]
 linux-arm64 = ["manylinux_2_28_aarch64", "manylinux_2_17_aarch64", "manylinux2014_aarch64"]
+
+# ---------------------------------------------------------------------------------------------
+# C++ (M2). Windows only: llvm-mingw (github.com/mstorsjo/llvm-mingw) ships clang/clang++, lld, lldb-dap,
+# clangd, clang-format and the MinGW-w64 runtime with libc++, all free software. macOS and Linux use the
+# compiler of the system and bundle nothing. The sha256 is the "digest" GitHub shows for the asset of
+# the release (https://api.github.com/repos/mstorsjo/llvm-mingw/releases/tags/<release>) and was
+# confirmed by hashing the downloaded zip. To bump: change release/llvm_version and replace the sha256
+# the same way. Never invent a hash. The zip carries four targets (735 MB unpacked); only x86_64 is kept.
+
+[cpp.windows]
+distribution = "llvm-mingw"
+release = "20260922"
+llvm_version = "23.1.2"
+url = "https://github.com/mstorsjo/llvm-mingw/releases/download/{release}/llvm-mingw-{release}-ucrt-x86_64.zip"
+sha256 = "e3ad77d117a4bea19a7a3b333341824d79a5a371004a10e25b8504e7b3047666"
+# Paths and globs (relative to the llvm-mingw root) that are kept; a folder name keeps everything below it.
+# Everything else is not even extracted: the other targets (i686, armv7, aarch64), busybox, share/ and
+# the *-w64-mingw32-* driver wrappers of those targets. The Python that lldb embeds is kept: LLDB's
+# data formatters are Python scripts (Rust's std formatters need it, docs/PLAN_RUST.md section 3.2).
+keep = [
+  "LICENSE.TXT",
+  "bin/clang.exe", "bin/clang++.exe", "bin/clang-[0-9]*.exe", "bin/clang-format.exe", "bin/clangd.exe",
+  "bin/gcc.exe", "bin/g++.exe", "bin/cc.exe", "bin/c++.exe",
+  "bin/x86_64-w64-mingw32-*.exe", "bin/x86_64-*-windows-gnu.cfg", "bin/mingw32-common.cfg",
+  "bin/ld.lld.exe", "bin/lld.exe", "bin/lldb.exe", "bin/lldb-dap.exe", "bin/lldb-server.exe",
+  "bin/lldb-argdumper.exe", "bin/llvm-ar.exe", "bin/llvm-ranlib.exe", "bin/llvm-nm.exe",
+  "bin/llvm-objdump.exe", "bin/llvm-objcopy.exe", "bin/llvm-strip.exe", "bin/llvm-symbolizer.exe",
+  "bin/*.dll",
+  "x86_64-w64-mingw32/", "lib/clang/", "include/", "python/",
+]
+# Dropped even if kept above: IDL sources of the Windows headers (not needed to compile), sanitizer
+# runtimes for Linux and the libraries of the other architectures.
+drop = [
+  "include/*.idl",
+  "python/include/*", "python/share/*", "python/lib/python3*/idlelib/*", "python/lib/python3*/tkinter/*",
+  "python/lib/python3*/ensurepip/*", "python/lib/python3*/test/*",
+  "lib/clang/*/lib/linux/*",
+  "lib/clang/*/lib/windows/*-i386.*", "lib/clang/*/lib/windows/*-aarch64.*", "lib/clang/*/lib/windows/*-arm.*",
+]

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
+	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
 const (
@@ -46,6 +47,8 @@ type Options struct {
 	Name string
 	// LanguageID is the languageId sent with didOpen ("go", "python"...).
 	LanguageID string
+	// CodeLanguage is the language reported with every lsp:status of this server.
+	CodeLanguage domain.CodeLanguage
 	// IdleTimeout shuts the server down (shutdown + exit) when no document stays open for
 	// this long. The next OpenDocument starts it again and the status is not "unavailable":
 	// that one means the tool is missing. Zero disables it.
@@ -85,10 +88,22 @@ func (s *Server) OpenDocument(_ context.Context, path, text string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.cancelIdleLocked()
-	doc := s.docs.open(path, text)
+	doc, reopened, changed := s.docs.open(path, text)
 	s.ensureStartedLocked(path)
-	if s.state == stateReady {
+	if s.state != stateReady {
+		return nil
+	}
+	// The server already has a reopened file: a second didOpen would be ignored (clangd) and
+	// its diagnostics not published again, so they are sent from what it published last.
+	// A window that reloaded (or a status bar that switched language) learns the server is ready.
+	s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerReady)
+	switch {
+	case !reopened:
 		s.openLocked(doc)
+	case changed:
+		s.notifyLocked("textDocument/didChange", didChangeParams(doc))
+	case doc.diagnostics != nil:
+		s.sink.Diagnostics(doc.path, doc.diagnostics)
 	}
 	return nil
 }

@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 0
+# program:
+#   int main() {
+#       int x = 1;
+#       if (x = 2) {
+#           return 1;
+#       }
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:11: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+    3 |     if (x = 2) {
+      |         ~~^~~

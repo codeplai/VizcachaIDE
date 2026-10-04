@@ -11,6 +11,7 @@
   "actions.continue": { "en": "Continue", "es": "Continuar" },
   "actions.runToHere": { "en": "Run to here", "es": "Ejecutar hasta aquí" },
   "actions.more": { "en": "More ▾", "es": "Más ▾" },
+  "actions.build": { "en": "Build", "es": "Compilar" },
 
   "tooltips.run": { "en": "Run your program (F5)", "es": "Ejecuta tu programa (F5)" },
   "tooltips.debug": { "en": "Run step by step and see your variables (F6)", "es": "Ejecuta paso a paso y mira tus variables (F6)" },
@@ -51,8 +52,8 @@
   "run.finished": { "en": "✓ Finished in {seconds} s", "es": "✓ Terminó bien en {seconds} s" },
   "run.exitCode": { "en": "✗ Your program ended with code {code}.", "es": "✗ Tu programa terminó con código {code}." },
   "run.compileFailed": {
-    "en": "✗ Your program didn't run: Go found {count, plural, one {# problem} other {# problems}}. See the explanation on the right.",
-    "es": "✗ No se pudo ejecutar: Go encontró {count, plural, one {# problema} other {# problemas}}. Mira la explicación a la derecha."
+    "en": "✗ Your program didn't run: there {count, plural, one {is # problem} other {are # problems}}. See the explanation on the right.",
+    "es": "✗ No se pudo ejecutar: {count, plural, one {hay # problema} other {hay # problemas}}. Mira la explicación a la derecha."
   },
   "run.inputPlaceholder": { "en": "Type here and press Enter to answer your program", "es": "Escribe aquí y pulsa Enter para responder a tu programa" },
   "run.stopped": { "en": "■ Stopped.", "es": "■ Detenido." },
@@ -61,6 +62,7 @@
   "run.debugStdin": { "en": "While debugging, your program can't read the keyboard.", "es": "Mientras depuras, tu programa no puede leer el teclado." },
   "run.debugAdapterStopped": { "en": "The debugger stopped unexpectedly. Try starting it again.", "es": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo." },
   "run.debugStarting": { "en": "Starting the debugger…", "es": "Iniciando el depurador…" },
+  "run.debugEnded": { "en": "■ Debugging finished.", "es": "■ Depuración terminada." },
   "run.debugRunning": { "en": "● Debugging {file} · running", "es": "● Depurando {file} · en ejecución" },
 
   "errors.goNotFound": { "en": "Go isn't installed. VizcachaIDE needs Go to run your programs. Install Go or choose where it is in Settings.", "es": "Go no está instalado. VizcachaIDE necesita Go para ejecutar tus programas. Instálalo o indica dónde está en Configuración." },
@@ -201,6 +203,7 @@
   "dev.stateWrite": { "en": "1 · Write", "es": "1 · Escribir" },
   "dev.stateError": { "en": "2 · Error explained", "es": "2 · Error explicado" },
   "dev.stateDebug": { "en": "3 · Debug", "es": "3 · Depurar" },
+  "dev.stateCrash": { "en": "4 · Crash", "es": "4 · Caída" },
   "dev.themeSystem": { "en": "System", "es": "Sistema" },
   "dev.themeLight": { "en": "Light", "es": "Claro" },
   "dev.themeDark": { "en": "Dark", "es": "Oscuro" },
@@ -366,5 +369,18 @@
   "updates.autoHint": { "en": "Once a day when VizcachaIDE opens. The new version downloads by itself and is verified before you install it.", "es": "Una vez al día, al abrir VizcachaIDE. La versión nueva se descarga sola y se verifica antes de instalarla." },
   "updates.checkMenu": { "en": "Check for updates…", "es": "Buscar actualizaciones…" },
   "updates.readyInstall": { "en": "VizcachaIDE {version} is ready to install.", "es": "VizcachaIDE {version} está lista para instalar." },
-  "updates.readyFile": { "en": "VizcachaIDE {version} is downloaded. Open the file to install it.", "es": "VizcachaIDE {version} está descargada. Abre el archivo para instalarla." }
+  "updates.readyFile": { "en": "VizcachaIDE {version} is downloaded. Open the file to install it.", "es": "VizcachaIDE {version} está descargada. Abre el archivo para instalarla." },
+  "settings.toolCxx": { "en": "C++ compiler (g++ or clang++)", "es": "Compilador de C++ (g++ o clang++)" },
+  "settings.toolLldbDap": { "en": "Debugger (lldb-dap)", "es": "Depurador (lldb-dap)" },
+  "settings.toolClangd": { "en": "Code helper (clangd)", "es": "Ayudante de código (clangd)" },
+  "settings.toolClangFormat": { "en": "Formatter (clang-format)", "es": "Formateador (clang-format)" },
+  "errors.cxxNotFound": { "en": "No C++ compiler was found. Install one or choose it in Settings.", "es": "No se encontró un compilador de C++. Instala uno o elígelo en Ajustes." },
+  "errors.lldbDapNotFound": { "en": "The debugger (lldb-dap) isn't available. Running still works.", "es": "El depurador (lldb-dap) no está disponible. Ejecutar sigue funcionando." },
+  "errors.clangdNotFound": { "en": "The code helper (clangd) isn't available. Suggestions and live problems are off.", "es": "El ayudante de código (clangd) no está disponible. No habrá sugerencias ni problemas en vivo." },
+  "errors.clangFormatNotFound": { "en": "clang-format isn't available, so the file was saved as it is.", "es": "clang-format no está disponible, así que el archivo se guardó tal cual." },
+  "errors.cppHeaderOnly": { "en": "This is a header. Open a .cpp file of the same folder to run it.", "es": "Esto es un encabezado. Abre un archivo .cpp de la misma carpeta para ejecutarlo." },
+  "errors.cppXcodeTools": { "en": "On macOS the compiler comes with the Command Line Tools. Run the command below in Terminal.", "es": "En macOS el compilador viene con las Command Line Tools. Ejecuta el comando de abajo en Terminal." },
+  "run.compiling": { "en": "Compiling…", "es": "Compilando…" },
+  "run.crashed": { "en": "The program crashed. Debug it with F6 to see the line.", "es": "El programa se cayó. Depúralo con F6 para ver la línea." },
+  "firstRun.cppWindows": { "en": "The full installer already includes a C++ compiler.", "es": "El instalador completo ya incluye un compilador de C++." }
 }

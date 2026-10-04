@@ -31,3 +31,25 @@ func TestJobEventsReplaceTheSink(t *testing.T) {
 		t.Error("the slot is still taken after the job ended")
 	}
 }
+
+// Job.Finished adds the closing line of the last stage (a crash) before run:finished.
+func TestFinishedLineComesBeforeTheEnd(t *testing.T) {
+	sink := newSink()
+	supervisor := process.New(sink)
+	job := helperJob("print", "program output", "3")
+	job.Finished = func(exitCode int) string {
+		if exitCode == 3 {
+			return "Segmentation fault"
+		}
+		return ""
+	}
+	if err := supervisor.Start(context.Background(), job); err != nil {
+		t.Fatal(err)
+	}
+	if event := sink.waitFinished(t); event.ExitCode != 3 {
+		t.Fatalf("exit %d", event.ExitCode)
+	}
+	if !strings.Contains(sink.Stderr(), "Segmentation fault\n") {
+		t.Errorf("stderr = %q, want the crash line", sink.Stderr())
+	}
+}

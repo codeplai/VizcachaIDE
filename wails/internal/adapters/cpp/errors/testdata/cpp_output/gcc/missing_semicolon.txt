@@ -1,0 +1,18 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   #include <iostream>
+#   int main() {
+#       int x = 5
+#       std::cout << x;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:4:5: error: expected ',' or ';' before 'std'
+    4 |     std::cout << x;
+      |     ^~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:9: warning: unused variable 'x' [-Wunused-variable]
+    3 |     int x = 5
+      |         ^

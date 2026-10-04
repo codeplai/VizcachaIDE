@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# program:
+#   int main() {
+#       const char* s = "si";
+#       if (s == "si") {
+#           return 1;
+#       }
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:11: warning: result of comparison against a string literal is unspecified (use an explicit string comparison function instead) [-Wstring-compare]
+    3 |     if (s == "si") {
+      |           ^  ~~~~
+1 warning generated.

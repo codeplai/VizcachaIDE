@@ -73,7 +73,7 @@ func (p *pipeSession) wait() int {
 	p.stdout.Flush()
 	p.stderr.Flush()
 	close(p.ended)
-	return p.cmd.ProcessState.ExitCode()
+	return exitCodeOf(p.cmd.ProcessState)
 }
 
 // environmentList is env in the "NAME=value" form os/exec wants.

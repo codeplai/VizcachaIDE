@@ -115,13 +115,13 @@ func (e *eventSink) DebugOutput(text, _ string)           { e.outputs <- text }
 func (e *eventSink) DebugVariables(_ int, variables []domain.Variable) {
 	e.variables <- variables
 }
-func (e *eventSink) RunOutput(string, string)                 {}
-func (e *eventSink) RunStarted(domain.RunConfiguration)       {}
-func (e *eventSink) RunFinished(int, int64)                   {}
-func (e *eventSink) Diagnostics(string, []domain.Diagnostic)  {}
-func (e *eventSink) LanguageServerStatus(domain.ServerStatus) {}
-func (e *eventSink) Explained([]domain.ExplainedDiagnostic)   {}
-func (e *eventSink) SettingsChanged(domain.Settings)          {}
+func (e *eventSink) RunOutput(string, string)                                      {}
+func (e *eventSink) RunStarted(domain.RunConfiguration)                            {}
+func (e *eventSink) RunFinished(int, int64)                                        {}
+func (e *eventSink) Diagnostics(string, []domain.Diagnostic)                       {}
+func (e *eventSink) LanguageServerStatus(domain.CodeLanguage, domain.ServerStatus) {}
+func (e *eventSink) Explained([]domain.ExplainedDiagnostic)                        {}
+func (e *eventSink) SettingsChanged(domain.Settings)                               {}
 
 // connectedSession wires a session to the fake server, as if configurationDone was sent.
 func connectedSession(t *testing.T, server *fakeServer, conn net.Conn, sink app.EventSink) *Session {

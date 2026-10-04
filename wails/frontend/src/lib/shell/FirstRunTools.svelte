@@ -3,11 +3,12 @@
   import { bridge } from '../bridge'
   import type { LanguageProfile, ToolSpec } from '../domain'
   import { t } from '../i18n'
+  import FirstRunCppHint from './FirstRunCppHint.svelte'
   import { enabledProfiles, refreshTools, toolStatus, tools } from '../stores'
 
-  // The wizard's check: the runtime of each language the student chose.
+  // The wizard's check: the runtime (or the compiler) of each language the student chose.
   const runtimeOf = (profile: LanguageProfile): ToolSpec | undefined =>
-    profile.tools.find((spec) => spec.role === 'runtime')
+    profile.tools.find((spec) => spec.role === 'runtime' || spec.role === 'compiler')
 
   const checked = $derived(
     $enabledProfiles.flatMap((profile) => {
@@ -35,6 +36,7 @@
   </h3>
   {#if !version}
     <p>{$t(spec.missingKey || 'errors.toolNotFound', { values: { tool: spec.id } })}</p>
+    {#if profile.id === 'cpp'}<FirstRunCppHint {spec} />{/if}
   {/if}
 {/each}
 

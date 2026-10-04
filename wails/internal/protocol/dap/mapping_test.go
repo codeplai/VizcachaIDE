@@ -15,8 +15,12 @@ func TestFramesFromRecordedStackTrace(t *testing.T) {
 
 	frames := mapFrames(response.Body.StackFrames, testFlavor{}, false)
 
-	names := []string{frames[0].Function, frames[1].Function, frames[2].Function}
-	if strings.Join(names, ",") != "main.multiply,main.main,runtime.main" {
+	// runtime.main (a "subtle" frame below the last kept one) is dropped.
+	names := make([]string, 0, len(frames))
+	for _, frame := range frames {
+		names = append(names, frame.Function)
+	}
+	if strings.Join(names, ",") != "main.multiply,main.main" {
 		t.Fatalf("functions = %v", names)
 	}
 	if frames[0].FrameID != 1000 {
@@ -34,14 +38,15 @@ func TestPanicSkipsLeadingRuntimeFrames(t *testing.T) {
 
 	frames := mapFrames(response.Body.StackFrames, testFlavor{}, true)
 
-	if frames[0].Function != "main.main" || frames[len(frames)-1].Function != "runtime.main" {
+	// The leading panic frames and the trailing runtime.main are both hidden.
+	if len(frames) != 1 || frames[0].Function != "main.main" {
 		t.Fatalf("frames = %+v", frames)
 	}
 	if frames[0].Location.File != filepath.Join(dir, "panic.go") {
 		t.Errorf("file = %s", frames[0].Location.File)
 	}
-	if kept := mapFrames(response.Body.StackFrames, testFlavor{}, false); len(kept) != 5 {
-		t.Errorf("without skipping there must be 5 frames, got %d", len(kept))
+	if kept := mapFrames(response.Body.StackFrames, testFlavor{}, false); len(kept) != 4 {
+		t.Errorf("without skipping the leading ones there must be 4 frames, got %d", len(kept))
 	}
 }
 

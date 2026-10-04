@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -16,6 +16,7 @@ import * as U from './ui.mjs'
 import { steps } from './steps.mjs'
 import { persistenceSteps, firstRunSteps } from './settings-steps.mjs'
 import { pythonSteps } from './steps-python.mjs'
+import { cppSteps } from './steps-cpp.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -44,7 +45,7 @@ const session = async (phase, settings, build) => {
     ctx.url = dev.url
     ctx.page = await edge.browser.newPage()
     ctx.page.on('pageerror', (e) => {
-      if (!/reading 'nodes'/.test(e.message)) console.log(`  [pageerror] ${e.message.slice(0, 160)}`)
+      if (!/reading 'nodes'/.test(e.message)) console.log(`  [pageerror] ${(process.env.QA_STACK ? e.stack : e.message).slice(0, process.env.QA_STACK ? 1500 : 160)}`)
     })
     await U.reload(ctx.page, dev.url)
   }
@@ -98,6 +99,13 @@ const main = async () => {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`python-${lang}`, { language: lang, toolPaths: { python: L.DEV_PYTHON } }, (ctx) => pythonSteps(ctx, lang))
+      }
+    }
+    // C++ (M2): the development llvm-mingw of docs/PLAN_CPP.md section 0, or VIZCACHA_TEST_LLVM_BIN.
+    if (wants('cpp')) {
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`cpp-${lang}`, { language: lang, toolPaths: { cxx: L.DEV_CXX } }, (ctx) => cppSteps(ctx, lang))
       }
     }
   } finally {

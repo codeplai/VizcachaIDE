@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# program:
+#   int main() {
+#       int sin_usar = 3;
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:9: warning: unused variable 'sin_usar' [-Wunused-variable]
+    2 |     int sin_usar = 3;
+      |         ^~~~~~~~
+1 warning generated.

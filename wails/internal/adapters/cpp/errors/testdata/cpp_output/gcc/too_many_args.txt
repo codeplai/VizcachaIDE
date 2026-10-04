@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int doble(int a) { return 2 * a; }
+#   int main() {
+#       return doble(1, 2);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:3:17: error: too many arguments to function 'int doble(int)'
+    3 |     return doble(1, 2);
+      |            ~~~~~^~~~~~
+D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú\main.cpp:1:5: note: declared here
+    1 | int doble(int a) { return 2 * a; }
+      |     ^~~~~

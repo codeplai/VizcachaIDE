@@ -102,14 +102,18 @@ func newRegistry(sink *bridge.WailsEventSink, store app.SettingsStore, texts *ba
 	if err != nil {
 		return nil, nil, err
 	}
-	supports := append([]app.LanguageSupport{goSupport, pythonSupport}, newUnavailableSupports()...)
-	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, supports...)
+	cppSupport, closeCpp, err := newCppSupport(sink, store, texts, supervisor)
+	if err != nil {
+		return nil, nil, err
+	}
+	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, goSupport, pythonSupport, cppSupport)
 	if err != nil {
 		return nil, nil, err
 	}
 	closeAll := func(ctx context.Context) {
 		closeGo(ctx)
 		closePython(ctx)
+		closeCpp(ctx)
 	}
 	return registry, closeAll, nil
 }

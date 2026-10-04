@@ -74,3 +74,6 @@ settings.ini
 
 # Python virtual environments for development (e.g. wails/.venv-py312, PLAN_PYTHON.md §0)
 .venv-*/
+
+# Development toolchains downloaded for testing (e.g. llvm-mingw for C++, PLAN_CPP.md §0)
+.toolchain-dev/

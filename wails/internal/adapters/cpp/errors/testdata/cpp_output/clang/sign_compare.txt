@@ -1,0 +1,15 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# program:
+#   #include <vector>
+#   int main() {
+#       std::vector<int> v(3);
+#       for (int i = 0; i < v.size(); i++) {}
+#       return 0;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:4:23: warning: comparison of integers of different signs: 'int' and 'size_type' (aka 'unsigned long long') [-Wsign-compare]
+    4 |     for (int i = 0; i < v.size(); i++) {}
+      |                     ~ ^ ~~~~~~~~
+1 warning generated.

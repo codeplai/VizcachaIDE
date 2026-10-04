@@ -1,0 +1,16 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   #include <iostream>
+#   int main() {
+#       std::cout << "hola";
+#       return 0;
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:4:14: error: expected '}'
+    4 |     return 0;
+      |              ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:12: note: to match this '{'
+    2 | int main() {
+      |            ^
+1 error generated.

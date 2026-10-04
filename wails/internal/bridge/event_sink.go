@@ -100,8 +100,8 @@ func (s *WailsEventSink) Diagnostics(path string, diagnostics []domain.Diagnosti
 }
 
 // LanguageServerStatus implements app.EventSink.
-func (s *WailsEventSink) LanguageServerStatus(status domain.ServerStatus) {
-	s.emit(EventLspStatus, status)
+func (s *WailsEventSink) LanguageServerStatus(codeLanguage domain.CodeLanguage, status domain.ServerStatus) {
+	s.emit(EventLspStatus, LspStatusPayload{CodeLanguage: codeLanguage, Status: status})
 }
 
 // Explained implements app.EventSink.

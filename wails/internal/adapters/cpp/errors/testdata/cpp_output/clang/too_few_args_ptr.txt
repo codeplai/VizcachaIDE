@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int sumar(int a, int b) { return a + b; }
+#   int main() {
+#       int (*f)(int, int) = sumar;
+#       return f(1);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú\main.cpp:4:15: error: too few arguments to function call, expected 2, have 1
+    4 |     return f(1);
+      |            ~  ^
+1 error generated.

@@ -36,12 +36,26 @@ export const assistantProblemCount = derived(assistantProblems, (items) => items
 const REFRESH_DELAY_MS = 300
 
 /**
+ * The backend answers each request with an `assistant:explained` event that replaces the cards.
+ * Requests go one at a time, so an older answer can never arrive after a newer one.
+ */
+let queue: Promise<unknown> = Promise.resolve()
+const inTurn = <T>(work: () => Promise<T>): Promise<T> => {
+  const next = queue.then(work, work)
+  queue = next.catch(() => undefined)
+  return next
+}
+
+/**
  * Asks the backend to explain everything at once: what gopls underlined plus what the last run
  * printed. The answer arrives as `assistant:explained` (texts already in the user's language).
  */
 const refreshExplanations = async (bridge: Bridge): Promise<void> => {
-  const lsp = Object.values(get(diagnosticsByFile)).flat()
-  await bridge.assistant.explainDiagnostics([...lsp, ...get(runDiagnostics)])
+  await inTurn(() => {
+    const lsp = Object.values(get(diagnosticsByFile)).flat()
+    const fallback = get(lastRunConfiguration)?.codeLanguage ?? ''
+    return bridge.assistant.explainDiagnostics(fallback, [...lsp, ...get(runDiagnostics)])
+  })
 }
 
 /**
@@ -69,7 +83,9 @@ const vetInBackground = async (bridge: Bridge, config: RunConfiguration): Promis
   const number = runNumber
   const output = await bridge.run.check(config)
   if (!output.trim() || number !== runNumber) return
-  const items = await bridge.assistant.explain(config.codeLanguage, output, config.workingDir)
+  const items = await inTurn(() =>
+    bridge.assistant.explain(config.codeLanguage, output, config.workingDir)
+  )
   if (number !== runNumber || items.length === 0) return
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)
@@ -79,10 +95,12 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
   const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
   const config = get(lastRunConfiguration)
   const items = failed
-    ? await bridge.assistant.explain(
-        config?.codeLanguage ?? 'go',
-        failureOutputOfRun(config?.echo ?? false),
-        config?.workingDir ?? ''
+    ? await inTurn(() =>
+        bridge.assistant.explain(
+          config?.codeLanguage ?? 'go',
+          failureOutputOfRun(config?.echo ?? false),
+          config?.workingDir ?? ''
+        )
       )
     : []
   runDiagnostics.set(items.map((item) => item.diagnostic))

@@ -1,0 +1,18 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   #include <string>
+#   int main() {
+#       std::string nombre = "Ana";
+#       int n = nombre;
+#       return n;
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:4:9: error: no viable conversion from 'std::string' (aka 'basic_string<char>') to 'int'
+    4 |     int n = nombre;
+      |         ^   ~~~~~~
+D:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/string:1130:55: note: candidate function
+ 1130 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX20 operator __self_view() const _NOEXCEPT {
+      |                                                       ^
+1 error generated.

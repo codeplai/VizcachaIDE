@@ -38,7 +38,7 @@ func TestAssistantExplainsParsedDiagnostics(t *testing.T) {
 		t.Fatal(err)
 	}
 	service := NewAssistantService(sink, newTestRegistry(t), NewLanguageResolver(store, nil))
-	items, err := service.ExplainDiagnostics([]domain.Diagnostic{
+	items, err := service.ExplainDiagnostics("", []domain.Diagnostic{
 		{Severity: domain.SeverityWarning, Message: "w"},
 		{Severity: domain.SeverityInfo, Message: "i"},
 	})

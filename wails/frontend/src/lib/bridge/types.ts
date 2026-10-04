@@ -86,7 +86,7 @@ export interface AssistantApi {
     rawOutput: string,
     workingDir: string
   ) => Promise<ExplainedDiagnostic[]>
-  explainDiagnostics: (diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
+  explainDiagnostics: (codeLanguage: CodeLanguage | '', diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
 }
 
 /** Mirrors bridge.ConsoleService (Go). */

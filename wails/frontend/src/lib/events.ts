@@ -1,6 +1,7 @@
 // Mirror of internal/bridge/events.go. FROZEN contract: a Go test checks that both
 // files list the same event names. Change them together (Contract change request).
 import type {
+  CodeLanguage,
   DebugState,
   ExplainedDiagnostic,
   RunConfiguration,
@@ -64,6 +65,12 @@ export interface FileChangedPayload {
   path: string
 }
 
+/** The state of one language's server (gopls, pylsp, clangd...). */
+export interface LspStatusPayload {
+  codeLanguage: CodeLanguage
+  status: ServerStatus
+}
+
 export const TERMINATED_BY_USER = -1
 
 export interface EventPayloads {
@@ -75,7 +82,7 @@ export interface EventPayloads {
   'debug:output': DebugOutputPayload
   'debug:terminated': DebugTerminatedPayload
   'lsp:diagnostics': DiagnosticsPayload
-  'lsp:status': ServerStatus
+  'lsp:status': LspStatusPayload
   'assistant:explained': ExplainedDiagnostic[]
   'settings:changed': Settings
   'file:changed': FileChangedPayload

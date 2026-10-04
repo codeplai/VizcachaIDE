@@ -1,0 +1,18 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# compiler: clang++
+# compileExit: 0
+# program:
+#   int doble(int a) {
+#       int r = 2 * a;
+#   }
+#   int main() {
+#       return doble(2);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:9: warning: unused variable 'r' [-Wunused-variable]
+    2 |     int r = 2 * a;
+      |         ^
+D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:1: warning: non-void function does not return a value [-Wreturn-type]
+    3 | }
+      | ^
+2 warnings generated.

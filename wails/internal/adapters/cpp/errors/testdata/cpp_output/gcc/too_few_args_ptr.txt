@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú
+# compiler: g++
+# compileExit: 1
+# program:
+#   int sumar(int a, int b) { return a + b; }
+#   int main() {
+#       int (*f)(int, int) = sumar;
+#       return f(1);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:4:13: error: too few arguments to function
+    4 |     return f(1);
+      |            ~^~~

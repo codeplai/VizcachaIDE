@@ -35,11 +35,12 @@ func (s *AssistantService) Explain(codeLanguage domain.CodeLanguage, rawOutput, 
 
 // ExplainDiagnostics explains diagnostics that are already parsed (for example the ones the
 // language server published) and emits them like Explain does. Each one goes to the explainer
-// of the language of its file; one without a file goes to the default language.
-func (s *AssistantService) ExplainDiagnostics(diagnostics []domain.Diagnostic) ([]domain.ExplainedDiagnostic, error) {
+// of the language of its file; one without a file (a crash line, a missing main) goes to
+// codeLanguage, the language of the last run, or to the default language when it is "".
+func (s *AssistantService) ExplainDiagnostics(codeLanguage domain.CodeLanguage, diagnostics []domain.Diagnostic) ([]domain.ExplainedDiagnostic, error) {
 	language := s.language.Current()
 	items := []domain.ExplainedDiagnostic{}
-	for _, group := range s.groupByLanguage(diagnostics) {
+	for _, group := range s.groupByLanguage(codeLanguage, diagnostics) {
 		items = append(items, app.NewExplainError(group.support.Explainer).FromDiagnostics(group.diagnostics, language)...)
 	}
 	s.sink.Explained(items)
@@ -52,7 +53,7 @@ type diagnosticGroup struct {
 }
 
 // groupByLanguage splits the diagnostics by language, in order of first appearance.
-func (s *AssistantService) groupByLanguage(diagnostics []domain.Diagnostic) []*diagnosticGroup {
+func (s *AssistantService) groupByLanguage(fallback domain.CodeLanguage, diagnostics []domain.Diagnostic) []*diagnosticGroup {
 	var groups []*diagnosticGroup
 	index := map[domain.CodeLanguage]*diagnosticGroup{}
 	for _, diagnostic := range diagnostics {
@@ -60,7 +61,7 @@ func (s *AssistantService) groupByLanguage(diagnostics []domain.Diagnostic) []*d
 		if diagnostic.Location != nil {
 			file = diagnostic.Location.File
 		}
-		support := s.supportForFile(file)
+		support := s.supportOfDiagnostic(file, fallback)
 		group, ok := index[support.Profile.ID]
 		if !ok {
 			group = &diagnosticGroup{support: support}
@@ -70,4 +71,15 @@ func (s *AssistantService) groupByLanguage(diagnostics []domain.Diagnostic) []*d
 		group.diagnostics = append(group.diagnostics, diagnostic)
 	}
 	return groups
+}
+
+// supportOfDiagnostic is the language of the file, or fallback for a diagnostic without one.
+func (s *AssistantService) supportOfDiagnostic(file string, fallback domain.CodeLanguage) app.LanguageSupport {
+	if file != "" || fallback == "" {
+		return s.supportForFile(file)
+	}
+	if support, err := s.supportOf(fallback); err == nil {
+		return support
+	}
+	return s.supportForFile(file)
 }

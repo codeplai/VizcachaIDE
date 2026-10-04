@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú
+# compiler: clang++
+# compileExit: 1
+# program:
+#   int doble(int a) { return 2 * a; }
+#   int main() {
+#       int (*f)(int) = doble;
+#       return f(1, 2);
+#   }
+# output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú\main.cpp:4:17: error: too many arguments to function call, expected 1, have 2
+    4 |     return f(1, 2);
+      |            ~    ^
+1 error generated.
