@@ -1,0 +1,833 @@
+{
+ "completion": {
+  "isIncomplete": false,
+  "items": [
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 7,
+    "label": " vector<class Tp, class Alloc>",
+    "score": 1.2068569660186768,
+    "sortText": "406585b6vector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(size_type n, const value_type &x, const allocator_type &a)",
+    "score": 0.44484052062034607,
+    "sortText": "411c3dddvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(ForwardIterator first, ForwardIterator last)",
+    "score": 0.44484052062034607,
+    "sortText": "411c3dddvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(ForwardIterator first, ForwardIterator last, const allocator_type &a)",
+    "score": 0.44484052062034607,
+    "sortText": "411c3dddvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(InputIterator first, InputIterator last, const allocator_type &a)",
+    "score": 0.44484052062034607,
+    "sortText": "411c3dddvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(InputIterator first, InputIterator last)",
+    "score": 0.44484052062034607,
+    "sortText": "411c3dddvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(initializer_list<value_type> il)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(size_type n, const value_type &x)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(const allocator_type &a)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(const vector<Tp, Allocator> &x)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(const vector<Tp, Allocator> &x, const __type_identity_t<allocator_type> &a)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(initializer_list<value_type> il, const allocator_type &a)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(size_type n, const allocator_type &a)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(vector<Tp, Allocator> &&x, const __type_identity_t<allocator_type> &a)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(vector<Tp, Allocator> &&x)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>(size_type n)",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   },
+   {
+    "filterText": "vector",
+    "insertText": "vector",
+    "insertTextFormat": 1,
+    "kind": 4,
+    "label": " vector<class Tp, class Alloc>()",
+    "score": 0.24473007023334503,
+    "sortText": "4185657bvector",
+    "textEdit": {
+     "newText": "vector",
+     "range": {
+      "end": {
+       "character": 12,
+       "line": 17
+      },
+      "start": {
+       "character": 9,
+       "line": 17
+      }
+     }
+    }
+   }
+  ]
+ },
+ "definition": [
+  {
+   "range": {
+    "end": {
+     "character": 9,
+     "line": 10
+    },
+    "start": {
+     "character": 4,
+     "line": 10
+    }
+   },
+   "uri": "{DOC_URI}"
+  }
+ ],
+ "documentSymbol": [
+  {
+   "children": [
+    {
+     "detail": "void (int)",
+     "kind": 6,
+     "name": "add",
+     "range": {
+      "end": {
+       "character": 35,
+       "line": 5
+      },
+      "start": {
+       "character": 4,
+       "line": 5
+      }
+     },
+     "selectionRange": {
+      "end": {
+       "character": 12,
+       "line": 5
+      },
+      "start": {
+       "character": 9,
+       "line": 5
+      }
+     },
+     "tags": [
+      5,
+      18,
+      19
+     ]
+    },
+    {
+     "detail": "int",
+     "kind": 8,
+     "name": "total",
+     "range": {
+      "end": {
+       "character": 17,
+       "line": 7
+      },
+      "start": {
+       "character": 4,
+       "line": 7
+      }
+     },
+     "selectionRange": {
+      "end": {
+       "character": 13,
+       "line": 7
+      },
+      "start": {
+       "character": 8,
+       "line": 7
+      }
+     },
+     "tags": [
+      2,
+      18
+     ]
+    }
+   ],
+   "detail": "class",
+   "kind": 5,
+   "name": "Counter",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 8
+    },
+    "start": {
+     "character": 0,
+     "line": 3
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 13,
+     "line": 3
+    },
+    "start": {
+     "character": 6,
+     "line": 3
+    }
+   },
+   "tags": [
+    18,
+    19
+   ]
+  },
+  {
+   "detail": "int (int)",
+   "kind": 12,
+   "name": "twice",
+   "range": {
+    "end": {
+     "character": 34,
+     "line": 10
+    },
+    "start": {
+     "character": 0,
+     "line": 10
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 9,
+     "line": 10
+    },
+    "start": {
+     "character": 4,
+     "line": 10
+    }
+   },
+   "tags": [
+    18,
+    19
+   ]
+  },
+  {
+   "detail": "int ()",
+   "kind": 12,
+   "name": "main",
+   "range": {
+    "end": {
+     "character": 1,
+     "line": 18
+    },
+    "start": {
+     "character": 0,
+     "line": 12
+    }
+   },
+   "selectionRange": {
+    "end": {
+     "character": 8,
+     "line": 12
+    },
+    "start": {
+     "character": 4,
+     "line": 12
+    }
+   },
+   "tags": [
+    18,
+    19
+   ]
+  }
+ ],
+ "hover": {
+  "contents": {
+   "kind": "plaintext",
+   "value": "instance-method push_back\n\nprovided by <vector>\n\n→ void\n\nParameters:\n\n- value_type && __x (aka int &&)\n\n// In vector<int>\npublic: void push_back(value_type &&__x)"
+  },
+  "range": {
+   "end": {
+    "character": 15,
+    "line": 14
+   },
+   "start": {
+    "character": 6,
+    "line": 14
+   }
+  }
+ },
+ "initialize": {
+  "capabilities": {
+   "astProvider": true,
+   "callHierarchyProvider": true,
+   "clangdInlayHintsProvider": true,
+   "codeActionProvider": true,
+   "compilationDatabase": {
+    "automaticReload": true
+   },
+   "completionProvider": {
+    "resolveProvider": false,
+    "triggerCharacters": [
+     ".",
+     "<",
+     ">",
+     ":",
+     "\"",
+     "/",
+     "*"
+    ]
+   },
+   "declarationProvider": true,
+   "definitionProvider": true,
+   "documentFormattingProvider": true,
+   "documentHighlightProvider": true,
+   "documentLinkProvider": {
+    "resolveProvider": false
+   },
+   "documentOnTypeFormattingProvider": {
+    "firstTriggerCharacter": "\n",
+    "moreTriggerCharacter": []
+   },
+   "documentRangeFormattingProvider": {
+    "rangesSupport": true
+   },
+   "documentSymbolProvider": true,
+   "executeCommandProvider": {
+    "commands": [
+     "clangd.applyFix",
+     "clangd.applyRename",
+     "clangd.applyTweak"
+    ]
+   },
+   "foldingRangeProvider": true,
+   "hoverProvider": true,
+   "implementationProvider": true,
+   "inactiveRegionsProvider": true,
+   "inlayHintProvider": true,
+   "memoryUsageProvider": true,
+   "referencesProvider": true,
+   "renameProvider": true,
+   "selectionRangeProvider": true,
+   "semanticTokensProvider": {
+    "full": {
+     "delta": true
+    },
+    "legend": {
+     "tokenModifiers": [
+      "declaration",
+      "definition",
+      "deprecated",
+      "deduced",
+      "readonly",
+      "static",
+      "abstract",
+      "virtual",
+      "dependentName",
+      "defaultLibrary",
+      "usedAsMutableReference",
+      "usedAsMutablePointer",
+      "constructorOrDestructor",
+      "userDefined",
+      "functionScope",
+      "classScope",
+      "fileScope",
+      "globalScope"
+     ],
+     "tokenTypes": [
+      "variable",
+      "variable",
+      "parameter",
+      "function",
+      "method",
+      "function",
+      "property",
+      "variable",
+      "class",
+      "interface",
+      "enum",
+      "enumMember",
+      "type",
+      "type",
+      "unknown",
+      "namespace",
+      "typeParameter",
+      "concept",
+      "type",
+      "macro",
+      "modifier",
+      "operator",
+      "bracket",
+      "label",
+      "comment"
+     ]
+    },
+    "range": false
+   },
+   "signatureHelpProvider": {
+    "triggerCharacters": [
+     "(",
+     ")",
+     "{",
+     "}",
+     "<",
+     ">",
+     ","
+    ]
+   },
+   "standardTypeHierarchyProvider": true,
+   "textDocumentSync": {
+    "change": 2,
+    "openClose": true,
+    "save": true
+   },
+   "typeDefinitionProvider": true,
+   "typeHierarchyProvider": true,
+   "workspaceSymbolProvider": true
+  },
+  "serverInfo": {
+   "name": "clangd",
+   "version": "clangd version 23.1.2 (https://github.com/llvm/llvm-project.git 85ac560262434c9ccfc0c183ec22d4138ed647fb) windows x86_64-w64-windows-gnu; target=x86_64-w64-mingw32"
+  }
+ },
+ "memberCompletion": {
+  "isIncomplete": false,
+  "items": [
+   {
+    "detail": "void",
+    "filterText": "push_back",
+    "insertText": "push_back",
+    "insertTextFormat": 1,
+    "kind": 2,
+    "label": " push_back(value_type &&x)",
+    "score": 0.9368076324462891,
+    "sortText": "40902d60push_back",
+    "textEdit": {
+     "newText": "push_back",
+     "range": {
+      "end": {
+       "character": 10,
+       "line": 14
+      },
+      "start": {
+       "character": 6,
+       "line": 14
+      }
+     }
+    }
+   },
+   {
+    "detail": "void",
+    "filterText": "push_back",
+    "insertText": "push_back",
+    "insertTextFormat": 1,
+    "kind": 2,
+    "label": " push_back(const_reference x)",
+    "score": 0.9368076324462891,
+    "sortText": "40902d60push_back",
+    "textEdit": {
+     "newText": "push_back",
+     "range": {
+      "end": {
+       "character": 10,
+       "line": 14
+      },
+      "start": {
+       "character": 6,
+       "line": 14
+      }
+     }
+    }
+   }
+  ]
+ },
+ "publishDiagnostics": {
+  "diagnostics": [
+   {
+    "code": "undeclared_var_use",
+    "message": "Use of undeclared identifier 'missing'",
+    "range": {
+     "end": {
+      "character": 24,
+      "line": 16
+     },
+     "start": {
+      "character": 17,
+      "line": 16
+     }
+    },
+    "severity": 1,
+    "source": "clang"
+   },
+   {
+    "code": "no_member_suggest",
+    "message": "No member named 'vec' in namespace 'std'; did you mean 'dec'? (fix available)\n\nD:/Users/mcalderon/Documents/Claude/Projects/VizcachaIDE/wails/.toolchain-dev/llvm-mingw-20260922-ucrt-x86_64/include/c++/v1/ios:836:40:\nnote: 'dec' declared here",
+    "range": {
+     "end": {
+      "character": 12,
+      "line": 17
+     },
+     "start": {
+      "character": 9,
+      "line": 17
+     }
+    },
+    "severity": 1,
+    "source": "clang"
+   },
+   {
+    "code": "expected_semi_after_expr",
+    "message": "Expected ';' after expression (fix available)",
+    "range": {
+     "end": {
+      "character": 1,
+      "line": 18
+     },
+     "start": {
+      "character": 0,
+      "line": 18
+     }
+    },
+    "severity": 1,
+    "source": "clang"
+   },
+   {
+    "code": "-Wunused-value",
+    "message": "Expression result unused",
+    "range": {
+     "end": {
+      "character": 12,
+      "line": 17
+     },
+     "start": {
+      "character": 4,
+      "line": 17
+     }
+    },
+    "severity": 2,
+    "source": "clang"
+   }
+  ],
+  "uri": "{DOC_URI}",
+  "version": 1
+ },
+ "signatureHelp": {
+  "activeParameter": 0,
+  "activeSignature": 0,
+  "signatures": [
+   {
+    "label": "twice(int x) -> int",
+    "parameters": [
+     {
+      "label": [
+       6,
+       11
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
