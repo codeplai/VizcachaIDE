@@ -343,5 +343,8 @@
   "packages.noFolder": { "en": "Open a folder or a file first. Packages are installed for a project folder.", "es": "Abre primero una carpeta o un archivo. Los paquetes se instalan para una carpeta de proyecto." },
   "packages.working": { "en": "Working… this can take a moment if pip needs to download something.", "es": "Trabajando… puede tardar si pip necesita descargar algo." },
   "packages.output": { "en": "Package output", "es": "Salida de los paquetes" },
-  "packages.startFailed": { "en": "The package command couldn't start. Another program may still be running: stop it and try again.", "es": "No se pudo iniciar el comando de paquetes. Puede que otro programa siga en marcha: deténlo e inténtalo de nuevo." }
+  "packages.startFailed": { "en": "The package command couldn't start. Another program may still be running: stop it and try again.", "es": "No se pudo iniciar el comando de paquetes. Puede que otro programa siga en marcha: deténlo e inténtalo de nuevo." },
+  "actions.toggleSidebar": { "en": "Show or hide the side panel (Ctrl+B)", "es": "Mostrar u ocultar el panel lateral (Ctrl+B)" },
+  "actions.toggleAssistant": { "en": "Show or hide the Assistant (Ctrl+Alt+B)", "es": "Mostrar u ocultar el Asistente (Ctrl+Alt+B)" },
+  "a11y.panels": { "en": "Panels", "es": "Paneles" }
 }

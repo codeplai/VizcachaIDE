@@ -18,6 +18,7 @@
   import FileButtons from './FileButtons.svelte'
   import FileMenu from './FileMenu.svelte'
   import MoreMenu from './MoreMenu.svelte'
+  import PanelToggles from './PanelToggles.svelte'
 </script>
 
 <header class="titlebar">
@@ -83,6 +84,7 @@
         </button>
       {/if}
     {/if}
+    <PanelToggles />
     <MoreMenu />
   </div>
 </header>

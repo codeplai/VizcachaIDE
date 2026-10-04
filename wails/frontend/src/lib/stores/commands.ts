@@ -5,7 +5,7 @@ import type { Breakpoint } from '../domain'
 import { breakpoints, debugActive, debuggedPath, debugStarting } from './debug'
 import { codeLanguageOf } from './codeLanguages'
 import { activePath, buffers } from './files'
-import { cursor } from './layout'
+import { assistantOpen, cursor } from './layout'
 import { showNotice } from './notice'
 import { programArguments } from './programArguments'
 import { lastRunConfiguration, pushRunText, resetRun, stoppedByUser } from './run'
@@ -53,6 +53,7 @@ export const startDebugging = async (bridge: Bridge): Promise<void> => {
   if (!(await splitProgramArguments(bridge, argsText))) return
   debuggedPath.set(path)
   debugStarting.set(true)
+  assistantOpen.set(true) // the variables and the call stack live in the Assistant
   await withToolErrors(bridge, codeLanguageOf(path), () =>
     bridge.debug.start(path, breakpointsOf(path), argsText)
   )

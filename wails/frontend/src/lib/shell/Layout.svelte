@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { Pane, PaneGroup, PaneResizer } from 'paneforge'
   import EditorPane from '../editor/EditorPane.svelte'
   import AssistantPanel from '../panels/AssistantPanel.svelte'
@@ -6,7 +7,7 @@
   import FilesPanel from '../panels/FilesPanel.svelte'
   import OutlinePanel from '../panels/OutlinePanel.svelte'
   import SearchPanel from '../panels/SearchPanel.svelte'
-  import { sidebarView } from '../stores'
+  import { assistantOpen, sidebarOpen, sidebarView } from '../stores'
   import '../panels/panel.css'
   import './dialog.css'
   import AboutDialog from './AboutDialog.svelte'
@@ -19,6 +20,27 @@
   import SettingsDialog from './SettingsDialog.svelte'
   import StatusBar from './StatusBar.svelte'
   import TitleBar from './TitleBar.svelte'
+
+  // The side panel and the Assistant can be hidden (rail, title bar buttons, Ctrl+B, Ctrl+Alt+B).
+  // paneforge remembers collapsed panes, so the stores start from what the panes restored.
+  let sidebarPane: ReturnType<typeof Pane> | undefined = $state()
+  let assistantPane: ReturnType<typeof Pane> | undefined = $state()
+  let ready = $state(false)
+
+  onMount(() => {
+    if (sidebarPane) sidebarOpen.set(!sidebarPane.isCollapsed())
+    if (assistantPane) assistantOpen.set(!assistantPane.isCollapsed())
+    ready = true
+  })
+
+  const follow = (pane: ReturnType<typeof Pane> | undefined, open: boolean): void => {
+    if (!ready || !pane) return
+    if (open && pane.isCollapsed()) pane.expand()
+    else if (!open && !pane.isCollapsed()) pane.collapse()
+  }
+
+  $effect(() => follow(sidebarPane, $sidebarOpen))
+  $effect(() => follow(assistantPane, $assistantOpen))
 </script>
 
 <div class="window">
@@ -27,7 +49,16 @@
   <div class="middle">
     <Rail />
     <PaneGroup direction="horizontal" autoSaveId="vizcacha-main">
-      <Pane defaultSize={17} minSize={12} maxSize={35}>
+      <Pane
+        bind:this={sidebarPane}
+        defaultSize={17}
+        minSize={12}
+        maxSize={35}
+        collapsible
+        collapsedSize={0}
+        onCollapse={() => sidebarOpen.set(false)}
+        onExpand={() => sidebarOpen.set(true)}
+      >
         {#if $sidebarView === 'files'}
           <FilesPanel />
         {:else if $sidebarView === 'outline'}
@@ -45,7 +76,18 @@
         </PaneGroup>
       </Pane>
       <PaneResizer class="resizer" />
-      <Pane defaultSize={23} minSize={16} maxSize={40}><AssistantPanel /></Pane>
+      <Pane
+        bind:this={assistantPane}
+        defaultSize={23}
+        minSize={16}
+        maxSize={40}
+        collapsible
+        collapsedSize={0}
+        onCollapse={() => assistantOpen.set(false)}
+        onExpand={() => assistantOpen.set(true)}
+      >
+        <AssistantPanel />
+      </Pane>
     </PaneGroup>
   </div>
   <NoticeBar />

@@ -15,7 +15,9 @@ import {
   stepOut,
   stepOver,
   stopDebugging,
-  stopProgram
+  stopProgram,
+  toggleAssistant,
+  toggleSidebar
 } from '../stores'
 
 type Action = (bridge: Bridge) => Promise<void>
@@ -36,8 +38,18 @@ const fileShortcut = (event: KeyboardEvent): Action | null => {
   return FILE_SHORTCUTS[key] ?? null
 }
 
+/** Ctrl+B hides or shows the side panel, Ctrl+Alt+B the Assistant (as in VS Code). */
+const panelShortcut = (event: KeyboardEvent): Action | null => {
+  if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.key.toLowerCase() !== 'b')
+    return null
+  const toggle = event.altKey ? toggleAssistant : toggleSidebar
+  return async () => toggle()
+}
+
 const actionFor = (event: KeyboardEvent): Action | null => {
   const debugging = get(debugActive)
+  const panelAction = panelShortcut(event)
+  if (panelAction) return panelAction
   const fileAction = fileShortcut(event)
   if (fileAction) return fileAction
   switch (event.key) {

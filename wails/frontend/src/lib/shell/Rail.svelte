@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { sidebarView, type SidebarView } from '../stores'
+  import { selectSidebarView, sidebarOpen, sidebarView, type SidebarView } from '../stores'
 
   const items: { view: SidebarView; icon: string; label: string }[] = [
     { view: 'files', icon: '▤', label: 'panels.files' },
@@ -13,11 +13,11 @@
   {#each items as item (item.view)}
     <button
       type="button"
-      class:on={$sidebarView === item.view}
-      aria-pressed={$sidebarView === item.view}
+      class:on={$sidebarOpen && $sidebarView === item.view}
+      aria-pressed={$sidebarOpen && $sidebarView === item.view}
       aria-label={$t(item.label)}
       title={$t(item.label)}
-      onclick={() => sidebarView.set(item.view)}
+      onclick={() => selectSidebarView(item.view)}
     >
       {item.icon}
     </button>
