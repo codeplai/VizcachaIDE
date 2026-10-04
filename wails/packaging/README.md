@@ -24,7 +24,7 @@ python wails/packaging/build_release.py --cache-dir /path/to/packaging/cache   #
 ```
 
 Output: `wails/dist/release/VizcachaIDE-<version>-<os>-<arch>-<variant>…` + `SHA256SUMS-*.txt`.
-Version = `info.productVersion` in `wails/wails.json` (`2.1.0`). Wails cannot cross-compile
+Version = `info.productVersion` in `wails/wails.json` (`2.2.0`). Wails cannot cross-compile
 with CGO targets, so each OS/arch is built on its own machine (see `.github/workflows/wails-release.yml`,
 tags `wails-v*`).
 

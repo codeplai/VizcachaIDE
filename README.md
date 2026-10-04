@@ -15,9 +15,9 @@ beginner without the setup that professional IDEs ask for.
 learn it. The name comes from the *vizcacha*, the Andean rodent from Peru that always looks
 relaxed. That is the mood we want for someone writing their first program.
 
-> **Status: edition 2.1.0.** The main product is the new edition in
-> [`wails/`](wails/) (Go backend, Svelte 5 and CodeMirror 6). Since 2.1 its core is ready for more
-> languages: Python and C++ are planned next. The original PyQt5 edition
+> **Status: edition 2.2.0.** The main product is the new edition in
+> [`wails/`](wails/) (Go backend, Svelte 5 and CodeMirror 6). It supports **Go and Python**; C++ is
+> planned next. The original PyQt5 edition
 > (1.x, folder `vizcacha/`) stays available as the [classic edition](#classic-edition-1x-pyqt5),
 > in maintenance.
 

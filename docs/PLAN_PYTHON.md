@@ -80,6 +80,18 @@ Alternativas descartadas por ahora: pyright o basedpyright (mejor análisis, per
 paquete pesado), IPython o ipykernel para la consola (demasiado grandes para el paquete), cling no
 aplica.
 
+## 3.0 Estado (2026-10-04): P0–P6 integrados y QA en verde (46/46)
+
+Todo M1 está en la rama `m1-python`: P0 (contrato y base, orquestador) y P1–P6 (coders Sonnet)
+integrados, con los CCR aplicados (`SupportsRunInTerminalRequest`, `StdioTransport` sin contexto,
+saltar eventos DAP desconocidos, `process.PrepareTree/KillTree`, símbolos planos en `protocol/lsp`,
+pylsp con pyflakes). La QA (`docs/wails/QA_WAILS.md`, sección 2.2.0) pasa 46/46: la paridad de Go y
+la fase de Python del arnés E2E en EN/ES. Arreglos de la QA: depuración sin pausas, tracebacks en
+terminal, catálogo con los mensajes de pyflakes, espacios de los prompts en ConPTY y barra de estado.
+Versión 2.2.0 en `wails.json`, CHANGELOG y `docs/release/notes-2.2.0.{en,es}.md`. Pendiente: fusionar
+en `main`; instalador NSIS de `full-python` y paquetes de macOS/Linux sólo en el CI. Limitación
+conocida: `lsp:status` aún no lleva el lenguaje (M2 puede añadirlo al contrato).
+
 ## 3.1 Decisiones de la revisión (2026-10-03, antes de ejecutar)
 
 Contrastado el plan con el código real de M0, se fijaron estos cambios. Los hace **P0** antes de
