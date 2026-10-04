@@ -1,4 +1,4 @@
-# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpwdtu43i8\mis programas ñandú
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú
 # compiler: g++
 # compileExit: 0
 # program:
@@ -7,3 +7,10 @@
 #       return a[5];
 #   }
 # output:
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp: In function 'int main()':
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:3:15: warning: array subscript 5 is above array bounds of 'int [3]' [-Warray-bounds=]
+    3 |     return a[5];
+      |            ~~~^
+D:\Users\mcalderon\AppData\Local\Temp\tmpw70xzq_f\mis programas ñandú\main.cpp:2:9: note: while referencing 'a'
+    2 |     int a[3] = {1, 2, 3};
+      |         ^

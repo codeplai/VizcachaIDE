@@ -1,4 +1,4 @@
-# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú
 # compiler: clang++
 # compileExit: 0
 # program:
@@ -7,10 +7,10 @@
 #       return a[5];
 #   }
 # output:
-D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:3:12: warning: array index 5 is past the end of the array (that has type 'int[3]') [-Warray-bounds]
+D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú\main.cpp:3:12: warning: array index 5 is past the end of the array (that has type 'int[3]') [-Warray-bounds]
     3 |     return a[5];
       |            ^ ~
-D:\Users\mcalderon\AppData\Local\Temp\tmpr6x5orby\mis programas ñandú\main.cpp:2:5: note: array 'a' declared here
+D:\Users\mcalderon\AppData\Local\Temp\tmpabvnuqzr\mis programas ñandú\main.cpp:2:5: note: array 'a' declared here
     2 |     int a[3] = {1, 2, 3};
       |     ^
 1 warning generated.

@@ -1,6 +1,7 @@
 """Record real compiler and runtime output for the C++ error parser fixtures (track C0).
 
-Usage: python record_cpp_output.py <llvm bin> <gcc bin> <fixtures folder>
+Usage: python record_cpp_output.py <llvm bin> <gcc bin> <fixtures folder> [case ...]
+With case names, only those fixtures are recorded again (the others keep their files).
 Writes <fixtures>/{clang,gcc}/<case>.txt. Programs live in a folder with spaces and an accent,
 like students' folders; compile flags are the adapter's (cpp.CompileFlags on Windows).
 """
@@ -10,6 +11,9 @@ import sys
 import tempfile
 
 FLAGS = ["-std=c++17", "-g", "-O0", "-Wall", "-Wextra", "-fdiagnostics-color=never", "-static"]
+
+# Flags added to a case: GCC only warns about array bounds when it optimises.
+EXTRA_FLAGS = {"array_bounds": ["-O2"]}
 
 COMPILE = {
     "undeclared": 'int main() {\n    int total = 1;\n    return totl;\n}\n',
@@ -33,6 +37,9 @@ COMPILE = {
     "assign_in_condition": 'int main() {\n    int x = 1;\n    if (x = 2) {\n        return 1;\n    }\n    return 0;\n}\n',
     "array_bounds": 'int main() {\n    int a[3] = {1, 2, 3};\n    return a[5];\n}\n',
     "string_compare": 'int main() {\n    const char* s = "si";\n    if (s == "si") {\n        return 1;\n    }\n    return 0;\n}\n',
+    "no_matching_overload": 'void f(int a) {}\nvoid f(double a, double b) {}\nint main() {\n    f("x", "y", "z");\n    return 0;\n}\n',
+    "too_few_args_ptr": 'int sumar(int a, int b) { return a + b; }\nint main() {\n    int (*f)(int, int) = sumar;\n    return f(1);\n}\n',
+    "too_many_args_ptr": 'int doble(int a) { return 2 * a; }\nint main() {\n    int (*f)(int) = doble;\n    return f(1, 2);\n}\n',
     "undefined_reference": 'int calcular(int x);\nint main() {\n    return calcular(2);\n}\n',
     "undefined_main": 'int ayudar() {\n    return 1;\n}\n',
 }
@@ -51,16 +58,19 @@ def header(folder, compiler, source, extra=""):
     return f"# workingDir: {folder}\n# compiler: {compiler}\n{extra}# program:\n{lines}# output:\n"
 
 
-def record(name, compiler, flags, out_dir):
+def record(name, compiler, flags, out_dir, only):
     work = os.path.join(tempfile.mkdtemp(), "mis programas ñandú")
     os.makedirs(work)
     os.makedirs(out_dir, exist_ok=True)
-    for case, source in {**COMPILE, **RUNTIME}.items():
+    cases = {**COMPILE, **RUNTIME}
+    for case, source in cases.items():
+        if only and case not in only:
+            continue
         src = os.path.join(work, "main.cpp")
         exe = os.path.join(work, "main.exe")
         with open(src, "w", encoding="utf-8") as f:
             f.write(source)
-        built = subprocess.run([compiler, *flags, "-o", exe, src], cwd=work, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        built = subprocess.run([compiler, *flags, *EXTRA_FLAGS.get(case, []), "-o", exe, src], cwd=work, capture_output=True, text=True, encoding="utf-8", errors="replace")
         text = built.stdout + built.stderr
         extra = f"# compileExit: {built.returncode}\n"
         if case in RUNTIME and built.returncode == 0:
@@ -69,14 +79,14 @@ def record(name, compiler, flags, out_dir):
             text += ran.stdout + ran.stderr
         with open(os.path.join(out_dir, case + ".txt"), "w", encoding="utf-8", newline="\n") as f:
             f.write(header(work, name, source, extra) + text)
-    print(f"{name}: {len(COMPILE) + len(RUNTIME)} cases in {out_dir}")
+    print(f"{name}: {len(only) or len(cases)} cases in {out_dir}")
 
 
 def main():
-    llvm_bin, gcc_bin, out = sys.argv[1:4]
+    llvm_bin, gcc_bin, out, *only = sys.argv[1:]
     exe = ".exe" if os.name == "nt" else ""
-    record("clang++", os.path.join(llvm_bin, "clang++" + exe), FLAGS, os.path.join(out, "clang"))
-    record("g++", os.path.join(gcc_bin, "g++" + exe), FLAGS, os.path.join(out, "gcc"))
+    record("clang++", os.path.join(llvm_bin, "clang++" + exe), FLAGS, os.path.join(out, "clang"), only)
+    record("g++", os.path.join(gcc_bin, "g++" + exe), FLAGS, os.path.join(out, "gcc"), only)
 
 
 main()

@@ -1,0 +1,466 @@
+[
+ {
+  "id": "CPP-COUT-UNDECLARED",
+  "patterns": [
+   "^'(?P<name>cout|cin|cerr|endl|string|vector|map|set|pair|getline|ifstream|ofstream|stringstream|unique_ptr|shared_ptr)' was not declared in this scope",
+   "^'(?P<name>cout|cin|cerr|endl|string|vector|map|set|pair|getline|ifstream|ofstream|stringstream|unique_ptr|shared_ptr)' does not name a type",
+   "^'(?P<name>[^']+)' is not a member of 'std'",
+   "^use of undeclared identifier '(?P<name>cout|cin|cerr|endl|string|vector|map|set|pair|getline|ifstream|ofstream|stringstream|unique_ptr|shared_ptr|std)'",
+   "^unknown type name '(?P<name>cout|cin|cerr|endl|string|vector|map|set|pair|getline|ifstream|ofstream|stringstream|unique_ptr|shared_ptr)'",
+   "^no member named '(?P<name>[^']+)' in namespace 'std'"
+  ],
+  "en": {
+   "title": "C++ does not find \"{name}\" of the standard library",
+   "body": "The program uses \"{name}\", which belongs to the C++ standard library. Two things are needed to use it: the #include of its header and the std:: prefix (std::cout, std::string...). One of them is missing here, so the compiler does not know the name.",
+   "fix": "At the top of the file add the #include of what you use: #include <iostream> for cout, cin and endl, #include <string> for string, #include <vector> for vector. Then write std::cout, std::endl, std::string... or put \"using namespace std;\" after the includes."
+  },
+  "es": {
+   "title": "C++ no encuentra \"{name}\" de la biblioteca estándar",
+   "body": "El programa usa \"{name}\", que pertenece a la biblioteca estándar de C++. Para usarlo hacen falta dos cosas: el #include de su encabezado y el prefijo std:: (std::cout, std::string...). Aquí falta una de las dos, así que el compilador no conoce el nombre.",
+   "fix": "Al principio del archivo agrega el #include de lo que uses: #include <iostream> para cout, cin y endl, #include <string> para string, #include <vector> para vector. Luego escribe std::cout, std::endl, std::string... o pon \"using namespace std;\" después de los includes."
+  }
+ },
+ {
+  "id": "CPP-UNDECLARED",
+  "patterns": [
+   "^'(?P<name>[^']+)' was not declared in this scope",
+   "^use of undeclared identifier '(?P<name>[^']+)'"
+  ],
+  "en": {
+   "title": "The compiler does not know the name \"{name}\"",
+   "body": "The program uses \"{name}\", but nothing with that name has been declared before that line. Usually the name has a typo, the variable was declared inside another block ({ ... }) and is not visible here, or it is declared further down in the file.",
+   "fix": "Check how \"{name}\" is spelled (uppercase and lowercase matter; the compiler often suggests the right name with \"did you mean\"). Declare the variable with its type before using it, for example int {name} = 0;, and do it in a block that also contains this line."
+  },
+  "es": {
+   "title": "El compilador no conoce el nombre \"{name}\"",
+   "body": "El programa usa \"{name}\", pero antes de esa línea no se ha declarado nada con ese nombre. Casi siempre el nombre tiene una errata, la variable se declaró dentro de otro bloque ({ ... }) y aquí no se ve, o se declara más abajo en el archivo.",
+   "fix": "Revisa cómo escribiste \"{name}\" (importan las mayúsculas y minúsculas; el compilador suele sugerir el nombre correcto con \"did you mean\"). Declara la variable con su tipo antes de usarla, por ejemplo int {name} = 0;, y hazlo en un bloque que también contenga esta línea."
+  }
+ },
+ {
+  "id": "CPP-EXPECTED-SEMICOLON",
+  "patterns": [
+   "^expected (?:',' or )?';' (?:before|after|at end of)"
+  ],
+  "en": {
+   "title": "A semicolon (;) is missing",
+   "body": "In C++ every statement ends with a semicolon. The compiler reached the next line and found the previous statement unfinished. The error is usually reported on the line AFTER the one that lacks the semicolon.",
+   "fix": "Look at the line above the one the error points to and put a ; at its end. Also check the end of every class or struct definition, which needs ; after the closing brace."
+  },
+  "es": {
+   "title": "Falta un punto y coma (;)",
+   "body": "En C++ cada instrucción termina con punto y coma. El compilador llegó a la línea siguiente y encontró la instrucción anterior sin terminar. El error casi siempre se señala en la línea DESPUÉS de la que no tiene el punto y coma.",
+   "fix": "Mira la línea de arriba de la que señala el error y pon un ; al final. Revisa también el final de cada class o struct, que necesita ; después de la llave de cierre."
+  }
+ },
+ {
+  "id": "CPP-EXPECTED-BRACE",
+  "patterns": [
+   "^expected '[{}]'",
+   "^expected declaration or statement",
+   "^expected unqualified-id",
+   "^extraneous closing brace"
+  ],
+  "en": {
+   "title": "A brace is missing or there is one too many",
+   "body": "Every opening brace '{' needs its closing brace '}'. The compiler found the end of the file, or a closing brace, where the blocks do not add up: a brace was forgotten, or there is an extra one that closes a function too early.",
+   "fix": "Look at the note \"to match this '{'\" if it appears: it shows the brace that was never closed. Indent the code and check that each block (function, if, for, while) closes where you expect. Remove any extra '}'."
+  },
+  "es": {
+   "title": "Falta una llave o sobra una",
+   "body": "Cada llave de apertura '{' necesita su llave de cierre '}'. El compilador llegó al final del archivo, o a una llave de cierre, donde los bloques no cuadran: se olvidó una llave, o hay una de más que cierra una función antes de tiempo.",
+   "fix": "Mira la nota \"to match this '{'\" si aparece: te muestra la llave que nunca se cerró. Indenta el código y comprueba que cada bloque (función, if, for, while) cierre donde esperas. Quita cualquier '}' que sobre."
+  }
+ },
+ {
+  "id": "CPP-EXPECTED-PRIMARY",
+  "patterns": [
+   "^expected primary-expression before",
+   "^expected expression$"
+  ],
+  "en": {
+   "title": "An expression is missing",
+   "body": "The compiler expected a value (a number, a variable, a call...) at this point, and found something else, such as a ';' or a ')'. For example \"int x = ;\" has nothing to assign, or an operator like + has no operand next to it.",
+   "fix": "Write the value that should go there, or remove the extra symbol. Check the line the error points to and the one above it, and that every parenthesis has its pair."
+  },
+  "es": {
+   "title": "Falta una expresión",
+   "body": "El compilador esperaba un valor (un número, una variable, una llamada...) en este punto y encontró otra cosa, como un ';' o un ')'. Por ejemplo \"int x = ;\" no tiene nada que asignar, o un operador como + no tiene operando al lado.",
+   "fix": "Escribe el valor que debería ir ahí o quita el símbolo que sobra. Revisa la línea que señala el error y la de arriba, y que cada paréntesis tenga su pareja."
+  }
+ },
+ {
+  "id": "CPP-NO-MATCHING-FUNCTION",
+  "patterns": [
+   "^no matching function for call to '(?P<call>[^']+)'",
+   "^no matching (?:constructor|member function) (?:for initialization of|for call to) '(?P<call>[^']+)'"
+  ],
+  "en": {
+   "title": "No version of \"{call}\" accepts these arguments",
+   "body": "The call to \"{call}\" does not match any function with that name: the number of arguments or their types are not the ones the function expects. The notes below the error list the candidates and tell why each one was discarded.",
+   "fix": "Read the notes of the error: they say what each candidate expects (for example \"requires 2 arguments, but 1 was provided\"). Pass the right number of arguments, in the right order and with the right types, or convert them first."
+  },
+  "es": {
+   "title": "Ninguna versión de \"{call}\" acepta estos argumentos",
+   "body": "La llamada a \"{call}\" no coincide con ninguna función de ese nombre: el número de argumentos o sus tipos no son los que la función espera. Las notas debajo del error listan los candidatos y dicen por qué se descartó cada uno.",
+   "fix": "Lee las notas del error: dicen qué espera cada candidato (por ejemplo \"requires 2 arguments, but 1 was provided\"). Pasa el número correcto de argumentos, en el orden y con los tipos correctos, o conviértelos antes."
+  }
+ },
+ {
+  "id": "CPP-TOO-FEW-ARGS",
+  "patterns": [
+   "^too few arguments to function"
+  ],
+  "en": {
+   "title": "The function is called with too few arguments",
+   "body": "The function needs more arguments than the call gives it. Every parameter in the function's definition must receive a value in the call, unless it has a default value.",
+   "fix": "Look at the definition of the function (the note \"declared here\" points to it) and pass a value for each parameter, in the same order."
+  },
+  "es": {
+   "title": "La función se llama con muy pocos argumentos",
+   "body": "La función necesita más argumentos de los que le da la llamada. Cada parámetro de la definición de la función debe recibir un valor en la llamada, salvo que tenga un valor por defecto.",
+   "fix": "Mira la definición de la función (la nota \"declared here\" te lleva a ella) y pasa un valor para cada parámetro, en el mismo orden."
+  }
+ },
+ {
+  "id": "CPP-TOO-MANY-ARGS",
+  "patterns": [
+   "^too many arguments to function"
+  ],
+  "en": {
+   "title": "The function is called with too many arguments",
+   "body": "The call gives the function more arguments than it has parameters. The compiler does not know what to do with the extra ones.",
+   "fix": "Look at the definition of the function (the note \"declared here\" points to it) and remove the extra arguments, or add the missing parameter to the function if you really need it."
+  },
+  "es": {
+   "title": "La función se llama con demasiados argumentos",
+   "body": "La llamada le da a la función más argumentos de los que tiene parámetros. El compilador no sabe qué hacer con los que sobran.",
+   "fix": "Mira la definición de la función (la nota \"declared here\" te lleva a ella) y quita los argumentos que sobran, o agrega el parámetro que falta a la función si de verdad lo necesitas."
+  }
+ },
+ {
+  "id": "CPP-CANNOT-CONVERT",
+  "patterns": [
+   "^cannot convert '(?P<from>[^']+)'(?: \\{aka '[^']+'\\})? to '(?P<to>[^']+)'",
+   "^could not convert '[^']+' from '(?P<from>[^']+)' to '(?P<to>[^']+)'",
+   "^invalid conversion from '(?P<from>[^']+)' to '(?P<to>[^']+)'",
+   "^no viable conversion from '(?P<from>[^']+)'(?: \\(aka '[^']+'\\))? to '(?P<to>[^']+)'",
+   "^cannot initialize [^']*of type '(?P<to>[^']+)' with an? [^']*of type '(?P<from>[^']+)'",
+   "^assigning to '(?P<to>[^']+)' from incompatible type '(?P<from>[^']+)'"
+  ],
+  "en": {
+   "title": "A value of type \"{from}\" cannot be used as \"{to}\"",
+   "body": "C++ checks the type of every value. Here a value of type \"{from}\" is given where a \"{to}\" is needed, and there is no automatic conversion between the two (for example, a text cannot be turned into a number by assigning it).",
+   "fix": "Use a value of the type \"{to}\", or convert it explicitly with a function that does it (std::stoi turns a text into an int, std::to_string turns a number into a text). Check that the variable has the type you really want."
+  },
+  "es": {
+   "title": "Un valor de tipo \"{from}\" no se puede usar como \"{to}\"",
+   "body": "C++ comprueba el tipo de cada valor. Aquí se da un valor de tipo \"{from}\" donde hace falta un \"{to}\", y no hay conversión automática entre los dos (por ejemplo, un texto no se vuelve número al asignarlo).",
+   "fix": "Usa un valor del tipo \"{to}\", o conviértelo de forma explícita con una función que lo haga (std::stoi convierte un texto en int, std::to_string convierte un número en texto). Comprueba que la variable tenga el tipo que de verdad quieres."
+  }
+ },
+ {
+  "id": "CPP-INVALID-OPERANDS",
+  "patterns": [
+   "^no match for 'operator[^']+' \\(operand types are '(?P<left>[^']+)'(?: \\{aka '[^']+'\\})? and '(?P<right>[^']+)'",
+   "^invalid operands of types '(?P<left>[^']+)'(?: \\{aka '[^']+'\\})? and '(?P<right>[^']+)'",
+   "^invalid operands to binary expression \\('(?P<left>[^']+)'(?: \\(aka '[^']+'\\))? and '(?P<right>[^']+)'"
+  ],
+  "en": {
+   "title": "The operator does not work between \"{left}\" and \"{right}\"",
+   "body": "The program applies an operator (+, -, <<, ==...) to a \"{left}\" and a \"{right}\", and C++ has no definition of that operator for those two types. For example, a vector cannot be added to a string, and a struct cannot be printed with << unless you define how.",
+   "fix": "Use values of types that work with that operator, or convert one of them first. To print or compare your own types, write the operator for them or print their fields one by one."
+  },
+  "es": {
+   "title": "El operador no funciona entre \"{left}\" y \"{right}\"",
+   "body": "El programa aplica un operador (+, -, <<, ==...) a un \"{left}\" y a un \"{right}\", y C++ no tiene definido ese operador para esos dos tipos. Por ejemplo, no se puede sumar un vector a un string, ni imprimir un struct con << si no defines cómo.",
+   "fix": "Usa valores de tipos que funcionen con ese operador, o convierte uno de ellos antes. Para imprimir o comparar tus propios tipos, escribe el operador para ellos o imprime sus campos uno por uno."
+  }
+ },
+ {
+  "id": "CPP-NO-MEMBER",
+  "patterns": [
+   "^'(?P<type>[^']+)'(?: \\{aka '[^']+'\\})? has no member named '(?P<name>[^']+)'",
+   "^no member named '(?P<name>[^']+)' in '(?P<type>[^']+)'"
+  ],
+  "en": {
+   "title": "\"{type}\" has nothing called \"{name}\"",
+   "body": "The program uses \"{name}\" on a \"{type}\" (with a dot or an arrow), but that type has no attribute or method with that name. Usually the name has a typo or belongs to another type.",
+   "fix": "Check how \"{name}\" is spelled (the compiler often suggests the right one with \"did you mean\") and look in the documentation for the real names of the methods of \"{type}\"."
+  },
+  "es": {
+   "title": "\"{type}\" no tiene nada llamado \"{name}\"",
+   "body": "El programa usa \"{name}\" sobre un \"{type}\" (con un punto o una flecha), pero ese tipo no tiene ningún atributo ni método con ese nombre. Casi siempre el nombre tiene una errata o pertenece a otro tipo.",
+   "fix": "Revisa cómo escribiste \"{name}\" (el compilador suele sugerir el correcto con \"did you mean\") y busca en la documentación los nombres reales de los métodos de \"{type}\"."
+  }
+ },
+ {
+  "id": "CPP-REDECLARED",
+  "patterns": [
+   "^(?:redeclaration|redefinition) of '(?P<name>[^']+)'"
+  ],
+  "en": {
+   "title": "\"{name}\" is declared twice",
+   "body": "The same name is declared two times in the same place (the same block of code, or the same file for functions), and C++ does not allow it. The note below the error shows the first declaration.",
+   "fix": "If you want to change the value of the variable, write only \"name = value;\" without repeating the type. If they are different things, give each one its own name. A function defined in two places must be kept in only one."
+  },
+  "es": {
+   "title": "\"{name}\" está declarado dos veces",
+   "body": "El mismo nombre se declara dos veces en el mismo lugar (el mismo bloque de código, o el mismo archivo si son funciones), y C++ no lo permite. La nota debajo del error muestra la primera declaración.",
+   "fix": "Si quieres cambiar el valor de la variable, escribe solo \"nombre = valor;\" sin repetir el tipo. Si son cosas distintas, dale a cada una su propio nombre. Una función definida en dos lugares debe quedarse en uno solo."
+  }
+ },
+ {
+  "id": "CPP-MISSING-RETURN",
+  "patterns": [
+   "^no return statement in function returning non-void",
+   "^control reaches end of non-void function",
+   "^non-void function does not return a value"
+  ],
+  "en": {
+   "title": "The function does not return a value on every path",
+   "body": "The function is declared to return a value (int, double, string...), but it can reach its closing brace without a return. Using the result of a function like that is undefined behavior: the program may print garbage or crash.",
+   "fix": "Add a return with the value at the end of the function, and make sure every branch (if, else, switch) returns something. If the function does not need to return anything, declare it as void."
+  },
+  "es": {
+   "title": "La función no devuelve un valor por todos los caminos",
+   "body": "La función está declarada para devolver un valor (int, double, string...), pero puede llegar a su llave de cierre sin un return. Usar el resultado de una función así es comportamiento indefinido: el programa puede mostrar basura o caerse.",
+   "fix": "Agrega un return con el valor al final de la función y asegúrate de que cada rama (if, else, switch) devuelva algo. Si la función no necesita devolver nada, decláralo como void."
+  }
+ },
+ {
+  "id": "CPP-NO-SUCH-FILE",
+  "patterns": [
+   "^(?P<file>.+): No such file or directory$",
+   "^'(?P<file>[^']+)' file not found"
+  ],
+  "en": {
+   "title": "The file \"{file}\" does not exist",
+   "body": "The #include asks for the file \"{file}\" and the compiler cannot find it, neither among its own headers nor in your folder. The usual cause is a typo in the name (#include <iostreem>), using <> where \"\" is needed, or a header that is in another folder.",
+   "fix": "Check how the name is spelled. Standard headers go between < and > (#include <iostream>); your own files go between quotes (#include \"calculator.h\") and must be in the same folder as the file that includes them."
+  },
+  "es": {
+   "title": "El archivo \"{file}\" no existe",
+   "body": "El #include pide el archivo \"{file}\" y el compilador no lo encuentra, ni entre sus propios encabezados ni en tu carpeta. La causa habitual es una errata en el nombre (#include <iostreem>), usar <> donde hacen falta comillas, o un encabezado que está en otra carpeta.",
+   "fix": "Revisa cómo está escrito el nombre. Los encabezados estándar van entre < y > (#include <iostream>); tus propios archivos van entre comillas (#include \"calculadora.h\") y deben estar en la misma carpeta que el archivo que los incluye."
+  }
+ },
+ {
+  "id": "CPP-UNUSED-VARIABLE",
+  "patterns": [
+   "^unused variable '(?P<name>[^']+)'",
+   "^variable '(?P<name>[^']+)' set but not used"
+  ],
+  "en": {
+   "title": "The variable \"{name}\" is never used",
+   "body": "This is not an error, only a warning: \"{name}\" is declared (and maybe given a value) but nothing reads it afterwards. It is usually a leftover or a sign that you forgot to use it.",
+   "fix": "If you do not need \"{name}\", delete it. If you do, check that you are using it and not a similarly named variable."
+  },
+  "es": {
+   "title": "La variable \"{name}\" nunca se usa",
+   "body": "No es un error, solo un aviso: \"{name}\" se declara (y quizá se le da un valor) pero nada la lee después. Suele ser un resto olvidado o una señal de que te faltó usarla.",
+   "fix": "Si no necesitas \"{name}\", bórrala. Si la necesitas, comprueba que la estás usando y no otra variable con un nombre parecido."
+  }
+ },
+ {
+  "id": "CPP-UNINITIALIZED",
+  "patterns": [
+   "^'(?P<name>[^']+)' (?:may be|is) used uninitialized",
+   "^variable '(?P<name>[^']+)' (?:is|may be) uninitialized when used here"
+  ],
+  "en": {
+   "title": "The variable \"{name}\" is used before it has a value",
+   "body": "\"{name}\" is declared without a value and then it is read. In C++ a local variable has no value of its own: it contains whatever was left in memory, so the program can print garbage or behave differently each time.",
+   "fix": "Give \"{name}\" a value when you declare it, for example int {name} = 0;, or make sure it is assigned on every path before the line that reads it."
+  },
+  "es": {
+   "title": "La variable \"{name}\" se usa antes de tener un valor",
+   "body": "\"{name}\" se declara sin valor y luego se lee. En C++ una variable local no tiene valor propio: contiene lo que haya quedado en la memoria, así que el programa puede mostrar basura o comportarse distinto cada vez.",
+   "fix": "Dale un valor a \"{name}\" cuando la declares, por ejemplo int {name} = 0;, o asegúrate de que se asigne por todos los caminos antes de la línea que la lee."
+  }
+ },
+ {
+  "id": "CPP-SIGN-COMPARE",
+  "patterns": [
+   "^comparison of integer expressions of different signedness",
+   "^comparison of integers of different signs"
+  ],
+  "en": {
+   "title": "A signed and an unsigned number are compared",
+   "body": "This is a warning: one side of the comparison can be negative (int) and the other cannot (unsigned, like the size of a vector). C++ converts the negative number into a huge positive one and the result may be wrong.",
+   "fix": "Use the same kind of number on both sides. In a loop over a vector, declare the counter as size_t (for (size_t i = 0; i < v.size(); i++)) or compare with static_cast<int>(v.size())."
+  },
+  "es": {
+   "title": "Se comparan un número con signo y uno sin signo",
+   "body": "Es un aviso: un lado de la comparación puede ser negativo (int) y el otro no (unsigned, como el tamaño de un vector). C++ convierte el número negativo en uno positivo enorme y el resultado puede ser incorrecto.",
+   "fix": "Usa el mismo tipo de número en los dos lados. En un bucle sobre un vector, declara el contador como size_t (for (size_t i = 0; i < v.size(); i++)) o compara con static_cast<int>(v.size())."
+  }
+ },
+ {
+  "id": "CPP-ASSIGN-IN-CONDITION",
+  "patterns": [
+   "^suggest parentheses around assignment used as truth value",
+   "^using the result of an assignment as a condition without parentheses"
+  ],
+  "en": {
+   "title": "An assignment (=) is used as a condition",
+   "body": "This is a warning: inside the condition of an if or while there is a single =, which assigns a value, instead of ==, which compares. The assignment always gives its own value as the result, so the condition does not check what you wanted.",
+   "fix": "To compare two values write ==: if (x == 2). If you really want to assign inside the condition, put it between extra parentheses: if ((x = 2))."
+  },
+  "es": {
+   "title": "Se usa una asignación (=) como condición",
+   "body": "Es un aviso: dentro de la condición de un if o un while hay un solo =, que asigna un valor, en lugar de ==, que compara. La asignación da su propio valor como resultado, así que la condición no comprueba lo que querías.",
+   "fix": "Para comparar dos valores escribe ==: if (x == 2). Si de verdad quieres asignar dentro de la condición, ponlo entre paréntesis extra: if ((x = 2))."
+  }
+ },
+ {
+  "id": "CPP-ARRAY-BOUNDS",
+  "patterns": [
+   "^array subscript (?P<index>-?\\d+) is (?:above|below|outside) array bounds",
+   "^array index (?P<index>-?\\d+) is (?:past the end|before the beginning) of the array"
+  ],
+  "en": {
+   "title": "The position {index} is outside the array",
+   "body": "The program reads or writes the position {index} of an array that is smaller. The positions of an array of N elements go from 0 to N-1. C++ does not stop you: it touches memory that is not the array's and the program can fail in strange ways.",
+   "fix": "Use a position between 0 and the size of the array minus one. In a loop, stop with i < size and not with i <= size. If you need more room, make the array bigger or use std::vector."
+  },
+  "es": {
+   "title": "La posición {index} está fuera del arreglo",
+   "body": "El programa lee o escribe la posición {index} de un arreglo que es más pequeño. Las posiciones de un arreglo de N elementos van de 0 a N-1. C++ no te detiene: toca memoria que no es del arreglo y el programa puede fallar de formas raras.",
+   "fix": "Usa una posición entre 0 y el tamaño del arreglo menos uno. En un bucle, termina con i < tamaño y no con i <= tamaño. Si necesitas más espacio, haz el arreglo más grande o usa std::vector."
+  }
+ },
+ {
+  "id": "CPP-STRING-COMPARE",
+  "patterns": [
+   "^comparison with string literal results in unspecified behavior",
+   "^result of comparison against a string literal is unspecified"
+  ],
+  "en": {
+   "title": "A text is compared with == and it does not compare the letters",
+   "body": "This is a warning: with a char* or a char array, == compares where the two texts are stored in memory, not their letters, so the result is not what you expect.",
+   "fix": "Use std::string for your texts (#include <string>): then == compares the letters. With C texts use strcmp(a, b) == 0 from <cstring>."
+  },
+  "es": {
+   "title": "Se compara un texto con == y no se comparan las letras",
+   "body": "Es un aviso: con un char* o un arreglo de char, == compara en qué parte de la memoria están guardados los dos textos, no sus letras, así que el resultado no es el que esperas.",
+   "fix": "Usa std::string para tus textos (#include <string>): así == compara las letras. Con textos de C usa strcmp(a, b) == 0 de <cstring>."
+  }
+ },
+ {
+  "id": "CPP-UNDEFINED-MAIN",
+  "patterns": [
+   "^undefined reference to `_?(?:WinMain(?:@\\d+)?|main)'",
+   "^undefined symbol: _?(?:WinMain|main)$"
+  ],
+  "en": {
+   "title": "The program has no main function",
+   "body": "Every C++ program starts in a function called main, and the linker did not find it in the files of the program. The file may only have helper functions, or main is misspelled or has been commented out.",
+   "fix": "Add \"int main() { ... }\" to one of the files, or check that it is spelled exactly like that, in lowercase. If your folder has several .cpp files, only one of them may have main."
+  },
+  "es": {
+   "title": "El programa no tiene la función main",
+   "body": "Todo programa de C++ empieza en una función llamada main, y el enlazador no la encontró en los archivos del programa. Puede que el archivo solo tenga funciones auxiliares, o que main esté mal escrita o comentada.",
+   "fix": "Agrega \"int main() { ... }\" a uno de los archivos, o comprueba que esté escrita exactamente así, en minúsculas. Si tu carpeta tiene varios archivos .cpp, solo uno puede tener main."
+  }
+ },
+ {
+  "id": "CPP-UNDEFINED-REFERENCE",
+  "patterns": [
+   "^undefined reference to `(?P<symbol>.+)'",
+   "^undefined symbol: (?P<symbol>.+)$"
+  ],
+  "en": {
+   "title": "The code of \"{symbol}\" is missing",
+   "body": "The program calls \"{symbol}\" and the compiler accepted it because it is declared, but when it joined the pieces (the link step) it did not find its code. Usually the function is declared but never written, its definition has a slightly different signature, or the file that defines it is not part of the program.",
+   "fix": "Write the body of \"{symbol}\" (a declaration alone is not enough) and check that its name and parameter types are exactly the same in the declaration and in the definition. If it is in another .cpp file, keep both files in the same folder so they are compiled together."
+  },
+  "es": {
+   "title": "Falta el código de \"{symbol}\"",
+   "body": "El programa llama a \"{symbol}\" y el compilador lo aceptó porque está declarado, pero al unir las piezas (el paso de enlazado) no encontró su código. Lo habitual es que la función esté declarada pero nunca escrita, que su definición tenga una firma un poco distinta, o que el archivo que la define no forme parte del programa.",
+   "fix": "Escribe el cuerpo de \"{symbol}\" (una declaración sola no basta) y comprueba que su nombre y los tipos de sus parámetros sean exactamente iguales en la declaración y en la definición. Si está en otro archivo .cpp, deja los dos archivos en la misma carpeta para que se compilen juntos."
+  }
+ },
+ {
+  "id": "CPP-SEGFAULT",
+  "patterns": [
+   "^Segmentation fault"
+  ],
+  "en": {
+   "title": "The program touched memory it is not allowed to use",
+   "body": "The operating system stopped the program because it read or wrote an invalid memory address. The usual causes are using a pointer that is null or was never given an address, going outside an array or a vector, or using memory that was already freed.",
+   "fix": "Look for the pointers and arrays near the last thing the program printed. Check that every pointer points to something before using it (if (p != nullptr)), that the indexes stay inside the array, and use the debugger to see the exact line."
+  },
+  "es": {
+   "title": "El programa tocó memoria que no puede usar",
+   "body": "El sistema operativo detuvo el programa porque leyó o escribió una dirección de memoria inválida. Las causas habituales son usar un puntero nulo o al que nunca se le dio una dirección, salirse de un arreglo o de un vector, o usar memoria que ya se liberó.",
+   "fix": "Busca los punteros y arreglos cerca de lo último que el programa mostró. Comprueba que cada puntero apunte a algo antes de usarlo (if (p != nullptr)), que los índices se queden dentro del arreglo y usa el depurador para ver la línea exacta."
+  }
+ },
+ {
+  "id": "CPP-STACK-OVERFLOW",
+  "patterns": [
+   "^Stack overflow"
+  ],
+  "en": {
+   "title": "A function called itself too many times",
+   "body": "Each call to a function uses a little of a memory area called the stack. A function that calls itself without ever stopping (infinite recursion), or with a huge local array, uses it all and the program is stopped.",
+   "fix": "Check that the recursive function has a base case that stops the calls, and that each call moves closer to it. For big amounts of data use std::vector instead of a local array."
+  },
+  "es": {
+   "title": "Una función se llamó a sí misma demasiadas veces",
+   "body": "Cada llamada a una función usa un poco de una zona de memoria llamada pila. Una función que se llama a sí misma sin detenerse nunca (recursión infinita), o con un arreglo local enorme, la gasta toda y el programa se detiene.",
+   "fix": "Comprueba que la función recursiva tenga un caso base que detenga las llamadas y que cada llamada se acerque a él. Para grandes cantidades de datos usa std::vector en lugar de un arreglo local."
+  }
+ },
+ {
+  "id": "CPP-DIVIDE-ZERO",
+  "patterns": [
+   "^Floating point exception"
+  ],
+  "en": {
+   "title": "The program divided an integer by zero",
+   "body": "Dividing integers by zero (or taking the remainder with %) has no result, and the processor stops the program. The message says \"floating point\" for historical reasons, but it comes from integer division.",
+   "fix": "Check that the divisor is not 0 before dividing: if (b != 0) { ... }. Look at where the divisor gets its value (an input, a counter that was never increased)."
+  },
+  "es": {
+   "title": "El programa dividió un entero entre cero",
+   "body": "Dividir enteros entre cero (o sacar el resto con %) no tiene resultado, y el procesador detiene el programa. El mensaje dice \"floating point\" por razones históricas, pero viene de una división de enteros.",
+   "fix": "Comprueba que el divisor no sea 0 antes de dividir: if (b != 0) { ... }. Mira de dónde saca su valor el divisor (una entrada, un contador que nunca aumentó)."
+  }
+ },
+ {
+  "id": "CPP-OUT-OF-RANGE",
+  "patterns": [
+   "^terminate called after throwing an instance of 'std::out_of_range'",
+   "^libc\\+\\+abi: terminating due to uncaught exception of type std::out_of_range"
+  ],
+  "en": {
+   "title": "A position outside the vector or string was requested",
+   "body": "The method .at() checks the position and, when it is outside the valid range (from 0 to size - 1), throws an out_of_range exception. Nothing in the program caught it, so the program ended.",
+   "fix": "Use a position that exists: from 0 to size() - 1, and check that the vector is not empty. If the position can be wrong, check it first (if (i < v.size())) or catch the error with try and catch."
+  },
+  "es": {
+   "title": "Se pidió una posición fuera del vector o del texto",
+   "body": "El método .at() comprueba la posición y, cuando está fuera del rango válido (de 0 a tamaño - 1), lanza una excepción out_of_range. Nada en el programa la atrapó, así que el programa terminó.",
+   "fix": "Usa una posición que exista: de 0 a size() - 1, y comprueba que el vector no esté vacío. Si la posición puede ser incorrecta, compruébala antes (if (i < v.size())) o atrapa el error con try y catch."
+  }
+ },
+ {
+  "id": "CPP-TERMINATE",
+  "patterns": [
+   "^terminate called after throwing an instance of '(?P<type>[^']+)'",
+   "^libc\\+\\+abi: terminating due to uncaught exception of type (?P<type>.+?)(?:: .*)?$"
+  ],
+  "en": {
+   "title": "An exception of type \"{type}\" was not caught",
+   "body": "Somewhere the program threw an exception (throw) of type \"{type}\", or a library function did, and no try/catch caught it. When that happens C++ ends the program. The text after the type tells what went wrong.",
+   "fix": "Read the message after the type: it says the reason. Find the line that throws it (the debugger shows it) and avoid the cause, or surround that code with try { ... } catch (const std::exception& e) { ... } to handle it."
+  },
+  "es": {
+   "title": "No se atrapó una excepción de tipo \"{type}\"",
+   "body": "En algún punto el programa lanzó una excepción (throw) de tipo \"{type}\", o lo hizo una función de la biblioteca, y ningún try/catch la atrapó. Cuando eso pasa C++ termina el programa. El texto que sigue al tipo dice qué salió mal.",
+   "fix": "Lee el mensaje que sigue al tipo: dice el motivo. Encuentra la línea que la lanza (el depurador te la muestra) y evita la causa, o rodea ese código con try { ... } catch (const std::exception& e) { ... } para manejarla."
+  }
+ }
+]
