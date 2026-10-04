@@ -1,0 +1,24 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn doble(x: i32) -> i32 {
+#       x * 2;
+#   }
+#   fn main() {
+#       println!("{}", doble(2));
+#   }
+# output:
+error[E0308]: mismatched types
+ --> main.rs:1:21
+  |
+1 | fn doble(x: i32) -> i32 {
+  |    -----            ^^^ expected `i32`, found `()`
+  |    |
+  |    implicitly returns `()` as its body has no tail or `return` expression
+2 |     x * 2;
+  |          - help: remove this semicolon to return this value
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0308`.

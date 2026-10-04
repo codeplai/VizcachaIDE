@@ -1,0 +1,21 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   trait Forma { fn area(&self) -> f64; }
+#   struct Cuadrado;
+#   impl Forma for Cuadrado {}
+#   fn main() {}
+# output:
+error[E0046]: not all trait items implemented, missing: `area`
+ --> main.rs:3:1
+  |
+1 | trait Forma { fn area(&self) -> f64; }
+  |               ---------------------- `area` from trait
+2 | struct Cuadrado;
+3 | impl Forma for Cuadrado {}
+  | ^^^^^^^^^^^^^^^^^^^^^^^ missing `area` in implementation
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0046`.

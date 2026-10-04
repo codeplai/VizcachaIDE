@@ -28,6 +28,7 @@ const createRunApi = (): RunApi => ({
   runUntitled: async (path, source, args) =>
     fromWire(await RunService.RunUntitled(path, source, args)),
   build: async (path, args) => fromWire(await RunService.Build(path, args)),
+  runMember: async (path, member, args) => fromWire(await RunService.RunMember(path, member, args)),
   splitArguments: (text) => RunService.SplitArguments(text),
   check: (config) => RunService.Check(toWire(config)),
   stop: () => RunService.Stop(),
@@ -86,7 +87,8 @@ export const createWailsBridge = (): Bridge => ({
     signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
     documentHighlights: async (at) =>
       fromWire(await LanguageService.DocumentHighlights(toWire(at))),
-    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path))
+    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
+    inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible)))
   },
   assistant: {
     explain: async (codeLanguage, raw, dir) =>

@@ -1,0 +1,27 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       printn!("hola");
+#   }
+# output:
+error: cannot find macro `printn` in this scope
+  --> main.rs:2:5
+   |
+ 2 |     printn!("hola");
+   |     ^^^^^^
+   |
+  ::: D:\Users\mcalderon\Documents\Claude\Projects\VizcachaIDE\wails\.toolchain-dev\rustup\toolchains\stable-x86_64-pc-windows-gnu\lib/rustlib/src/rust\library\std\src\macros.rs:86:1
+   |
+86 | macro_rules! print {
+   | ------------------ similarly named macro `print` defined here
+   |
+help: a macro with a similar name exists
+   |
+ 2 -     printn!("hola");
+ 2 +     print!("hola");
+   |
+
+error: aborting due to 1 previous error
+

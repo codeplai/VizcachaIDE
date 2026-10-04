@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sync/atomic"
 	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
@@ -17,6 +18,12 @@ const (
 // request sends a query and returns its raw result. ok is false when the server is missing,
 // not ready in time, failed or timed out: callers then answer with an empty result.
 func (s *Server) request(ctx context.Context, method string, params any) (raw json.RawMessage, ok bool) {
+	return s.requestIf(ctx, method, params, nil)
+}
+
+// requestIf is request that, once the server is ready, does not ask when needs is false: the
+// capability the method depends on was not announced in the initialize result.
+func (s *Server) requestIf(ctx context.Context, method string, params any, needs *atomic.Bool) (raw json.RawMessage, ok bool) {
 	limit := requestTimeout
 	if s.busy.Load() {
 		limit = busyTimeout
@@ -33,9 +40,10 @@ func (s *Server) request(ctx context.Context, method string, params any) (raw js
 		s.busy.Store(true)
 		return nil, false
 	}
-	if conn, usable = s.readyConnection(conn); !usable {
+	if conn, usable = s.readyConnection(conn); !usable || (needs != nil && !needs.Load()) {
 		return nil, false
 	}
+	s.noticeManifests(ctx, conn)
 	result, err := conn.call(ctx, method, params)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {

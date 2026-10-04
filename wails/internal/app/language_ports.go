@@ -60,3 +60,10 @@ type PackageManager interface {
 	Tidy(ctx context.Context, dir string) error
 	List(ctx context.Context, dir string) error
 }
+
+// MemberRunner is a ProgramRunner whose projects can hold several programs: in the root of a
+// Cargo workspace, Run answers that the student must choose a member, and ConfigureMember gives
+// the configuration of the chosen one (docs/PLAN_RUST.md section 3.2 point 8).
+type MemberRunner interface {
+	ConfigureMember(path, member string, programArgs []string) (domain.RunConfiguration, error)
+}

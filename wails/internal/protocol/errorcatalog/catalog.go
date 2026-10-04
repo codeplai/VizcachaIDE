@@ -23,13 +23,17 @@ type texts struct {
 type rawEntry struct {
 	ID       string   `json:"id"`
 	Patterns []string `json:"patterns"`
-	EN       texts    `json:"en"`
-	ES       texts    `json:"es"`
+	// Codes are stable error codes of the compiler (rustc's "E0382", a lint name): a diagnostic
+	// whose Code is one of them is recognised whatever its wording.
+	Codes []string `json:"codes"`
+	EN    texts    `json:"en"`
+	ES    texts    `json:"es"`
 }
 
-// entry recognises one kind of message. The first entry whose pattern matches wins.
+// entry recognises one kind of message. The first entry whose code or pattern matches wins.
 type entry struct {
 	id       string
+	codes    []string
 	patterns []*regexp.Regexp
 	texts    map[string]texts
 }
@@ -67,7 +71,7 @@ func loadCatalog(catalogJSON []byte) (*catalog, error) {
 }
 
 func buildEntry(item rawEntry) (entry, error) {
-	built := entry{id: item.ID, texts: map[string]texts{"en": item.EN, "es": item.ES}}
+	built := entry{id: item.ID, codes: item.Codes, texts: map[string]texts{"en": item.EN, "es": item.ES}}
 	for _, pattern := range item.Patterns {
 		compiled, err := regexp.Compile(pattern)
 		if err != nil {
@@ -75,8 +79,8 @@ func buildEntry(item rawEntry) (entry, error) {
 		}
 		built.patterns = append(built.patterns, compiled)
 	}
-	if len(built.patterns) == 0 {
-		return entry{}, fmt.Errorf("%w: %s has no patterns", ErrInvalidCatalog, item.ID)
+	if len(built.patterns) == 0 && len(built.codes) == 0 {
+		return entry{}, fmt.Errorf("%w: %s has no patterns and no codes", ErrInvalidCatalog, item.ID)
 	}
 	return built, built.checkPlaceholders()
 }
@@ -99,6 +103,9 @@ func (e entry) checkPlaceholders() error {
 }
 
 func (e entry) requireGroup(name string) error {
+	if len(e.patterns) == 0 { // recognised by code only: nothing can fill {name}
+		return fmt.Errorf("%w: %s uses {%s} but has no pattern", ErrInvalidCatalog, e.id, name)
+	}
 	for _, pattern := range e.patterns {
 		if !slices.Contains(pattern.SubexpNames(), name) {
 			return fmt.Errorf("%w: %s uses {%s} but a pattern lacks the group", ErrInvalidCatalog, e.id, name)
@@ -107,10 +114,16 @@ func (e entry) requireGroup(name string) error {
 	return nil
 }
 
-// find returns the first entry that recognises the message, or nil.
-func (c *catalog) find(message string) *match {
+// find returns the first entry that recognises the diagnostic, by its code (when the
+// compiler gives a stable one, "" otherwise) or by its message, or nil. The patterns of an entry
+// recognised by code still fill its placeholders when they match.
+func (c *catalog) find(code, message string) *match {
 	for i := range c.entries {
-		if placeholders, ok := c.entries[i].search(message); ok {
+		placeholders, ok := c.entries[i].search(message)
+		if ok || (code != "" && slices.Contains(c.entries[i].codes, code)) {
+			if placeholders == nil {
+				placeholders = map[string]string{}
+			}
 			return &match{entry: &c.entries[i], placeholders: placeholders}
 		}
 	}

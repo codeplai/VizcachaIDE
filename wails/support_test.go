@@ -9,7 +9,7 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// The start-up check: the Go, Python and C++ supports must form a consistent registry, with every
+// The start-up check: the Go, Python, C++ and Rust supports must form a consistent registry, with every
 // extension routed to its language.
 func TestRegistryOfTheApplicationIsConsistent(t *testing.T) {
 	texts, err := newBackendTexts(func() string { return domain.LanguageEN })
@@ -22,13 +22,14 @@ func TestRegistryOfTheApplicationIsConsistent(t *testing.T) {
 	}
 	for path, want := range map[string]domain.CodeLanguage{
 		"main.go": domain.CodeLanguageGo, "tool.PY": domain.CodeLanguagePython, "a.hpp": domain.CodeLanguageCpp,
+		"main.rs": domain.CodeLanguageRust,
 	} {
 		support, ok := registry.ForPath(path)
 		if !ok || support.Profile.ID != want {
 			t.Errorf("ForPath(%q) = %q, %v; want %q", path, support.Profile.ID, ok, want)
 		}
 	}
-	if registry.Default().Profile.ID != domain.CodeLanguageGo || len(registry.Profiles()) != 3 {
+	if registry.Default().Profile.ID != domain.CodeLanguageGo || len(registry.Profiles()) != 4 {
 		t.Errorf("default = %q, profiles = %d", registry.Default().Profile.ID, len(registry.Profiles()))
 	}
 }

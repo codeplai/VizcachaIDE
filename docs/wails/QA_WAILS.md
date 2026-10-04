@@ -1,5 +1,52 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
+## 2.4.0 (M3, Rust): QA, 2026-10-04
+
+Same environment and harness, branch `m3-rust`, with Rust 1.99.0 stable (`x86_64-pc-windows-gnu`,
+clippy, rustfmt, rust-analyzer) installed by rustup in `wails/.toolchain-dev` and lldb-dap 23.1.2 from
+llvm-mingw.
+
+- **Result: 80/80 steps pass.** The full run gave 78/80: the two Go `editor-intel` steps opened
+  `qa/args/main.go` instead of `qa/complete/main.go` (a harness bug: `openByName` took the first
+  `main.go` of the tree; it now takes a folder, using the tree's new `data-path`), and the EN and ES
+  phases were rerun, 14/14 each. Go, Python and C++ have no regressions, and the new Rust phase
+  (`steps-rust.mjs`, 9 steps × EN/ES) passes: run a loose file with `read_line`, the moved value
+  (E0382) and an index panic explained in the IDE language, live problems from rust-analyzer in a
+  Cargo project, the `Vec<i32>` inlay hint, *More → Build*, the debugger (variables `n`/`resultado`/`i`)
+  with keyboard input, and rustfmt on save.
+- **Fixed during QA:**
+  - rust-analyzer started on a loose file never loaded a Cargo project opened later: one
+    rust-analyzer per Cargo workspace plus one for loose files (`analyzer.Router`); every loose file
+    is a detached file (`lsp.PulledConfiguration`).
+  - Inlay hints asked once while rust-analyzer was still indexing came back empty: the editor asks
+    again with backoff, and when diagnostics or the server status change.
+  - LLDB 23 read the payload of Rust enums at the wrong offset on `*-gnu` (`Some(7)` → `Some(440)`):
+    `lldbdap/data/vizcacha_rust_enums.py` patches the formatters; the hidden `iter` of a `for` loop is
+    no longer a variable.
+  - An llvm-mingw on PATH shadowed rustc's own MinGW linker (`-lgcc_eh` not found): the linker is
+    pinned.
+- **Known limitations:** Rust is not bundled (rustup); rust-analyzer needs several seconds and a few
+  hundred MB per project; borrow-checker errors of a loose file appear after a run (clippy), not
+  live. macOS and Linux are covered only by CI.
+- **Multi-file experiment** (`qa.mjs --only multi`, asked by the user, 24/24 after the fixes): in
+  each language a 4-file project (main → a second file → a third one, and a fourth that uses an
+  external library: Go `github.com/google/uuid`, Python `humanize`, header-only `nlohmann/json`,
+  Rust `rand`) runs, Ctrl+click opens the definition in another file, hover documents the library's
+  function, a breakpoint in the third file shows `main → second → third` with its variables, and an
+  error in the third file is listed in Problems and opens that file. It found four bugs, all fixed:
+  breakpoints of other files were not sent to the debugger; gopls (and rust-analyzer) never heard of
+  `go.mod`/`Cargo.toml` changes made by the package commands (`lsp.ManifestFiles`); `rand` did not
+  build with rustup's GNU toolchain (its dlltool needs an assembler it lacks: LLVM's `llvm-dlltool`
+  is passed, and `RS-DLLTOOL` explains a missing one); LLDB's disassembly pseudo-paths
+  (`tienda.exe\`main`) counted as user code, so the standard library frames below `main` showed.
+  Known gaps: with only rustup (lite, no llvm-mingw) `rand` cannot build; C++ Ctrl+click reaches the
+  declaration in the header (clangd runs without a background index).
+- After those fixes the regression run gave 77/80: the Go `modules` step (EN and ES) opened
+  `qa/loop/main.go` because the reload right after the harness restart still showed the previous
+  folder (the step now retries until the tree is `qa/mod`; both phases then passed 14/14), and the
+  C++ crash card was missing once in ES (not reproduced: the C++ ES phase passed 8/8 when run again).
+- Evidence: [qa-2.4/](qa-2.4/).
+
 ## 2.3.0 (M2, C++): QA, 2026-10-04
 
 Same environment and harness, branch `m2-cpp`, with llvm-mingw 20260922 (clang++, lldb-dap, clangd

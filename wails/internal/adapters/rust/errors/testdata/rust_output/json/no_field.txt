@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g --error-format=json -o main.exe main.rs
+# compileExit: 1
+# program:
+#   struct Punto { x: i32 }
+#   fn main() {
+#       let p = Punto { x: 1 };
+#       println!("{}", p.y);
+#   }
+# output:
+{"$message_type":"diagnostic","message":"no field `y` on type `Punto`","code":{"code":"E0609","explanation":"Attempted to access a nonexistent field in a struct.\n\nErroneous code example:\n\n```compile_fail,E0609\nstruct StructWithFields {\n    x: u32,\n}\n\nlet s = StructWithFields { x: 0 };\nprintln!(\"{}\", s.foo); // error: no field `foo` on type `StructWithFields`\n```\n\nTo fix this error, check that you didn't misspell the field's name or that the\nfield actually exists. Example:\n\n```\nstruct StructWithFields {\n    x: u32,\n}\n\nlet s = StructWithFields { x: 0 };\nprintln!(\"{}\", s.x); // ok!\n```\n"},"level":"error","spans":[{"file_name":"main.rs","byte_start":88,"byte_end":89,"line_start":4,"line_end":4,"column_start":22,"column_end":23,"is_primary":true,"text":[{"text":"    println!(\"{}\", p.y);","highlight_start":22,"highlight_end":23}],"label":"unknown field","suggested_replacement":null,"suggestion_applicability":null,"expansion":null}],"children":[{"message":"a field with a similar name exists","code":null,"level":"help","spans":[{"file_name":"main.rs","byte_start":88,"byte_end":89,"line_start":4,"line_end":4,"column_start":22,"column_end":23,"is_primary":true,"text":[{"text":"    println!(\"{}\", p.y);","highlight_start":22,"highlight_end":23}],"label":null,"suggested_replacement":"x","suggestion_applicability":"MaybeIncorrect","expansion":null}],"children":[],"rendered":null}],"rendered":"error[E0609]: no field `y` on type `Punto`\n --> main.rs:4:22\n  |\n4 |     println!(\"{}\", p.y);\n  |                      ^ unknown field\n  |\nhelp: a field with a similar name exists\n  |\n4 -     println!(\"{}\", p.y);\n4 +     println!(\"{}\", p.x);\n  |\n\n"}
+{"$message_type":"diagnostic","message":"aborting due to 1 previous error","code":null,"level":"error","spans":[],"children":[],"rendered":"error: aborting due to 1 previous error\n\n"}
+{"$message_type":"diagnostic","message":"For more information about this error, try `rustc --explain E0609`.","code":null,"level":"failure-note","spans":[],"children":[],"rendered":"For more information about this error, try `rustc --explain E0609`.\n"}

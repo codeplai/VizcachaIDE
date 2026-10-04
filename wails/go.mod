@@ -3,6 +3,7 @@ module github.com/codeplai/VizcachaIDE/wails
 go 1.26.0
 
 require (
+	github.com/BurntSushi/toml v1.6.0
 	github.com/aymanbagabas/go-pty v0.2.3
 	github.com/charmbracelet/x/ansi v0.11.8
 	github.com/google/go-dap v0.12.0

@@ -109,3 +109,12 @@ func (s *LanguageService) DocumentSymbols(path string) ([]domain.DocumentSymbol,
 	}
 	return server.DocumentSymbols(context.Background(), path)
 }
+
+// InlayHints returns the hints of the visible lines of a file (inferred types, parameter names).
+func (s *LanguageService) InlayHints(visible domain.SourceRange) ([]domain.InlayHint, error) {
+	server := s.serverFor(visible.Start.File)
+	if server == nil {
+		return []domain.InlayHint{}, nil
+	}
+	return server.InlayHints(context.Background(), visible)
+}

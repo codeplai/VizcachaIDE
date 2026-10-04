@@ -219,6 +219,66 @@ Respuestas a las preguntas abiertas. Mandan sobre lo que digan otras secciones d
    - Hacen falta textos nuevos para el selector: `run.chooseMember` y `errors.rustNoBinary`, que R0
      añade a §6.
 
+## 3.3 Resultado de R0 (2026-10-04)
+
+Hecho por el orquestador en la rama `m3-rust` (parte de `main` con M2 y 2.3.0). **Mandan sobre §4 y §9
+donde difieran.**
+
+**Entorno de desarrollo.** rustup aislado en `wails/.toolchain-dev` (`RUSTUP_HOME=.toolchain-dev/rustup`,
+`CARGO_HOME=.toolchain-dev/cargo`, `--no-modify-path`): Rust **1.99.0** estable, host
+`x86_64-pc-windows-gnu`, con clippy, rustfmt, rust-analyzer y rust-src. Los tests lo encuentran solos al
+subir desde la carpeta del test; en un worktree, que no tiene `.toolchain-dev`, hay que darles
+`VIZCACHA_TEST_CARGO_HOME`, `VIZCACHA_TEST_RUSTUP_HOME` y `VIZCACHA_TEST_LLVM_BIN` (rutas absolutas a
+las carpetas del checkout principal).
+
+**Spikes.**
+1. *Enlazador GNU:* `rustc hola.rs` enlaza **sin ningún `gcc` en el PATH**: el toolchain GNU de rustup
+   trae su propio MinGW en `lib/rustlib/x86_64-pc-windows-gnu/bin/self-contained`
+   (`x86_64-w64-mingw32-gcc.exe`, `ld.exe`). `Toolchain.SelfContainedLinker` lo comprueba; el `clang`
+   de llvm-mingw sólo se pasa como enlazador si esa carpeta falta (§3.2 punto 2).
+2. *Formateadores de LLDB:* rustc 1.99 trae `lib/rustlib/etc/lldb_lookup.py`, `lldb_providers.py` y
+   `rust_types.py`, pero **no** `lldb_commands` (el plan de §4.4 lo daba por hecho). R2 carga los
+   formateadores como lo hace el script `rust-lldb` de esta versión: `command script import
+   <etc>/lldb_lookup.py` y los `type synthetic add`/`type summary add` que ese script registra (leerlo
+   en `cargo/bin/rust-lldb` o en la fuente de rustc). El LLDB de llvm-mingw trae Python 3.14 (§3.2 punto 3).
+3. *Mensaje de `panic` real (1.99):* `thread 'main' (35236) panicked at main.rs:4:21:` — **con el id
+   del hilo entre paréntesis**, que el patrón de §4.7 no contempla — y la línea siguiente es el mensaje.
+   Con `RUST_BACKTRACE=1` la pila trae el frame del alumno: `   6: main::main` /
+   `             at .\main.rs:4:21`, y los de la biblioteca con `/rustc/<hash>/library` o la ruta de
+   `rust-src` del sysroot. Los fixtures mandan.
+
+**Contrato añadido** (los tracks lo usan, no lo cambian sin CCR):
+- `domain.CodeLanguageRust`, `domain.ProjectCargo`, `domain.InlayHint{Line, Column, Label, Kind,
+  PaddingLeft, PaddingRight}` con `InlayHintType|Parameter|Other`, `Settings.InlayHints` (por defecto
+  `true`); en el frontend `CodeLanguage` incluye `'rust'`, `ProjectKind` `'cargo'`, `InlayHint` y
+  `settings.inlayHints`.
+- `app.LanguageServer.InlayHints(ctx, visible domain.SourceRange) ([]domain.InlayHint, error)`,
+  `bridge.LanguageService.InlayHints`, `bridge.language.inlayHints(visible)` (mock: `[]`).
+  `lsp.Server.InlayHints` existe y devuelve `[]` hasta R6.
+- `process.Job.OutputFilter` (`process.OutputFilter func(stream, line string) (string, bool)`): sólo en
+  etapas `Pipes`, línea completa por línea completa, sin el salto (se repone).
+- `errorcatalog`: una entrada puede tener `"codes": ["E0382"]`; se reconoce si `Diagnostic.Code` es
+  uno de ellos **o** si un patrón casa con el mensaje (los patrones, si casan, rellenan los
+  marcadores). Una entrada sólo con códigos no puede usar `{marcadores}`. El parser de Rust pone en
+  `Diagnostic.Code` el código de rustc (`E0382`, `unused_variables`, `clippy::needless_range_loop`).
+- `adapters/rust`: `Profile`; `NewLocator(Options{Settings, AppDir, BaseEnvironment, Probe})` con
+  `Tool(id) domain.ToolStatus` (configurado → `toolchain/cpp/bin` sólo para lldb-dap → `CARGO_HOME/bin`
+  → PATH; clippy es `cargo-clippy`), `Toolchain(ctx) (Toolchain, error)` (en caché; `MissingTool("rustc")`
+  o `ErrNoToolchain`) y `Environment()`; `Toolchain{Rustc, Version, Channel, Host, Sysroot}` con
+  `Edition()`, `Advice(goos)` (claves `errors.rustMsvcHost`, `errors.rustNotStable`,
+  `errors.rustTooOld`), `SelfContainedLinker(exists)` y `FormattersDir()`; `MinimumStable = "1.99.0"`;
+  `rust.Environment(base)`; `FindProject(path) (CargoProject, ok, err)` con `Root`, `Manifest`, `Name`,
+  `Edition`, `Workspace`, `Virtual`, `Members`, `Binaries`, `DefaultRun`, `Context()` y `BinaryFor(file)`.
+  Lee `Cargo.toml` con `github.com/BurntSushi/toml` (MIT).
+- `adapters/rust/rusttest`: `Environment(t)`, `Rustc(t)`, `LldbDap(t)`, `Exe`.
+- Fixtures en `adapters/rust/errors/testdata/rust_output/{json,text,runtime,clippy,cargo}` (32 casos
+  de compilación en JSON y texto, 13 de ejecución, 2 de clippy, 3 de cargo) grabados con
+  `record_rust_output.py` desde una carpeta con espacios y acentos.
+- depguard `rust-adapter-stays-in-rust`; textos de §6 más `settings.inlayHints`, `run.chooseMember`,
+  `errors.rustNotStable`, `errors.rustTooOld` y `errors.rustLldbNoPython` (687 por idioma).
+- Plantillas `rust` (hola y en blanco) en `editor/templates.ts`; el mock usa de momento la muestra de
+  Go para Rust (R5 añade la suya).
+
 ## 4. Diseño: `wails/internal/adapters/rust/`
 
 ```

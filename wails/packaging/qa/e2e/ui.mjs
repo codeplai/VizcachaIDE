@@ -16,11 +16,15 @@ export const reload = async (page, url, lang) => {
   if (lang) await page.evaluate(() => 0)
 }
 
-/** Double-clicks a file in the Files panel (opens it in a tab). */
-export const openByName = async (page, name) => {
+/** Double-clicks a file in the Files panel (opens it in a tab); `folder` picks among same names. */
+export const openByName = async (page, name, folder = '') => {
   const handle = await page.evaluateHandle(
-    (n) => [...document.querySelectorAll('button.file:not(.dir)')].find((b) => b.textContent.trim() === n),
-    name
+    (n, f) =>
+      [...document.querySelectorAll('button.file:not(.dir)')].find(
+        (b) => b.textContent.trim() === n && (b.dataset.path ?? '').split(String.fromCharCode(92)).join('/').includes(f)
+      ),
+    name,
+    folder
   )
   const el = handle.asElement()
   if (!el) throw new Error(`file not in the tree: ${name}`)

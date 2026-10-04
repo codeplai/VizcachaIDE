@@ -1,0 +1,29 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: main.exe
+# runExit: 101 (0x00000065)
+# program:
+#   fn main() {
+#       let v: Vec<i32> = Vec::new();
+#       let x = v.first().unwrap();
+#       println!("{}", x);
+#   }
+# output:
+
+thread 'main' (35336) panicked at main.rs:3:23:
+called `Option::unwrap()` on a `None` value
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\std\src/panicking.rs:679:5
+   1: core::panicking::panic_fmt
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/panicking.rs:80:14
+   2: core::panicking::panic
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/panicking.rs:150:5
+   3: core::option::unwrap_failed
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/option.rs:2248:5
+   4: <core::option::Option<&i32>>::unwrap
+             at D:\Users\mcalderon\Documents\Claude\Projects\VizcachaIDE\wails\.toolchain-dev\rustup\toolchains\stable-x86_64-pc-windows-gnu\lib/rustlib/src/rust\library\core\src\option.rs:1014:21
+   5: main::main
+             at .\main.rs:3:23
+   6: <fn() as core::ops::function::FnOnce<()>>::call_once
+             at D:\Users\mcalderon\Documents\Claude\Projects\VizcachaIDE\wails\.toolchain-dev\rustup\toolchains\stable-x86_64-pc-windows-gnu\lib/rustlib/src/rust\library\core\src\ops\function.rs:250:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

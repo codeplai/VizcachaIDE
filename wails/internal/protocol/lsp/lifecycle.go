@@ -23,7 +23,7 @@ func (s *Server) ensureStartedLocked(path string) {
 		return
 	}
 	root := s.flavor.RootOf(path)
-	conn, err := startConnection(executable, args, env, root, s.onNotification)
+	conn, err := startConnection(executable, args, env, root, s.onNotification, s.answer)
 	if err != nil {
 		slog.Warn("language server did not start", "server", s.opts.Name, "error", err)
 		s.makeUnavailableLocked(nil)
@@ -40,6 +40,7 @@ func (s *Server) ensureStartedLocked(path string) {
 func (s *Server) initialize(conn *connection, root string) {
 	ctx, cancel := context.WithTimeout(context.Background(), initializeTimeout)
 	defer cancel()
+	s.rememberManifests(root) // what the server is about to read
 	err := s.handshake(ctx, conn, root)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -60,9 +61,11 @@ func (s *Server) initialize(conn *connection, root string) {
 
 // handshake sends initialize, initialized and, if the flavor has one, its configuration.
 func (s *Server) handshake(ctx context.Context, conn *connection, root string) error {
-	if _, err := conn.call(ctx, "initialize", initializeParams(root, s.flavor.InitializationOptions())); err != nil {
+	result, err := conn.call(ctx, "initialize", initializeParams(root, s.flavor.InitializationOptions(), pullsConfiguration(s.flavor)))
+	if err != nil {
 		return err
 	}
+	s.hints.Store(announcesInlayHints(result))
 	if err := conn.notify(ctx, "initialized", protocol.InitializedParams{}); err != nil {
 		return err
 	}
@@ -105,6 +108,7 @@ func (s *Server) openLocked(doc document) {
 		s.notifyLocked("workspace/didChangeWorkspaceFolders", addFolderParams(root))
 	}
 	s.notifyLocked("textDocument/didOpen", didOpenParams(doc, s.opts.LanguageID))
+	s.refreshConfigurationLocked() // after didOpen, as rust-analyzer needs it for a new detached file
 }
 
 func (s *Server) notifyLocked(method string, params any) {

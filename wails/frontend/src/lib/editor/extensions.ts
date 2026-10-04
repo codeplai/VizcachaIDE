@@ -13,6 +13,7 @@ import { documentSync } from './documentSync'
 import { goCompletion } from './lspCompletion'
 import { goToDefinition, type OpenLocation } from './goToDefinition'
 import { hoverDocs } from './hoverDocs'
+import { inlayHints, type InlayHints } from './inlayHints'
 import { inlineHints } from './inlineHint'
 import { emptyMarks, marksField } from './marks'
 import { problemLint } from './problemLint'
@@ -42,10 +43,15 @@ const keys = Prec.high(
   ])
 )
 
-const languageExtensions = (wiring: LanguageWiring | null, file: DocumentContext): Extension[] => {
+const languageExtensions = (
+  wiring: LanguageWiring | null,
+  file: DocumentContext,
+  inlay: InlayHints | null
+): Extension[] => {
   if (!wiring) return []
   const { language, openLocation } = wiring
   return [
+    ...(inlay ? [inlay.extension] : []),
     goCompletion(language, file),
     hoverDocs(language, file),
     signatureHelp(language, file),
@@ -63,6 +69,8 @@ export interface EditorExtensions {
   extensions: Extension[]
   /** Sends pending edits to gopls. */
   flush: () => Promise<void>
+  /** The inlay hints, when the editor has a language service. */
+  inlay: InlayHints | null
 }
 
 export const editorExtensions = (
@@ -73,6 +81,7 @@ export const editorExtensions = (
 ): EditorExtensions => {
   const sync = wiring ? documentSync(wiring.language, getPath) : null
   const file: DocumentContext = { path: getPath, flush: sync?.flush ?? (async () => {}) }
+  const inlay = wiring ? inlayHints(wiring.language, file) : null
   const extensions = [
     marksField.init(() => emptyMarks),
     phrases.of([]),
@@ -93,12 +102,12 @@ export const editorExtensions = (
     editorHighlighting,
     inlineHints,
     ...(sync ? [sync.extension] : []),
-    ...languageExtensions(wiring, file),
+    ...languageExtensions(wiring, file, inlay),
     EditorView.updateListener.of((update) => {
       if (update.docChanged && !isExternalEdit(update))
         handlers.onChange(update.state.doc.toString())
       if (update.selectionSet || update.docChanged) reportCursor(update.state, handlers)
     })
   ]
-  return { extensions, flush: file.flush }
+  return { extensions, flush: file.flush, inlay }
 }

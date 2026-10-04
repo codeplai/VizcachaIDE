@@ -98,6 +98,8 @@ type LanguageServer interface {
 	DocumentHighlights(ctx context.Context, at domain.SourceLocation) ([]domain.SourceRange, error)
 	// DocumentSymbols returns the nested declarations of an open document (for the Outline).
 	DocumentSymbols(ctx context.Context, path string) ([]domain.DocumentSymbol, error)
+	// InlayHints returns the hints of the visible part of an open document (Start.File).
+	InlayHints(ctx context.Context, visible domain.SourceRange) ([]domain.InlayHint, error)
 	Shutdown(ctx context.Context) error
 }
 

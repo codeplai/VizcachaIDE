@@ -1,0 +1,28 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       let n: i32 = "5".parse()?;
+#       println!("{}", n);
+#   }
+# output:
+error[E0277]: the `?` operator can only be used in a function that returns `Result` or `Option` (or another type that implements `FromResidual`)
+ --> main.rs:2:29
+  |
+1 | fn main() {
+  | --------- this function should return `Result` or `Option` to accept `?`
+2 |     let n: i32 = "5".parse()?;
+  |                             ^ cannot use the `?` operator in a function that returns `()`
+  |
+help: consider adding return type
+  |
+1 ~ fn main() -> Result<(), Box<dyn std::error::Error>> {
+2 |     let n: i32 = "5".parse()?;
+3 |     println!("{}", n);
+4 +     Ok(())
+  |
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0277`.

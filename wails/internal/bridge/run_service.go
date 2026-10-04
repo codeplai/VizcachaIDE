@@ -39,6 +39,28 @@ func (s *RunService) Run(path string, programArgs []string) (domain.RunConfigura
 	return config, nil
 }
 
+// RunMember runs the member of a Cargo workspace the student chose after Run answered
+// run.chooseMember. Languages without members answer app.ErrUnsupported.
+func (s *RunService) RunMember(path, member string, programArgs []string) (domain.RunConfiguration, error) {
+	support, err := s.supportFor(path)
+	if err != nil {
+		return domain.RunConfiguration{}, fmt.Errorf("run %s: %w", member, err)
+	}
+	members, ok := support.Runner.(app.MemberRunner)
+	if !ok {
+		return domain.RunConfiguration{}, fmt.Errorf("run %s: %w", member, app.ErrUnsupported)
+	}
+	config, err := members.ConfigureMember(path, member, programArgs)
+	if err != nil {
+		return config, fmt.Errorf("run %s: %w", member, err)
+	}
+	if err := support.Runner.Run(context.Background(), config); err != nil {
+		return config, fmt.Errorf("run %s: %w", member, err)
+	}
+	s.remember(support.Runner)
+	return config, nil
+}
+
 // Build compiles one file without running it. Languages without a build step answer
 // app.ErrUnsupported.
 func (s *RunService) Build(path string, programArgs []string) (domain.RunConfiguration, error) {

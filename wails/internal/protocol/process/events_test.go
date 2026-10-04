@@ -53,3 +53,28 @@ func TestFinishedLineComesBeforeTheEnd(t *testing.T) {
 		t.Errorf("stderr = %q, want the crash line", sink.Stderr())
 	}
 }
+
+func TestOutputFilterRewritesAndDropsWholeLines(t *testing.T) {
+	sink := newSink()
+	supervisor := process.New(sink)
+	job := helperJob("print", "json:error E0382\nnoise\nplain text", "0")
+	job.OutputFilter = func(stream, line string) (string, string, bool) {
+		if line == "noise" {
+			return stream, "", false
+		}
+		if strings.HasPrefix(line, "json:") {
+			return "stderr", strings.TrimPrefix(line, "json:"), true
+		}
+		return stream, line, true
+	}
+	if err := supervisor.Start(context.Background(), job); err != nil {
+		t.Fatal(err)
+	}
+	sink.waitFinished(t)
+	if got := strings.ReplaceAll(sink.Stdout(), "\r", ""); got != "plain text\n" {
+		t.Errorf("stdout = %q", got)
+	}
+	if got := strings.ReplaceAll(sink.Stderr(), "\r", ""); got != "error E0382\n" {
+		t.Errorf("stderr = %q", got)
+	}
+}

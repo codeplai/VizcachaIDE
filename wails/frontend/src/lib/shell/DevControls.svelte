@@ -17,8 +17,10 @@
     { scenario: 'write', label: 'dev.stateWrite' },
     { scenario: 'error', label: 'dev.stateError' },
     { scenario: 'debug', label: 'dev.stateDebug' },
-    // Only C++ has a crash to show (Segmentation fault).
-    ...(sampleLanguage === 'cpp' ? [{ scenario: 'crash' as const, label: 'dev.stateCrash' }] : [])
+    // Native languages have a crash to show: a Segmentation fault, a Rust panic.
+    ...(sampleLanguage === 'cpp' || sampleLanguage === 'rust'
+      ? [{ scenario: 'crash' as const, label: 'dev.stateCrash' }]
+      : [])
   ]
   const languages = ['es', 'en'] as const
   const themes = [

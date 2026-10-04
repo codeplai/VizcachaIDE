@@ -1,6 +1,6 @@
 // Part of the domain.ts contract (v3): the language profiles. Import it through domain.ts.
 
-export type CodeLanguage = 'go' | 'python' | 'cpp'
+export type CodeLanguage = 'go' | 'python' | 'cpp' | 'rust'
 
 export type PackageAction = 'init' | 'add' | 'remove' | 'tidy' | 'list'
 
@@ -59,4 +59,6 @@ export interface ToolStatus {
   version: string
   source: ToolSource
   path: string
+  /** i18n keys of non-blocking advice about the tool (errors.rustTooOld...); null or [] when none. */
+  advice?: string[] | null
 }

@@ -9,14 +9,22 @@ import { assistantOpen, cursor } from './layout'
 import { showNotice } from './notice'
 import { programArguments } from './programArguments'
 import { lastRunConfiguration, pushRunText, resetRun, stoppedByUser } from './run'
+import { runOrChooseMember } from './runMember'
 import { withToolErrors } from './toolErrors'
 import { isUntitled } from './untitled'
 
-const breakpointsOf = (file: string): Breakpoint[] =>
-  (get(breakpoints)[file] ?? []).map((line) => ({
-    location: { file, line, column: 1 },
-    condition: ''
-  }))
+/**
+ * The breakpoints a debug session of `file` starts with: those of every file of its language, so
+ * a breakpoint in another file of the project (a function main calls) stops too.
+ */
+const breakpointsOf = (file: string): Breakpoint[] => {
+  const language = codeLanguageOf(file)
+  return Object.entries(get(breakpoints))
+    .filter(([other]) => codeLanguageOf(other) === language)
+    .flatMap(([other, lines]) =>
+      lines.map((line) => ({ location: { file: other, line, column: 1 }, condition: '' }))
+    )
+}
 
 /** The "Program arguments" text split like a shell, or null (after saying why) if it is invalid. */
 const splitProgramArguments = async (bridge: Bridge, text: string): Promise<string[] | null> => {
@@ -37,7 +45,7 @@ export const runActiveFile = async (bridge: Bridge): Promise<void> => {
   await withToolErrors(bridge, codeLanguageOf(path), () =>
     isUntitled(path)
       ? bridge.run.runUntitled(path, get(buffers)[path] ?? '', args)
-      : bridge.run.run(path, args)
+      : runOrChooseMember(path, args, () => bridge.run.run(path, args))
   )
 }
 

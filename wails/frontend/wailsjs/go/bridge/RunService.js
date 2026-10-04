@@ -18,6 +18,10 @@ export function Run(arg1, arg2) {
   return window['go']['bridge']['RunService']['Run'](arg1, arg2);
 }
 
+export function RunMember(arg1, arg2, arg3) {
+  return window['go']['bridge']['RunService']['RunMember'](arg1, arg2, arg3);
+}
+
 export function RunUntitled(arg1, arg2, arg3) {
   return window['go']['bridge']['RunService']['RunUntitled'](arg1, arg2, arg3);
 }

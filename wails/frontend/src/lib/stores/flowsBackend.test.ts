@@ -10,7 +10,9 @@ import { setupI18n } from '../i18n'
 import SettingsDialog from '../shell/SettingsDialog.svelte'
 import {
   activePath,
+  breakpoints,
   buffers,
+  debugActive,
   connectStores,
   interfaceLanguage,
   notice,
@@ -58,6 +60,21 @@ describe('program arguments', () => {
     expect(run).toHaveBeenCalledWith(SAMPLE_MAIN, ['--name', '"Ada', 'Lovelace"'])
     await startDebugging(bridge)
     expect(start.mock.calls[0]?.[2]).toBe('--name "Ada Lovelace"')
+  })
+
+  it('Debug sends the breakpoints of the other files of the same language too', async () => {
+    const bridge = await setUp()
+    const start = vi.spyOn(bridge.debug, 'start')
+    const helper = SAMPLE_MAIN.replace(/main\.go$/, 'helper.go')
+    breakpoints.set({ [helper]: [3], [SAMPLE_MAIN]: [5], 'C:/otro/app.py': [2] })
+    debugActive.set(false)
+    await startDebugging(bridge)
+    expect(start).toHaveBeenCalled()
+    const files = (start.mock.calls[0]?.[1] ?? []).map((point) => point.location.file)
+    expect(files).toContain(helper)
+    expect(files).toContain(SAMPLE_MAIN)
+    expect(files).not.toContain('C:/otro/app.py')
+    breakpoints.set({})
   })
 
   it('says so and does not run when the arguments cannot be split', async () => {

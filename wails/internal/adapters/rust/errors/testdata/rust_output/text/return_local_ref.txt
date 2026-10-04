@@ -1,0 +1,21 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn crear() -> &'static str {
+#       let s = String::from("hola");
+#       &s
+#   }
+#   fn main() {
+#       println!("{}", crear());
+#   }
+# output:
+error[E0515]: cannot return reference to local variable `s`
+ --> main.rs:3:5
+  |
+3 |     &s
+  |     ^^ returns a reference to data owned by the current function
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0515`.

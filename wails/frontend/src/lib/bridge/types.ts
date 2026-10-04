@@ -5,6 +5,7 @@ import type {
   CompletionItem,
   Diagnostic,
   DocumentSymbol,
+  InlayHint,
   ExplainedDiagnostic,
   FileNode,
   FrameVariables,
@@ -27,6 +28,8 @@ export interface RunApi {
   /** path is the untitled name (e.g. "untitled-1.py"): its extension decides the language. */
   runUntitled: (path: string, source: string, programArgs: string[]) => Promise<RunConfiguration>
   build: (path: string, programArgs: string[]) => Promise<RunConfiguration>
+  /** Runs the member of a Cargo workspace chosen after `run` rejected with run.chooseMember. */
+  runMember: (path: string, member: string, programArgs: string[]) => Promise<RunConfiguration>
   /** Splits the "program arguments" text like a shell (quotes group words). */
   splitArguments: (text: string) => Promise<string[]>
   /** Runs the checker of config.codeLanguage (go vet, ruff check); "" when it found nothing. */
@@ -77,6 +80,8 @@ export interface LanguageApi {
   signatureHelp: (at: SourceLocation) => Promise<SignatureHelp | null>
   documentHighlights: (at: SourceLocation) => Promise<SourceRange[]>
   documentSymbols: (path: string) => Promise<DocumentSymbol[]>
+  /** The hints of the visible lines of an open file (`visible.start.file`). */
+  inlayHints: (visible: SourceRange) => Promise<InlayHint[]>
 }
 
 /** Mirrors bridge.AssistantService (Go). */
@@ -86,7 +91,10 @@ export interface AssistantApi {
     rawOutput: string,
     workingDir: string
   ) => Promise<ExplainedDiagnostic[]>
-  explainDiagnostics: (codeLanguage: CodeLanguage | '', diagnostics: Diagnostic[]) => Promise<ExplainedDiagnostic[]>
+  explainDiagnostics: (
+    codeLanguage: CodeLanguage | '',
+    diagnostics: Diagnostic[]
+  ) => Promise<ExplainedDiagnostic[]>
 }
 
 /** Mirrors bridge.ConsoleService (Go). */

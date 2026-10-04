@@ -10,6 +10,7 @@ const (
 	ProjectGoModule  ProjectKind = "gomod"
 	ProjectFolder    ProjectKind = "folder"
 	ProjectPyProject ProjectKind = "pyproject"
+	ProjectCargo     ProjectKind = "cargo"
 )
 
 // ProjectContext is the project found around the file being run. For Go, Name is the

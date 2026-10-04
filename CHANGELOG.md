@@ -8,6 +8,63 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-10-04
+
+Wails edition. **Rust** is the fourth language: write, compile and run, understand compiler errors
+and panics, debug with the keyboard working, format and manage Cargo packages, with the same
+experience as Go, Python and C++. **Inlay hints** arrive for every language whose code helper offers
+them. Go, Python and C++ work as in 2.3.0 (80/80 QA steps in English and Spanish, see
+`docs/wails/QA_WAILS.md`).
+
+### Added
+- **Run Rust** (F5): a loose `.rs` file compiles with `rustc`, a Cargo project with `cargo`; the
+  program runs in a terminal, so `read_line` reads what you type in Output. *More → Build* compiles
+  without running. Cargo **workspaces** work: the member of the open file runs, and from the
+  workspace root a dialog asks which program to run.
+- **The Assistant explains about 45 Rust errors** in English and Spanish, recognised by rustc's
+  stable codes: ownership and borrowing (moved value, two mutable borrows, a reference that does not
+  live long enough…) with a tiny example, mismatched types, unknown names and imports, missing `;` or
+  `}`, panics (index out of bounds, `unwrap` on `None` or `Err`, overflow, division by zero…) at the
+  line of your code, a stack overflow, and clippy advice.
+- **Debugger for Rust** (lldb-dap, shared with C++): breakpoints, steps, readable `String`, `Vec`,
+  `Option`, `Result` and `HashMap`, a stop at the line of a `panic!`, and **keyboard input while
+  debugging**.
+- **Code intelligence for Rust** (rust-analyzer): live problems, completion, hover, signature help,
+  go to definition and the Outline, for Cargo projects and loose files.
+- **Format on save** with rustfmt, **clippy** advice after a run, and the **Packages** dialog for
+  Cargo (init, add, remove, list).
+- **Inlay hints** (inferred types and parameter names) for Rust, Go and C++, drawn inside the code
+  without changing it; Settings → Editor turns them off. Python's code helper has none.
+- Settings → Tools tells what to fix in a Rust install (Visual Studio toolchain, not the stable one,
+  too old, rustup without toolchain) with the command to copy; the first run shows how to install
+  Rust with rustup (free).
+
+### Changed
+- One program at a time still: Rust shares the run supervisor with the other languages.
+- The language servers learn about a file opened again after the window reloaded (problems and
+  status come back).
+
+### Fixed
+- The debugger showed the payload of Rust enums wrong with LLDB 23 on Windows (`Some(7)` read as
+  `Some(440)`); the IDE ships a fix for LLDB's Rust formatters.
+- A Rust install could fail to link when llvm-mingw was on PATH: the toolchain's own MinGW linker is
+  now always used.
+- Debugging did not stop at breakpoints set in another file of the project (only the open file's
+  were sent), in every language.
+- After `go get` or `cargo add` the code helper kept saying the package could not be found: the
+  language servers now hear when `go.mod`, `go.sum`, `Cargo.toml` or `Cargo.lock` change.
+- Crates such as `rand` did not build with rustup's Windows GNU toolchain (dlltool): VizcachaIDE
+  passes llvm-mingw's `llvm-dlltool`, and the Assistant explains what to install when there is none.
+- The call stack of Rust and C++ showed the standard library frames below `main` again.
+
+### Notes
+- Rust is not bundled: install it with rustup (on Windows the `x86_64-pc-windows-gnu` toolchain,
+  since the MSVC one needs Visual Studio's linker, which is not free). Debugging needs lldb-dap, which
+  the `full-cpp` and `full` downloads include.
+- For developers: `process.Job.OutputFilter`, catalog entries by compiler code, `LanguageServer.InlayHints`,
+  `lsp.PulledConfiguration`, `app.MemberRunner`, `ToolStatus.Advice` and the Rust adapter in
+  `wails/internal/adapters/rust` (see `docs/PLAN_RUST.md`).
+
 ## [2.3.0] - 2026-10-04
 
 Wails edition. **C++** is the third language: write, compile and run, understand errors and crashes,
@@ -229,6 +286,66 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.4.0] - 2026-10-04
+
+Edición Wails. **Rust** es el cuarto lenguaje: escribir, compilar y ejecutar, entender los errores
+del compilador y los `panic`, depurar con el teclado funcionando, formatear y manejar paquetes de
+Cargo, con la misma experiencia que Go, Python y C++. Llegan las **pistas en línea** para todos los
+lenguajes cuyo ayudante de código las ofrece. Go, Python y C++ funcionan como en 2.3.0 (80/80
+pasos de QA en inglés y español, ver `docs/wails/QA_WAILS.md`).
+
+### Añadido
+- **Ejecutar Rust** (F5): un `.rs` suelto se compila con `rustc` y un proyecto Cargo con `cargo`; el
+  programa corre en una terminal, así que `read_line` lee lo que escribes en Salida. *Más → Compilar*
+  compila sin ejecutar. Funcionan los **workspaces** de Cargo: se ejecuta el miembro del archivo
+  abierto y, desde la raíz del workspace, un diálogo pregunta qué programa ejecutar.
+- **El Asistente explica unos 45 errores de Rust** en inglés y español, reconocidos por los códigos
+  estables de rustc: propiedad y préstamos (valor movido, dos préstamos mutables, una referencia que
+  no vive lo suficiente…) con un ejemplo mínimo, tipos que no coinciden, nombres e importaciones
+  desconocidos, `;` o `}` que faltan, `panic` (índice fuera de rango, `unwrap` sobre `None` o `Err`,
+  desbordamiento, división entre cero…) en la línea de tu código, desbordamiento de pila y consejos
+  de clippy.
+- **Depurador de Rust** (lldb-dap, compartido con C++): puntos de interrupción, pasos, `String`,
+  `Vec`, `Option`, `Result` y `HashMap` legibles, parada en la línea de un `panic!` y **entrada por
+  teclado mientras depuras**.
+- **Inteligencia de código para Rust** (rust-analyzer): problemas en vivo, completado, información al
+  pasar el ratón, ayuda de firmas, ir a la definición y el Esquema, en proyectos Cargo y en archivos
+  sueltos.
+- **Formato al guardar** con rustfmt, **consejos de clippy** después de ejecutar y el diálogo de
+  **Paquetes** para Cargo (crear, añadir, quitar, listar).
+- **Pistas en línea** (tipos deducidos y nombres de parámetros) para Rust, Go y C++, dibujadas dentro
+  del código sin cambiarlo; se apagan en Ajustes → Editor. El ayudante de código de Python no las da.
+- Ajustes → Herramientas dice qué arreglar en una instalación de Rust (toolchain de Visual Studio, no
+  estable, demasiado antigua, rustup sin toolchain) con el comando a copiar; el primer arranque
+  explica cómo instalar Rust con rustup (gratis).
+
+### Cambiado
+- Sigue habiendo un solo programa a la vez: Rust comparte el supervisor de ejecución con los demás.
+- Los ayudantes de código se enteran de un archivo abierto otra vez tras recargar la ventana (vuelven
+  los problemas y el estado).
+
+### Corregido
+- El depurador mostraba mal el contenido de los enums de Rust con LLDB 23 en Windows (`Some(7)` se
+  leía `Some(440)`); la IDE incluye un arreglo para los formateadores de Rust de LLDB.
+- Una instalación de Rust podía fallar al enlazar si llvm-mingw estaba en el PATH: ahora se usa
+  siempre el enlazador MinGW propio del toolchain.
+- Depurar no se detenía en los puntos de interrupción puestos en otro archivo del proyecto (sólo se
+  enviaban los del archivo abierto), en todos los lenguajes.
+- Después de `go get` o `cargo add` el ayudante de código seguía diciendo que no encontraba el
+  paquete: ahora los servidores de lenguaje se enteran cuando cambian `go.mod`, `go.sum`,
+  `Cargo.toml` o `Cargo.lock`.
+- Crates como `rand` no compilaban con el toolchain GNU de rustup en Windows (dlltool): VizcachaIDE
+  pasa el `llvm-dlltool` de llvm-mingw, y el Asistente explica qué instalar cuando no lo hay.
+- La pila de llamadas de Rust y C++ volvía a mostrar los marcos de la biblioteca estándar bajo `main`.
+
+### Notas
+- Rust no viene incluido: se instala con rustup (en Windows el toolchain `x86_64-pc-windows-gnu`,
+  porque el de MSVC necesita el enlazador de Visual Studio, que no es libre). Depurar necesita
+  lldb-dap, que traen las descargas `full-cpp` y `full`.
+- Para desarrolladores: `process.Job.OutputFilter`, entradas del catálogo por código del compilador,
+  `LanguageServer.InlayHints`, `lsp.PulledConfiguration`, `app.MemberRunner`, `ToolStatus.Advice` y el
+  adaptador de Rust en `wails/internal/adapters/rust` (ver `docs/PLAN_RUST.md`).
 
 ## [2.3.0] - 2026-10-04
 
@@ -452,8 +569,9 @@ arquitectura en capas, y casi todo lo que prometía el README de la 0.1 ahora ex
 - Una interfaz de depurador **simulada** (paneles de Variables y Pila de llamadas) que no usaba
   Delve.
 
-[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.3.0...HEAD
-[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.3.0...HEAD
+[Unreleased]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.4.0...HEAD
+[Sin publicar]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.4.0...HEAD
+[2.4.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.3.0...wails-v2.4.0
 [2.3.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.2.0...wails-v2.3.0
 [2.2.0]: https://github.com/codeplai/VizcachaIDE/compare/wails-v2.1.0...wails-v2.2.0
 [2.1.0]: https://github.com/codeplai/VizcachaIDE/releases/tag/wails-v2.1.0

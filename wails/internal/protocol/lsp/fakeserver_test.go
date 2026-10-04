@@ -37,7 +37,7 @@ func runFakeServer() {
 		if req.Method() == "exit" {
 			os.Exit(0)
 		}
-		return reply(ctx, nil, nil)
+		return reply(ctx, fakeAnswer(req.Method()), nil)
 	})
 	<-conn.Done()
 }

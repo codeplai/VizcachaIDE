@@ -6,6 +6,14 @@ import { codeLanguageOfPath } from './mockCodeLanguages'
 import { SAMPLE_STRUCT_REFERENCE, sampleStructFields } from './mockData'
 import { sampleFrameVariables } from './mockFrames'
 import { CPP_BREAKPOINT_LINE, CPP_LAST_LINE, cppFrameVariables } from './mockCpp'
+import {
+  RUST_BREAKPOINT_LINE,
+  RUST_LAST_LINE,
+  RUST_WORKSPACE_ERROR,
+  RUST_WORKSPACE_MANIFEST,
+  rustFrameVariables
+} from './mockRust'
+import type { RunMemberApi } from '../stores/runMember'
 import { PYTHON_BREAKPOINT_LINE, PYTHON_LAST_LINE, pythonFrameVariables } from './mockPython'
 import {
   emitCrashedRun,
@@ -35,7 +43,8 @@ const FIELDS_DELAY_MS = 250
 const DEBUG_LINES: Record<SampleLanguage, { first: number; last: number }> = {
   go: { first: 6, last: 7 },
   python: { first: PYTHON_BREAKPOINT_LINE, last: PYTHON_LAST_LINE },
-  cpp: { first: CPP_BREAKPOINT_LINE, last: CPP_LAST_LINE }
+  cpp: { first: CPP_BREAKPOINT_LINE, last: CPP_LAST_LINE },
+  rust: { first: RUST_BREAKPOINT_LINE, last: RUST_LAST_LINE }
 }
 
 /** The language of a path; the demo's own sample when the path is empty (the dev bar). */
@@ -49,12 +58,14 @@ const configurationFor = (state: MockState, path: string): RunConfiguration => {
   return { ...configuration, target: path || configuration.target }
 }
 
-export const mockRun = (state: MockState, emit: Emit): RunApi => {
+export const mockRun = (state: MockState, emit: Emit): RunApi & RunMemberApi => {
   const language = (): Language => resolveLanguage(state.settings.language, systemLanguage())
   const run: RunApi['run'] = async (path) => {
+    if (path === RUST_WORKSPACE_MANIFEST) throw new Error(RUST_WORKSPACE_ERROR)
     const sample = sampleFor(state, path)
     if (state.scenario === 'error') emitFailedRun(emit, language(), sample)
-    else if (state.scenario === 'crash' && sample === 'cpp') emitCrashedRun(emit, language())
+    else if (state.scenario === 'crash' && (sample === 'cpp' || sample === 'rust'))
+      emitCrashedRun(emit, language(), sample)
     else emitSuccessfulRun(emit, sample)
     return configurationFor(state, path)
   }
@@ -64,8 +75,13 @@ export const mockRun = (state: MockState, emit: Emit): RunApi => {
     else emitSuccessfulBuild(emit, sample)
     return configurationFor(state, path)
   }
+  const runMember: RunMemberApi['runMember'] = async (path) => {
+    emitSuccessfulRun(emit, 'rust')
+    return configurationFor(state, path)
+  }
   return {
     run,
+    runMember,
     runUntitled: (path, _source, args) => run(path, args),
     build,
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
@@ -82,7 +98,8 @@ export const mockRun = (state: MockState, emit: Emit): RunApi => {
 const frameVariablesOf: Record<SampleLanguage, (frameId: number) => FrameVariables> = {
   go: sampleFrameVariables,
   python: pythonFrameVariables,
-  cpp: cppFrameVariables
+  cpp: cppFrameVariables,
+  rust: rustFrameVariables
 }
 
 export const mockDebug = (state: MockState, emit: Emit): DebugApi => {

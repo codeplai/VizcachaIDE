@@ -22,6 +22,10 @@ export interface EditorHandle {
   setMarks: (marks: EditorMarks) => void
   setPhrases: (phrases: Extension) => void
   setFontSize: (pixels: number) => void
+  /** Shows or hides the inlay hints (inferred types and parameter names). */
+  setInlayHints: (enabled: boolean) => void
+  /** Asks the language server for the inlay hints again (it finished analysing the file). */
+  refreshInlayHints: () => void
   goTo: (line: number, column: number) => void
   destroy: () => void
 }
@@ -49,7 +53,7 @@ export const createEditor = (
   const states = new Map<string, EditorState>()
   let currentPath: string | null = null
   let currentPhrases: Extension = []
-  const { extensions } = editorExtensions(handlers, phrases, wiring, () => currentPath)
+  const { extensions, inlay } = editorExtensions(handlers, phrases, wiring, () => currentPath)
   const view = new EditorView({ parent, state: EditorState.create({ extensions }) })
 
   const applyText = (text: string): void => {
@@ -79,6 +83,8 @@ export const createEditor = (
       view.dispatch({ effects: phrases.reconfigure(next) })
     },
     setFontSize: (pixels) => parent.style.setProperty('--editor-font-size', `${pixels}px`),
+    setInlayHints: (enabled) => inlay?.setEnabled(enabled),
+    refreshInlayHints: () => inlay?.refresh(),
     goTo: (line, column) => {
       const pos = offsetOf(view.state, line, column)
       view.dispatch({

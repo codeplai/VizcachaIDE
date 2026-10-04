@@ -4,6 +4,7 @@ import type { Bridge, ToolId, Unsubscribe } from '../bridge'
 import type { Capabilities, CodeLanguage, LanguageProfile, Settings, ToolStatus } from '../domain'
 import { debuggedPath } from './debug'
 import { lspStatuses } from './diagnostics'
+import { rustAdvice } from './rustToolchain'
 import { activePath } from './files'
 import { settings } from './settings'
 
@@ -77,7 +78,9 @@ export const toolStatus = (id: string, all: ToolStatus[] = get(tools)): ToolStat
 
 /** Asks again which tools exist and where they come from (after a tool path changed). */
 export const refreshTools = async (bridge: Bridge): Promise<void> => {
-  tools.set(await bridge.codeLanguages.tools())
+  const all = await bridge.codeLanguages.tools()
+  tools.set(all)
+  rustAdvice.set(all.find((status) => status.id === 'rustc')?.advice ?? [])
 }
 
 const toolPathsDiffer = (a: Settings, b: Settings): boolean => {

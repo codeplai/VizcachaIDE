@@ -9,6 +9,7 @@ const (
 	CodeLanguageGo     CodeLanguage = "go"
 	CodeLanguagePython CodeLanguage = "python"
 	CodeLanguageCpp    CodeLanguage = "cpp"
+	CodeLanguageRust   CodeLanguage = "rust"
 )
 
 // PackageAction is one verb of a language's package manager.
@@ -97,4 +98,7 @@ type ToolStatus struct {
 	Version      string       `json:"version"` // "" when missing
 	Source       ToolSource   `json:"source"`
 	Path         string       `json:"path"`
+	// Advice are the i18n keys of non-blocking warnings about the tool (a Rust that is not the
+	// stable one, a Visual Studio host...); empty when there is nothing to say.
+	Advice []string `json:"advice"`
 }

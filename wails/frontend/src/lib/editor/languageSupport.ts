@@ -2,6 +2,7 @@
 import { cpp } from '@codemirror/lang-cpp'
 import { go } from '@codemirror/lang-go'
 import { python } from '@codemirror/lang-python'
+import { rust } from '@codemirror/lang-rust'
 import { indentUnit } from '@codemirror/language'
 import { EditorState, type Extension } from '@codemirror/state'
 import type { CodeLanguage, IndentStyle, LanguageProfile } from '../domain'
@@ -14,6 +15,7 @@ const syntaxFor = (codeLanguage: CodeLanguage | undefined): Extension => {
   if (codeLanguage === 'go') return go()
   if (codeLanguage === 'python') return python()
   if (codeLanguage === 'cpp') return cpp()
+  if (codeLanguage === 'rust') return rust()
   return []
 }
 

@@ -33,6 +33,14 @@ const CPP_BLANK = `int main() {
 }
 `
 
+const RUST_HELLO = `fn main() {
+    println!("Hola, Rust");
+}
+`
+
+const RUST_BLANK = `fn main() {}
+`
+
 export interface NewFileTemplate {
   /** A program that prints a greeting (the first-run wizard's "Hello" choice). */
   hello: string
@@ -45,5 +53,6 @@ export interface NewFileTemplate {
 export const newFileTemplates: Record<CodeLanguage, NewFileTemplate> = {
   go: { hello: GO_HELLO, blank: GO_BLANK, extension: '.go' },
   python: { hello: PYTHON_HELLO, blank: '', extension: '.py' },
-  cpp: { hello: CPP_HELLO, blank: CPP_BLANK, extension: '.cpp' }
+  cpp: { hello: CPP_HELLO, blank: CPP_BLANK, extension: '.cpp' },
+  rust: { hello: RUST_HELLO, blank: RUST_BLANK, extension: '.rs' }
 }

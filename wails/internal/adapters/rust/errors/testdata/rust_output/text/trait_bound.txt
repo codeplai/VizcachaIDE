@@ -1,0 +1,28 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   struct Punto { x: i32 }
+#   fn main() {
+#       let p = Punto { x: 1 };
+#       println!("{}", p);
+#   }
+# output:
+error[E0277]: `Punto` doesn't implement `std::fmt::Display`
+ --> main.rs:4:20
+  |
+4 |     println!("{}", p);
+  |               --   ^ `Punto` cannot be formatted with the default formatter
+  |               |
+  |               required by this formatting parameter
+  |
+help: the trait `std::fmt::Display` is not implemented for `Punto`
+ --> main.rs:1:1
+  |
+1 | struct Punto { x: i32 }
+  | ^^^^^^^^^^^^
+  = note: in format strings you may be able to use `{:?}` (or `{:#?}` for pretty-print) instead
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0277`.

@@ -74,3 +74,8 @@ func (Flavor) Configuration() any { return nil }
 
 // Environment adds nothing to the process environment.
 func (Flavor) Environment() map[string]string { return nil }
+
+// Manifests are the files that tell clangd how a project compiles (lsp.ManifestFiles).
+func (Flavor) Manifests() []string {
+	return []string{"compile_commands.json", "compile_flags.txt", ".clangd"}
+}

@@ -22,15 +22,23 @@ type pipeSession struct {
 	stderr *streamWriter
 	output *atomic.Bool
 	ended  chan struct{}
+	// filtered is the OutputFilter of the job around the sink, or nil.
+	filtered *filteredEvents
 }
 
 func startPipes(ctx context.Context, job Job, sink JobEvents) (session, error) {
+	var filtered *filteredEvents
+	if job.OutputFilter != nil {
+		filtered = newFilteredEvents(sink, job.OutputFilter)
+		sink = filtered
+	}
 	output := &atomic.Bool{}
 	pipes := &pipeSession{
-		stdout: newStreamWriter(sink, "stdout", output),
-		stderr: newStreamWriter(sink, "stderr", output),
-		output: output,
-		ended:  make(chan struct{}),
+		filtered: filtered,
+		stdout:   newStreamWriter(sink, "stdout", output),
+		stderr:   newStreamWriter(sink, "stderr", output),
+		output:   output,
+		ended:    make(chan struct{}),
 	}
 	cmd := exec.CommandContext(ctx, job.Command, job.Args...)
 	cmd.Dir = job.Dir
@@ -72,6 +80,9 @@ func (p *pipeSession) wait() int {
 	_ = p.cmd.Wait() // the exit code is read from ProcessState
 	p.stdout.Flush()
 	p.stderr.Flush()
+	if p.filtered != nil {
+		p.filtered.flush()
+	}
 	close(p.ended)
 	return exitCodeOf(p.cmd.ProcessState)
 }

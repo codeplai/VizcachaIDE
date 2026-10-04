@@ -30,7 +30,7 @@ func NewExplainer(catalogJSON []byte, parse OutputParser) (*Explainer, error) {
 
 // identify returns the catalog id of a message, or "".
 func (e *Explainer) identify(message string) string {
-	if found := e.catalog.find(message); found != nil {
+	if found := e.catalog.find("", message); found != nil {
 		return found.entry.id
 	}
 	return ""
@@ -44,7 +44,7 @@ func (e *Explainer) Parse(rawOutput, workingDir string) []domain.Diagnostic {
 // Explain returns the explanation in "en" or "es" (anything else is English),
 // or nil when the message is not in the catalog.
 func (e *Explainer) Explain(diagnostic domain.Diagnostic, language string) *domain.ErrorExplanation {
-	found := e.catalog.find(diagnostic.Message)
+	found := e.catalog.find(diagnostic.Code, diagnostic.Message)
 	if found == nil {
 		return nil
 	}

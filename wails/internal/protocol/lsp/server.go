@@ -64,6 +64,7 @@ type Server struct {
 	opts   Options
 	docs   *openDocuments
 	busy   atomic.Bool // the last query timed out: the next ones wait less
+	hints  atomic.Bool // the initialize result announced inlayHintProvider
 
 	mu      sync.Mutex
 	state   serverState
@@ -71,6 +72,9 @@ type Server struct {
 	folders map[string]bool
 	ready   chan struct{} // closed when the server is ready or unavailable
 	idle    idleShutdown
+	// settingsSent is the JSON of the last settings a pulling server heard of (pulled.go).
+	settingsSent string
+	manifests    manifestWatch // go.mod, Cargo.toml... changed outside the editor (manifests.go)
 }
 
 var _ app.LanguageServer = (*Server)(nil)

@@ -1,0 +1,17 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       println!("hola");
+# output:
+error: this file contains an unclosed delimiter
+ --> main.rs:2:23
+  |
+1 | fn main() {
+  |           - unclosed delimiter
+2 |     println!("hola");
+  |                      ^
+
+error: aborting due to 1 previous error
+
