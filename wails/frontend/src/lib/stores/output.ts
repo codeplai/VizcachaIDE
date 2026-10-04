@@ -1,10 +1,11 @@
 import { derived } from 'svelte/store'
-import { TERMINATED_BY_USER } from '../events'
+import { TERMINATED_BY_USER, type DebugOutputPayload } from '../events'
+import { debugInputEnabled } from './codeLanguages'
 import { debugActive, debugOutput, debugStarting, currentLine } from './debug'
 import { activeFileName } from './files'
 import { compileProblemCount } from './assistant'
 import { styledSegments, type OutputSegment } from './outputLinks'
-import { runLines, runResult, stoppedByUser } from './run'
+import { addChunk, running, runLines, runResult, stoppedByUser, type RawRunLine } from './run'
 
 /** A line of the Output panel: either program text or an i18n key with its values. */
 export interface OutputLine {
@@ -50,19 +51,36 @@ const programLines = derived(
   }
 )
 
+/** Program text of the debuggee (`debug:output`), joined like a run's output so a prompt stays one line. */
+const debuggeeLines = (entries: DebugOutputPayload[]): OutputLine[] => {
+  let lines: RawRunLine[] = []
+  let tail: 'stdout' | 'stderr' | null = null
+  for (const { category, text } of entries) {
+    if (category === 'console') continue
+    const next = addChunk(lines, tail, category, text)
+    lines = next.lines
+    tail = next.tail
+  }
+  return lines.map((line) => textLine('plain', line.text))
+}
+
 const debuggingLines = derived(
-  [debugOutput, activeFileName, currentLine, debugStarting],
-  ([lines, file, line, starting]) => {
+  [debugOutput, activeFileName, currentLine, debugStarting, debugInputEnabled],
+  ([lines, file, line, starting, canType]) => {
     if (starting) return [{ tone: 'system', key: 'run.debugStarting' } satisfies OutputLine]
     const view: OutputLine[] = [
-      { tone: 'system', key: 'run.debugging', values: { file, line: line ?? 0 } },
-      { tone: 'system', key: 'run.debugStdin' }
+      { tone: 'system', key: 'run.debugging', values: { file, line: line ?? 0 } }
     ]
-    const extra = lines
-      .filter((entry) => entry.category !== 'console')
-      .map((entry) => textLine('plain', entry.text))
-    return [...view, ...extra]
+    // Delve gives a Go program no keyboard; a Python debuggee runs in a terminal and reads it.
+    if (!canType) view.push({ tone: 'system', key: 'run.debugStdin' })
+    return [...view, ...debuggeeLines(lines)]
   }
+)
+
+/** True when the Output input box is enabled: a program runs, or the debuggee can read the keyboard. */
+export const programInputOpen = derived(
+  [running, debugActive, debugStarting, debugInputEnabled],
+  ([isRunning, debugging, starting, canType]) => isRunning || ((debugging || starting) && canType)
 )
 
 /** What the Output panel shows: the debug session while one is active, the last run otherwise. */

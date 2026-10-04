@@ -4,7 +4,7 @@ import type { Bridge } from '../bridge'
 import type { CodeLanguage, LanguageProfile, ToolSpec } from '../domain'
 import { t } from '../i18n'
 import { profiles } from './codeLanguages'
-import { debugStarting } from './debug'
+import { debugStarting, debuggedPath } from './debug'
 import { openDialog } from './layout'
 import { showNotice, type NoticeAction } from './notice'
 
@@ -119,6 +119,7 @@ export const withToolErrors = async (
     await action()
   } catch (error) {
     debugStarting.set(false)
+    debuggedPath.set(null)
     const reason = reasonOf(error)
     const tool = missingToolIn(reason)
     if (tool) return explainMissingTool(bridge, tool, TOOL_ID.test(reason))

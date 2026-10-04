@@ -6,7 +6,15 @@
   import Modal from './Modal.svelte'
 
   /** Product names are not translated; a tool without an entry shows its id. */
-  const TOOL_NAMES: Record<string, string> = { go: 'Go', dlv: 'Delve', gopls: 'gopls' }
+  const TOOL_NAMES: Record<string, string> = {
+    go: 'Go',
+    dlv: 'Delve',
+    gopls: 'gopls',
+    python: 'CPython',
+    debugpy: 'debugpy',
+    pylsp: 'python-lsp-server',
+    ruff: 'ruff'
+  }
   const author = { name: 'Marks Calderon', role: 'CEO Codeplai', email: 'hola@codeplai.pe' }
   const website = 'https://vizcacha.codeplai.pe'
   const licenseUrl = 'https://opensource.org/licenses/MIT'

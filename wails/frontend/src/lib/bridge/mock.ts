@@ -1,30 +1,15 @@
 // Mock bridge: lets `npm run dev` show the whole app in a browser without Go.
-import type { RunConfiguration, Settings } from '../domain'
-import { TERMINATED_BY_USER } from '../events'
-import { resolveLanguage, systemLanguage, type Language } from '../language'
+import { resolveLanguage, systemLanguage } from '../language'
 import { createEmitter } from './emitter'
 import { mockAssistant } from './mockAssistant'
 import { mockConsole } from './mockConsole'
+import { defaultSettings, sampleLocation, sampleSymbols } from './mockData'
+import { mockDebug, mockRun, type MockState } from './mockExecution'
 import { mockFiles } from './mockFiles'
-import {
-  defaultSettings,
-  sampleDebugState,
-  SAMPLE_STRUCT_REFERENCE,
-  sampleLocation,
-  sampleStructFields,
-  sampleSymbols
-} from './mockData'
-import {
-  emitDebugStart,
-  emitFailedRun,
-  emitSuccessfulRun,
-  type Emit,
-  type Scenario
-} from './mockScenarios'
-import { sampleFrameVariables } from './mockFrames'
-import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
+import { mockCodeLanguages, mockPackages } from './mockCodeLanguages'
+import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
 import { mockSettings } from './mockSettings'
-import type { Bridge, DebugApi, LanguageApi, RunApi } from './types'
+import type { Bridge, LanguageApi } from './types'
 
 export interface MockControls {
   /** Replays one of the three states of the prototype. */
@@ -35,80 +20,6 @@ export interface MockControls {
 export interface MockBridge {
   bridge: Bridge
   controls: MockControls
-}
-
-interface MockState {
-  settings: Settings
-  scenario: Scenario
-  debugLine: number
-  debugging: boolean
-}
-
-/** The text of app.ErrUnsupported: the language's adapter does not exist yet. */
-const UNSUPPORTED_ACTION = 'this language does not support the action'
-const LAST_LINE = 7
-const FIELDS_DELAY_MS = 250
-
-const configurationFor = (path: string): RunConfiguration => ({
-  codeLanguage: codeLanguageOfPath(path),
-  target: path,
-  workingDir: 'hola-go',
-  mode: 'file',
-  programArgs: [],
-  project: null,
-  echo: false
-})
-
-const mockRun = (state: MockState, emit: Emit): RunApi => {
-  const language = (): Language => resolveLanguage(state.settings.language, systemLanguage())
-  const run: RunApi['run'] = async (path) => {
-    // Like the 2.1 backend: Python and C++ have a profile but no adapter yet.
-    if (codeLanguageOfPath(path) !== 'go') throw new Error(UNSUPPORTED_ACTION)
-    if (state.scenario === 'error') emitFailedRun(emit, language())
-    else emitSuccessfulRun(emit)
-    return configurationFor(path)
-  }
-  return {
-    run,
-    runUntitled: (path, _source, args) => run(path, args),
-    build: async (path) => configurationFor(path),
-    splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
-    check: async () => '',
-    stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),
-    writeInput: async () => {},
-    format: async (_path, text) =>
-      text.replace(/^( {4})+/gm, (indent) => '	'.repeat(indent.length / 4))
-  }
-}
-
-const mockDebug = (state: MockState, emit: Emit): DebugApi => {
-  const finish = (exitCode: number): void => {
-    state.debugging = false
-    emit('debug:terminated', { exitCode })
-  }
-  const stepTo = async (line: number): Promise<void> => {
-    state.debugLine = line
-    emit('debug:stopped', sampleDebugState(line))
-  }
-  return {
-    start: async () => {
-      state.debugging = true
-      state.debugLine = 6
-      emitDebugStart(emit)
-    },
-    setBreakpoints: async () => {},
-    stepOver: () => stepTo(Math.min(state.debugLine + 1, LAST_LINE)),
-    stepInto: () => stepTo(Math.min(state.debugLine + 1, LAST_LINE)),
-    stepOut: () => stepTo(LAST_LINE),
-    resume: async () => finish(0),
-    runTo: (location) => stepTo(location.line),
-    requestVariables: async (reference) => {
-      const variables = reference === SAMPLE_STRUCT_REFERENCE ? sampleStructFields() : []
-      setTimeout(() => emit('debug:variables', { reference, variables }), FIELDS_DELAY_MS)
-    },
-    frameVariables: async (frameId) => sampleFrameVariables(frameId),
-    stop: async () => finish(TERMINATED_BY_USER)
-  }
 }
 
 const mockLanguage = (emit: Emit): LanguageApi => ({
@@ -150,11 +61,17 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
   documentSymbols: async () => sampleSymbols()
 })
 
-export const createMockBridge = (): MockBridge => {
+export interface MockOptions {
+  /** The sample project the demo opens (`?language=python` in the browser). */
+  sampleLanguage?: SampleLanguage
+}
+
+export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): MockBridge => {
   const { on, emit } = createEmitter()
   const state: MockState = {
-    settings: defaultSettings(),
+    settings: defaultSettings(sampleLanguage),
     scenario: 'write',
+    sampleLanguage,
     debugLine: 6,
     debugging: false
   }
@@ -172,7 +89,7 @@ export const createMockBridge = (): MockBridge => {
       emit
     ),
     console: mockConsole(),
-    files: mockFiles(),
+    files: mockFiles(sampleLanguage),
     settings: mockSettings(state, emit),
     system: {
       openUrl: (url) => void window.open(url, '_blank', 'noopener'),

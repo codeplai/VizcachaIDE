@@ -8,7 +8,7 @@
     goToLocation,
     outputLines,
     readClipboard,
-    running,
+    programInputOpen,
     selectAllIn,
     stdinDraft,
     type OutputLine
@@ -42,7 +42,7 @@
     },
     {
       label: 'panels.menuPasteInput',
-      disabled: !$running,
+      disabled: !$programInputOpen,
       run: () => void pasteIntoInput()
     },
     { label: 'panels.menuSelectAll', run: () => selectAllIn(terminal) },
@@ -100,7 +100,7 @@
       {/each}
     </div>
   </PanelMenu>
-  {#if $running}<StdinInput />{/if}
+  {#if $programInputOpen}<StdinInput />{/if}
 </div>
 
 <style>

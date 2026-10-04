@@ -6,6 +6,8 @@ import type { DebugOutputPayload } from '../events'
 export const debugState = writable<DebugState | null>(null)
 export const debugActive = writable(false)
 export const debugStarting = writable(false)
+/** The file of the running debug session: its language says if the program can read the keyboard. */
+export const debuggedPath = writable<string | null>(null)
 export const debugOutput = writable<DebugOutputPayload[]>([])
 /** Breakpoint lines per file (1-based). */
 export const breakpoints = writable<Record<string, number[]>>({})
@@ -92,6 +94,7 @@ export const connectDebug = (bridge: Bridge): Unsubscribe => {
     bridge.on('debug:terminated', () => {
       debugStarting.set(false)
       debugActive.set(false)
+      debuggedPath.set(null)
       debugState.set(null)
       debugOutput.set([])
       forgetExpansion()

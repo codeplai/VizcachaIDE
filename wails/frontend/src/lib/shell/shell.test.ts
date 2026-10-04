@@ -79,7 +79,8 @@ describe('Settings dialog', () => {
     settingsTab.set('tools')
     render(SettingsDialog)
     expect(await screen.findAllByText(/Included with VizcachaIDE/)).toHaveLength(2)
-    expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(1)
+    // gopls, plus Python and its three modules.
+    expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(5)
     const go = screen.getByLabelText('Go')
     await fireEvent.change(go, { target: { value: ' C:\\go\\bin\\go.exe ' } })
     await waitFor(() => expect(get(settings)?.toolPaths['go']).toBe('C:\\go\\bin\\go.exe'))
@@ -131,15 +132,17 @@ describe('Confirmations', () => {
 })
 
 describe('First start wizard', () => {
-  it('walks through three steps and opens the example', async () => {
+  it('walks through four steps and opens the example', async () => {
     await bridge.settings.save({ ...(await bridge.settings.get()), firstRun: true })
     render(FirstRunWizard)
     expect(await screen.findByText(/Welcome to VizcachaIDE/)).toBeTruthy()
-    expect(screen.getByText('Step 1 of 3')).toBeTruthy()
+    expect(screen.getByText('Step 1 of 4')).toBeTruthy()
     await fireEvent.click(screen.getByRole('button', { name: 'Español' }))
     await waitFor(() => expect(get(settings)?.language).toBe('es'))
     await fireEvent.click(screen.getByRole('button', { name: 'Next' }))
-    expect(screen.getByText('Checking Go… Go 1.25.5 is ready.')).toBeTruthy()
+    expect(screen.getByText('Which programming languages will you use?')).toBeTruthy()
+    await fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    expect(await screen.findByText('Checking Go… Go 1.25.5 is ready.')).toBeTruthy()
     await fireEvent.click(screen.getByRole('button', { name: 'Next' }))
     expect(screen.getByText('Open your first program')).toBeTruthy()
     await fireEvent.click(screen.getByRole('button', { name: 'Open hello example' }))

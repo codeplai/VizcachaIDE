@@ -1,7 +1,18 @@
 // Mock of the Files service: an in-memory tree that create, rename and delete really change.
 import type { FileNode } from '../domain'
 import { SAMPLE_DIR, SAMPLE_SOURCES, sampleTree } from './mockData'
+import { PYTHON_DIR, PYTHON_SOURCES, pythonTree } from './mockPython'
+import type { SampleLanguage } from './mockScenarios'
 import type { FilesApi } from './types'
+
+/** The folder the demo opens with: Go's, or Python's with `?language=python`. */
+const PROJECTS: Record<
+  SampleLanguage,
+  { dir: string; tree: () => FileNode; sources: Record<string, string>; dialogFile: string }
+> = {
+  go: { dir: SAMPLE_DIR, tree: sampleTree, sources: SAMPLE_SOURCES, dialogFile: 'saludo.go' },
+  python: { dir: PYTHON_DIR, tree: pythonTree, sources: PYTHON_SOURCES, dialogFile: 'saludo.py' }
+}
 
 const separatorOf = (path: string): string => (path.includes('\\') ? '\\' : '/')
 const dirnameOf = (path: string): string => path.slice(0, path.lastIndexOf(separatorOf(path)))
@@ -73,9 +84,10 @@ const createTreeEditor = (tree: FileNode, texts: Record<string, string>): TreeEd
   return { add, remove, rename }
 }
 
-export const mockFiles = (): FilesApi => {
-  const tree = sampleTree()
-  const texts: Record<string, string> = { ...SAMPLE_SOURCES }
+export const mockFiles = (codeLanguage: SampleLanguage = 'go'): FilesApi => {
+  const project = PROJECTS[codeLanguage]
+  const tree = project.tree()
+  const texts: Record<string, string> = { ...project.sources }
   const editor = createTreeEditor(tree, texts)
   return {
     openFolder: async () => structuredClone(tree),
@@ -83,8 +95,8 @@ export const mockFiles = (): FilesApi => {
     readFile: async (path) => texts[path] ?? '',
     saveFile: async (path, text) => void (texts[path] = text),
     watchFiles: async () => {},
-    openFileDialog: async () => `${SAMPLE_DIR}/saludo.go`,
-    saveFileDialog: async (name, folder) => `${folder || SAMPLE_DIR}/${name}`,
+    openFileDialog: async () => `${project.dir}/${project.dialogFile}`,
+    saveFileDialog: async (name, folder) => `${folder || project.dir}/${name}`,
     createFile: async (path, text) => editor.add(path, false, text),
     createFolder: async (path) => editor.add(path, true),
     rename: editor.rename,

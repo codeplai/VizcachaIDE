@@ -3,8 +3,8 @@
   import type { Settings, ToolSpec } from '../domain'
   import { t } from '../i18n'
   import {
+    enabledProfiles,
     pickTool,
-    profiles,
     settings,
     toolSourceKey,
     toolStatus,
@@ -20,8 +20,11 @@
   /** A tool that lives inside another one (debugpy in python) has no path of its own. */
   const hasOwnPath = (spec: ToolSpec): boolean => spec.providedBy === ''
 
+  /** The row's name; a module of another tool (debugpy) fills {module} of its label. */
+  const labelOf = (spec: ToolSpec): string => $t(spec.labelKey, { values: { module: spec.id } })
+
   // A language without tools yet (Python and C++ in 2.1) would show an empty heading.
-  const withTools = $derived($profiles.filter((profile) => profile.tools.length > 0))
+  const withTools = $derived($enabledProfiles.filter((profile) => profile.tools.length > 0))
 </script>
 
 {#each withTools as profile (profile.id)}
@@ -31,7 +34,7 @@
     {@const version = status?.version}
     <div class="field">
       {#if hasOwnPath(spec)}
-        <label for={`setting-${spec.id}`}>{$t(spec.labelKey)}</label>
+        <label for={`setting-${spec.id}`}>{labelOf(spec)}</label>
         <div class="row">
           <input
             id={`setting-${spec.id}`}
@@ -46,7 +49,7 @@
           </button>
         </div>
       {:else}
-        <span class="label">{$t(spec.labelKey)}</span>
+        <span class="label">{labelOf(spec)}</span>
       {/if}
       <span class="hint" id={`setting-${spec.id}-origin`}>
         {#if status}{$t(toolSourceKey(status.source))} ·{/if}

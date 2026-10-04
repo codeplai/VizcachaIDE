@@ -10,10 +10,14 @@
     return `shell.modules${kind}.${task.action === 'add' ? 'get' : task.action}`
   }
 
+  // Go keeps the texts of 2.0 (they name Go); other languages share the neutral ones.
+  const textKey = (goKey: string, otherKey: string): string =>
+    $packageTask && $packageTask.codeLanguage !== 'go' ? otherKey : goKey
+
   const finished = $derived($packageTask && !$packageBusy && $runResult ? $runResult : null)
   const failedKey = $derived(
     $packageTask?.error
-      ? 'shell.modulesStartFailed'
+      ? textKey('shell.modulesStartFailed', 'packages.startFailed')
       : finished && finished.exitCode !== 0
         ? (specificKey('Failed') ?? 'packages.failed')
         : null
@@ -24,10 +28,13 @@
 </script>
 
 {#if $packageBusy}
-  <p role="status">{$t('shell.modulesWorking')}</p>
+  <p role="status">{$t(textKey('shell.modulesWorking', 'packages.working'))}</p>
 {/if}
 {#if $packageTask && $packageOutput.length > 0}
-  <pre class="out" role="log" aria-label={$t('shell.modulesOutput')}>{$packageOutput.join(
+  <pre
+    class="out"
+    role="log"
+    aria-label={$t(textKey('shell.modulesOutput', 'packages.output'))}>{$packageOutput.join(
       '\n'
     )}</pre>
 {/if}

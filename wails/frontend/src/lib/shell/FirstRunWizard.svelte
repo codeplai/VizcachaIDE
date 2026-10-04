@@ -3,14 +3,7 @@
   import { bridge } from '../bridge'
   import type { LanguageSetting } from '../domain'
   import { t } from '../i18n'
-  import {
-    FIRST_RUN_STEPS,
-    completeFirstRun,
-    settings,
-    toolStatus,
-    tools,
-    updateSettings
-  } from '../stores'
+  import { FIRST_RUN_STEPS, completeFirstRun, settings, updateSettings } from '../stores'
 
   let step = $state(1)
 
@@ -18,8 +11,9 @@
     { id: 'en', label: 'language.en' },
     { id: 'es', label: 'language.es' }
   ]
-  const goVersion = $derived(toolStatus('go', $tools)?.version ?? '')
   import logo from '../../assets/brand/logo.png'
+  import CodeLanguageChoices from './CodeLanguageChoices.svelte'
+  import FirstRunTools from './FirstRunTools.svelte'
 </script>
 
 <Dialog.Root open={$settings?.firstRun === true}>
@@ -48,14 +42,10 @@
           {/each}
         </div>
       {:else if step === 2}
-        <h3>
-          {#if goVersion}
-            {$t('firstRun.step2', { values: { version: goVersion } })}
-          {:else}
-            {$t('firstRun.checking')}
-          {/if}
-        </h3>
-        {#if !goVersion}<p>{$t('errors.goNotFound')}</p>{/if}
+        <h3>{$t('firstRun.languages')}</h3>
+        <CodeLanguageChoices label={$t('firstRun.languages')} />
+      {:else if step === 3}
+        <FirstRunTools />
       {:else}
         <h3>{$t('firstRun.step3')}</h3>
         <div class="choices">

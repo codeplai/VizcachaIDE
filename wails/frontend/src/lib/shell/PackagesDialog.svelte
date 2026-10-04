@@ -22,6 +22,7 @@
 
   const actions = $derived($capabilities?.packageActions ?? [])
   const isGo = $derived($activeCodeLanguage === 'go')
+  const isPython = $derived($activeCodeLanguage === 'python')
   const project = $derived.by(() => {
     const found = $lastRunConfiguration?.project
     return found && found.kind !== 'folder' ? found : null
@@ -34,10 +35,10 @@
 <Modal
   open={$openDialog === 'packages'}
   title={$t(isGo ? 'shell.goModules' : 'packages.title')}
-  description={isGo ? $t('shell.modulesIntro') : undefined}
+  description={isGo ? $t('shell.modulesIntro') : isPython ? $t('packages.pipHint') : undefined}
   onClose={() => openDialog.set(null)}
 >
-  {#if project}
+  {#if project && isGo}
     <dl>
       <dt>{$t('shell.modulesName')}</dt>
       <dd>{project.name}</dd>
@@ -49,7 +50,7 @@
   {/if}
 
   {#if !$packagesFolder}
-    <p>{$t('shell.modulesNoFolder')}</p>
+    <p>{$t(isGo ? 'shell.modulesNoFolder' : 'packages.noFolder')}</p>
   {:else if needsInit}
     <PackagesInitForm />
   {:else}
@@ -83,7 +84,7 @@
             id="module-package"
             type="text"
             bind:value={packageName}
-            placeholder={isGo ? 'github.com/user/pkg' : ''}
+            placeholder={isGo ? 'github.com/user/pkg' : 'requests'}
             aria-invalid={packageName !== '' && !packageOk}
           />
           <button
@@ -91,7 +92,7 @@
             type="submit"
             disabled={packageName.trim() === '' || !packageOk || $packageBusy}
           >
-            {$t('shell.modulesAdd')}
+            {$t(isGo ? 'shell.modulesAdd' : 'packages.add')}
           </button>
           {#if actions.includes('remove')}
             <button
@@ -105,7 +106,9 @@
           {/if}
         </div>
         {#if packageName !== '' && !packageOk}
-          <span class="hint bad">{$t('shell.modulesPackageInvalid')}</span>
+          <span class="hint bad"
+            >{$t(isGo ? 'shell.modulesPackageInvalid' : 'packages.invalid')}</span
+          >
         {/if}
         {#if isGo}
           <button class="link" type="button" onclick={() => bridge.system.openUrl(PKG_GO_DEV)}>
