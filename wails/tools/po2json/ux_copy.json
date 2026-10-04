@@ -62,6 +62,7 @@
   "run.debugStdin": { "en": "While debugging, your program can't read the keyboard.", "es": "Mientras depuras, tu programa no puede leer el teclado." },
   "run.debugAdapterStopped": { "en": "The debugger stopped unexpectedly. Try starting it again.", "es": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo." },
   "run.debugStarting": { "en": "Starting the debugger…", "es": "Iniciando el depurador…" },
+  "run.debugEnded": { "en": "■ Debugging finished.", "es": "■ Depuración terminada." },
   "run.debugRunning": { "en": "● Debugging {file} · running", "es": "● Depurando {file} · en ejecución" },
 
   "errors.goNotFound": { "en": "Go isn't installed. VizcachaIDE needs Go to run your programs. Install Go or choose where it is in Settings.", "es": "Go no está instalado. VizcachaIDE necesita Go para ejecutar tus programas. Instálalo o indica dónde está en Configuración." },

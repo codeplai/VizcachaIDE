@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
-	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/errorcatalog"
 )
 
 var families = []string{"gcc", "clang"}
@@ -27,7 +26,7 @@ var crashLines = map[string]string{
 
 var runExit = regexp.MustCompile(`# runExit: \d+ \((0x[0-9A-F]+)\)`)
 
-func newExplainer(t *testing.T) *errorcatalog.Explainer {
+func newExplainer(t *testing.T) *Explainer {
 	t.Helper()
 	explainer, err := NewExplainer()
 	if err != nil {

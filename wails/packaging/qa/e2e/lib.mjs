@@ -17,6 +17,11 @@ export const WQ = path.join(os.tmpdir(), 'wq')
 export const DEV_PYTHON =
   process.env.VIZCACHA_TEST_PYTHON ||
   path.join(WAILS_DIR, '.venv-py312', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python')
+/** A clang++ with lldb-dap, clangd and clang-format next to it for the C++ steps (docs/PLAN_CPP.md section 0). */
+export const DEV_CXX = path.join(
+  process.env.VIZCACHA_TEST_LLVM_BIN || path.join(WAILS_DIR, '.toolchain-dev', 'llvm-mingw-20260922-ucrt-x86_64', 'bin'),
+  process.platform === 'win32' ? 'clang++.exe' : 'clang++'
+)
 export const PROJECT = path.join(WQ, 'proj')
 export const SETTINGS_DIR = path.join(process.env.APPDATA || path.join(os.homedir(), '.config'), 'VizcachaIDE')
 export const SETTINGS_FILE = path.join(SETTINGS_DIR, 'settings.json')

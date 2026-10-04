@@ -21,7 +21,7 @@ var Profile = domain.LanguageProfile{
 	Indent:     domain.IndentStyle{UseTabs: false, Size: 4},
 	Capabilities: domain.Capabilities{
 		Build: true, Console: false, Format: true, Check: true, DebugInput: true,
-		PackageActions: nil,
+		PackageActions: []domain.PackageAction{}, // an empty list, never null in JSON
 		ThreadsLabel:   "debug.threads",
 	},
 	Tools: []domain.ToolSpec{

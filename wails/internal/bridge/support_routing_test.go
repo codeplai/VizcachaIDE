@@ -41,7 +41,7 @@ func TestAssistantRoutesDiagnosticsByFile(t *testing.T) {
 	service := NewAssistantService(sink, l.registry, NewLanguageResolver(store, nil))
 	at := func(file string) *domain.SourceLocation { return &domain.SourceLocation{File: file} }
 
-	items, err := service.ExplainDiagnostics([]domain.Diagnostic{
+	items, err := service.ExplainDiagnostics("", []domain.Diagnostic{
 		{Severity: domain.SeverityError, Message: "a", Location: at("x.py")},
 		{Severity: domain.SeverityError, Message: "b", Location: at("x.go")},
 		{Severity: domain.SeverityError, Message: "c"}, // no file: the default language
@@ -55,6 +55,11 @@ func TestAssistantRoutesDiagnosticsByFile(t *testing.T) {
 	}
 	if want := []string{"py:en:a", "go:en:b", "go:en:c"}; !reflect.DeepEqual(titles, want) {
 		t.Errorf("titles = %v, want %v", titles, want)
+	}
+	// Without a file, the language of the last run wins over the default one.
+	crash, err := service.ExplainDiagnostics(domain.CodeLanguagePython, []domain.Diagnostic{{Severity: domain.SeverityError, Message: "d"}})
+	if err != nil || len(crash) != 1 || crash[0].Explanation.Title != "py:en:d" {
+		t.Errorf("fallback = %+v, %v", crash, err)
 	}
 	if _, err := service.Explain("cobol", "x", ""); !errors.Is(err, app.ErrUnknownCodeLanguage) {
 		t.Errorf("Explain with an unknown language: %v", err)

@@ -169,3 +169,15 @@ func TestOtherShapesAreRecognised(t *testing.T) {
 		t.Errorf("type = %q", terminate.Placeholders["type"])
 	}
 }
+
+func TestClangdMessagesAreExplainedLikeTheCompilers(t *testing.T) {
+	explainer, err := NewExplainer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	live := domain.Diagnostic{Severity: domain.SeverityError, Source: "clangd", Message: "Use of undeclared identifier 'totl'; did you mean 'total'? (fix available)"}
+	explanation := explainer.Explain(live, "en")
+	if explanation == nil || explanation.ExplanationID != "CPP-UNDECLARED" || explanation.Placeholders["name"] != "totl" {
+		t.Fatalf("explanation = %+v", explanation)
+	}
+}

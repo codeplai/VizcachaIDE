@@ -2,7 +2,7 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { Breakpoint } from '../domain'
-import { breakpoints, debugActive, debuggedPath, debugStarting } from './debug'
+import { breakpoints, debugActive, debuggedPath, debugOutput, debugStarting } from './debug'
 import { codeLanguageOf } from './codeLanguages'
 import { activePath, buffers } from './files'
 import { assistantOpen, cursor } from './layout'
@@ -61,6 +61,7 @@ export const startDebugging = async (bridge: Bridge): Promise<void> => {
   const argsText = get(programArguments)
   if (!(await splitProgramArguments(bridge, argsText))) return
   debuggedPath.set(path)
+  debugOutput.set([])
   debugStarting.set(true)
   assistantOpen.set(true) // the variables and the call stack live in the Assistant
   await withToolErrors(bridge, codeLanguageOf(path), () =>

@@ -3,6 +3,7 @@ import type { Bridge, Unsubscribe } from '../bridge'
 import type { RunConfiguration } from '../domain'
 import type { RunFinishedPayload } from '../events'
 import { writeOver } from './carriageReturn'
+import { debugOutput } from './debug'
 
 /** One raw line of program output, before it is turned into display text. */
 export interface RawRunLine {
@@ -77,6 +78,7 @@ export const pushRunText = (stream: Stream, text: string): void => {
 export const connectRun = (bridge: Bridge): Unsubscribe => {
   const offs = [
     bridge.on('run:started', (config) => {
+      debugOutput.set([]) // a new run replaces what an ended debug session printed
       runResult.set(null)
       running.set(true)
       lastRunConfiguration.set(config)

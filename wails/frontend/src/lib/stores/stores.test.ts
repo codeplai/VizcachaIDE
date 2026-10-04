@@ -1,5 +1,5 @@
 import { get } from 'svelte/store'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createMockBridge } from '../bridge/mock'
 import type { Diagnostic, ExplainedDiagnostic, Variable } from '../domain'
 import {
@@ -78,7 +78,7 @@ describe('stores connected to the mock bridge', () => {
   it('shows the error state and the compile failure line', async () => {
     const { controls } = await connect()
     await controls.play('error')
-    expect(get(uiMode)).toBe('error')
+    await vi.waitFor(() => expect(get(uiMode)).toBe('error'))
     expect(get(problemCount)).toBe(1)
     const last = get(outputLines).at(-1)
     expect(last?.key).toBe('run.compileFailed')

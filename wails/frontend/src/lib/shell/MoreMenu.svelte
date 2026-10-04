@@ -14,7 +14,7 @@
   } from '../stores'
 
   // The package manager of the open file's language; languages without one have no entry.
-  const hasPackages = $derived(($capabilities?.packageActions.length ?? 0) > 0)
+  const hasPackages = $derived(($capabilities?.packageActions?.length ?? 0) > 0)
   // Build needs a saved file: an untitled one has no folder to put the program in.
   const canBuild = $derived(
     ($capabilities?.build ?? false) && $activePath !== null && !isUntitled($activePath)

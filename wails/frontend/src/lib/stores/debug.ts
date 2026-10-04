@@ -103,7 +103,7 @@ export const connectDebug = (bridge: Bridge): Unsubscribe => {
       debugActive.set(false)
       debuggedPath.set(null)
       debugState.set(null)
-      debugOutput.set([])
+      // The debuggee's output stays in Output until the next run or debug session.
       forgetExpansion()
     })
   ]

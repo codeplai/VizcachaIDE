@@ -21,6 +21,6 @@ export const mockAssistant = (
   }
   return {
     explain: async () => answer(scenario() === 'error' ? [sampleDiagnostic()] : []),
-    explainDiagnostics: async (diagnostics) => answer(diagnostics)
+    explainDiagnostics: async (_codeLanguage, diagnostics) => answer(diagnostics)
   }
 }

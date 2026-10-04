@@ -2,6 +2,7 @@ package clangd
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 
@@ -55,4 +56,21 @@ func TestRealClangdCompletesAndExplainsPushBack(t *testing.T) {
 			t.Errorf("hover = %q", hover)
 		}
 	})
+}
+
+// A reloaded window opens the same file again: clangd must publish its diagnostics again.
+func TestRealClangdRepublishesWhenTheFileIsOpenedAgain(t *testing.T) {
+	llvm := cpptest.LLVMBin(t)
+	s := openSample(t, NewFlavor(Config{Locator: locatorFor(llvm, llvm)}), true)
+	s.sink.mu.Lock()
+	delete(s.sink.diagnostics, s.file)
+	s.sink.mu.Unlock()
+	text, err := os.ReadFile(s.file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.server.OpenDocument(context.Background(), s.file, string(text)); err != nil {
+		t.Fatal(err)
+	}
+	waitUntil(t, func() bool { return len(s.sink.diagnosticsOf(s.file)) > 0 })
 }

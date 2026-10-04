@@ -4,4 +4,4 @@ import {domain} from '../models';
 
 export function Explain(arg1:domain.CodeLanguage,arg2:string,arg3:string):Promise<Array<domain.ExplainedDiagnostic>>;
 
-export function ExplainDiagnostics(arg1:Array<domain.Diagnostic>):Promise<Array<domain.ExplainedDiagnostic>>;
+export function ExplainDiagnostics(arg1:domain.CodeLanguage,arg2:Array<domain.Diagnostic>):Promise<Array<domain.ExplainedDiagnostic>>;

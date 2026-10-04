@@ -130,5 +130,7 @@ func (s *Server) onNotification(method string, raw json.RawMessage) {
 	if !open {
 		return
 	}
-	s.sink.Diagnostics(doc.path, toDiagnostics(params, doc.path, doc.text, s.opts.Name))
+	diagnostics := toDiagnostics(params, doc.path, doc.text, s.opts.Name)
+	s.docs.remember(doc.path, diagnostics)
+	s.sink.Diagnostics(doc.path, diagnostics)
 }

@@ -541,6 +541,7 @@
   "run.compiling": "Compilando…",
   "run.crashed": "El programa se cayó. Depúralo con F6 para ver la línea.",
   "run.debugAdapterStopped": "El depurador se detuvo de forma inesperada. Intenta iniciarlo de nuevo.",
+  "run.debugEnded": "■ Depuración terminada.",
   "run.debugRunning": "● Depurando {{.file}} · en ejecución",
   "run.debugStarting": "Iniciando el depurador…",
   "run.debugStdin": "Mientras depuras, tu programa no puede leer el teclado.",

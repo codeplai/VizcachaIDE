@@ -88,10 +88,23 @@ func (s *Server) OpenDocument(_ context.Context, path, text string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.cancelIdleLocked()
-	doc := s.docs.open(path, text)
+	doc, reopened, changed := s.docs.open(path, text)
 	s.ensureStartedLocked(path)
-	if s.state == stateReady {
+	if s.state != stateReady {
+		return nil
+	}
+	// The server already has a reopened file: a second didOpen would be ignored (clangd) and
+	// its diagnostics not published again, so they are sent from what it published last.
+	if reopened { // a reloaded window lost the status too
+		s.sink.LanguageServerStatus(s.opts.CodeLanguage, domain.ServerReady)
+	}
+	switch {
+	case !reopened:
 		s.openLocked(doc)
+	case changed:
+		s.notifyLocked("textDocument/didChange", didChangeParams(doc))
+	case doc.diagnostics != nil:
+		s.sink.Diagnostics(doc.path, doc.diagnostics)
 	}
 	return nil
 }

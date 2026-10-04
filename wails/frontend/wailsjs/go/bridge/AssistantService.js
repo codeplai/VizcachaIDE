@@ -6,6 +6,6 @@ export function Explain(arg1, arg2, arg3) {
   return window['go']['bridge']['AssistantService']['Explain'](arg1, arg2, arg3);
 }
 
-export function ExplainDiagnostics(arg1) {
-  return window['go']['bridge']['AssistantService']['ExplainDiagnostics'](arg1);
+export function ExplainDiagnostics(arg1, arg2) {
+  return window['go']['bridge']['AssistantService']['ExplainDiagnostics'](arg1, arg2);
 }

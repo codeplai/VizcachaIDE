@@ -541,6 +541,7 @@
   "run.compiling": "Compiling…",
   "run.crashed": "The program crashed. Debug it with F6 to see the line.",
   "run.debugAdapterStopped": "The debugger stopped unexpectedly. Try starting it again.",
+  "run.debugEnded": "■ Debugging finished.",
   "run.debugRunning": "● Debugging {{.file}} · running",
   "run.debugStarting": "Starting the debugger…",
   "run.debugStdin": "While debugging, your program can't read the keyboard.",
