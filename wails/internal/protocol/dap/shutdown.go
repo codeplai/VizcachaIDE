@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 // fail reports the error in the output and ends the session.
-func (s *session) fail(err error) {
+func (s *Session) fail(err error) {
 	if s.isFinished() || errors.Is(err, errConnectionClosed) {
 		return
 	}
@@ -17,14 +17,14 @@ func (s *session) fail(err error) {
 	s.finish(failedExitCode)
 }
 
-func (s *session) isFinished() bool {
+func (s *Session) isFinished() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.finished
 }
 
-// connectionClosed runs when Delve hangs up on its own.
-func (s *session) connectionClosed() {
+// connectionClosed runs when the adapter hangs up on its own.
+func (s *Session) connectionClosed() {
 	if s.isFinished() {
 		return
 	}
@@ -32,8 +32,11 @@ func (s *session) connectionClosed() {
 	s.finish(failedExitCode)
 }
 
-// finish ends the session once: tells the UI, disconnects, kills Delve by PID.
-func (s *session) finish(exitCode int) {
+// Finish ends the session with an exit code (once).
+func (s *Session) Finish(exitCode int) { s.finish(exitCode) }
+
+// finish ends the session once: tells the UI, disconnects, stops the adapter process.
+func (s *Session) finish(exitCode int) {
 	s.mu.Lock()
 	if s.finished {
 		s.mu.Unlock()
@@ -51,7 +54,9 @@ func (s *session) finish(exitCode int) {
 		disconnect(client)
 		client.Close()
 	}
-	s.process.kill()
+	if s.transport != nil {
+		_ = s.transport.Close()
+	}
 	s.onFinish()
 }
 

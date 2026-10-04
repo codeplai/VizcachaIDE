@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-dap"
 )
 
-// fakeServer plays Delve's side of a connection with the responses of a recorded
+// fakeServer plays the adapter's side of a connection with the responses of a recorded
 // transcript. after lists events to push once a request has been answered.
 type fakeServer struct {
 	conn      net.Conn
@@ -124,12 +124,13 @@ func (e *eventSink) Explained([]domain.ExplainedDiagnostic)   {}
 func (e *eventSink) SettingsChanged(domain.Settings)          {}
 
 // connectedSession wires a session to the fake server, as if configurationDone was sent.
-func connectedSession(t *testing.T, server *fakeServer, conn net.Conn, sink app.EventSink) *session {
+func connectedSession(t *testing.T, server *fakeServer, conn net.Conn, sink app.EventSink) *Session {
 	t.Helper()
-	s := newSession(sink, app.NewBreakpointBook(), app.NewChangeTracker(), nil)
-	s.text = func(key string) string { return englishTexts[key] }
-	s.onFinish = func() {}
-	s.client = NewClient(conn, s.handleEvent, s.connectionClosed)
+	s := NewSession(SessionDeps{
+		Sink: sink, Book: app.NewBreakpointBook(), Tracker: app.NewChangeTracker(),
+		Flavor: testFlavor{}, Texts: func(key string) string { return key },
+	})
+	s.client = NewClient(conn, s.handleEvent, s.connectionClosed, nil)
 	s.configured = true
 	return s
 }

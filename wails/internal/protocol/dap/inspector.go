@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 )
 
 const (
-	stackLevels             = 50
-	goroutineLocationLimit  = 50
-	goroutineLocationLevels = 1
+	stackLevels          = 50
+	threadLocationLimit  = 50
+	threadLocationLevels = 1
 )
 
 // inspect builds the DebugState after a stop: threads, then the stack, scopes and
-// Locals of the top user frame, plus the top frame of up to 50 goroutines.
+// Locals of the top user frame, plus the top frame of up to 50 threads.
 // If the program resumes first (ctx cancelled) nothing is emitted.
-func (s *session) inspect(ctx context.Context, event *dap.StoppedEvent) {
-	reason := stopReason(event.Body.Reason)
+func (s *Session) inspect(ctx context.Context, event *dap.StoppedEvent) {
+	reason, description := s.flavor.StopReason(event)
 	threads := s.threads(ctx)
 	threadID := event.Body.ThreadId
 	if threadID == 0 && len(threads) > 0 {
 		threadID = threads[0].ThreadID
 	}
-	locations := s.goroutineLocations(ctx, threads, threadID)
+	locations := s.threadLocations(ctx, threads, threadID)
 	frames := s.frames(ctx, threadID, reason == domain.StopException)
 	variables := s.locals(ctx, frames)
 	if ctx.Err() != nil {
@@ -43,31 +43,31 @@ func (s *session) inspect(ctx context.Context, event *dap.StoppedEvent) {
 		Variables:     variables,
 		Threads:       threads,
 		CurrentThread: &threadID,
-		Description:   stopDescription(event),
+		Description:   description,
 	})
 }
 
-func (s *session) threads(ctx context.Context) []domain.Thread {
+func (s *Session) threads(ctx context.Context) []domain.Thread {
 	response, err := s.call(ctx, &dap.ThreadsRequest{Request: newRequest("threads")})
 	if err != nil {
 		return []domain.Thread{}
 	}
-	return mapGoroutines(response.(*dap.ThreadsResponse).Body.Threads)
+	return mapThreads(response.(*dap.ThreadsResponse).Body.Threads)
 }
 
-// goroutineLocations asks for the top frame of each goroutine, in parallel.
-func (s *session) goroutineLocations(ctx context.Context, threads []domain.Thread, current int) map[int]*domain.SourceLocation {
+// threadLocations asks for the top frame of each thread, in parallel.
+func (s *Session) threadLocations(ctx context.Context, threads []domain.Thread, current int) map[int]*domain.SourceLocation {
 	locations := map[int]*domain.SourceLocation{}
 	var mu sync.Mutex
 	var group sync.WaitGroup
-	for _, thread := range threads[:min(len(threads), goroutineLocationLimit)] {
+	for _, thread := range threads[:min(len(threads), threadLocationLimit)] {
 		if thread.ThreadID == current {
 			continue
 		}
 		group.Add(1)
 		go func() {
 			defer group.Done()
-			frames := mapFrames(s.stack(ctx, thread.ThreadID, goroutineLocationLevels), false)
+			frames := mapFrames(s.stack(ctx, thread.ThreadID, threadLocationLevels), s.flavor, false)
 			if len(frames) == 0 {
 				return
 			}
@@ -80,7 +80,7 @@ func (s *session) goroutineLocations(ctx context.Context, threads []domain.Threa
 	return locations
 }
 
-func (s *session) stack(ctx context.Context, threadID, levels int) []dap.StackFrame {
+func (s *Session) stack(ctx context.Context, threadID, levels int) []dap.StackFrame {
 	request := &dap.StackTraceRequest{
 		Request:   newRequest("stackTrace"),
 		Arguments: dap.StackTraceArguments{ThreadId: threadID, Levels: levels},
@@ -92,12 +92,12 @@ func (s *session) stack(ctx context.Context, threadID, levels int) []dap.StackFr
 	return response.(*dap.StackTraceResponse).Body.StackFrames
 }
 
-func (s *session) frames(ctx context.Context, threadID int, skipRuntime bool) []domain.StackFrame {
-	return mapFrames(s.stack(ctx, threadID, stackLevels), skipRuntime)
+func (s *Session) frames(ctx context.Context, threadID int, skipHidden bool) []domain.StackFrame {
+	return mapFrames(s.stack(ctx, threadID, stackLevels), s.flavor, skipHidden)
 }
 
 // locals returns the Locals of the top frame, or an empty list.
-func (s *session) locals(ctx context.Context, frames []domain.StackFrame) []domain.Variable {
+func (s *Session) locals(ctx context.Context, frames []domain.StackFrame) []domain.Variable {
 	if len(frames) == 0 {
 		return []domain.Variable{}
 	}
@@ -106,7 +106,7 @@ func (s *session) locals(ctx context.Context, frames []domain.StackFrame) []doma
 	if err != nil {
 		return []domain.Variable{}
 	}
-	reference := localsReference(response.(*dap.ScopesResponse).Body.Scopes)
+	reference := localsReference(response.(*dap.ScopesResponse).Body.Scopes, s.flavor)
 	if reference == 0 {
 		return []domain.Variable{}
 	}
@@ -114,7 +114,7 @@ func (s *session) locals(ctx context.Context, frames []domain.StackFrame) []doma
 }
 
 // children asks for the variables behind a reference.
-func (s *session) children(ctx context.Context, reference int) []domain.Variable {
+func (s *Session) children(ctx context.Context, reference int) []domain.Variable {
 	request := &dap.VariablesRequest{
 		Request:   newRequest("variables"),
 		Arguments: dap.VariablesArguments{VariablesReference: reference},
@@ -123,5 +123,5 @@ func (s *session) children(ctx context.Context, reference int) []domain.Variable
 	if err != nil {
 		return []domain.Variable{}
 	}
-	return mapVariables(response.(*dap.VariablesResponse).Body.Variables)
+	return mapVariables(response.(*dap.VariablesResponse).Body.Variables, s.flavor)
 }

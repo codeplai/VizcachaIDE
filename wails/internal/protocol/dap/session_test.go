@@ -1,11 +1,9 @@
-package delve
+package dap
 
 import (
-	"errors"
 	"path/filepath"
 	"testing"
 
-	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/google/go-dap"
 )
@@ -145,25 +143,5 @@ func TestRunToUsesATemporaryBreakpointAndContinues(t *testing.T) {
 	s.book.ClearTemporary()
 	if len(s.book.For(file)) != 0 {
 		t.Error("the temporary breakpoint must go away after the stop")
-	}
-}
-
-func TestControlsWithoutSessionReturnErrNoSession(t *testing.T) {
-	debugger := New(newEventSink(), Options{})
-	if err := debugger.StepOver(); !errors.Is(err, app.ErrNoSession) {
-		t.Errorf("StepOver without session = %v, want ErrNoSession", err)
-	}
-	if debugger.IsActive() {
-		t.Error("no session is active")
-	}
-}
-
-func TestDelveNotFoundIsToolNotFound(t *testing.T) {
-	debugger := New(newEventSink(), Options{DelvePath: func() string { return filepath.Join(t.TempDir(), "no-dlv") }})
-
-	err := debugger.Start(t.Context(), domain.NewFileRunConfiguration(domain.CodeLanguageGo, "x/main.go", nil), nil)
-
-	if !errors.Is(err, app.ErrToolNotFound) {
-		t.Fatalf("err = %v, want ErrToolNotFound", err)
 	}
 }

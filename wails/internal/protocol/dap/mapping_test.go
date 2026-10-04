@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"path/filepath"
@@ -9,28 +9,11 @@ import (
 	"github.com/google/go-dap"
 )
 
-func TestStopReasons(t *testing.T) {
-	cases := map[string]domain.StopReason{
-		"breakpoint":          domain.StopBreakpoint,
-		"function breakpoint": domain.StopBreakpoint,
-		"step":                domain.StopStep,
-		"entry":               domain.StopEntry,
-		"exception":           domain.StopException,
-		"pause":               domain.StopPause,
-		"something new":       domain.StopPause,
-	}
-	for reason, want := range cases {
-		if got := stopReason(reason); got != want {
-			t.Errorf("stopReason(%q) = %q, want %q", reason, got, want)
-		}
-	}
-}
-
 func TestFramesFromRecordedStackTrace(t *testing.T) {
 	dir := t.TempDir()
 	response := responseFor[*dap.StackTraceResponse](t, functionsSession(t, dir))
 
-	frames := mapFrames(response.Body.StackFrames, false)
+	frames := mapFrames(response.Body.StackFrames, testFlavor{}, false)
 
 	names := []string{frames[0].Function, frames[1].Function, frames[2].Function}
 	if strings.Join(names, ",") != "main.multiply,main.main,runtime.main" {
@@ -49,7 +32,7 @@ func TestPanicSkipsLeadingRuntimeFrames(t *testing.T) {
 	dir := t.TempDir()
 	response := panicPart(t, dir, "stackTrace").(*dap.StackTraceResponse)
 
-	frames := mapFrames(response.Body.StackFrames, true)
+	frames := mapFrames(response.Body.StackFrames, testFlavor{}, true)
 
 	if frames[0].Function != "main.main" || frames[len(frames)-1].Function != "runtime.main" {
 		t.Fatalf("frames = %+v", frames)
@@ -57,28 +40,15 @@ func TestPanicSkipsLeadingRuntimeFrames(t *testing.T) {
 	if frames[0].Location.File != filepath.Join(dir, "panic.go") {
 		t.Errorf("file = %s", frames[0].Location.File)
 	}
-	if kept := mapFrames(response.Body.StackFrames, false); len(kept) != 5 {
+	if kept := mapFrames(response.Body.StackFrames, testFlavor{}, false); len(kept) != 5 {
 		t.Errorf("without skipping there must be 5 frames, got %d", len(kept))
-	}
-}
-
-func TestPanicDescription(t *testing.T) {
-	stopped := panicPart(t, t.TempDir(), "stopped").(*dap.StoppedEvent)
-
-	got := stopDescription(stopped)
-
-	if want := "panic: runtime error: index out of range [3] with length 0"; got != want {
-		t.Errorf("description = %q, want %q", got, want)
-	}
-	if stopReason(stopped.Body.Reason) != domain.StopException {
-		t.Errorf("reason = %q, want panic", stopped.Body.Reason)
 	}
 }
 
 func TestVariablesKeepReferenceForLazyExpansion(t *testing.T) {
 	dir := t.TempDir()
-	simple := mapVariables(responseFor[*dap.VariablesResponse](t, functionsSession(t, dir)).Body.Variables)
-	nested := mapVariables(panicPart(t, dir, "long_variable").(*dap.VariablesResponse).Body.Variables)
+	simple := mapVariables(responseFor[*dap.VariablesResponse](t, functionsSession(t, dir)).Body.Variables, testFlavor{})
+	nested := mapVariables(panicPart(t, dir, "long_variable").(*dap.VariablesResponse).Body.Variables, testFlavor{})
 
 	names := []string{simple[0].Name, simple[1].Name, simple[2].Name, simple[3].Name}
 	if strings.Join(names, ",") != "a,b,~r0,result" {
@@ -98,7 +68,7 @@ func TestLongValuesAreTruncated(t *testing.T) {
 		t.Fatal("the fixture value must be longer than the limit")
 	}
 
-	value := mapVariables(raw)[0].Value
+	value := mapVariables(raw, testFlavor{})[0].Value
 
 	if len([]rune(value)) != maxValueLength || !strings.HasSuffix(value, ellipsis) {
 		t.Errorf("value has %d runes and ends with %q", len([]rune(value)), value[len(value)-3:])
@@ -110,10 +80,10 @@ func TestLocalsScopeEvenForOptimizedFunctions(t *testing.T) {
 	normal := responseFor[*dap.ScopesResponse](t, functionsSession(t, dir))
 	optimized := panicPart(t, dir, "optimized_scopes").(*dap.ScopesResponse)
 
-	if localsReference(normal.Body.Scopes) != 1000 || localsReference(optimized.Body.Scopes) != 1000 {
+	if localsReference(normal.Body.Scopes, testFlavor{}) != 1000 || localsReference(optimized.Body.Scopes, testFlavor{}) != 1000 {
 		t.Error("the Locals scope must be found in both responses")
 	}
-	if localsReference(nil) != 0 {
+	if localsReference(nil, testFlavor{}) != 0 {
 		t.Error("no scopes means reference 0")
 	}
 }
@@ -121,30 +91,38 @@ func TestLocalsScopeEvenForOptimizedFunctions(t *testing.T) {
 func TestGoroutinesDropTheCurrentMark(t *testing.T) {
 	response := responseFor[*dap.ThreadsResponse](t, functionsSession(t, t.TempDir()))
 
-	goroutines := mapGoroutines(response.Body.Threads)
+	goroutines := mapThreads(response.Body.Threads)
 
 	if len(goroutines) != 6 || goroutines[0].Name != "[Go 1] main.multiply (Thread 41936)" {
 		t.Errorf("goroutines = %+v", goroutines)
 	}
 }
 
-func TestOutputCategoriesAndNoise(t *testing.T) {
+func TestStandardOutputCategories(t *testing.T) {
 	event := func(category, text string) *dap.OutputEvent {
 		return &dap.OutputEvent{Body: dap.OutputEventBody{Category: category, Output: text}}
 	}
-	if _, category, ok := outputText(event("stdout", "hi\n")); !ok || category != "stdout" {
+	if _, category, ok := StandardOutput(event("stdout", "hi\n")); !ok || category != "stdout" {
 		t.Errorf("stdout: ok=%v category=%q", ok, category)
 	}
-	if _, category, _ := outputText(event("important", "x")); category != "console" {
+	if _, category, _ := StandardOutput(event("important", "x")); category != "console" {
 		t.Errorf("unknown categories are console, got %q", category)
 	}
-	for _, noise := range []*dap.OutputEvent{
-		event("console", "Type 'dlv help' for list of commands.\n"),
-		event("telemetry", "x"),
-		event("stdout", ""),
-	} {
-		if _, _, ok := outputText(noise); ok {
+	for _, noise := range []*dap.OutputEvent{event("telemetry", "x"), event("stdout", "")} {
+		if _, _, ok := StandardOutput(noise); ok {
 			t.Errorf("%+v must be dropped", noise.Body)
+		}
+	}
+}
+
+func TestStandardStopReasons(t *testing.T) {
+	cases := map[string]domain.StopReason{
+		"breakpoint": domain.StopBreakpoint, "step": domain.StopStep, "entry": domain.StopEntry,
+		"exception": domain.StopException, "pause": domain.StopPause, "something new": domain.StopPause,
+	}
+	for reason, want := range cases {
+		if got := StandardStopReason(reason); got != want {
+			t.Errorf("StandardStopReason(%q) = %q, want %q", reason, got, want)
 		}
 	}
 }

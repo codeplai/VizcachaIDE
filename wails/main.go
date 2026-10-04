@@ -9,10 +9,10 @@ import (
 	"embed"
 	"log"
 
-	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/delve"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/console"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/delve"
 	golangerrors "github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/errors"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/packages"
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang/runner"

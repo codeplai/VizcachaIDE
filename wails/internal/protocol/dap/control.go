@@ -1,4 +1,4 @@
-package delve
+package dap
 
 import (
 	"context"
@@ -9,8 +9,11 @@ import (
 	"github.com/google/go-dap"
 )
 
+// Execute resumes the program with next, stepIn, stepOut or continue.
+func (s *Session) Execute(command string) error { return s.execute(command) }
+
 // execute resumes the program with next, stepIn, stepOut or continue.
-func (s *session) execute(command string) error {
+func (s *Session) execute(command string) error {
 	s.mu.Lock()
 	threadID, ready := s.threadID, s.configured && !s.finished
 	s.mu.Unlock()
@@ -40,8 +43,22 @@ func executionRequest(command string, threadID int) (dap.RequestMessage, error) 
 	return nil, fmt.Errorf("unknown execution command %q", command)
 }
 
+// RunTo puts a temporary breakpoint at the location and continues.
+func (s *Session) RunTo(location domain.SourceLocation) error { return s.runTo(location) }
+
+// SetBreakpoints replaces the lines of one file, also while running.
+func (s *Session) SetBreakpoints(file string, lines []int) error {
+	return s.setBreakpoints(file, lines)
+}
+
+// RequestVariables answers asynchronously with debug:variables.
+func (s *Session) RequestVariables(reference int) { s.requestVariables(reference) }
+
+// FrameVariables reads the arguments and locals of one frame of the paused stack.
+func (s *Session) FrameVariables(frameID int) domain.FrameVariables { return s.frameVariables(frameID) }
+
 // runTo puts a temporary breakpoint at the location and continues.
-func (s *session) runTo(location domain.SourceLocation) error {
+func (s *Session) runTo(location domain.SourceLocation) error {
 	if !s.isConfigured() {
 		return app.ErrNoSession
 	}
@@ -52,8 +69,8 @@ func (s *session) runTo(location domain.SourceLocation) error {
 	return s.execute("continue")
 }
 
-// setBreakpoints replaces the lines of one file and tells Delve when it is ready.
-func (s *session) setBreakpoints(file string, lines []int) error {
+// setBreakpoints replaces the lines of one file and tells the adapter when it is ready.
+func (s *Session) setBreakpoints(file string, lines []int) error {
 	key := s.book.Replace(file, lines)
 	if !s.isConfigured() {
 		return nil
@@ -63,7 +80,7 @@ func (s *session) setBreakpoints(file string, lines []int) error {
 
 // requestVariables answers asynchronously with debug:variables. The answer is
 // always emitted, empty on failure, except when the program resumed first.
-func (s *session) requestVariables(reference int) {
+func (s *Session) requestVariables(reference int) {
 	ctx := s.pausedContext()
 	if ctx == nil || reference == 0 {
 		s.sink.DebugVariables(reference, []domain.Variable{})
