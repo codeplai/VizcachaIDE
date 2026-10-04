@@ -60,9 +60,11 @@ func (s *Server) initialize(conn *connection, root string) {
 
 // handshake sends initialize, initialized and, if the flavor has one, its configuration.
 func (s *Server) handshake(ctx context.Context, conn *connection, root string) error {
-	if _, err := conn.call(ctx, "initialize", initializeParams(root, s.flavor.InitializationOptions())); err != nil {
+	result, err := conn.call(ctx, "initialize", initializeParams(root, s.flavor.InitializationOptions()))
+	if err != nil {
 		return err
 	}
+	s.hints.Store(announcesInlayHints(result))
 	if err := conn.notify(ctx, "initialized", protocol.InitializedParams{}); err != nil {
 		return err
 	}

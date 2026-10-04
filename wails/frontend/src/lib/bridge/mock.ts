@@ -6,6 +6,7 @@ import { mockConsole } from './mockConsole'
 import { defaultSettings, sampleLocation, sampleSymbols } from './mockData'
 import { mockDebug, mockRun, type MockState } from './mockExecution'
 import { mockFiles } from './mockFiles'
+import { sampleInlayHints } from './mockInlay'
 import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
 import { mockSettings } from './mockSettings'
@@ -61,7 +62,7 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
   }),
   documentHighlights: async () => [],
   documentSymbols: async () => sampleSymbols(),
-  inlayHints: async () => []
+  inlayHints: async (visible) => sampleInlayHints(visible)
 })
 
 export interface MockOptions {

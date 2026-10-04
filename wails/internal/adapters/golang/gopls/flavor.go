@@ -58,8 +58,20 @@ func (f Flavor) Command(env map[string]string) (string, []string, error) {
 // RootOf is the folder with the nearest go.mod above path, or the file's own folder.
 func (Flavor) RootOf(path string) string { return moduleRoot(path) }
 
-// InitializationOptions are none: gopls works with its defaults.
-func (Flavor) InitializationOptions() any { return nil }
+// InitializationOptions turn on the inlay hints a beginner reads (they are all off in gopls by
+// default): the type of `x := 5`, the names of the parameters of a call, the type of the
+// variables of a range loop, constant values and inferred type arguments. gopls reads its settings
+// from the initializationOptions of initialize.
+func (Flavor) InitializationOptions() any {
+	return map[string]any{"hints": map[string]any{
+		"assignVariableTypes":    true,
+		"compositeLiteralFields": false,
+		"constantValues":         true,
+		"functionTypeParameters": true,
+		"parameterNames":         true,
+		"rangeVariableTypes":     true,
+	}}
+}
 
 // Configuration is none: gopls needs no workspace/didChangeConfiguration.
 func (Flavor) Configuration() any { return nil }

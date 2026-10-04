@@ -32,6 +32,17 @@
   <span class="hint" id="setting-format-hint">{$t('settings.formatOnSaveHint')}</span>
 </div>
 
+<div class="field check">
+  <label>
+    <input
+      type="checkbox"
+      checked={$settings?.inlayHints ?? true}
+      onchange={(event) => updateSettings(bridge, { inlayHints: event.currentTarget.checked })}
+    />
+    {$t('settings.inlayHints')}
+  </label>
+</div>
+
 <style>
   .check label {
     display: flex;

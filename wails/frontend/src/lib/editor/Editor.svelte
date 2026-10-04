@@ -8,6 +8,7 @@
     type LanguageWiring
   } from './createEditor'
   import { profileOf } from '../stores/codeLanguages'
+  import { settings } from '../stores/settings'
   import type { RevealRequest } from '../stores/navigation'
   import type { EditorMarks } from './marks'
   import { editorPhrases } from './phrases'
@@ -36,6 +37,7 @@
   $effect(() => handle?.setMarks(marks))
   $effect(() => handle?.setPhrases(editorPhrases($t)))
   $effect(() => handle?.setFontSize(fontSize))
+  $effect(() => handle?.setInlayHints($settings?.inlayHints ?? true))
   $effect(() => {
     if (!goto || goto.nonce === lastGoto || goto.location.file !== path) return
     lastGoto = goto.nonce
