@@ -64,6 +64,9 @@ type Job struct {
 	// (run:started, run:output, run:finished). A debug adapter's runInTerminal passes one that
 	// turns the output into debug:output. Only the first stage's Events counts. Nil = the sink.
 	Events JobEvents
+	// OutputFilter transforms or drops each line this stage prints; nil shows it as it is. Only
+	// Pipes stages use it (a compile stage), never a program in a terminal.
+	OutputFilter OutputFilter
 }
 
 // JobEvents is what a run reports. app.EventSink satisfies it, so the default is the sink.

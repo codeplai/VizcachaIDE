@@ -1,0 +1,10 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmp79v6ahlj\mis programas ñandú
+# command: clippy-driver --edition 2024 --crate-type bin --emit=metadata --out-dir build --error-format=json main.rs
+# exit: 0
+# program:
+#   fn main() {
+#       let s = String::from("a");
+#       let t = s.clone();
+#       println!("{}", t);
+#   }
+# output:

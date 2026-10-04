@@ -1,0 +1,19 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       let x = 5
+#       println!("{}", x);
+#   }
+# output:
+error: expected `;`, found `println`
+ --> main.rs:2:14
+  |
+2 |     let x = 5
+  |              ^ help: add `;` here
+3 |     println!("{}", x);
+  |     ------- unexpected token
+
+error: aborting due to 1 previous error
+

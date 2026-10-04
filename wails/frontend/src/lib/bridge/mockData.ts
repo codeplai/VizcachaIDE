@@ -166,5 +166,6 @@ export const defaultSettings = (defaultCodeLanguage: CodeLanguage = 'go'): Setti
   formatOnSave: true,
   recentFiles: [],
   checkUpdates: true,
-  lastUpdateCheck: ''
+  lastUpdateCheck: '',
+  inlayHints: true
 })

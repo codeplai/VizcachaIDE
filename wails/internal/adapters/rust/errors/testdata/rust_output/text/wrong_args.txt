@@ -1,0 +1,28 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn sumar(a: i32, b: i32) -> i32 { a + b }
+#   fn main() {
+#       println!("{}", sumar(1));
+#   }
+# output:
+error[E0061]: this function takes 2 arguments but 1 argument was supplied
+ --> main.rs:3:20
+  |
+3 |     println!("{}", sumar(1));
+  |                    ^^^^^--- argument #2 of type `i32` is missing
+  |
+note: function defined here
+ --> main.rs:1:4
+  |
+1 | fn sumar(a: i32, b: i32) -> i32 { a + b }
+  |    ^^^^^         ------
+help: provide the argument
+  |
+3 |     println!("{}", sumar(1, /* i32 */));
+  |                           +++++++++++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0061`.

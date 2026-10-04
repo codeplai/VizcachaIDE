@@ -442,6 +442,28 @@ export namespace domain {
 	        this.size = source["size"];
 	    }
 	}
+	export class InlayHint {
+	    line: number;
+	    column: number;
+	    label: string;
+	    kind: string;
+	    paddingLeft: boolean;
+	    paddingRight: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new InlayHint(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.line = source["line"];
+	        this.column = source["column"];
+	        this.label = source["label"];
+	        this.kind = source["kind"];
+	        this.paddingLeft = source["paddingLeft"];
+	        this.paddingRight = source["paddingRight"];
+	    }
+	}
 	export class ToolSpec {
 	    id: string;
 	    role: string;
@@ -599,6 +621,7 @@ export namespace domain {
 	    checkUpdates: boolean;
 	    lastUpdateCheck: string;
 	    recentFiles: string[];
+	    inlayHints: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Settings(source);
@@ -618,6 +641,7 @@ export namespace domain {
 	        this.checkUpdates = source["checkUpdates"];
 	        this.lastUpdateCheck = source["lastUpdateCheck"];
 	        this.recentFiles = source["recentFiles"];
+	        this.inlayHints = source["inlayHints"];
 	    }
 	}
 	export class SignatureHelp {

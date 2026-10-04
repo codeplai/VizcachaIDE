@@ -60,7 +60,8 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
     activeParameter: 0
   }),
   documentHighlights: async () => [],
-  documentSymbols: async () => sampleSymbols()
+  documentSymbols: async () => sampleSymbols(),
+  inlayHints: async () => []
 })
 
 export interface MockOptions {

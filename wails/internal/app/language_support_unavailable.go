@@ -87,6 +87,9 @@ func (unavailableServer) DocumentHighlights(context.Context, domain.SourceLocati
 func (unavailableServer) DocumentSymbols(context.Context, string) ([]domain.DocumentSymbol, error) {
 	return []domain.DocumentSymbol{}, nil
 }
+func (unavailableServer) InlayHints(context.Context, domain.SourceRange) ([]domain.InlayHint, error) {
+	return []domain.InlayHint{}, nil
+}
 func (unavailableServer) Shutdown(context.Context) error { return nil }
 
 type unavailableExplainer struct{}

@@ -24,6 +24,8 @@ export interface Settings {
   checkUpdates: boolean
   /** RFC 3339 time of the last successful update check; '' if never. */
   lastUpdateCheck: string
+  /** Draw the language server's inlay hints (inferred types, parameter names). */
+  inlayHints: boolean
 }
 
 export type UpdateStatus =

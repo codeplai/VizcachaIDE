@@ -42,7 +42,11 @@ const DEBUG_LINES: Record<SampleLanguage, { first: number; last: number }> = {
 const languageOf = (state: MockState, path: string): CodeLanguage =>
   path ? codeLanguageOfPath(path) : state.sampleLanguage
 
-const sampleFor = (state: MockState, path: string): SampleLanguage => languageOf(state, path)
+// Rust has no sample yet (track R5 of docs/PLAN_RUST.md adds it): it plays the Go one.
+const sampleFor = (state: MockState, path: string): SampleLanguage => {
+  const language = languageOf(state, path)
+  return language === 'rust' ? 'go' : language
+}
 
 const configurationFor = (state: MockState, path: string): RunConfiguration => {
   const { configuration } = sampleOf(sampleFor(state, path))

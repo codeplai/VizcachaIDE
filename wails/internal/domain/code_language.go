@@ -9,6 +9,7 @@ const (
 	CodeLanguageGo     CodeLanguage = "go"
 	CodeLanguagePython CodeLanguage = "python"
 	CodeLanguageCpp    CodeLanguage = "cpp"
+	CodeLanguageRust   CodeLanguage = "rust"
 )
 
 // PackageAction is one verb of a language's package manager.

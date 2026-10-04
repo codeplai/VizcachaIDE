@@ -1,0 +1,32 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: main.exe
+# runExit: 101 (0x00000065)
+# program:
+#   use std::cell::RefCell;
+#   fn main() {
+#       let c = RefCell::new(1);
+#       let _a = c.borrow_mut();
+#       let _b = c.borrow_mut();
+#   }
+# output:
+
+thread 'main' (32712) panicked at main.rs:5:16:
+RefCell already borrowed
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\std\src/panicking.rs:679:5
+   1: core::panicking::panic_fmt
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/panicking.rs:80:14
+   2: core::cell::panic_already_borrowed::do_panic::runtime
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/panic.rs:172:21
+   3: core::cell::panic_already_borrowed::do_panic
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src\intrinsics/mod.rs:2636:9
+   4: core::cell::panic_already_borrowed
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library\core\src/panic.rs:177:9
+   5: <core::cell::RefCell<i32>>::borrow_mut
+             at D:\Users\mcalderon\Documents\Claude\Projects\VizcachaIDE\wails\.toolchain-dev\rustup\toolchains\stable-x86_64-pc-windows-gnu\lib/rustlib/src/rust\library\core\src\cell.rs:1227:25
+   6: main::main
+             at .\main.rs:5:16
+   7: <fn() as core::ops::function::FnOnce<()>>::call_once
+             at D:\Users\mcalderon\Documents\Claude\Projects\VizcachaIDE\wails\.toolchain-dev\rustup\toolchains\stable-x86_64-pc-windows-gnu\lib/rustlib/src/rust\library\core\src\ops\function.rs:250:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

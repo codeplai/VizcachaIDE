@@ -30,6 +30,10 @@ export function Hover(arg1) {
   return window['go']['bridge']['LanguageService']['Hover'](arg1);
 }
 
+export function InlayHints(arg1) {
+  return window['go']['bridge']['LanguageService']['InlayHints'](arg1);
+}
+
 export function OpenDocument(arg1, arg2) {
   return window['go']['bridge']['LanguageService']['OpenDocument'](arg1, arg2);
 }

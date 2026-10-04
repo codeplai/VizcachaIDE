@@ -44,6 +44,18 @@ export type SymbolKind =
   | 'package'
   | 'other'
 
+export type InlayHintKind = 'type' | 'parameter' | 'other'
+
+/** A label drawn inside the code without changing it (an inferred type, a parameter name). */
+export interface InlayHint {
+  line: number
+  column: number
+  label: string
+  kind: InlayHintKind
+  paddingLeft: boolean
+  paddingRight: boolean
+}
+
 export interface DocumentSymbol {
   name: string
   kind: SymbolKind
@@ -137,7 +149,7 @@ export interface ExplainedDiagnostic {
   explanation: ErrorExplanation | null
 }
 
-export type ProjectKind = 'gomod' | 'folder' | 'pyproject'
+export type ProjectKind = 'gomod' | 'folder' | 'pyproject' | 'cargo'
 
 /** The project around the file being run. For Go, name is the module path. */
 export interface ProjectContext {

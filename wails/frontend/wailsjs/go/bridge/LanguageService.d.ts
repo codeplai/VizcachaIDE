@@ -16,6 +16,8 @@ export function DocumentSymbols(arg1:string):Promise<Array<domain.DocumentSymbol
 
 export function Hover(arg1:domain.SourceLocation):Promise<string>;
 
+export function InlayHints(arg1:domain.SourceRange):Promise<Array<domain.InlayHint>>;
+
 export function OpenDocument(arg1:string,arg2:string):Promise<void>;
 
 export function SignatureHelp(arg1:domain.SourceLocation):Promise<domain.SignatureHelp>;

@@ -86,7 +86,8 @@ export const createWailsBridge = (): Bridge => ({
     signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
     documentHighlights: async (at) =>
       fromWire(await LanguageService.DocumentHighlights(toWire(at))),
-    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path))
+    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
+    inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible)))
   },
   assistant: {
     explain: async (codeLanguage, raw, dir) =>

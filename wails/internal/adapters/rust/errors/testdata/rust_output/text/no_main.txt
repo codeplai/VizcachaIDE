@@ -1,0 +1,15 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn ayudar() {}
+# output:
+error[E0601]: `main` function not found in crate `main`
+ --> main.rs:1:15
+  |
+1 | fn ayudar() {}
+  |               ^ consider adding a `main` function to `main.rs`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0601`.

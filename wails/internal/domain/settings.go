@@ -47,6 +47,8 @@ type Settings struct {
 	LastUpdateCheck string `json:"lastUpdateCheck"`
 	// RecentFiles are the last opened files, newest first (at most MaxRecentFiles).
 	RecentFiles []string `json:"recentFiles"`
+	// InlayHints draws the hints of the language server (inferred types, parameter names).
+	InlayHints bool `json:"inlayHints"`
 }
 
 // MaxRecentFiles is how many entries Settings.RecentFiles keeps.
@@ -57,6 +59,6 @@ func DefaultSettings() Settings {
 	return Settings{
 		Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, ToolPaths: map[string]string{},
 		FirstRun: true, DefaultCodeLanguage: CodeLanguageGo, EnabledCodeLanguages: []CodeLanguage{},
-		FormatOnSave: true, RecentFiles: []string{}, CheckUpdates: true,
+		FormatOnSave: true, RecentFiles: []string{}, CheckUpdates: true, InlayHints: true,
 	}
 }

@@ -69,6 +69,7 @@ linters:
             - "!**/internal/adapters/golang/**"
             - "!**/internal/adapters/python/**"
             - "!**/internal/adapters/cpp/**"
+            - "!**/internal/adapters/rust/**"
           deny:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
               desc: adapters never import bridge
@@ -87,6 +88,8 @@ linters:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/python
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/rust
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
               desc: a language adapter imports only its own folder
@@ -109,6 +112,8 @@ linters:
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
               desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/rust
+              desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch
@@ -129,6 +134,32 @@ linters:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/python
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/rust
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filewatch
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/filesystem
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/windowstate
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/updates
+              desc: a language adapter imports only its own folder
+        rust-adapter-stays-in-rust:
+          # Same rule as go-adapter-stays-in-go, for the Rust adapter (PLAN_RUST.md section 3.1).
+          # The debugger shares protocol/dap/lldb with C++, never adapters/cpp.
+          files:
+            - "**/internal/adapters/rust/**"
+          deny:
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/bridge
+              desc: adapters never import bridge
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/golang
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/python
+              desc: a language adapter imports only its own folder
+            - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp
               desc: a language adapter imports only its own folder
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters/settings
               desc: a language adapter imports only its own folder

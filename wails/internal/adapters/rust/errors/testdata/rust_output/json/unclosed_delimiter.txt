@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g --error-format=json -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       println!("hola");
+# output:
+{"$message_type":"diagnostic","message":"this file contains an unclosed delimiter","code":null,"level":"error","spans":[{"file_name":"main.rs","byte_start":10,"byte_end":11,"line_start":1,"line_end":1,"column_start":11,"column_end":12,"is_primary":false,"text":[{"text":"fn main() {","highlight_start":11,"highlight_end":12}],"label":"unclosed delimiter","suggested_replacement":null,"suggestion_applicability":null,"expansion":null},{"file_name":"main.rs","byte_start":36,"byte_end":36,"line_start":2,"line_end":2,"column_start":23,"column_end":23,"is_primary":true,"text":[{"text":"    println!(\"hola\");","highlight_start":23,"highlight_end":23}],"label":null,"suggested_replacement":null,"suggestion_applicability":null,"expansion":null}],"children":[],"rendered":"error: this file contains an unclosed delimiter\n --> main.rs:2:23\n  |\n1 | fn main() {\n  |           - unclosed delimiter\n2 |     println!(\"hola\");\n  |                      ^\n\n"}
+{"$message_type":"diagnostic","message":"aborting due to 1 previous error","code":null,"level":"error","spans":[],"children":[],"rendered":"error: aborting due to 1 previous error\n\n"}

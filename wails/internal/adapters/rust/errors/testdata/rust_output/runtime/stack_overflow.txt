@@ -1,0 +1,14 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: main.exe
+# runExit: 3221225725 (0xC00000FD)
+# program:
+#   fn f(n: u64) -> u64 {
+#       let a = [n; 64];
+#       f(n + 1) + a[0]
+#   }
+#   fn main() {
+#       println!("{}", f(0));
+#   }
+# output:
+
+thread 'main' (30088) has overflowed its stack

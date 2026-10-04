@@ -1,0 +1,25 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   struct Punto { x: i32 }
+#   fn main() {
+#       let p = Punto { x: 1 };
+#       println!("{}", p.y);
+#   }
+# output:
+error[E0609]: no field `y` on type `Punto`
+ --> main.rs:4:22
+  |
+4 |     println!("{}", p.y);
+  |                      ^ unknown field
+  |
+help: a field with a similar name exists
+  |
+4 -     println!("{}", p.y);
+4 +     println!("{}", p.x);
+  |
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0609`.

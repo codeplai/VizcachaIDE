@@ -5,6 +5,7 @@ import type {
   CompletionItem,
   Diagnostic,
   DocumentSymbol,
+  InlayHint,
   ExplainedDiagnostic,
   FileNode,
   FrameVariables,
@@ -77,6 +78,8 @@ export interface LanguageApi {
   signatureHelp: (at: SourceLocation) => Promise<SignatureHelp | null>
   documentHighlights: (at: SourceLocation) => Promise<SourceRange[]>
   documentSymbols: (path: string) => Promise<DocumentSymbol[]>
+  /** The hints of the visible lines of an open file (`visible.start.file`). */
+  inlayHints: (visible: SourceRange) => Promise<InlayHint[]>
 }
 
 /** Mirrors bridge.AssistantService (Go). */

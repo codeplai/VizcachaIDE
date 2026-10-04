@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: main.exe
+# runExit: 1 (0x00000001)
+# program:
+#   fn main() -> Result<(), String> {
+#       Err(String::from("archivo no encontrado"))
+#   }
+# output:
+Error: "archivo no encontrado"

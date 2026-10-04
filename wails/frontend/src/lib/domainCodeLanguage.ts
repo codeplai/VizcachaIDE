@@ -1,6 +1,6 @@
 // Part of the domain.ts contract (v3): the language profiles. Import it through domain.ts.
 
-export type CodeLanguage = 'go' | 'python' | 'cpp'
+export type CodeLanguage = 'go' | 'python' | 'cpp' | 'rust'
 
 export type PackageAction = 'init' | 'add' | 'remove' | 'tidy' | 'list'
 

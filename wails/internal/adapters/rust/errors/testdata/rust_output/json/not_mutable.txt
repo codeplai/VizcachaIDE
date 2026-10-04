@@ -1,0 +1,13 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g --error-format=json -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       let v = Vec::new();
+#       v.push(1);
+#       println!("{:?}", v);
+#   }
+# output:
+{"$message_type":"diagnostic","message":"cannot borrow `v` as mutable, as it is not declared as mutable","code":{"code":"E0596","explanation":"This error occurs because you tried to mutably borrow a non-mutable variable.\n\nErroneous code example:\n\n```compile_fail,E0596\nlet x = 1;\nlet y = &mut x; // error: cannot borrow mutably\n```\n\nIn here, `x` isn't mutable, so when we try to mutably borrow it in `y`, it\nfails. To fix this error, you need to make `x` mutable:\n\n```\nlet mut x = 1;\nlet y = &mut x; // ok!\n```\n"},"level":"error","spans":[{"file_name":"main.rs","byte_start":42,"byte_end":43,"line_start":3,"line_end":3,"column_start":5,"column_end":6,"is_primary":true,"text":[{"text":"    v.push(1);","highlight_start":5,"highlight_end":6}],"label":"cannot borrow as mutable","suggested_replacement":null,"suggestion_applicability":null,"expansion":null}],"children":[{"message":"consider changing this to be mutable","code":null,"level":"help","spans":[{"file_name":"main.rs","byte_start":21,"byte_end":21,"line_start":2,"line_end":2,"column_start":9,"column_end":9,"is_primary":true,"text":[{"text":"    let v = Vec::new();","highlight_start":9,"highlight_end":9}],"label":null,"suggested_replacement":"mut ","suggestion_applicability":"MachineApplicable","expansion":null}],"children":[],"rendered":null}],"rendered":"error[E0596]: cannot borrow `v` as mutable, as it is not declared as mutable\n --> main.rs:3:5\n  |\n3 |     v.push(1);\n  |     ^ cannot borrow as mutable\n  |\nhelp: consider changing this to be mutable\n  |\n2 |     let mut v = Vec::new();\n  |         +++\n\n"}
+{"$message_type":"diagnostic","message":"aborting due to 1 previous error","code":null,"level":"error","spans":[],"children":[],"rendered":"error: aborting due to 1 previous error\n\n"}
+{"$message_type":"diagnostic","message":"For more information about this error, try `rustc --explain E0596`.","code":null,"level":"failure-note","spans":[],"children":[],"rendered":"For more information about this error, try `rustc --explain E0596`.\n"}

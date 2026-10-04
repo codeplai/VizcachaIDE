@@ -1,0 +1,11 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g --error-format=json -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       let x = 5
+#       println!("{}", x);
+#   }
+# output:
+{"$message_type":"diagnostic","message":"expected `;`, found `println`","code":null,"level":"error","spans":[{"file_name":"main.rs","byte_start":32,"byte_end":39,"line_start":3,"line_end":3,"column_start":5,"column_end":12,"is_primary":false,"text":[{"text":"    println!(\"{}\", x);","highlight_start":5,"highlight_end":12}],"label":"unexpected token","suggested_replacement":null,"suggestion_applicability":null,"expansion":null},{"file_name":"main.rs","byte_start":26,"byte_end":26,"line_start":2,"line_end":2,"column_start":14,"column_end":14,"is_primary":true,"text":[{"text":"    let x = 5","highlight_start":14,"highlight_end":14}],"label":null,"suggested_replacement":null,"suggestion_applicability":null,"expansion":null}],"children":[{"message":"add `;` here","code":null,"level":"help","spans":[{"file_name":"main.rs","byte_start":26,"byte_end":26,"line_start":2,"line_end":2,"column_start":14,"column_end":14,"is_primary":true,"text":[{"text":"    let x = 5","highlight_start":14,"highlight_end":14}],"label":null,"suggested_replacement":";","suggestion_applicability":"MachineApplicable","expansion":null}],"children":[],"rendered":null}],"rendered":"error: expected `;`, found `println`\n --> main.rs:2:14\n  |\n2 |     let x = 5\n  |              ^ help: add `;` here\n3 |     println!(\"{}\", x);\n  |     ------- unexpected token\n\n"}
+{"$message_type":"diagnostic","message":"aborting due to 1 previous error","code":null,"level":"error","spans":[],"children":[],"rendered":"error: aborting due to 1 previous error\n\n"}

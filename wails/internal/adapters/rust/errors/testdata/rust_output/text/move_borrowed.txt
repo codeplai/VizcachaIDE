@@ -1,0 +1,31 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpr_ge8tvv\mis programas ñandú
+# command: rustc --edition 2024 -g -o main.exe main.rs
+# compileExit: 1
+# program:
+#   fn main() {
+#       let s = String::from("a");
+#       let r = &s;
+#       let t = s;
+#       println!("{} {}", r, t);
+#   }
+# output:
+error[E0505]: cannot move out of `s` because it is borrowed
+ --> main.rs:4:13
+  |
+2 |     let s = String::from("a");
+  |         - binding `s` declared here
+3 |     let r = &s;
+  |             -- borrow of `s` occurs here
+4 |     let t = s;
+  |             ^ move out of `s` occurs here
+5 |     println!("{} {}", r, t);
+  |                       - borrow later used here
+  |
+help: consider cloning the value if the performance cost is acceptable
+  |
+3 |     let r = &s.clone();
+  |               ++++++++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0505`.
