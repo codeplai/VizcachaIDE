@@ -29,6 +29,16 @@ PROGRAMS = {
     "eof_input": 'nombre = input("Nombre: ")\n',
     "unbound_local": 'contador = 0\ndef sumar():\n    contador += 1\nsumar()\n',
     "missing_args": 'def saludar(nombre, edad):\n    pass\nsaludar("Ana")\n',
+    "syntax_invalid": 'x = = 1\n',
+    "syntax_assign": '5 = x\n',
+    "type_operands": 'print(1 + "a")\n',
+    "type_not_subscriptable": 'n = 5\nprint(n[0])\n',
+    "type_not_callable": 'n = 5\nn()\n',
+    "type_not_iterable": 'for i in 5:\n    print(i)\n',
+    "type_too_many_args": 'def f(a):\n    return a\nf(1, 2)\n',
+    "type_compare": 'print("a" < 1)\n',
+    "import_name": 'from os import nada\n',
+    "assertion": 'assert 1 == 2\n',
 }
 
 RUFF_SOURCE = 'import os\n\ndef main():\n    total = 5\n    print(valor)\n'

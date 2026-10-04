@@ -1,0 +1,448 @@
+[
+ {
+  "id": "PY-NAME-ERROR",
+  "patterns": ["^NameError: name '(?P<name>[^']+)' is not defined"],
+  "en": {
+   "title": "Python does not know the name \"{name}\"",
+   "body": "The program uses \"{name}\", but nothing with that name exists at that point. Usually the name has a typo, it was never created, or it is created later in the file than the line that uses it.",
+   "fix": "Check how \"{name}\" is spelled (uppercase and lowercase matter). Create it with = before using it, or import it if it comes from a module. If it is text, put it in quotes."
+  },
+  "es": {
+   "title": "Python no conoce el nombre \"{name}\"",
+   "body": "El programa usa \"{name}\", pero en ese punto no existe nada con ese nombre. Casi siempre el nombre tiene una errata, nunca se creó, o se crea más abajo en el archivo que la línea que lo usa.",
+   "fix": "Revisa cómo escribiste \"{name}\" (importan las mayúsculas y minúsculas). Créalo con = antes de usarlo o impórtalo si viene de un módulo. Si es un texto, ponlo entre comillas."
+  }
+ },
+ {
+  "id": "PY-UNBOUND-LOCAL",
+  "patterns": [
+   "^UnboundLocalError: cannot access local variable '(?P<name>[^']+)'",
+   "^UnboundLocalError: local variable '(?P<name>[^']+)' referenced before assignment"
+  ],
+  "en": {
+   "title": "The variable \"{name}\" is used before it has a value",
+   "body": "Inside this function you assign to \"{name}\" (for example with = or +=), so Python treats it as a variable that belongs to the function and not as the one defined outside. Here the function reads it before giving it a value.",
+   "fix": "Give \"{name}\" a value inside the function before using it, or pass it as a parameter. If you really want to change the one defined outside, write \"global {name}\" as the first line of the function."
+  },
+  "es": {
+   "title": "La variable \"{name}\" se usa antes de tener un valor",
+   "body": "Dentro de esta función asignas a \"{name}\" (por ejemplo con = o +=), así que Python la trata como una variable propia de la función y no como la que está definida afuera. Aquí la función la lee antes de darle un valor.",
+   "fix": "Dale un valor a \"{name}\" dentro de la función antes de usarla, o recíbela como parámetro. Si de verdad quieres cambiar la de afuera, escribe \"global {name}\" como primera línea de la función."
+  }
+ },
+ {
+  "id": "PY-INDENTATION",
+  "patterns": ["^IndentationError: (?:expected an indented block|unexpected indent|unindent does not match|unexpected unindent)"],
+  "en": {
+   "title": "The indentation of a line is wrong",
+   "body": "In Python the spaces at the start of a line show which block of code it belongs to. Here a line has more, fewer or no spaces where Python expected something else. For example, the lines inside a def, if, for or while must be indented, and all the lines of one block must have the same indentation.",
+   "fix": "Look at the line the error points to. Indent the lines of a block with the same number of spaces (four is the usual choice) and do not indent a line that is not inside a block."
+  },
+  "es": {
+   "title": "La sangría de una línea es incorrecta",
+   "body": "En Python los espacios al inicio de una línea indican a qué bloque de código pertenece. Aquí una línea tiene más, menos o ningún espacio donde Python esperaba otra cosa. Por ejemplo, las líneas dentro de un def, if, for o while deben ir con sangría, y todas las líneas de un bloque deben tener la misma.",
+   "fix": "Mira la línea que señala el error. Pon la misma cantidad de espacios a todas las líneas de un bloque (lo habitual son cuatro) y no sangres una línea que no esté dentro de un bloque."
+  }
+ },
+ {
+  "id": "PY-TAB-ERROR",
+  "patterns": ["^TabError: inconsistent use of tabs and spaces"],
+  "en": {
+   "title": "Tabs and spaces are mixed in the indentation",
+   "body": "Some lines are indented with the Tab key and others with spaces. They look the same on screen, but Python cannot tell how deep each line is.",
+   "fix": "Use only spaces (four per level). Select the lines of the block and indent them again with the same method."
+  },
+  "es": {
+   "title": "Se mezclan tabuladores y espacios en la sangría",
+   "body": "Unas líneas llevan sangría con la tecla Tab y otras con espacios. En pantalla se ven igual, pero Python no puede saber qué tan adentro está cada línea.",
+   "fix": "Usa solo espacios (cuatro por nivel). Selecciona las líneas del bloque y vuelve a sangrarlas con el mismo método."
+  }
+ },
+ {
+  "id": "PY-SYNTAX-INVALID",
+  "patterns": ["^SyntaxError: invalid syntax(?:\\. Perhaps you forgot a comma\\?)?$"],
+  "en": {
+   "title": "Python cannot understand this line",
+   "body": "The line breaks the grammar of Python. The error usually shows up where Python noticed it, which may be a little after the real mistake: a missing comma or operator, a doubled symbol, or a word in the wrong place.",
+   "fix": "Read the marked line, and also the one before it. Look for a missing comma, an extra symbol or a misspelled keyword (if, else, for, while, def)."
+  },
+  "es": {
+   "title": "Python no entiende esta línea",
+   "body": "La línea rompe la gramática de Python. El error suele aparecer donde Python se dio cuenta, que puede estar un poco después del fallo real: una coma u operador que falta, un símbolo repetido o una palabra fuera de lugar.",
+   "fix": "Lee la línea marcada y también la anterior. Busca una coma que falte, un símbolo de más o una palabra clave mal escrita (if, else, for, while, def)."
+  }
+ },
+ {
+  "id": "PY-SYNTAX-MISSING-COLON",
+  "patterns": ["^SyntaxError: expected ':'"],
+  "en": {
+   "title": "A colon (:) is missing",
+   "body": "Lines that start a block (if, elif, else, for, while, def, class, try, except) must end with a colon. Python expected it here and found the end of the line.",
+   "fix": "Add a colon at the end of the marked line, for example: for i in range(3):"
+  },
+  "es": {
+   "title": "Falta los dos puntos (:)",
+   "body": "Las líneas que abren un bloque (if, elif, else, for, while, def, class, try, except) deben terminar con dos puntos. Python los esperaba aquí y encontró el final de la línea.",
+   "fix": "Agrega los dos puntos al final de la línea marcada, por ejemplo: for i in range(3):"
+  }
+ },
+ {
+  "id": "PY-SYNTAX-UNCLOSED",
+  "patterns": ["^SyntaxError: '(?P<open>[(\\[{])' was never closed"],
+  "en": {
+   "title": "The bracket {open} is never closed",
+   "body": "You opened a {open} but Python reached the end of the code without finding the one that closes it. The error is shown at the opening bracket.",
+   "fix": "Add the closing bracket where the group ends: ) closes (, ] closes [ and } closes {. Count the openings and closings of the marked line."
+  },
+  "es": {
+   "title": "El paréntesis o corchete {open} no se cierra",
+   "body": "Abriste un {open}, pero Python llegó al final del código sin encontrar el que lo cierra. El error se muestra en el símbolo que abre.",
+   "fix": "Agrega el símbolo de cierre donde termina el grupo: ) cierra (, ] cierra [ y } cierra {. Cuenta las aperturas y los cierres de la línea marcada."
+  }
+ },
+ {
+  "id": "PY-SYNTAX-STRING",
+  "patterns": ["^SyntaxError: unterminated (?:triple-quoted |f-)?string literal"],
+  "en": {
+   "title": "A text is missing its closing quote",
+   "body": "A text (string) starts with a quote and must end with the same quote on the same line. Python found the end of the line before the closing quote.",
+   "fix": "Add the closing quote at the end of the text. If the text contains quotes, use the other kind around it (\"it's\") or use triple quotes for several lines."
+  },
+  "es": {
+   "title": "A un texto le falta la comilla de cierre",
+   "body": "Un texto (cadena) empieza con una comilla y debe terminar con la misma comilla en la misma línea. Python encontró el final de la línea antes de la comilla que cierra.",
+   "fix": "Agrega la comilla de cierre al final del texto. Si el texto contiene comillas, rodéalo con el otro tipo (\"it's\") o usa comillas triples para varias líneas."
+  }
+ },
+ {
+  "id": "PY-SYNTAX-ASSIGN",
+  "patterns": [
+   "^SyntaxError: cannot assign to ",
+   "^SyntaxError: invalid syntax\\. Maybe you meant '==' or ':=' instead of '='\\?"
+  ],
+  "en": {
+   "title": "The = sign is used where it cannot be",
+   "body": "A single = stores a value in a variable, so on its left there must be a variable name. Python found a number, a text or an expression there. It also happens when you wanted to compare two values inside an if or while.",
+   "fix": "To store a value, put the variable on the left: age = 5. To compare two values, use == (for example: if age == 5:)."
+  },
+  "es": {
+   "title": "El signo = se usa donde no se puede",
+   "body": "Un solo = guarda un valor en una variable, así que a su izquierda debe haber el nombre de una variable. Python encontró un número, un texto o una expresión. También pasa cuando querías comparar dos valores dentro de un if o while.",
+   "fix": "Para guardar un valor, pon la variable a la izquierda: edad = 5. Para comparar dos valores, usa == (por ejemplo: if edad == 5:)."
+  }
+ },
+ {
+  "id": "PY-TYPE-OPERANDS",
+  "patterns": ["^TypeError: unsupported operand type\\(s\\) for (?P<op>\\S+): '(?P<left>[^']+)' and '(?P<right>[^']+)'"],
+  "en": {
+   "title": "Cannot use {op} between {left} and {right}",
+   "body": "The operator {op} does not work between a value of type {left} and one of type {right}. For example, you cannot add a number to a text.",
+   "fix": "Convert one of the values so both have the same type: int(...) or float(...) to get a number, str(...) to get a text."
+  },
+  "es": {
+   "title": "No se puede usar {op} entre {left} y {right}",
+   "body": "El operador {op} no funciona entre un valor de tipo {left} y uno de tipo {right}. Por ejemplo, no se puede sumar un número a un texto.",
+   "fix": "Convierte uno de los valores para que los dos sean del mismo tipo: int(...) o float(...) para obtener un número, str(...) para obtener un texto."
+  }
+ },
+ {
+  "id": "PY-TYPE-CONCAT",
+  "patterns": ["^TypeError: can only concatenate str \\(not \"(?P<type>[^\"]+)\"\\) to str"],
+  "en": {
+   "title": "A text cannot be joined with a value of type {type}",
+   "body": "The + sign joins text with text, but one of the values is of type {type}. Python does not convert it automatically.",
+   "fix": "Convert the value to text with str(...), or join the pieces like this: \"You are \" + str(age) + \" years old\"."
+  },
+  "es": {
+   "title": "No se puede unir un texto con un valor de tipo {type}",
+   "body": "El signo + une texto con texto, pero uno de los valores es de tipo {type}. Python no lo convierte automáticamente.",
+   "fix": "Convierte el valor a texto con str(...), o une las piezas así: \"Tienes \" + str(edad) + \" años\"."
+  }
+ },
+ {
+  "id": "PY-TYPE-NOT-SUBSCRIPTABLE",
+  "patterns": ["^TypeError: '(?P<type>[^']+)' object is not subscriptable"],
+  "en": {
+   "title": "A value of type {type} cannot be indexed with []",
+   "body": "Square brackets pick one element out of a list, text, tuple or dictionary. The value you used them on is of type {type}, which has no elements to pick.",
+   "fix": "Check that the variable holds the list, text or dictionary you expect (print it or look at the type). Remove the [] if it is a single value."
+  },
+  "es": {
+   "title": "Un valor de tipo {type} no se puede indexar con []",
+   "body": "Los corchetes sacan un elemento de una lista, un texto, una tupla o un diccionario. El valor sobre el que los usaste es de tipo {type}, que no tiene elementos para sacar.",
+   "fix": "Comprueba que la variable guarde la lista, el texto o el diccionario que esperas (imprímela o mira su tipo). Quita los [] si es un valor suelto."
+  }
+ },
+ {
+  "id": "PY-TYPE-NOT-CALLABLE",
+  "patterns": ["^TypeError: '(?P<type>[^']+)' object is not callable"],
+  "en": {
+   "title": "A value of type {type} cannot be called like a function",
+   "body": "Parentheses right after a name run a function, but here the name holds a value of type {type}. It often happens when a variable has the same name as a function (for example sum or list) or when an operator is missing before the parentheses: 2(3 + 4).",
+   "fix": "Rename the variable so it does not hide a function, or write the missing operator, for example 2 * (3 + 4). If you did not mean to call it, remove the ()."
+  },
+  "es": {
+   "title": "Un valor de tipo {type} no se puede llamar como una función",
+   "body": "Los paréntesis justo después de un nombre ejecutan una función, pero aquí el nombre guarda un valor de tipo {type}. Pasa mucho cuando una variable se llama igual que una función (por ejemplo sum o list) o cuando falta un operador antes del paréntesis: 2(3 + 4).",
+   "fix": "Cambia el nombre de la variable para que no tape una función, o escribe el operador que falta, por ejemplo 2 * (3 + 4). Si no querías llamarlo, quita los ()."
+  }
+ },
+ {
+  "id": "PY-TYPE-NOT-ITERABLE",
+  "patterns": ["^TypeError: '(?P<type>[^']+)' object is not iterable"],
+  "en": {
+   "title": "A value of type {type} cannot be walked one item at a time",
+   "body": "A for loop (and functions such as list or sum) needs something with several items: a list, a text, a range, a dictionary. Here it received a value of type {type}, which is a single value.",
+   "fix": "If you want to repeat something N times, use range(N). Otherwise check that the variable holds a list or a text and not a single number."
+  },
+  "es": {
+   "title": "Un valor de tipo {type} no se puede recorrer elemento por elemento",
+   "body": "Un ciclo for (y funciones como list o sum) necesita algo con varios elementos: una lista, un texto, un range, un diccionario. Aquí recibió un valor de tipo {type}, que es un valor suelto.",
+   "fix": "Si quieres repetir algo N veces, usa range(N). Si no, comprueba que la variable guarde una lista o un texto y no un número suelto."
+  }
+ },
+ {
+  "id": "PY-TYPE-MISSING-ARGS",
+  "patterns": ["^TypeError: (?P<function>[^\\s(]+)\\(\\) missing (?P<count>\\d+) required (?:positional|keyword-only) arguments?: (?P<names>.+)"],
+  "en": {
+   "title": "The call to {function}() is missing {count} value(s)",
+   "body": "The function {function} needs more values than you gave it when calling it. The missing ones are: {names}.",
+   "fix": "Add the missing values in the parentheses of the call, in the same order as the function defines them, or give those parameters a default value in the def."
+  },
+  "es": {
+   "title": "A la llamada a {function}() le faltan {count} valor(es)",
+   "body": "La función {function} necesita más valores de los que le diste al llamarla. Los que faltan son: {names}.",
+   "fix": "Agrega los valores que faltan entre los paréntesis de la llamada, en el mismo orden en que la función los define, o dale un valor por defecto a esos parámetros en el def."
+  }
+ },
+ {
+  "id": "PY-TYPE-TOO-MANY-ARGS",
+  "patterns": ["^TypeError: (?P<function>[^\\s(]+)\\(\\) takes (?P<expected>(?:from )?\\d+(?: to \\d+)?) positional arguments? but (?P<given>\\d+) (?:was|were) given"],
+  "en": {
+   "title": "The call to {function}() has too many values",
+   "body": "The function {function} accepts {expected} value(s) and you gave it {given}. If {function} is a method of a class, remember that Python passes self by itself, so the def must list it as its first parameter.",
+   "fix": "Remove the extra values from the call, or add parameters to the def of the function. In a class method, write def name(self, ...)."
+  },
+  "es": {
+   "title": "La llamada a {function}() tiene demasiados valores",
+   "body": "La función {function} acepta {expected} valor(es) y le diste {given}. Si {function} es un método de una clase, recuerda que Python pasa self por su cuenta, así que el def debe listarlo como primer parámetro.",
+   "fix": "Quita los valores que sobran de la llamada, o agrega parámetros al def de la función. En un método de clase, escribe def nombre(self, ...)."
+  }
+ },
+ {
+  "id": "PY-TYPE-INT-STR",
+  "patterns": ["^TypeError: '(?P<op>[<>]=?)' not supported between instances of '(?P<left>[^']+)' and '(?P<right>[^']+)'"],
+  "en": {
+   "title": "Cannot compare {left} with {right} using {op}",
+   "body": "The comparison {op} only works between values that can be ordered, such as two numbers or two texts. Here one value is of type {left} and the other of type {right}. A common cause: input() always returns text, even if the person types a number.",
+   "fix": "Convert one side so both have the same type, for example int(input(\"Age: \")) to get a number from the keyboard."
+  },
+  "es": {
+   "title": "No se puede comparar {left} con {right} usando {op}",
+   "body": "La comparación {op} solo funciona entre valores que se pueden ordenar, como dos números o dos textos. Aquí un valor es de tipo {left} y el otro de tipo {right}. Una causa común: input() siempre devuelve texto, aunque la persona escriba un número.",
+   "fix": "Convierte un lado para que los dos sean del mismo tipo, por ejemplo int(input(\"Edad: \")) para obtener un número del teclado."
+  }
+ },
+ {
+  "id": "PY-VALUE-LITERAL",
+  "patterns": [
+   "^ValueError: invalid literal for int\\(\\) with base 10: '(?P<text>[^']*)'",
+   "^ValueError: could not convert string to float: '(?P<text>[^']*)'"
+  ],
+  "en": {
+   "title": "\"{text}\" cannot be converted to a number",
+   "body": "int() or float() received the text \"{text}\", which is not a valid number. Letters, spaces, commas or an empty text make the conversion fail.",
+   "fix": "Check what the text contains before converting it. Use only digits (and a point for decimals), or catch the error with try / except ValueError and ask again."
+  },
+  "es": {
+   "title": "\"{text}\" no se puede convertir en número",
+   "body": "int() o float() recibió el texto \"{text}\", que no es un número válido. Las letras, los espacios, las comas o un texto vacío hacen fallar la conversión.",
+   "fix": "Revisa qué contiene el texto antes de convertirlo. Usa solo dígitos (y un punto para decimales), o atrapa el error con try / except ValueError y vuelve a preguntar."
+  }
+ },
+ {
+  "id": "PY-ZERO-DIVISION",
+  "patterns": ["^ZeroDivisionError: .*by zero"],
+  "en": {
+   "title": "Division by zero",
+   "body": "The program tried to divide by 0 (with /, //, % or divmod), which has no result. Often the divisor is a variable that ended up being zero, for example the length of an empty list.",
+   "fix": "Check the divisor before dividing: if divisor != 0: ... Think about what the program should do when it is zero."
+  },
+  "es": {
+   "title": "División entre cero",
+   "body": "El programa intentó dividir entre 0 (con /, //, % o divmod), y eso no tiene resultado. Muchas veces el divisor es una variable que terminó valiendo cero, por ejemplo el largo de una lista vacía.",
+   "fix": "Comprueba el divisor antes de dividir: if divisor != 0: ... Piensa qué debe hacer el programa cuando sea cero."
+  }
+ },
+ {
+  "id": "PY-INDEX-RANGE",
+  "patterns": ["^IndexError: (?P<kind>[\\w ]+?) index out of range"],
+  "en": {
+   "title": "That position does not exist in the {kind}",
+   "body": "You asked for a position that is past the end of the {kind}. Positions start at 0, so a {kind} with 3 elements has positions 0, 1 and 2, and the last one is -1.",
+   "fix": "Check the number you use between [ ]. Use len(...) to know how many elements there are, and remember that the last valid position is len(...) - 1."
+  },
+  "es": {
+   "title": "Esa posición no existe en el tipo {kind}",
+   "body": "Pediste una posición que está más allá del final ({kind}). Las posiciones empiezan en 0, así que con 3 elementos las posiciones son 0, 1 y 2, y la última también es -1.",
+   "fix": "Revisa el número que usas entre [ ]. Usa len(...) para saber cuántos elementos hay, y recuerda que la última posición válida es len(...) - 1."
+  }
+ },
+ {
+  "id": "PY-KEY-ERROR",
+  "patterns": ["^KeyError: (?P<key>.+)"],
+  "en": {
+   "title": "The key {key} is not in the dictionary",
+   "body": "You looked up {key} in a dictionary, but it has no entry with that key. Keys must match exactly, including uppercase, lowercase and spaces.",
+   "fix": "Check how the key is written, or ask first: if key in dictionary. You can also use dictionary.get(key) to receive None instead of an error."
+  },
+  "es": {
+   "title": "La clave {key} no está en el diccionario",
+   "body": "Buscaste {key} en un diccionario, pero no tiene ninguna entrada con esa clave. Las claves deben coincidir exactamente, con mayúsculas, minúsculas y espacios.",
+   "fix": "Revisa cómo está escrita la clave, o pregunta antes: if clave in diccionario. También puedes usar diccionario.get(clave) para recibir None en vez de un error."
+  }
+ },
+ {
+  "id": "PY-ATTRIBUTE",
+  "patterns": [
+   "^AttributeError: '(?P<type>[^']+)' object has no attribute '(?P<name>[^']+)'",
+   "^AttributeError: module '(?P<type>[^']+)' has no attribute '(?P<name>[^']+)'"
+  ],
+  "en": {
+   "title": "\"{type}\" has no attribute or method \"{name}\"",
+   "body": "The program wrote .{name} after something of type {type}, but {type} has nothing with that name. Common causes: a typo, wrong uppercase or lowercase, or the value is not the type you thought. If {type} is a module, a file of yours with the same name may be hiding the real one.",
+   "fix": "Check the spelling of \"{name}\". Use dir(value) to see what it has, or print(type(value)) to check its type."
+  },
+  "es": {
+   "title": "\"{type}\" no tiene el atributo o método \"{name}\"",
+   "body": "El programa escribió .{name} después de algo de tipo {type}, pero {type} no tiene nada con ese nombre. Causas comunes: una errata, mayúsculas o minúsculas incorrectas, o que el valor no sea del tipo que creías. Si {type} es un módulo, un archivo tuyo con el mismo nombre puede estar tapando al verdadero.",
+   "fix": "Revisa cómo escribiste \"{name}\". Usa dir(valor) para ver qué tiene, o print(type(valor)) para comprobar su tipo."
+  }
+ },
+ {
+  "id": "PY-MODULE-NOT-FOUND",
+  "patterns": ["^ModuleNotFoundError: No module named '(?P<module>[^']+)'"],
+  "en": {
+   "title": "The module \"{module}\" was not found",
+   "body": "The program imports \"{module}\", but Python cannot find it. Either it is not installed, or its name has a typo. A file of yours with that name in another folder is not found either.",
+   "fix": "Check the spelling of the name. If it is an external library, install it with the package manager of the IDE (it uses pip). If it is your own file, put it in the same folder as the program."
+  },
+  "es": {
+   "title": "No se encontró el módulo \"{module}\"",
+   "body": "El programa importa \"{module}\", pero Python no lo encuentra. O no está instalado, o el nombre tiene una errata. Tampoco se encuentra un archivo tuyo con ese nombre si está en otra carpeta.",
+   "fix": "Revisa cómo escribiste el nombre. Si es una biblioteca externa, instálala con el gestor de paquetes del IDE (usa pip). Si es un archivo tuyo, ponlo en la misma carpeta que el programa."
+  }
+ },
+ {
+  "id": "PY-IMPORT-NAME",
+  "patterns": ["^ImportError: cannot import name '(?P<name>[^']+)' from '(?P<module>[^']+)'"],
+  "en": {
+   "title": "\"{name}\" does not exist in \"{module}\"",
+   "body": "The module \"{module}\" was found, but it has nothing called \"{name}\" to import. It may be misspelled, or it may belong to another version of the library.",
+   "fix": "Check the spelling and the uppercase letters of \"{name}\". Use dir({module}) after \"import {module}\" to see what it offers. If \"{module}\" is a file of yours, check it does define \"{name}\"."
+  },
+  "es": {
+   "title": "\"{name}\" no existe en \"{module}\"",
+   "body": "El módulo \"{module}\" se encontró, pero no tiene nada llamado \"{name}\" para importar. Puede estar mal escrito o pertenecer a otra versión de la biblioteca.",
+   "fix": "Revisa la ortografía y las mayúsculas de \"{name}\". Usa dir({module}) después de \"import {module}\" para ver qué ofrece. Si \"{module}\" es un archivo tuyo, comprueba que sí define \"{name}\"."
+  }
+ },
+ {
+  "id": "PY-RECURSION",
+  "patterns": ["^RecursionError: maximum recursion depth exceeded"],
+  "en": {
+   "title": "A function calls itself without ever stopping",
+   "body": "A function kept calling itself until Python reached its limit of nested calls. This happens when a recursive function has no stopping case (base case), or when its calls never get closer to it.",
+   "fix": "Add a base case that returns without calling the function again (for example: if n == 0: return 1) and make sure every call moves closer to it."
+  },
+  "es": {
+   "title": "Una función se llama a sí misma sin detenerse nunca",
+   "body": "Una función siguió llamándose a sí misma hasta que Python llegó a su límite de llamadas anidadas. Pasa cuando una función recursiva no tiene un caso de parada (caso base), o cuando sus llamadas nunca se acercan a él.",
+   "fix": "Agrega un caso base que devuelva un valor sin llamar otra vez a la función (por ejemplo: if n == 0: return 1) y asegúrate de que cada llamada se acerque a él."
+  }
+ },
+ {
+  "id": "PY-FILE-NOT-FOUND",
+  "patterns": ["^FileNotFoundError: \\[Errno 2\\] No such file or directory: '(?P<file>[^']*)'"],
+  "en": {
+   "title": "The file \"{file}\" does not exist",
+   "body": "The program tried to open \"{file}\", but Python did not find it. A relative name like this one is searched in the folder of the program, so the file may be missing, misspelled or in another folder.",
+   "fix": "Check the name and the extension, and that the file is in the same folder as the program. If it is somewhere else, write its full path."
+  },
+  "es": {
+   "title": "El archivo \"{file}\" no existe",
+   "body": "El programa intentó abrir \"{file}\", pero Python no lo encontró. Un nombre relativo como este se busca en la carpeta del programa, así que el archivo puede faltar, estar mal escrito o estar en otra carpeta.",
+   "fix": "Revisa el nombre y la extensión, y que el archivo esté en la misma carpeta que el programa. Si está en otro lugar, escribe su ruta completa."
+  }
+ },
+ {
+  "id": "PY-EOF-INPUT",
+  "patterns": ["^EOFError: EOF when reading a line"],
+  "en": {
+   "title": "input() did not receive anything",
+   "body": "The program asked for keyboard input with input(), but the input ended before the person typed a line. It happens when the input is closed or when the program runs where nobody can type.",
+   "fix": "Run the program from the IDE and type your answer in the Output panel, then press Enter."
+  },
+  "es": {
+   "title": "input() no recibió nada",
+   "body": "El programa pidió datos del teclado con input(), pero la entrada terminó antes de que la persona escribiera una línea. Pasa cuando la entrada está cerrada o cuando el programa corre donde nadie puede escribir.",
+   "fix": "Ejecuta el programa desde el IDE y escribe tu respuesta en el panel Salida, luego pulsa Enter."
+  }
+ },
+ {
+  "id": "PY-ASSERTION",
+  "patterns": ["^AssertionError"],
+  "en": {
+   "title": "An assert failed",
+   "body": "The program has an assert line whose condition was false. An assert states something that must always be true, so a failure means the data or the logic is not what the program expects at that point.",
+   "fix": "Look at the line with assert and print the values it uses to see why the condition is false. Fix the data or the code that produces them."
+  },
+  "es": {
+   "title": "Falló un assert",
+   "body": "El programa tiene una línea assert cuya condición resultó falsa. Un assert afirma algo que siempre debe ser verdad, así que si falla es que los datos o la lógica no son lo que el programa espera en ese punto.",
+   "fix": "Mira la línea con assert e imprime los valores que usa para ver por qué la condición es falsa. Corrige los datos o el código que los produce."
+  }
+ },
+ {
+  "id": "W-PY-UNUSED-VAR",
+  "patterns": ["^Local variable `(?P<name>[^`]+)` is assigned to but never used"],
+  "en": {
+   "title": "Variable \"{name}\" is never used",
+   "body": "You gave a value to \"{name}\" but the function never reads it. It is usually a leftover or a sign that something is missing.",
+   "fix": "Use \"{name}\" where it belongs, or delete the line if you do not need it."
+  },
+  "es": {
+   "title": "La variable \"{name}\" nunca se usa",
+   "body": "Le diste un valor a \"{name}\", pero la función nunca lo lee. Suele ser un resto de código o una señal de que falta algo.",
+   "fix": "Usa \"{name}\" donde corresponda, o borra la línea si no la necesitas."
+  }
+ },
+ {
+  "id": "W-PY-UNUSED-IMPORT",
+  "patterns": ["^`(?P<module>[^`]+)` imported but unused"],
+  "en": {
+   "title": "\"{module}\" is imported but never used",
+   "body": "The file imports \"{module}\", but nothing in it uses it. It does no harm, but it is clutter.",
+   "fix": "Delete the import line, or use something from \"{module}\" in the program."
+  },
+  "es": {
+   "title": "\"{module}\" se importa, pero nunca se usa",
+   "body": "El archivo importa \"{module}\", pero nada en él lo usa. No hace daño, pero estorba.",
+   "fix": "Borra la línea del import, o usa algo de \"{module}\" en el programa."
+  }
+ },
+ {
+  "id": "W-PY-UNDEFINED",
+  "patterns": ["^Undefined name `(?P<name>[^`]+)`"],
+  "en": {
+   "title": "The name \"{name}\" is not defined",
+   "body": "The code uses \"{name}\", but nothing with that name is created or imported in the file. If you ran the program now it would stop with a NameError.",
+   "fix": "Check how \"{name}\" is spelled. Create it with = before using it, or import it if it comes from a module."
+  },
+  "es": {
+   "title": "El nombre \"{name}\" no está definido",
+   "body": "El código usa \"{name}\", pero nada con ese nombre se crea ni se importa en el archivo. Si ejecutaras el programa ahora se detendría con un NameError.",
+   "fix": "Revisa cómo escribiste \"{name}\". Créalo con = antes de usarlo o impórtalo si viene de un módulo."
+  }
+ }
+]

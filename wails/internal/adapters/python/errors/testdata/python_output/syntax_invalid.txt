@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   x = = 1
+# output:
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\syntax_invalid.py", line 1
+    x = = 1
+        ^
+SyntaxError: invalid syntax

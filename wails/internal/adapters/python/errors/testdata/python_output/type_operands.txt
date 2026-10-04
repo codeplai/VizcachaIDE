@@ -1,0 +1,9 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   print(1 + "a")
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\type_operands.py", line 1, in <module>
+    print(1 + "a")
+          ~~^~~~~
+TypeError: unsupported operand type(s) for +: 'int' and 'str'

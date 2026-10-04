@@ -1,0 +1,8 @@
+# workingDir: D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú
+# program:
+#   from os import nada
+# output:
+Traceback (most recent call last):
+  File "D:\Users\mcalderon\AppData\Local\Temp\tmpsn4gqz72\mis programas ñandú\import_name.py", line 1, in <module>
+    from os import nada
+ImportError: cannot import name 'nada' from 'os' (D:\Users\mcalderon\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\os.py)
