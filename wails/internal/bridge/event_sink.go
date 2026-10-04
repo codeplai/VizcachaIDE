@@ -19,7 +19,18 @@ type WailsEventSink struct {
 var (
 	_ app.EventSink      = (*WailsEventSink)(nil)
 	_ app.FileChangeSink = (*WailsEventSink)(nil)
+	_ app.UpdateSink     = (*WailsEventSink)(nil)
 )
+
+// UpdateState implements app.UpdateSink.
+func (s *WailsEventSink) UpdateState(state domain.UpdateState) { s.emit(EventUpdateState, state) }
+
+// Quit closes the application (after the update installer started).
+func (s *WailsEventSink) Quit() {
+	if ctx := s.Context(); ctx != nil {
+		runtime.Quit(ctx)
+	}
+}
 
 // NewWailsEventSink creates a sink that drops events until SetContext is called.
 func NewWailsEventSink() *WailsEventSink { return &WailsEventSink{} }

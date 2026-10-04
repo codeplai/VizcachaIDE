@@ -30,6 +30,8 @@ const (
 	EventSettingsChanged = "settings:changed"
 	// EventFileChanged carries FileChangedPayload: an open file changed outside the IDE.
 	EventFileChanged = "file:changed"
+	// EventUpdateState carries a domain.UpdateState: checking, downloading or ready to install.
+	EventUpdateState = "update:state"
 )
 
 // AllEvents lists every event name, in declaration order.
@@ -46,4 +48,5 @@ var AllEvents = []string{
 	EventAssistantExplained,
 	EventSettingsChanged,
 	EventFileChanged,
+	EventUpdateState,
 }

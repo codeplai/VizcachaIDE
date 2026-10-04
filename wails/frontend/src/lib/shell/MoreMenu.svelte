@@ -1,7 +1,14 @@
 <script lang="ts">
   import { DropdownMenu } from 'bits-ui'
   import { t } from '../i18n'
-  import { activeCodeLanguage, capabilities, openDialog } from '../stores'
+  import { bridge } from '../bridge'
+  import {
+    activeCodeLanguage,
+    capabilities,
+    checkForUpdates,
+    openDialog,
+    settingsTab
+  } from '../stores'
 
   // The package manager of the open file's language; languages without one have no entry.
   const hasPackages = $derived(($capabilities?.packageActions.length ?? 0) > 0)
@@ -15,6 +22,14 @@
         ]
       : []),
     { label: 'panels.settings', run: () => openDialog.set('settings') },
+    {
+      label: 'updates.checkMenu',
+      run: () => {
+        settingsTab.set('updates')
+        openDialog.set('settings')
+        void checkForUpdates(bridge)
+      }
+    },
     { label: 'shell.about', run: () => openDialog.set('about') }
   ])
 </script>

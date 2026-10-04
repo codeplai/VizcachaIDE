@@ -6,6 +6,7 @@ import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
+import * as UpdatesService from '../../../wailsjs/go/bridge/UpdatesService'
 import {
   BrowserOpenURL,
   ClipboardGetText,
@@ -101,6 +102,12 @@ export const createWailsBridge = (): Bridge => ({
     pickExecutable: async (tool) => fromWire(await SettingsService.PickExecutable(tool)),
     resolvedLanguage: async () =>
       (await SettingsService.ResolvedLanguage()) === 'es' ? 'es' : 'en'
+  },
+  updates: {
+    state: async () => fromWire(await UpdatesService.State()),
+    check: async () => fromWire(await UpdatesService.Check()),
+    download: () => UpdatesService.Download(),
+    install: () => UpdatesService.Install()
   },
   system: {
     openUrl: (url) => BrowserOpenURL(url),

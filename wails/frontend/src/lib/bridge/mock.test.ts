@@ -86,6 +86,7 @@ describe('mock bridge', () => {
     await bridge.debug.requestVariables(11)
     await bridge.language.openDocument('a.go', '')
     await bridge.settings.save(await bridge.settings.get())
+    await bridge.updates.check()
     await new Promise((resolve) => setTimeout(resolve, 400))
     await bridge.debug.stop()
     expect([...seen].sort()).toEqual(Object.values(Events).sort())

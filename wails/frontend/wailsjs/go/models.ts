@@ -522,6 +522,28 @@ export namespace domain {
 	        this.name = source["name"];
 	    }
 	}
+	export class Release {
+	    version: string;
+	    notes: string;
+	    notesUrl: string;
+	    publishedAt: string;
+	    asset: string;
+	    assetSize: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Release(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.notes = source["notes"];
+	        this.notesUrl = source["notesUrl"];
+	        this.publishedAt = source["publishedAt"];
+	        this.asset = source["asset"];
+	        this.assetSize = source["assetSize"];
+	    }
+	}
 	export class RunConfiguration {
 	    codeLanguage: string;
 	    target: string;
@@ -574,6 +596,8 @@ export namespace domain {
 	    defaultCodeLanguage: string;
 	    enabledCodeLanguages: string[];
 	    formatOnSave: boolean;
+	    checkUpdates: boolean;
+	    lastUpdateCheck: string;
 	    recentFiles: string[];
 	
 	    static createFrom(source: any = {}) {
@@ -591,6 +615,8 @@ export namespace domain {
 	        this.defaultCodeLanguage = source["defaultCodeLanguage"];
 	        this.enabledCodeLanguages = source["enabledCodeLanguages"];
 	        this.formatOnSave = source["formatOnSave"];
+	        this.checkUpdates = source["checkUpdates"];
+	        this.lastUpdateCheck = source["lastUpdateCheck"];
 	        this.recentFiles = source["recentFiles"];
 	    }
 	}
@@ -636,6 +662,50 @@ export namespace domain {
 	        this.source = source["source"];
 	        this.path = source["path"];
 	    }
+	}
+	export class UpdateState {
+	    status: string;
+	    current: string;
+	    latest?: Release;
+	    downloadedBytes: number;
+	    totalBytes: number;
+	    installs: boolean;
+	    checkedAt: string;
+	    error: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateState(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.current = source["current"];
+	        this.latest = this.convertValues(source["latest"], Release);
+	        this.downloadedBytes = source["downloadedBytes"];
+	        this.totalBytes = source["totalBytes"];
+	        this.installs = source["installs"];
+	        this.checkedAt = source["checkedAt"];
+	        this.error = source["error"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 
 }

@@ -3,6 +3,7 @@ import { connectAssistant } from './assistant'
 import { connectCodeLanguages } from './codeLanguages'
 import { connectDebug } from './debug'
 import { connectDiagnostics } from './diagnostics'
+import { connectUpdates } from './updates'
 import { connectExternalChanges } from './externalChanges'
 import { connectFrames } from './frames'
 import { connectOutline } from './outline'
@@ -42,11 +43,13 @@ export * from './saving'
 export * from './settings'
 export * from './toolErrors'
 export * from './untitled'
+export * from './updates'
 
 /** Subscribes every store to the backend events. Call the returned function to stop. */
 export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
   const offSettings = await connectSettings(bridge)
   const offCodeLanguages = await connectCodeLanguages(bridge)
+  const offUpdates = await connectUpdates(bridge)
   const offs = [
     connectRun(bridge),
     connectDebug(bridge),
@@ -56,7 +59,8 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
     connectOutline(bridge),
     connectExternalChanges(bridge),
     offSettings,
-    offCodeLanguages
+    offCodeLanguages,
+    offUpdates
   ]
   return () => offs.forEach((off) => off())
 }

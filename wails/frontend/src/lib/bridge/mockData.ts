@@ -164,5 +164,7 @@ export const defaultSettings = (defaultCodeLanguage: CodeLanguage = 'go'): Setti
   firstRun: false,
   lastFolder: '',
   formatOnSave: true,
-  recentFiles: []
+  recentFiles: [],
+  checkUpdates: true,
+  lastUpdateCheck: ''
 })

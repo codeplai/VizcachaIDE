@@ -8,6 +8,15 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Added
+- **Automatic updates.** Once a day, when it opens, VizcachaIDE looks for a new version on its
+  GitHub releases (only `wails-v*`), downloads the file of this installation (same variant, system,
+  installed or portable) in the background and checks its SHA-256 against the release's checksum
+  file. A notice offers *Install and restart* (installed Windows copy: the new installer runs and the
+  IDE closes) or *Show the file* (portable, macOS, Linux). Settings → *Updates* shows the version,
+  the progress and the last check, has *Check now* and turns the automatic check off; the *More*
+  menu has *Check for updates…*.
+
 ## [2.2.0] - 2026-10-04
 
 Wails edition. **Python** is the second language: write, run, understand errors, debug and use a
@@ -172,6 +181,16 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Añadido
+- **Actualizaciones automáticas.** Una vez al día, al abrirse, VizcachaIDE busca una versión nueva
+  en sus releases de GitHub (sólo `wails-v*`), descarga en segundo plano el archivo de esta
+  instalación (misma variante, sistema, instalada o portable) y verifica su SHA-256 con el archivo
+  de sumas de la release. Un aviso ofrece *Instalar y reiniciar* (copia instalada en Windows: se
+  ejecuta el instalador nuevo y el IDE se cierra) o *Mostrar el archivo* (portable, macOS, Linux).
+  Ajustes → *Actualizaciones* muestra la versión, el progreso y la última comprobación, tiene
+  *Buscar ahora* y permite apagar la búsqueda automática; el menú *Más* tiene *Buscar
+  actualizaciones…*.
 
 ## [2.2.0] - 2026-10-04
 

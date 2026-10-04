@@ -37,6 +37,8 @@ func main() {
 type backend struct {
 	services []any
 	shutdown func(ctx context.Context)
+	// startup runs once the window exists (the daily update check).
+	startup func(ctx context.Context)
 }
 
 func run() error {
@@ -65,12 +67,15 @@ func run() error {
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 245, G: 247, B: 249, A: 1},
-		OnStartup:        func(ctx context.Context) { sink.SetContext(ctx) },
-		OnDomReady:       window.Restore,
-		OnBeforeClose:    window.Save,
-		OnShutdown:       parts.shutdown,
-		Bind:             parts.services,
-		Windows:          &windows.Options{Theme: windows.SystemDefault},
+		OnStartup: func(ctx context.Context) {
+			sink.SetContext(ctx)
+			go parts.startup(ctx)
+		},
+		OnDomReady:    window.Restore,
+		OnBeforeClose: window.Save,
+		OnShutdown:    parts.shutdown,
+		Bind:          parts.services,
+		Windows:       &windows.Options{Theme: windows.SystemDefault},
 	})
 }
 
@@ -138,6 +143,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 	if err != nil {
 		return nil, err
 	}
+	updater, autoUpdate := newUpdater(sink, store)
 
 	return &backend{
 		services: []any{
@@ -152,7 +158,9 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 				UseShell(filesystem.New()).UseLanguages(registry),
 			bridge.NewSettingsService(sink, store, language, registry).
 				UseTools(bridge.NewExecutableDialog(sink, texts.withData)),
+			bridge.NewUpdatesService(updater),
 		},
+		startup: autoUpdate,
 		shutdown: func(ctx context.Context) {
 			shutdownLanguages(ctx, registry)
 			closeSupports(ctx)
