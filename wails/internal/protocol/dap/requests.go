@@ -18,13 +18,14 @@ func initializeRequest(adapterID string) *dap.InitializeRequest {
 	return &dap.InitializeRequest{
 		Request: newRequest("initialize"),
 		Arguments: dap.InitializeRequestArguments{
-			ClientID:             clientID,
-			ClientName:           "VizcachaIDE",
-			AdapterID:            adapterID,
-			LinesStartAt1:        true,
-			ColumnsStartAt1:      true,
-			PathFormat:           "path",
-			SupportsVariableType: true,
+			ClientID:                     clientID,
+			ClientName:                   "VizcachaIDE",
+			AdapterID:                    adapterID,
+			LinesStartAt1:                true,
+			ColumnsStartAt1:              true,
+			PathFormat:                   "path",
+			SupportsVariableType:         true,
+			SupportsRunInTerminalRequest: true,
 		},
 	}
 }

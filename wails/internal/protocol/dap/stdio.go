@@ -29,14 +29,16 @@ type StdioTransport struct {
 
 var _ Transport = (*StdioTransport)(nil)
 
-// Open starts the adapter process and returns its stdin and stdout as one connection.
-func (t *StdioTransport) Open(ctx context.Context) (io.ReadWriteCloser, error) {
+// Open starts the adapter process and returns its stdin and stdout as one connection. The
+// process is not tied to ctx: the session cancels its connect context as soon as it is connected,
+// and the adapter must outlive it; Close ends the process.
+func (t *StdioTransport) Open(_ context.Context) (io.ReadWriteCloser, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	if t.cmd != nil {
 		return nil, errors.New("the debug adapter is already running")
 	}
-	cmd := exec.CommandContext(ctx, t.Command, t.Args...)
+	cmd := exec.Command(t.Command, t.Args...)
 	cmd.Dir, cmd.Env, cmd.Stderr = t.Dir, t.Env, t.Stderr
 	if cmd.Env == nil {
 		cmd.Env = os.Environ()

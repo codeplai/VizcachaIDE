@@ -59,11 +59,11 @@ func TestRecordedDefinitionAndSymbols(t *testing.T) {
 	if target == nil || target.Line != 1 || target.Column != 5 || !strings.EqualFold(filepath.Clean(target.File), filepath.Clean(s.file)) {
 		t.Errorf("definition = %+v, want 1:5 in main.py", target)
 	}
-	// pylsp answers flat SymbolInformation (location.range, no range/selectionRange): the generic
-	// mapping keeps name, kind and line but not the extent (CCR in the P3 report).
+	// pylsp answers flat SymbolInformation (location.range, no range/selectionRange); the generic
+	// mapping takes the extent from location.range.
 	symbols, _ := s.server.DocumentSymbols(context.Background(), s.file)
 	if len(symbols) != 1 || symbols[0].Name != "greet" || symbols[0].Kind != domain.SymbolFunction ||
-		symbols[0].Location.Line != 1 {
-		t.Errorf("symbols = %+v", symbols)
+		symbols[0].Location.Line != 1 || symbols[0].Range == nil || symbols[0].Range.End.Line < 2 {
+		t.Errorf("symbols = %+v (range %+v)", symbols, symbols[0].Range)
 	}
 }

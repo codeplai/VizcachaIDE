@@ -33,7 +33,7 @@ var Profile = domain.LanguageProfile{
 		},
 		{
 			ID: ToolPylsp, Role: domain.RoleLanguageServer, ProvidedBy: ToolPython, LabelKey: "settings.modulePython",
-			MissingKey: "errors.pylspMissing", InstallCommand: "python -m pip install python-lsp-server",
+			MissingKey: "errors.pylspMissing", InstallCommand: "python -m pip install \"python-lsp-server[pyflakes]\"",
 		},
 		{
 			ID: ToolRuff, Role: domain.RoleFormatter, ProvidedBy: ToolPython, LabelKey: "settings.modulePython",

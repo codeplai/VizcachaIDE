@@ -34,9 +34,22 @@ type symbolWire struct {
 	Range          protocol.Range `json:"range"`
 	SelectionRange protocol.Range `json:"selectionRange"`
 	Children       []symbolWire   `json:"children"`
+	// Location is set instead of Range by servers that answer flat SymbolInformation (pylsp).
+	Location *struct {
+		Range protocol.Range `json:"range"`
+	} `json:"location"`
 }
 
-// toDocumentSymbols maps a documentSymbol result made of nested DocumentSymbol.
+// ranges returns the whole range and the name range of a symbol, for both result shapes.
+func (s symbolWire) ranges() (whole, name protocol.Range) {
+	if s.Location != nil {
+		return s.Location.Range, s.Location.Range
+	}
+	return s.Range, s.SelectionRange
+}
+
+// toDocumentSymbols maps a documentSymbol result: nested DocumentSymbol (gopls, clangd) or flat
+// SymbolInformation (pylsp).
 func toDocumentSymbols(raw json.RawMessage, file, text string) []domain.DocumentSymbol {
 	var symbols []symbolWire
 	if json.Unmarshal(raw, &symbols) != nil {
@@ -52,10 +65,11 @@ func mapSymbols(symbols []symbolWire, file, text string) []domain.DocumentSymbol
 		if !known {
 			kind = domain.SymbolOther
 		}
-		whole := rangeIn(text, file, symbol.Range)
+		wholeRange, nameRange := symbol.ranges()
+		whole := rangeIn(text, file, wholeRange)
 		result = append(result, domain.DocumentSymbol{
 			Name: symbol.Name, Kind: kind, Detail: symbol.Detail,
-			Location: locationIn(text, file, symbol.SelectionRange.Start),
+			Location: locationIn(text, file, nameRange.Start),
 			Range:    &whole,
 			Children: mapSymbols(symbol.Children, file, text),
 		})

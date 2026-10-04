@@ -2,6 +2,7 @@ package runner
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -24,8 +25,9 @@ func TestFormatSourceSyntaxErrorNamesTheLine(t *testing.T) {
 	if !errors.Is(err, app.ErrFormat) {
 		t.Fatalf("error = %v, want ErrFormat", err)
 	}
-	if !strings.Contains(err.Error(), "line 5") {
-		t.Errorf("error %q must name line 5", err)
+	// "main.go:5:1: ..." is what lineFromFormatError (frontend saving.ts) reads.
+	if !regexp.MustCompile(`main\.go:5:\d+: `).MatchString(err.Error()) {
+		t.Errorf("error %q must name line 5 as main.go:5:<column>", err)
 	}
 }
 

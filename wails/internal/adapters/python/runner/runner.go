@@ -22,6 +22,9 @@ type Options struct {
 	AppDir string
 	// BaseEnvironment is the "NAME=value" list Python starts from. Default: os.Environ().
 	BaseEnvironment []string
+	// Locator is shared with the other Python adapters so they agree on the interpreter and
+	// probe it once. Default: a new one from Settings, AppDir and BaseEnvironment.
+	Locator *python.Locator
 }
 
 // Runner is the Python adapter of the run ports.
@@ -39,9 +42,12 @@ func New(supervisor *process.Supervisor, options Options) *Runner {
 	if base == nil {
 		base = os.Environ()
 	}
-	locator := python.NewLocator(python.Options{
-		Settings: options.Settings, AppDir: options.AppDir, BaseEnvironment: base,
-	})
+	locator := options.Locator
+	if locator == nil {
+		locator = python.NewLocator(python.Options{
+			Settings: options.Settings, AppDir: options.AppDir, BaseEnvironment: base,
+		})
+	}
 	return &Runner{supervisor: supervisor, locator: locator, base: base}
 }
 

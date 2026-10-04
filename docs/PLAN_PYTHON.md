@@ -14,7 +14,8 @@
    [`docs/wails/UX_COPY.md`](wails/UX_COPY.md); y el adaptador de Go en `wails/internal/adapters/golang/`
    como ejemplo de cada pieza.
 3. Para desarrollar y probar hace falta un Python 3.10 o más en la máquina con `debugpy`,
-   `python-lsp-server` y `ruff` instalados (`pip install debugpy python-lsp-server ruff`). Los tests de
+   `python-lsp-server` con **pyflakes** y `ruff` instalados (`pip install debugpy "python-lsp-server[pyflakes]" ruff`;
+   sin pyflakes pylsp no publica ningún diagnóstico, hallazgo de P3). Los tests de
    integración se saltan solos si faltan. **Usar CPython 3.12** (la versión que se empaqueta): jedi, que
    usa pylsp, no garantiza 3.14. En la máquina de desarrollo hay un 3.12 de Astral (`py -V:Astral/CPython3.12.14`);
    P0 crea con él el venv `wails/.venv-py312` (ignorado por git) y los tests lo encuentran con la

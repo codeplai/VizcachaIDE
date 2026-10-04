@@ -56,7 +56,7 @@ type answer struct {
 func startSession(interpreter python.Interpreter, baseEnvironment []string, scriptPath string) (*session, error) {
 	cmd := exec.Command(interpreter.Path, "-X", "utf8", "-u", scriptPath)
 	cmd.Env = python.EnvironmentList(python.Environment(baseEnvironment, interpreter))
-	process.HideConsole(cmd)
+	process.PrepareTree(cmd)
 	stderr := &lockedBuffer{}
 	cmd.Stderr = stderr
 	stdin, err := cmd.StdinPipe()
@@ -103,7 +103,7 @@ func (s *session) ended(cause error) error {
 // kill stops the process and reaps it.
 func (s *session) kill() {
 	_ = s.stdin.Close()
-	killTree(s.cmd.Process.Pid)
+	process.KillTree(s.cmd.Process.Pid)
 	_ = s.cmd.Process.Kill() // the process may already be gone
 	go func() { _ = s.cmd.Wait() }()
 }

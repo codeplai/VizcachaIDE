@@ -93,12 +93,20 @@ func newRegistry(sink *bridge.WailsEventSink, store app.SettingsStore, texts *ba
 	if err != nil {
 		return nil, nil, err
 	}
-	supports := append([]app.LanguageSupport{goSupport}, newUnavailableSupports()...)
+	pythonSupport, closePython, err := newPythonSupport(sink, store, texts, supervisor)
+	if err != nil {
+		return nil, nil, err
+	}
+	supports := append([]app.LanguageSupport{goSupport, pythonSupport}, newUnavailableSupports()...)
 	registry, err := app.NewLanguageRegistry(domain.CodeLanguageGo, supports...)
 	if err != nil {
 		return nil, nil, err
 	}
-	return registry, closeGo, nil
+	closeAll := func(ctx context.Context) {
+		closeGo(ctx)
+		closePython(ctx)
+	}
+	return registry, closeAll, nil
 }
 
 // shutdownLanguages stops what every language may have running: the user's program, a debug
