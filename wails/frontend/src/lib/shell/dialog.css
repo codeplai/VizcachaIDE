@@ -69,6 +69,20 @@
   color: var(--err);
 }
 
+/* A button that cannot be used yet (Create without a location) must look like it. */
+.dlg-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dlg-button:disabled:hover {
+  border-color: var(--line);
+}
+
+.dlg-button.primary:disabled:hover {
+  border-color: var(--go);
+}
+
 .menu {
   z-index: 50;
   min-width: 220px;

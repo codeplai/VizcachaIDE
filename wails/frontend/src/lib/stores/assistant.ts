@@ -71,8 +71,13 @@ const failureOutputOfRun = (inTerminal: boolean): string =>
 /** Counts runs, so a slow `go vet` of an older run cannot overwrite the newer one. */
 let runNumber = 0
 
-/** A "go mod ..." command also fires run events, but it has no program to vet. */
-const isGoCommand = (config: RunConfiguration): boolean => /^go\s/.test(config.target)
+/**
+ * A package command ("go mod tidy", "python -m pip install numpy", "cargo add rand") also fires
+ * run events, but it has no program to check: its target is the command, not a file (checking it
+ * made ruff report "os error 2" on a file named like the command).
+ */
+export const isPackageCommand = (config: RunConfiguration): boolean =>
+  /^(go|cargo|python\d*(\.exe)?|py)\s/i.test(config.target)
 
 /**
  * After a run that compiled and finished, `go vet` looks for mistakes the compiler allows (a Printf
@@ -105,7 +110,7 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
     : []
   runDiagnostics.set(items.map((item) => item.diagnostic))
   await refreshExplanations(bridge)
-  if (exitCode === 0 && config && !isGoCommand(config) && !get(stoppedByUser)) {
+  if (exitCode === 0 && config && !isPackageCommand(config) && !get(stoppedByUser)) {
     void vetInBackground(bridge, config).catch(() => undefined)
   }
 }

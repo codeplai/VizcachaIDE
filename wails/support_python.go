@@ -15,6 +15,7 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/packageindex"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
 )
 
@@ -43,6 +44,8 @@ func newPythonSupport(sink *bridge.WailsEventSink, store app.SettingsStore, text
 		Formatter: formatter,
 		Checker:   formatter,
 		Packages:  packages.New(supervisor, pythonRunner),
+		Search:    packages.NewSearch(packageindex.New()),
+		Scaffold:  python.Scaffold{},
 	}
 	return support, func(context.Context) { console.Reset() }, nil
 }

@@ -4,6 +4,8 @@ import {domain} from '../models';
 import {app} from '../models';
 import {bridge} from '../models';
 
+export function ChooseFolder():Promise<string>;
+
 export function CreateFile(arg1:string,arg2:string):Promise<void>;
 
 export function CreateFolder(arg1:string):Promise<void>;

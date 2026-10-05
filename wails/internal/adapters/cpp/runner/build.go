@@ -28,6 +28,7 @@ type compilation struct {
 	sources  []string
 	folder   string
 	output   string
+	console  string // the UTF-8 console helper compiled with the sources on Windows (console.go)
 }
 
 // compile prepares the compiler call for a configuration. output decides where the executable
@@ -41,7 +42,10 @@ func (r *Runner) compile(ctx context.Context, config domain.RunConfiguration, ou
 	if err != nil {
 		return compilation{}, err
 	}
-	c := compilation{compiler: compiler, sources: sources, folder: folderOf(config), output: output(config)}
+	c := compilation{
+		compiler: compiler, sources: sources, folder: folderOf(config), output: output(config),
+		console: r.consoleSource(),
+	}
 	if err := os.MkdirAll(filepath.Dir(c.output), 0o755); err != nil {
 		return compilation{}, fmt.Errorf("create the build folder: %w", err)
 	}
@@ -52,7 +56,11 @@ func (r *Runner) compile(ctx context.Context, config domain.RunConfiguration, ou
 func (c compilation) arguments() []string {
 	args := cpp.CompileFlags(c.compiler.Family, runtime.GOOS)
 	args = append(args, "-o", c.output)
-	return append(args, c.sources...)
+	args = append(args, c.sources...)
+	if c.console != "" {
+		args = append(args, c.console)
+	}
+	return args
 }
 
 // job describes the compiler call for the supervisor: pipes, with the "Compiling..." notice.

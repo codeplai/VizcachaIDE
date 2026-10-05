@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | rust | multi
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | rust | newproject | multi
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -19,6 +19,7 @@ import { pythonSteps } from './steps-python.mjs'
 import { cppSteps } from './steps-cpp.mjs'
 import { rustSteps } from './steps-rust.mjs'
 import { multifileSteps } from './steps-multifile.mjs'
+import { newProjectSteps } from './steps-newproject.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -116,6 +117,15 @@ const main = async () => {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`rust-${lang}`, { language: lang, toolPaths: { 'lldb-dap': L.DEV_LLDB_DAP } }, (ctx) => rustSteps(ctx, lang))
+      }
+    }
+    // File > New project in every language (after 2.4.0).
+    if (wants('newproject')) {
+      Object.assign(process.env, L.DEV_RUST)
+      const toolPaths = { python: L.DEV_PYTHON, cxx: L.DEV_CXX, 'lldb-dap': L.DEV_LLDB_DAP }
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`newproject-${lang}`, { language: lang, toolPaths }, (ctx) => newProjectSteps(ctx, lang))
       }
     }
     // Multi-file projects with an external library in every language (only on request: it

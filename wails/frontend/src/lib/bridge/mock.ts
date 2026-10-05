@@ -6,6 +6,7 @@ import { mockConsole } from './mockConsole'
 import { defaultSettings, sampleLocation, sampleSymbols } from './mockData'
 import { mockDebug, mockRun, type MockState } from './mockExecution'
 import { mockFiles } from './mockFiles'
+import { mockProjects } from './mockProjects'
 import { sampleInlayHints } from './mockInlay'
 import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
@@ -80,6 +81,7 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
     debugging: false
   }
   const debug = mockDebug(state, emit)
+  const files = mockFiles(sampleLanguage)
   const bridge: Bridge = {
     isMock: true,
     run: mockRun(state, emit),
@@ -93,7 +95,8 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
       emit
     ),
     console: mockConsole(),
-    files: mockFiles(sampleLanguage),
+    projects: mockProjects(files),
+    files,
     settings: mockSettings(state, emit),
     updates: mockUpdates(emit),
     system: {

@@ -8,6 +8,36 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Added
+- **File → New project…** (Ctrl+Shift+N): a name, the programming language and the folder where it
+  goes (always chosen, no default); VizcachaIDE writes the project and opens it ready for F5. Each
+  one starts with a program that asks your name and greets you. Go: `go.mod` + `main.go`; Python:
+  `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 for the code helper); Rust: `Cargo.toml`
+  + `src/main.rs` + `.gitignore`. Names with spaces and accents keep their folder name; the Go module
+  and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`). A C++ project also
+  gets a `.clang-format` with the IDE's style (LLVM, 4 spaces), so another editor formats it the same.
+- **Search packages by name** in the Packages dialog: while you type, a list shows the matching
+  packages with their version and description, and you choose the one to install (Python: PyPI,
+  among its ~15 000 most downloaded projects plus any exact name; Go: pkg.go.dev; Rust: crates.io).
+  Without network the dialog says so and still installs an exact name.
+- **Close folder** in the Files panel (the ✕ next to Refresh, or a right click on the folder) and in
+  the File menu: it closes the
+  tabs of that folder (asking about unsaved changes), empties the panel and is not reopened at the
+  next start. Files from elsewhere stay open.
+
+### Changed
+- **New file** (Ctrl+N and the toolbar button) is written in the language you are working in: the
+  open file's, else the open folder's (`Cargo.toml`, `go.mod`, `compile_flags.txt`… or most of its
+  sources), else the default of Settings. It used to be always a `.go`.
+
+### Fixed
+- pip's "A new release of pip is available" notice no longer shows after installing (it looked
+  like an error), and installing a package no longer leaves a false problem ("os error 2"): the
+  check that follows a successful run skipped Go's commands but not pip's or cargo's.
+- C++ programs on Windows showed accents wrong ("¿Cómo" as "┐C├│mo") and lost the accented letters
+  typed in Output ("Ñandú" read as "and"): every C++ program VizcachaIDE builds on Windows sets the
+  console to UTF-8 and reads `std::cin` through the console's Unicode input.
+
 ## [2.4.0] - 2026-10-04
 
 Wails edition. **Rust** is the fourth language: write, compile and run, understand compiler errors
@@ -286,6 +316,37 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Añadido
+- **Archivo → Nuevo proyecto…** (Ctrl+Shift+N): un nombre, el lenguaje de programación y la carpeta
+  donde va (siempre se elige, sin valor por defecto); VizcachaIDE escribe el proyecto y lo abre listo
+  para F5. Cada uno empieza con un programa que pregunta tu nombre y te saluda. Go: `go.mod` +
+  `main.go`; Python: `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 para el ayudante de
+  código); Rust: `Cargo.toml` + `src/main.rs` + `.gitignore`. Los nombres con espacios y acentos
+  conservan su carpeta; el módulo de Go y el crate de Rust reciben una versión válida ("Mi Tienda
+  Ñandú" → `mi-tienda-nandu`). Un proyecto C++ también lleva un `.clang-format` con el estilo de la IDE
+  (LLVM, 4 espacios), para que otro editor lo formatee igual.
+- **Buscar paquetes por nombre** en el diálogo de Paquetes: mientras escribes, una lista muestra los
+  paquetes que coinciden con su versión y descripción, y eliges cuál instalar (Python: PyPI, entre
+  sus ~15 000 proyectos más descargados más cualquier nombre exacto; Go: pkg.go.dev; Rust:
+  crates.io). Sin red el diálogo lo dice y deja instalar un nombre exacto.
+- **Cerrar carpeta** en el panel de Archivos (la ✕ junto a Actualizar, o clic derecho sobre la
+  carpeta) y en el menú Archivo: cierra
+  las pestañas de esa carpeta (preguntando por los cambios sin guardar), vacía el panel y no vuelve a
+  abrirse al siguiente inicio. Los archivos de otros lugares siguen abiertos.
+
+### Cambiado
+- **Archivo nuevo** (Ctrl+N y el botón de la barra) se escribe en el lenguaje con el que estás
+  trabajando: el del archivo abierto, si no el de la carpeta abierta (`Cargo.toml`, `go.mod`,
+  `compile_flags.txt`… o la mayoría de sus fuentes), si no el de Ajustes. Antes era siempre un `.go`.
+
+### Corregido
+- Ya no aparece el aviso de pip "A new release of pip is available" al instalar (parecía un error),
+  e instalar un paquete ya no deja un problema falso ("os error 2"): la comprobación que sigue a una
+  ejecución correcta omitía los comandos de Go pero no los de pip ni cargo.
+- Los programas de C++ en Windows mostraban mal los acentos ("¿Cómo" como "┐C├│mo") y perdían las
+  letras acentuadas escritas en Salida ("Ñandú" se leía "and"): todo programa de C++ que VizcachaIDE
+  compila en Windows pone la consola en UTF-8 y lee `std::cin` con la entrada Unicode de la consola.
 
 ## [2.4.0] - 2026-10-04
 

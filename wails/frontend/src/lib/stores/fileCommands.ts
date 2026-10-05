@@ -1,10 +1,13 @@
 import { derived, get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { CodeLanguage } from '../domain'
-import { activePath, dirty, openFile, openTabs } from './files'
+import { activePath, dirty, fileTree, openFile, openTabs } from './files'
+import { isInside } from './fileTreeEdit'
+import { selectedNode } from './layout'
 import { showNotice } from './notice'
 import { requestCloseTab, saveAs, saveFile } from './saving'
-import { settings } from './settings'
+import { updateSettings } from './settings'
+import { workingCodeLanguage } from './workingLanguage'
 import { isUntitled, openUntitled } from './untitled'
 import { askNativeDialog } from './nativeDialogs'
 
@@ -13,9 +16,12 @@ export const activeNeedsSave = derived([activePath, dirty], ([path, marks]) =>
   path ? Boolean(marks[path]) || isUntitled(path) : false
 )
 
-/** New file (Ctrl+N): a tab without title in the default language, or in the one chosen. */
+/**
+ * New file (Ctrl+N): a tab without title in the language chosen, or else the one the learner is
+ * working in (the open file's, the open folder's, the default of Settings).
+ */
 export const newFile = async (bridge: Bridge, codeLanguage?: CodeLanguage): Promise<void> => {
-  await openUntitled(bridge, codeLanguage ?? get(settings)?.defaultCodeLanguage ?? 'go')
+  await openUntitled(bridge, codeLanguage ?? get(workingCodeLanguage))
 }
 
 /** Open file (Ctrl+O): asks for a file and opens it in a tab. Cancelling does nothing. */
@@ -55,4 +61,22 @@ export const closeAll = async (bridge: Bridge): Promise<void> => {
     await requestCloseTab(bridge, path)
     if (get(openTabs).includes(path)) return
   }
+}
+
+/**
+ * Close folder: closes the tabs of the files inside it (asking about each one with changes; Cancel
+ * keeps the folder open), empties the Files panel and forgets it as the folder of the next start.
+ * Files from elsewhere and untitled ones stay open.
+ */
+export const closeFolder = async (bridge: Bridge): Promise<void> => {
+  const tree = get(fileTree)
+  if (!tree) return
+  for (const path of [...get(openTabs)]) {
+    if (!isInside(path, tree.path)) continue
+    await requestCloseTab(bridge, path)
+    if (get(openTabs).includes(path)) return
+  }
+  fileTree.set(null)
+  selectedNode.set(null)
+  await updateSettings(bridge, { lastFolder: '' })
 }

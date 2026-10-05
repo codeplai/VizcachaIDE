@@ -37,6 +37,7 @@ func newTestLanguages(t *testing.T) *testLanguages {
 		},
 		Runner: l.goRunner, Debugger: l.goDebugger, LanguageServer: l.goServer, Explainer: fakeExplainer{tag: "go"},
 		Console: l.console, Formatter: fakeFormatter{}, Checker: l.checker, Packages: l.packages,
+		Search: fakeSearch{},
 	}
 	pySupport := app.LanguageSupport{
 		Profile: domain.LanguageProfile{

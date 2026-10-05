@@ -29,11 +29,13 @@ export * from './frames'
 export * from './layout'
 export * from './mode'
 export * from './navigation'
+export * from './newProject'
 export * from './notice'
 export * from './outline'
 export * from './panelText'
 export * from './output'
 export * from './packages'
+export * from './packageSearch'
 export * from './outputLinks'
 export * from './programArguments'
 export * from './recentFiles'
@@ -66,3 +68,4 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
   ]
   return () => offs.forEach((off) => off())
 }
+export * from './workingLanguage'

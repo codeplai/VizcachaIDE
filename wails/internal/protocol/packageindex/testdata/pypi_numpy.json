@@ -1,0 +1,7 @@
+{
+  "info": {
+    "name": "numpy",
+    "version": "2.5.3",
+    "summary": "Fundamental package for array computing in Python"
+  }
+}

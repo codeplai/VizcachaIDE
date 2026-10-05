@@ -157,6 +157,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 		services: []any{
 			bridge.NewRunService(registry),
 			bridge.NewPackagesService(registry),
+			bridge.NewProjectsService(registry),
 			bridge.NewCodeLanguagesService(registry),
 			bridge.NewConsoleService(registry),
 			bridge.NewDebugService(registry),

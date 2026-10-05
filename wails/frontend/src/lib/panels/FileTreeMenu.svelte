@@ -4,6 +4,7 @@
   import { bridge } from '../bridge'
   import { t } from '../i18n'
   import {
+    closeFolder,
     copyPath,
     deleteEntry,
     fileTree,
@@ -24,6 +25,8 @@
   const target = $derived(path ?? $fileTree?.path ?? null)
   /** The root folder cannot be renamed or deleted. */
   const canChange = $derived(path !== null && path !== $fileTree?.path)
+  /** The open folder itself (its row or the empty area) can be closed; its subfolders cannot. */
+  const isRoot = $derived($fileTree !== null && (path === null || path === $fileTree.path))
   const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
 </script>
 
@@ -60,6 +63,12 @@
         </ContextMenu.Item>
         <ContextMenu.Item class="menu-item" onSelect={() => void copyPath(target)}>
           {$t('tree.copyPath')}
+        </ContextMenu.Item>
+      {/if}
+      {#if isRoot}
+        <ContextMenu.Separator class="menu-sep" />
+        <ContextMenu.Item class="menu-item" onSelect={() => void closeFolder(bridge)}>
+          {$t('shell.closeFolder')}
         </ContextMenu.Item>
       {/if}
     </ContextMenu.Content>

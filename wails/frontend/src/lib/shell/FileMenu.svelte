@@ -6,13 +6,16 @@
     activePath,
     closeActive,
     closeAll,
+    closeFolder,
+    fileTree,
     newFile,
     openFileFromDialog,
     openFolder,
     openTabs,
     saveActiveAs,
     saveActiveFile,
-    saveAll
+    saveAll,
+    startNewProject
   } from '../stores'
   import NewFileMenu from './NewFileMenu.svelte'
   import RecentMenu from './RecentMenu.svelte'
@@ -21,14 +24,20 @@
     label: string
     shortcut?: string
     run: () => void
-    needs?: 'file' | 'tabs'
+    needs?: 'file' | 'tabs' | 'folder'
     separatorBefore?: boolean
   }
 
   const entries: Entry[] = [
     { label: 'file.new', shortcut: 'Ctrl+N', run: () => void newFile(bridge) },
+    {
+      label: 'file.newProject',
+      shortcut: 'Ctrl+Shift+N',
+      run: () => void startNewProject(bridge)
+    },
     { label: 'file.open', shortcut: 'Ctrl+O', run: () => void openFileFromDialog(bridge) },
     { label: 'shell.openFolder', run: () => void openFolder(bridge) },
+    { label: 'shell.closeFolder', run: () => void closeFolder(bridge), needs: 'folder' },
     {
       label: 'file.save',
       shortcut: 'Ctrl+S',
@@ -54,7 +63,9 @@
   ]
 
   const disabled = (entry: Entry): boolean =>
-    (entry.needs === 'file' && !$activePath) || (entry.needs === 'tabs' && $openTabs.length === 0)
+    (entry.needs === 'file' && !$activePath) ||
+    (entry.needs === 'tabs' && $openTabs.length === 0) ||
+    (entry.needs === 'folder' && !$fileTree)
 </script>
 
 <DropdownMenu.Root>

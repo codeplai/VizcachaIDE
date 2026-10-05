@@ -9,7 +9,9 @@ import type {
   ExplainedDiagnostic,
   FileNode,
   FrameVariables,
+  PackageInfo,
   LanguageProfile,
+  NewProject,
   RunConfiguration,
   Settings,
   SignatureHelp,
@@ -46,6 +48,15 @@ export interface PackagesApi {
   remove: (codeLanguage: CodeLanguage, dir: string, pkg: string) => Promise<void>
   tidy: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
   list: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
+  /** Packages of the language's index whose name matches, at most 10. Rejects when the index
+   *  cannot be searched (no network...); the student can still type the exact name. */
+  search: (codeLanguage: CodeLanguage, query: string) => Promise<PackageInfo[]>
+}
+
+/** Mirrors bridge.ProjectsService (Go). Errors start with an i18n key (`project.errorExists`). */
+export interface ProjectsApi {
+  /** Creates <location>/<name> with the language's template; returns the folder and main file. */
+  create: (codeLanguage: CodeLanguage, location: string, name: string) => Promise<NewProject>
 }
 
 /** Mirrors bridge.CodeLanguagesService (Go). Not to be confused with LanguageApi (the LSP). */
@@ -106,6 +117,8 @@ export interface ConsoleApi {
 /** Mirrors bridge.FilesService (Go). */
 export interface FilesApi {
   openFolder: () => Promise<FileNode>
+  /** Native folder dialog that opens nothing; "" when the user cancels. */
+  chooseFolder: () => Promise<string>
   listTree: (root: string) => Promise<FileNode>
   readFile: (path: string) => Promise<string>
   saveFile: (path: string, text: string) => Promise<void>
@@ -169,6 +182,7 @@ export interface Bridge {
   readonly isMock: boolean
   run: RunApi
   packages: PackagesApi
+  projects: ProjectsApi
   codeLanguages: CodeLanguagesApi
   debug: DebugApi
   language: LanguageApi

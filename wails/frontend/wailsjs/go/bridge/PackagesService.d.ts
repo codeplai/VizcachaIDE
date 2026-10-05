@@ -10,4 +10,6 @@ export function List(arg1:domain.CodeLanguage,arg2:string):Promise<void>;
 
 export function Remove(arg1:domain.CodeLanguage,arg2:string,arg3:string):Promise<void>;
 
+export function Search(arg1:domain.CodeLanguage,arg2:string):Promise<Array<domain.PackageInfo>>;
+
 export function Tidy(arg1:domain.CodeLanguage,arg2:string):Promise<void>;
