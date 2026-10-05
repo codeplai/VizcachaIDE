@@ -141,21 +141,21 @@ export const cppProfile: LanguageProfile = {
     }),
     tool({
       id: 'cmake',
-      role: 'runtime',
+      role: 'buildTool',
       labelKey: 'settings.toolCMake',
       missingKey: 'errors.cmakeNotFound',
       installUrl: 'https://cmake.org/download/'
     }),
     tool({
       id: 'ninja',
-      role: 'runtime',
+      role: 'buildTool',
       labelKey: 'settings.toolNinja',
       missingKey: 'errors.ninjaNotFound',
       installUrl: 'https://github.com/ninja-build/ninja/releases'
     }),
     tool({
       id: 'vcpkg',
-      role: 'runtime',
+      role: 'buildTool',
       labelKey: 'settings.toolVcpkg',
       missingKey: 'errors.vcpkgNotFound',
       installUrl: 'https://github.com/microsoft/vcpkg'

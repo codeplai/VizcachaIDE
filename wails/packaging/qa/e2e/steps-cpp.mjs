@@ -59,6 +59,8 @@ export const cppSteps = (ctx, lang) => {
     await open('error/main.cpp')
     await U.run(page)
     await page.waitForFunction((t) => document.querySelector('.guide')?.innerText.includes(t), { timeout: 60000 }, UNDECLARED[lang])
+    // The card shows before the run ends: wait for its closing line, so the slot is free for the next one.
+    await U.waitOutput(page, lang === 'es' ? 'terminó con código' : 'ended with code', 30000)
     await L.shot(page, `${lang}-cpp-02-error`)
     return `card "${UNDECLARED[lang]}"`
   })
@@ -84,8 +86,9 @@ export const cppSteps = (ctx, lang) => {
     return 'underline on "totl"'
   })
 
-  add('cpp-build', 'hola/main.cpp: More > Build leaves main.exe next to the source without running it', async () => {
-    const exe = path.join(folder, 'hola', process.platform === 'win32' ? 'main.exe' : 'main')
+  add('cpp-build', 'hola/main.cpp: More > Build leaves hola.exe next to the source without running it', async () => {
+    // The program is named after its CMake target, which is the folder's name.
+    const exe = path.join(folder, 'hola', process.platform === 'win32' ? 'hola.exe' : 'hola')
     fs.rmSync(exe, { force: true })
     await open('hola/main.cpp')
     await page.click('.more-trigger')

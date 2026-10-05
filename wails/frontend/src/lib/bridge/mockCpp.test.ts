@@ -104,9 +104,9 @@ describe('C++ tools and the dev bar', () => {
       ['lldb-dap', 'debugAdapter'],
       ['clangd', 'languageServer'],
       ['clang-format', 'formatter'],
-      ['cmake', 'runtime'],
-      ['ninja', 'runtime'],
-      ['vcpkg', 'runtime']
+      ['cmake', 'buildTool'],
+      ['ninja', 'buildTool'],
+      ['vcpkg', 'buildTool']
     ])
     expect(languageProfiles).toContain(cppProfile)
     expect(cppProfile.capabilities).toMatchObject({ build: true, console: false, debugInput: true })
