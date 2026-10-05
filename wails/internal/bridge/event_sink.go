@@ -20,7 +20,18 @@ var (
 	_ app.EventSink      = (*WailsEventSink)(nil)
 	_ app.FileChangeSink = (*WailsEventSink)(nil)
 	_ app.UpdateSink     = (*WailsEventSink)(nil)
+	_ app.TerminalSink   = (*WailsEventSink)(nil)
 )
+
+// TerminalOutput implements app.TerminalSink.
+func (s *WailsEventSink) TerminalOutput(id, data string) {
+	s.emit(EventTerminalOutput, TerminalOutputPayload{ID: id, Data: data})
+}
+
+// TerminalExit implements app.TerminalSink.
+func (s *WailsEventSink) TerminalExit(id string, exitCode int) {
+	s.emit(EventTerminalExit, TerminalExitPayload{ID: id, ExitCode: exitCode})
+}
 
 // UpdateState implements app.UpdateSink.
 func (s *WailsEventSink) UpdateState(state domain.UpdateState) { s.emit(EventUpdateState, state) }

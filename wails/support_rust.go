@@ -52,6 +52,7 @@ func newRustSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts 
 		Packages:  packages.New(supervisor, rustRunner),
 		Search:    packages.NewSearch(packageindex.New()),
 		Scaffold:  packages.Scaffold{},
+		Shell:     locator,
 	}
 	return support, func(context.Context) {}, nil
 }

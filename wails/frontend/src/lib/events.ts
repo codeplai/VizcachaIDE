@@ -25,7 +25,9 @@ export const Events = {
   assistantExplained: 'assistant:explained',
   settingsChanged: 'settings:changed',
   fileChanged: 'file:changed',
-  updateState: 'update:state'
+  updateState: 'update:state',
+  terminalOutput: 'terminal:output',
+  terminalExit: 'terminal:exit'
 } as const
 
 export type EventName = (typeof Events)[keyof typeof Events]
@@ -71,6 +73,18 @@ export interface LspStatusPayload {
   status: ServerStatus
 }
 
+/** Raw text (escape sequences included) from the shell of an integrated terminal. */
+export interface TerminalOutputPayload {
+  id: string
+  data: string
+}
+
+/** The shell of an integrated terminal ended. */
+export interface TerminalExitPayload {
+  id: string
+  exitCode: number
+}
+
 export const TERMINATED_BY_USER = -1
 
 export interface EventPayloads {
@@ -87,4 +101,6 @@ export interface EventPayloads {
   'settings:changed': Settings
   'file:changed': FileChangedPayload
   'update:state': UpdateState
+  'terminal:output': TerminalOutputPayload
+  'terminal:exit': TerminalExitPayload
 }
