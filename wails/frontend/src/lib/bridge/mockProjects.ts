@@ -23,7 +23,8 @@ const TEMPLATES: Partial<
     main: 'main.cpp',
     files: () => ({
       'main.cpp': `#include <iostream>\n#include <string>\n\nint main() {\n    std::cout << "${GREETING}";\n    std::string nombre;\n    std::getline(std::cin, nombre);\n    std::cout << "Hola, " << nombre << std::endl;\n}\n`,
-      'compile_flags.txt': '-std=c++17\n-Wall\n-Wextra\n'
+      'compile_flags.txt': '-std=c++17\n-Wall\n-Wextra\n',
+      '.clang-format': 'BasedOnStyle: LLVM\nIndentWidth: 4\n'
     })
   },
   rust: {

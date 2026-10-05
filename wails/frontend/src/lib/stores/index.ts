@@ -67,3 +67,4 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
   ]
   return () => offs.forEach((off) => off())
 }
+export * from './workingLanguage'

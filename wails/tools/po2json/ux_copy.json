@@ -421,7 +421,7 @@
   "project.cancel": { "en": "Cancel", "es": "Cancelar" },
   "project.files.go": { "en": "Creates go.mod + main.go", "es": "Crea go.mod + main.go" },
   "project.files.python": { "en": "Creates main.py", "es": "Crea main.py" },
-  "project.files.cpp": { "en": "Creates main.cpp + compile_flags.txt", "es": "Crea main.cpp + compile_flags.txt" },
+  "project.files.cpp": { "en": "Creates main.cpp + compile_flags.txt + .clang-format", "es": "Crea main.cpp + compile_flags.txt + .clang-format" },
   "project.files.rust": { "en": "Creates Cargo.toml + src/main.rs + .gitignore", "es": "Crea Cargo.toml + src/main.rs + .gitignore" },
   "project.errorNameEmpty": { "en": "Type a name for the project.", "es": "Escribe un nombre para el proyecto." },
   "project.errorNameInvalid": { "en": "The name cannot have \\ / : * ? \" < > | or be only dots and spaces.", "es": "El nombre no puede tener \\ / : * ? \" < > | ni ser solo puntos y espacios." },

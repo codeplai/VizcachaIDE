@@ -4,7 +4,7 @@ import type { CodeLanguage } from '../domain'
 import { activePath, dirty, openFile, openTabs } from './files'
 import { showNotice } from './notice'
 import { requestCloseTab, saveAs, saveFile } from './saving'
-import { settings } from './settings'
+import { workingCodeLanguage } from './workingLanguage'
 import { isUntitled, openUntitled } from './untitled'
 import { askNativeDialog } from './nativeDialogs'
 
@@ -13,9 +13,12 @@ export const activeNeedsSave = derived([activePath, dirty], ([path, marks]) =>
   path ? Boolean(marks[path]) || isUntitled(path) : false
 )
 
-/** New file (Ctrl+N): a tab without title in the default language, or in the one chosen. */
+/**
+ * New file (Ctrl+N): a tab without title in the language chosen, or else the one the learner is
+ * working in (the open file's, the open folder's, the default of Settings).
+ */
 export const newFile = async (bridge: Bridge, codeLanguage?: CodeLanguage): Promise<void> => {
-  await openUntitled(bridge, codeLanguage ?? get(settings)?.defaultCodeLanguage ?? 'go')
+  await openUntitled(bridge, codeLanguage ?? get(workingCodeLanguage))
 }
 
 /** Open file (Ctrl+O): asks for a file and opens it in a tab. Cancelling does nothing. */

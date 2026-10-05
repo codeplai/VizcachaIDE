@@ -14,7 +14,13 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   one starts with a program that asks your name and greets you. Go: `go.mod` + `main.go`; Python:
   `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 for the code helper); Rust: `Cargo.toml`
   + `src/main.rs` + `.gitignore`. Names with spaces and accents keep their folder name; the Go module
-  and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`).
+  and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`). A C++ project also
+  gets a `.clang-format` with the IDE's style (LLVM, 4 spaces), so another editor formats it the same.
+
+### Changed
+- **New file** (Ctrl+N and the toolbar button) is written in the language you are working in: the
+  open file's, else the open folder's (`Cargo.toml`, `go.mod`, `compile_flags.txt`… or most of its
+  sources), else the default of Settings. It used to be always a `.go`.
 
 ### Fixed
 - C++ programs on Windows showed accents wrong ("¿Cómo" as "┐C├│mo") and lost the accented letters
@@ -307,7 +313,13 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   `main.go`; Python: `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 para el ayudante de
   código); Rust: `Cargo.toml` + `src/main.rs` + `.gitignore`. Los nombres con espacios y acentos
   conservan su carpeta; el módulo de Go y el crate de Rust reciben una versión válida ("Mi Tienda
-  Ñandú" → `mi-tienda-nandu`).
+  Ñandú" → `mi-tienda-nandu`). Un proyecto C++ también lleva un `.clang-format` con el estilo de la IDE
+  (LLVM, 4 espacios), para que otro editor lo formatee igual.
+
+### Cambiado
+- **Archivo nuevo** (Ctrl+N y el botón de la barra) se escribe en el lenguaje con el que estás
+  trabajando: el del archivo abierto, si no el de la carpeta abierta (`Cargo.toml`, `go.mod`,
+  `compile_flags.txt`… o la mayoría de sus fuentes), si no el de Ajustes. Antes era siempre un `.go`.
 
 ### Corregido
 - Los programas de C++ en Windows mostraban mal los acentos ("¿Cómo" como "┐C├│mo") y perdían las

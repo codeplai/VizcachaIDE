@@ -542,7 +542,7 @@
   "project.errorNameEmpty": "Type a name for the project.",
   "project.errorNameInvalid": "The name cannot have \\ / : * ? \" \u003c \u003e | or be only dots and spaces.",
   "project.errorNoScaffold": "This language cannot create projects yet.",
-  "project.files.cpp": "Creates main.cpp + compile_flags.txt",
+  "project.files.cpp": "Creates main.cpp + compile_flags.txt + .clang-format",
   "project.files.go": "Creates go.mod + main.go",
   "project.files.python": "Creates main.py",
   "project.files.rust": "Creates Cargo.toml + src/main.rs + .gitignore",
