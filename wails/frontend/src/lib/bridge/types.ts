@@ -17,10 +17,12 @@ import type {
   SignatureHelp,
   SourceLocation,
   SourceRange,
-  ToolStatus,
-  UpdateState
+  ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
+import type { TerminalApi, UpdatesApi } from './typesShell'
+
+export type { TerminalApi, UpdatesApi }
 
 export type Unsubscribe = () => void
 
@@ -155,16 +157,6 @@ export interface SettingsApi {
 }
 
 /** Things only the desktop shell can do (the Wails runtime in the app, the browser in the mock). */
-/** Mirrors bridge.UpdatesService (Go). Progress and results also arrive as `update:state`. */
-export interface UpdatesApi {
-  state: () => Promise<UpdateState>
-  check: () => Promise<UpdateState>
-  /** Starts the download in the background. */
-  download: () => Promise<void>
-  /** Runs the installer and closes the IDE, or shows the downloaded file (portable copies). */
-  install: () => Promise<void>
-}
-
 export interface SystemApi {
   /** Opens a web page in the default browser (Wails BrowserOpenURL). */
   openUrl: (url: string) => void
@@ -191,6 +183,7 @@ export interface Bridge {
   files: FilesApi
   settings: SettingsApi
   updates: UpdatesApi
+  terminal: TerminalApi
   system: SystemApi
   on: <E extends EventName>(name: E, handler: (payload: EventPayloads[E]) => void) => Unsubscribe
 }

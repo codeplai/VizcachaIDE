@@ -33,6 +33,33 @@ type Program struct {
 	Dir     string
 	// Env is the full environment; nil means the IDE's own environment.
 	Env []string
+	// Interactive starts a terminal a person types in: the given size (Columns and Rows, 80x24
+	// when zero) and an environment left as it is, so the program colours its output and the
+	// caller keeps the raw bytes for a terminal emulator.
+	Interactive   bool
+	Columns, Rows int
+}
+
+// size is the size of the pseudoterminal: wide for the Output panel, the caller's for a terminal.
+func (p Program) size() (columns, lines int) {
+	if !p.Interactive {
+		return Columns, rows
+	}
+	columns, lines = p.Columns, p.Rows
+	if columns <= 0 {
+		columns = 80
+	}
+	if lines <= 0 {
+		lines = 24
+	}
+	return columns, lines
+}
+
+func (p Program) environment() []string {
+	if p.Interactive {
+		return p.Env
+	}
+	return withPlainOutput(p.Env)
 }
 
 // Terminal is a program running in a pseudoterminal. Read returns its output with terminal
@@ -48,13 +75,14 @@ func Start(program Program) (*Terminal, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := device.Resize(Columns, rows); err != nil {
+	width, height := program.size()
+	if err := device.Resize(width, height); err != nil {
 		_ = device.Close()
 		return nil, err
 	}
 	cmd := device.Command(program.Command, program.Args...)
 	cmd.Dir = program.Dir
-	cmd.Env = withPlainOutput(program.Env)
+	cmd.Env = program.environment()
 	if err := cmd.Start(); err != nil {
 		_ = device.Close()
 		return nil, err
@@ -74,6 +102,9 @@ func (t *Terminal) Read(p []byte) (int, error) { return t.device.Read(p) }
 
 // Write sends keyboard input. A line must end with "\r", like the Enter key.
 func (t *Terminal) Write(p []byte) (int, error) { return t.device.Write(p) }
+
+// Resize tells the program the new size of the terminal.
+func (t *Terminal) Resize(columns, lines int) error { return t.device.Resize(columns, lines) }
 
 // Interrupt sends Ctrl+C. Unix terminals deliver SIGINT; ConPTY may ignore it (see the
 // package comment), so the caller must still kill the tree if the program stays alive.

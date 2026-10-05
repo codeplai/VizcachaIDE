@@ -4,6 +4,14 @@
   import ConsolePanel from './ConsolePanel.svelte'
   import OutputPanel from './OutputPanel.svelte'
   import ProblemsPanel from './ProblemsPanel.svelte'
+  import TerminalPanel from './TerminalPanel.svelte'
+
+  // The terminal is created the first time its tab is shown and then stays alive (hidden), so
+  // switching tabs keeps its shells and what they printed.
+  let terminalSeen = $state(false)
+  $effect(() => {
+    if ($outputTab === 'terminal') terminalSeen = true
+  })
 </script>
 
 <section class="output">
@@ -41,11 +49,26 @@
         {$t('console.title')}
       </button>
     {/if}
+    <button
+      type="button"
+      role="tab"
+      class="otab"
+      class:on={$outputTab === 'terminal'}
+      aria-selected={$outputTab === 'terminal'}
+      onclick={() => outputTab.set('terminal')}
+    >
+      {$t('panels.terminal')}
+    </button>
   </div>
   <div class="body">
     {#if $outputTab === 'output'}<OutputPanel
       />{:else if $outputTab === 'console' && $capabilities?.console}<ConsolePanel
-      />{:else}<ProblemsPanel />{/if}
+      />{:else if $outputTab === 'problems'}<ProblemsPanel />{/if}
+    {#if terminalSeen}
+      <div class="terminal-slot" hidden={$outputTab !== 'terminal'}>
+        <TerminalPanel visible={$outputTab === 'terminal'} />
+      </div>
+    {/if}
   </div>
 </section>
 
@@ -60,6 +83,12 @@
   }
   .body {
     min-height: 0;
+  }
+  .terminal-slot {
+    height: 100%;
+  }
+  .terminal-slot[hidden] {
+    display: none;
   }
   .otabs {
     display: flex;

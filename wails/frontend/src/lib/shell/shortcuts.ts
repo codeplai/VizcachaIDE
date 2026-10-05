@@ -1,5 +1,6 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
+import { isTerminalToggle } from '../panels/terminalKeys'
 import {
   closeActive,
   debugActive,
@@ -8,6 +9,7 @@ import {
   startNewProject,
   resumeDebugging,
   runActiveFile,
+  showTerminal,
   runToCursor,
   saveActiveAs,
   saveActiveFile,
@@ -48,7 +50,18 @@ const panelShortcut = (event: KeyboardEvent): Action | null => {
   return async () => toggle()
 }
 
+/** Ctrl+` shows and focuses the terminal. */
+const terminalShortcut = (event: KeyboardEvent): Action | null =>
+  isTerminalToggle(event) ? showTerminal : null
+
+/** Inside the terminal the keys belong to the shell (Ctrl+W deletes a word, Ctrl+S stops output). */
+const inTerminal = (event: KeyboardEvent): boolean =>
+  event.target instanceof Element && event.target.closest('.xterm') !== null
+
 const actionFor = (event: KeyboardEvent): Action | null => {
+  const toggle = terminalShortcut(event)
+  if (toggle) return toggle
+  if (inTerminal(event)) return null
   const debugging = get(debugActive)
   const panelAction = panelShortcut(event)
   if (panelAction) return panelAction
@@ -72,7 +85,7 @@ const actionFor = (event: KeyboardEvent): Action | null => {
   }
 }
 
-/** Registers F5, F6, F7, F8, F9, Shift+F5, Shift+F6, Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S, Ctrl+Shift+N and Ctrl+W. Returns a function that removes them. */
+/** Registers Ctrl+`, F5, F6, F7, F8, F9, Shift+F5, Shift+F6, Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S, Ctrl+Shift+N and Ctrl+W. Returns a function that removes them. */
 export const registerShortcuts = (bridge: Bridge): (() => void) => {
   const handler = (event: KeyboardEvent): void => {
     const action = actionFor(event)
