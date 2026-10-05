@@ -115,5 +115,14 @@ describe('Files panel rows', () => {
     for (const name of [/^Rename/, /^Delete/, 'Show in Explorer', 'Copy path', 'New folder']) {
       expect(screen.getByRole('menuitem', { name })).toBeTruthy()
     }
+    expect(screen.queryByRole('menuitem', { name: 'Close folder' })).toBeNull()
+  })
+
+  it('right click on the open folder offers to close it', async () => {
+    const { container } = render(FilesPanel)
+    const root = container.querySelector('button.file.dir')
+    if (!root) throw new Error('no root folder row')
+    await fireEvent.contextMenu(root)
+    expect(await screen.findByRole('menuitem', { name: 'Close folder' })).toBeTruthy()
   })
 })
