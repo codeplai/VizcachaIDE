@@ -4,6 +4,14 @@ export type CodeLanguage = 'go' | 'python' | 'cpp' | 'rust'
 
 export type PackageAction = 'init' | 'add' | 'remove' | 'tidy' | 'list'
 
+/** One result of searching the package index of a language (PyPI, crates.io, pkg.go.dev). */
+export interface PackageInfo {
+  name: string
+  version: string
+  description: string
+  url: string
+}
+
 export interface IndentStyle {
   useTabs: boolean
   size: number

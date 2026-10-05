@@ -55,6 +55,27 @@ func (s *PackagesService) List(codeLanguage domain.CodeLanguage, dir string) err
 	})
 }
 
+// Search looks a package up by name in the index of the language (PyPI, crates.io, pkg.go.dev),
+// at most 10 results. An empty query gives an empty list. A language without an index answers
+// app.ErrUnsupported; an index that cannot be read, app.ErrPackageIndexUnavailable.
+func (s *PackagesService) Search(codeLanguage domain.CodeLanguage, query string) ([]domain.PackageInfo, error) {
+	support, err := s.supportOf(codeLanguage)
+	if err != nil {
+		return nil, fmt.Errorf("packages search: %w", err)
+	}
+	if support.Search == nil {
+		return nil, fmt.Errorf("packages search %s: %w", codeLanguage, app.ErrUnsupported)
+	}
+	found, err := support.Search.Search(context.Background(), query)
+	if err != nil {
+		return nil, fmt.Errorf("packages search %s: %w", codeLanguage, err)
+	}
+	if found == nil {
+		found = []domain.PackageInfo{}
+	}
+	return found, nil
+}
+
 func (s *PackagesService) run(codeLanguage domain.CodeLanguage, verb string, call func(app.PackageManager) error) error {
 	support, err := s.supportOf(codeLanguage)
 	if err != nil {

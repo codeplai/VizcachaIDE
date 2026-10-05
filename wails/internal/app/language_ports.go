@@ -61,6 +61,14 @@ type PackageManager interface {
 	List(ctx context.Context, dir string) error
 }
 
+// PackageSearch looks a package up by name in the package index of its language, so the student
+// can choose from a list instead of typing an exact name. It never touches the project and emits
+// no events. When the index cannot be searched (no network, an unexpected answer) the error wraps
+// ErrPackageIndexUnavailable. An empty query gives an empty list without any request.
+type PackageSearch interface {
+	Search(ctx context.Context, query string) ([]domain.PackageInfo, error)
+}
+
 // MemberRunner is a ProgramRunner whose projects can hold several programs: in the root of a
 // Cargo workspace, Run answers that the student must choose a member, and ConfigureMember gives
 // the configuration of the chosen one (docs/PLAN_RUST.md section 3.2 point 8).

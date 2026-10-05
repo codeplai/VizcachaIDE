@@ -18,6 +18,10 @@ export function Remove(arg1, arg2, arg3) {
   return window['go']['bridge']['PackagesService']['Remove'](arg1, arg2, arg3);
 }
 
+export function Search(arg1, arg2) {
+  return window['go']['bridge']['PackagesService']['Search'](arg1, arg2);
+}
+
 export function Tidy(arg1, arg2) {
   return window['go']['bridge']['PackagesService']['Tidy'](arg1, arg2);
 }

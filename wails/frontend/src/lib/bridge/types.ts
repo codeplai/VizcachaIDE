@@ -9,6 +9,7 @@ import type {
   ExplainedDiagnostic,
   FileNode,
   FrameVariables,
+  PackageInfo,
   LanguageProfile,
   NewProject,
   RunConfiguration,
@@ -47,6 +48,9 @@ export interface PackagesApi {
   remove: (codeLanguage: CodeLanguage, dir: string, pkg: string) => Promise<void>
   tidy: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
   list: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
+  /** Packages of the language's index whose name matches, at most 10. Rejects when the index
+   *  cannot be searched (no network...); the student can still type the exact name. */
+  search: (codeLanguage: CodeLanguage, query: string) => Promise<PackageInfo[]>
 }
 
 /** Mirrors bridge.ProjectsService (Go). Errors start with an i18n key (`project.errorExists`). */

@@ -185,6 +185,7 @@ linters:
             - go.lsp.dev
             - github.com/aymanbagabas/go-pty
             - github.com/charmbracelet/x/ansi
+            - golang.org/x/net/html
           deny:
             - pkg: github.com/codeplai/VizcachaIDE/wails/internal/adapters
               desc: protocol never imports adapters

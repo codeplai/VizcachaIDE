@@ -19,7 +19,8 @@ export const createPackagesApi = (): PackagesApi => ({
   add: (language, dir, pkg) => PackagesService.Add(toWire(language), dir, pkg),
   remove: (language, dir, pkg) => PackagesService.Remove(toWire(language), dir, pkg),
   tidy: (language, dir) => PackagesService.Tidy(toWire(language), dir),
-  list: (language, dir) => PackagesService.List(toWire(language), dir)
+  list: (language, dir) => PackagesService.List(toWire(language), dir),
+  search: async (language, query) => fromWire(await PackagesService.Search(toWire(language), query))
 })
 
 export const createProjectsApi = (): ProjectsApi => ({
