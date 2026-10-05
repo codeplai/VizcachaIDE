@@ -31,7 +31,8 @@ export interface Capabilities {
   threadsLabel: string
 }
 
-export type ToolRole = 'runtime' | 'compiler' | 'debugAdapter' | 'languageServer' | 'formatter'
+export type ToolRole =
+  'runtime' | 'compiler' | 'debugAdapter' | 'languageServer' | 'formatter' | 'buildTool'
 
 /** One tool a language needs and how to get it when it is missing. */
 export interface ToolSpec {

@@ -54,6 +54,9 @@ const (
 	RoleDebugAdapter   ToolRole = "debugAdapter"
 	RoleLanguageServer ToolRole = "languageServer"
 	RoleFormatter      ToolRole = "formatter"
+	// RoleBuildTool is a tool that builds or supplies libraries (CMake, Ninja, vcpkg): it is not the
+	// runtime whose version the status bar shows.
+	RoleBuildTool ToolRole = "buildTool"
 )
 
 // ToolSpec describes one tool a language needs and how to get it when it is missing.

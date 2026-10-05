@@ -19,6 +19,9 @@ const (
 	// bundledRoot and bundledSeed are where full-cpp ships vcpkg, relative to the executable.
 	bundledRoot = "toolchain/cpp/vcpkg"
 	bundledSeed = "toolchain/cpp/vcpkg-seed"
+	// SeedEnvironment names the variable that points at a seed folder when the application has none
+	// bundled (development and the E2E tests: VIZCACHA_TEST_VCPKG_SEED).
+	SeedEnvironment = "VIZCACHA_TEST_VCPKG_SEED"
 	// bundledCompilerBin is where full-cpp ships llvm-mingw.
 	bundledCompilerBin = "toolchain/cpp/bin"
 )
@@ -99,6 +102,10 @@ func (l *Locator) Seed() string {
 	if l.options.SeedDir != "" {
 		return l.options.SeedDir
 	}
+	// Development and tests point at a seed outside the application folder.
+	if dir := environmentValue(l.options.BaseEnvironment, SeedEnvironment); dir != "" {
+		return dir
+	}
 	seed := filepath.Join(l.options.AppDir, filepath.FromSlash(bundledSeed))
 	if info, err := os.Stat(seed); err == nil && info.IsDir() {
 		return seed
@@ -160,7 +167,11 @@ func (l *Locator) configured() string {
 	if err != nil {
 		return ""
 	}
-	return strings.TrimSpace(settings.ToolPaths[ToolID])
+	path := strings.TrimSpace(settings.ToolPaths[ToolID])
+	if isFile(path) { // Settings lets the student choose the vcpkg executable: its folder is the root
+		return filepath.Dir(path)
+	}
+	return path
 }
 
 func (l *Locator) valid(root string) bool {
@@ -172,28 +183,4 @@ func (l *Locator) valid(root string) bool {
 		executable += ".exe"
 	}
 	return isFile(filepath.Join(root, ".vcpkg-root")) && isFile(filepath.Join(root, executable))
-}
-
-func isFile(path string) bool {
-	info, err := os.Stat(path)
-	return err == nil && !info.IsDir()
-}
-
-func applicationDirectory() string {
-	executable, err := os.Executable()
-	if err != nil {
-		return "."
-	}
-	return filepath.Dir(executable)
-}
-
-// environmentValue returns the value of a variable in a "KEY=value" list, "" if absent.
-func environmentValue(environment []string, key string) string {
-	for index := len(environment) - 1; index >= 0; index-- {
-		name, value, found := strings.Cut(environment[index], "=")
-		if found && strings.EqualFold(name, key) {
-			return value
-		}
-	}
-	return ""
 }

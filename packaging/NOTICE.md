@@ -16,7 +16,12 @@ This installer / package, however, also contains third-party software:
   Go toolchain*  (The Go Authors)  BSD 3-Clause            -> toolchain/go/LICENSE
   Delve (dlv)*   (Derek Parker)    MIT                     -> toolchain/licenses/
   gopls*         (The Go Authors)  BSD 3-Clause            -> toolchain/licenses/
-  (* only in the "full" variant)
+  CMake*         (Kitware)         BSD 3-Clause            -> toolchain/licenses/
+  Ninja*         (Google et al.)   Apache 2.0              -> toolchain/licenses/
+  vcpkg*         (Microsoft)       MIT                     -> toolchain/licenses/
+  PowerShell*    (Microsoft)       MIT                     -> toolchain/licenses/
+  7-Zip*         (Igor Pavlov)     LGPL                    -> toolchain/licenses/
+  (* only in the "full" variants; CMake, Ninja, vcpkg, PowerShell and 7-Zip only in full-cpp)
 
 Because PyQt5 is licensed under the GPLv3, THE DISTRIBUTED PROGRAM AS A WHOLE
 IS LICENSED UNDER THE GNU GENERAL PUBLIC LICENSE, VERSION 3. The full text is
@@ -39,7 +44,8 @@ Sin embargo, este instalador o paquete incluye software de terceros:
 PyQt5 (GPLv3), las bibliotecas de Qt 5 (LGPLv3), PyQt5-sip (licencia SIP),
 el intérprete de Python (licencia PSF) y el cargador de PyInstaller
 (GPLv2 con excepción). La variante "full" incluye además Go (BSD de 3
-cláusulas), Delve (MIT) y gopls (BSD de 3 cláusulas).
+cláusulas), Delve (MIT) y gopls (BSD de 3 cláusulas). La variante full-cpp incluye además CMake
+(BSD de 3 cláusulas), Ninja (Apache 2.0), vcpkg (MIT), PowerShell (MIT) y 7-Zip (LGPL).
 
 Como PyQt5 se distribuye bajo la GPLv3, EL PROGRAMA DISTRIBUIDO EN SU
 CONJUNTO QUEDA BAJO LA LICENCIA PÚBLICA GENERAL DE GNU, VERSIÓN 3. El texto

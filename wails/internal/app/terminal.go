@@ -33,6 +33,23 @@ type ShellPaths interface {
 	ShellPaths(ctx context.Context) []string
 }
 
+// ShellVariables is an optional port of a language: environment variables ("NAME=value") of its
+// tools that the integrated terminal starts with (VCPKG_ROOT for "cmake --preset debug").
+type ShellVariables interface {
+	ShellVariables(ctx context.Context) []string
+}
+
+// ShellVariables gathers the variables of every language that offers them.
+func (r *LanguageRegistry) ShellVariables(ctx context.Context) []string {
+	var variables []string
+	for _, support := range r.supports {
+		if provider, ok := support.Shell.(ShellVariables); ok {
+			variables = append(variables, provider.ShellVariables(ctx)...)
+		}
+	}
+	return variables
+}
+
 // ShellPaths gathers the folders of every language that offers them, without repeats, in the
 // order of the languages.
 func (r *LanguageRegistry) ShellPaths(ctx context.Context) []string {

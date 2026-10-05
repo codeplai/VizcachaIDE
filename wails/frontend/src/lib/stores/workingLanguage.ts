@@ -13,10 +13,15 @@ const PROJECT_MARKERS: [string, CodeLanguage][] = [
   ['go.mod', 'go'],
   ['compile_flags.txt', 'cpp'],
   ['compile_commands.json', 'cpp'],
-  ['CMakeLists.txt', 'cpp'],
   ['pyproject.toml', 'python'],
   ['requirements.txt', 'python']
 ]
+
+/**
+ * CMakeLists.txt marks a C++ folder only when the folder has C or C++ sources: other languages
+ * (a Rust crate with a native library, a Python extension) have one too.
+ */
+const CMAKE_MARKER = 'CMakeLists.txt'
 
 /** How deep the sources are counted: a project's own folders, not every dependency below. */
 const COUNT_DEPTH = 3
@@ -29,7 +34,12 @@ const countSources = (
 ): void => {
   for (const child of node.children) {
     if (child.isDir) {
-      if (depth < COUNT_DEPTH && !child.name.startsWith('.') && child.name !== 'target') {
+      if (
+        depth < COUNT_DEPTH &&
+        !child.name.startsWith('.') &&
+        child.name !== 'target' &&
+        child.name !== 'build'
+      ) {
         countSources(child, all, counts, depth + 1)
       }
       continue
@@ -39,6 +49,9 @@ const countSources = (
   }
 }
 
+const hasCppSources = (tree: FileNode, all: LanguageProfile[]): boolean =>
+  tree.children.some((node) => !node.isDir && codeLanguageOf(node.path, all) === 'cpp')
+
 /** The language of a folder: its project marker, else the language most of its sources have. */
 export const folderCodeLanguage = (
   tree: FileNode | null,
@@ -47,6 +60,9 @@ export const folderCodeLanguage = (
   if (!tree) return null
   for (const [file, language] of PROJECT_MARKERS) {
     if (tree.children.some((node) => !node.isDir && node.name === file)) return language
+  }
+  if (hasCppSources(tree, all) && tree.children.some((node) => node.name === CMAKE_MARKER)) {
+    return 'cpp'
   }
   const counts = new Map<CodeLanguage, number>()
   countSources(tree, all, counts, 1)

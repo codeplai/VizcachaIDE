@@ -9,6 +9,19 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 ## [Unreleased]
 
 ### Added
+- **C++ projects use CMake**: a new C++ project is a CMake project (`CMakeLists.txt`, `CMakePresets.json`,
+  `vcpkg.json`, `.gitignore`, `main.cpp` and `.clang-format`; no more `compile_flags.txt`). Every `.cpp` in the
+  folder is part of the program, so a new file is enough. A folder without a `CMakeLists.txt` gets one
+  automatically the first time you run, build or debug it. F5, Build, Debug and Problems build with CMake and
+  Ninja; the code helper reads `build/compile_commands.json`.
+- **C++ libraries from vcpkg** in the Packages dialog: search a library by name (offline), choose it from
+  the list and install it; VizcachaIDE edits `vcpkg.json` and the marked block of `CMakeLists.txt`, so you
+  only write the `#include`. The first install of a library compiles it and takes a few minutes (a notice
+  says so); later ones come from a cache. Uninstall removes it again.
+- The full-cpp variant bundles CMake 4.4.4, Ninja 1.13.2 and a vcpkg snapshot (with the downloads vcpkg
+  needs the first time, so no waiting for them). The integrated terminal has `cmake`, `ninja` and
+  `VCPKG_ROOT`, so `cmake --preset debug` works there.
+- The Files panel shows the folders the build tools generate (`build/`, `target/`) dimmed.
 - **Integrated terminal**: a Terminal tab in the bottom panel (Ctrl+ the key left of 1, whatever it prints; also Ctrl+Ñ on keyboards with a Ñ) with a real shell (PowerShell on Windows, your shell elsewhere)
   in the open folder. The IDE's own Go, Python, C++ and Rust come first in PATH, so `go`, `python`, `pip`, `clang++` and `cargo`
   work there exactly as with F5. Several terminals, New terminal and Kill terminal, copy/paste (Ctrl+Shift+C / Ctrl+Shift+V,
@@ -16,7 +29,7 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 - **File → New project…** (Ctrl+Shift+N): a name, the programming language and the folder where it
   goes (always chosen, no default); VizcachaIDE writes the project and opens it ready for F5. Each
   one starts with a program that asks your name and greets you. Go: `go.mod` + `main.go`; Python:
-  `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 for the code helper); Rust: `Cargo.toml`
+  `main.py`; C++: a CMake project with `main.cpp`; Rust: `Cargo.toml`
   + `src/main.rs` + `.gitignore`. Names with spaces and accents keep their folder name; the Go module
   and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`). A C++ project also
   gets a `.clang-format` with the IDE's style (LLVM, 4 spaces), so another editor formats it the same.
@@ -322,6 +335,19 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 ## [Sin publicar]
 
 ### Añadido
+- **Los proyectos C++ usan CMake**: un proyecto C++ nuevo es un proyecto CMake (`CMakeLists.txt`,
+  `CMakePresets.json`, `vcpkg.json`, `.gitignore`, `main.cpp` y `.clang-format`; ya no hay `compile_flags.txt`).
+  Todo `.cpp` de la carpeta forma parte del programa, así que basta crear un archivo nuevo. A una carpeta sin
+  `CMakeLists.txt` se le crea uno solo la primera vez que la ejecutas, construyes o depuras. F5, Construir,
+  Depurar y Problemas compilan con CMake y Ninja; el ayudante de código lee `build/compile_commands.json`.
+- **Librerías de C++ con vcpkg** en el diálogo de Paquetes: busca una librería por nombre (sin internet),
+  elígela de la lista e instálala; VizcachaIDE edita `vcpkg.json` y el bloque marcado del `CMakeLists.txt`, así
+  que solo escribes el `#include`. La primera instalación de una librería la compila y tarda unos minutos
+  (un aviso lo dice); las siguientes salen de una caché. Desinstalar la quita de nuevo.
+- La variante full-cpp incluye CMake 4.4.4, Ninja 1.13.2 y una instantánea de vcpkg (con las descargas que
+  vcpkg necesita la primera vez, para no esperarlas). El terminal integrado tiene `cmake`, `ninja` y
+  `VCPKG_ROOT`, así que `cmake --preset debug` funciona ahí.
+- El panel de Archivos muestra atenuadas las carpetas que generan las herramientas (`build/`, `target/`).
 - **Terminal integrado**: una pestaña Terminal en el panel inferior (Ctrl+ la tecla a la izquierda del 1, sea cual sea su símbolo; también Ctrl+Ñ en teclados con Ñ)
   con un shell real (PowerShell en Windows, tu shell en macOS y Linux) en la carpeta abierta. El Go,
   Python, C++ y Rust de la IDE van primero en el PATH, así que `go`, `python`, `pip`, `clang++` y `cargo`
@@ -330,7 +356,7 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 - **Archivo → Nuevo proyecto…** (Ctrl+Shift+N): un nombre, el lenguaje de programación y la carpeta
   donde va (siempre se elige, sin valor por defecto); VizcachaIDE escribe el proyecto y lo abre listo
   para F5. Cada uno empieza con un programa que pregunta tu nombre y te saluda. Go: `go.mod` +
-  `main.go`; Python: `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 para el ayudante de
+  `main.go`; Python: `main.py`; C++: un proyecto CMake con `main.cpp` (C++17 para el ayudante de
   código); Rust: `Cargo.toml` + `src/main.rs` + `.gitignore`. Los nombres con espacios y acentos
   conservan su carpeta; el módulo de Go y el crate de Rust reciben una versión válida ("Mi Tienda
   Ñandú" → `mi-tienda-nandu`). Un proyecto C++ también lleva un `.clang-format` con el estilo de la IDE

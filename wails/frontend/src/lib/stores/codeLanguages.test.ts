@@ -71,7 +71,11 @@ describe('code languages from the backend', () => {
       threadsLabel: 'debug.threads'
     })
     activePath.set('main.cpp')
-    expect(get(capabilities)).toMatchObject({ console: false, build: true, packageActions: [] })
+    expect(get(capabilities)).toMatchObject({
+      console: false,
+      build: true,
+      packageActions: ['add', 'remove', 'list']
+    })
   })
 
   it('leaves the Console tab when the file changes to a language without console', () => {
