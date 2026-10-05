@@ -99,7 +99,7 @@ func TestBuildLeavesTheExecutableNextToTheSource(t *testing.T) {
 		if code := sink.waitFinished(t); code != 0 {
 			t.Fatalf("exit code %d, stderr %q", code, errText(sink))
 		}
-		exe := filepath.Join(filepath.Dir(path), executableName("main"))
+		exe := filepath.Join(filepath.Dir(path), executableName("mis_programas_nandu"))
 		if _, err := os.Stat(exe); err != nil {
 			t.Fatalf("no executable: %v", err)
 		}
@@ -145,8 +145,8 @@ func TestCompileForDebugReturnsTheExecutable(t *testing.T) {
 		if err != nil {
 			t.Fatalf("err = %v, output = %q", err, output)
 		}
-		if _, statErr := os.Stat(exe); statErr != nil || !strings.HasPrefix(exe, r.options.CacheDir) {
-			t.Fatalf("exe = %q (%v), want a file in the cache", exe, statErr)
+		if _, statErr := os.Stat(exe); statErr != nil || !strings.HasPrefix(exe, filepath.Join(filepath.Dir(path), "build")) {
+			t.Fatalf("exe = %q (%v), want a file in the project's build folder", exe, statErr)
 		}
 		if !strings.Contains(output, "sobra") {
 			t.Fatalf("output = %q, want the unused variable warning", output)

@@ -13,11 +13,16 @@ import (
 //	GNU ld:  C:/src/main.cpp:3:(.text+0x13): undefined reference to `calcular(int)'
 //	lld:     ld.lld: error: undefined symbol: calcular(int)
 //	         >>> referenced by C:\src\main.cpp:3
+//
+// A symbol defined twice (two files with main) is "multiple definition of `main'" in GNU ld and
+// "duplicate symbol: main" with ">>> defined at C:\src\main.cpp:3" lines in lld.
 var (
 	undefinedReference = regexp.MustCompile("undefined reference to `.+'$")
 	gnuLinkLocation    = regexp.MustCompile(`^(?P<path>.+?):(?P<line>\d+):\(`)
 	undefinedSymbol    = regexp.MustCompile(`^(?:\S*ld\.lld|lld): error: (?P<message>undefined symbol: .+)$`)
-	referencedBy       = regexp.MustCompile(`^>>>\s+referenced by (?P<path>.+):(?P<line>\d+)\s*$`)
+	referencedBy       = regexp.MustCompile(`^>>>\s+(?:referenced by|defined at) (?P<path>.+):(?P<line>\d+)\s*$`)
+	duplicateSymbol    = regexp.MustCompile(`^(?:\S*ld\.lld|lld): error: (?P<message>duplicate symbol: .+)$`)
+	multipleDefinition = regexp.MustCompile("multiple definition of `[^']+'")
 )
 
 // undefinedReferenceLine reads an undefined reference of GNU ld, with the file and line of the
@@ -54,6 +59,34 @@ func (p *parser) undefinedSymbolLine(lines []string) (int, bool) {
 		Message:  groups["message"],
 		Source:   sourceLinker,
 	}, []string{line}, true)
+	return 0, true
+}
+
+// duplicateSymbolLine reads a symbol defined twice by lld; its ">>> defined at" lines follow as
+// context and give the location of the first definition.
+func (p *parser) duplicateSymbolLine(lines []string) (int, bool) {
+	line := strings.TrimRight(lines[0], " \t\r")
+	groups := errorcatalog.NamedGroups(duplicateSymbol, line)
+	if groups == nil {
+		return 0, false
+	}
+	p.add(domain.Diagnostic{Severity: domain.SeverityError, Message: groups["message"], Source: sourceLinker}, []string{line}, true)
+	return 0, true
+}
+
+// multipleDefinitionLine reads a symbol defined twice by GNU ld, at the file and line of the
+// second definition when the object was built with -g.
+func (p *parser) multipleDefinitionLine(lines []string) (int, bool) {
+	line := strings.TrimRight(lines[0], " \t\r")
+	span := multipleDefinition.FindStringIndex(line)
+	if span == nil {
+		return 0, false
+	}
+	var location *domain.SourceLocation
+	if groups := errorcatalog.NamedGroups(gnuLinkLocation, line); groups != nil {
+		location = p.ownLocation(groups)
+	}
+	p.add(domain.Diagnostic{Location: location, Severity: domain.SeverityError, Message: line[span[0]:span[1]], Source: sourceLinker}, []string{line}, false)
 	return 0, true
 }
 

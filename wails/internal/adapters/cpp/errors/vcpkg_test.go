@@ -100,7 +100,8 @@ func TestMissingHostToolIsExplained(t *testing.T) {
 }
 
 func TestOtherErrorLinesAreNotTurnedIntoLibraryDiagnostics(t *testing.T) {
-	output := "error: something else entirely\nCMake Error at CMakeLists.txt:3 (add_executable):\n  No SOURCES given to target: x\n"
+	// "CMake Error at …" lines are the CMake handler's (cmake_test.go), not the libraries'.
+	output := "error: something else entirely\n"
 	if diagnostics := diagnosticsOf(t, output); len(diagnostics) != 0 {
 		t.Errorf("diagnostics = %+v", diagnostics)
 	}

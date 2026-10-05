@@ -9,14 +9,21 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/pty"
 )
 
-// Run implements app.ProgramRunner: compile, then run the program.
+// Run implements app.ProgramRunner: build the CMake project, then run the program.
 func (r *Runner) Run(ctx context.Context, config domain.RunConfiguration) error {
+	if project, ok := projectOf(config); ok {
+		return r.runProject(ctx, config, project)
+	}
 	return r.start(ctx, config, nil)
 }
 
-// Build implements app.ProgramRunner: only the compiler stage, with the executable next to the
-// source (main.exe, main), like "go build". It emits the run events.
+// Build implements app.ProgramRunner: only the build stages, with the executable next to the
+// code (nandu.exe, nandu), like "go build". A CMake project builds in Release. It emits the run
+// events.
 func (r *Runner) Build(ctx context.Context, config domain.RunConfiguration) error {
+	if project, ok := projectOf(config); ok {
+		return r.buildProject(ctx, config, project)
+	}
 	c, err := r.compile(ctx, config, besideSource)
 	if err != nil {
 		return err
@@ -24,7 +31,7 @@ func (r *Runner) Build(ctx context.Context, config domain.RunConfiguration) erro
 	return r.supervisor.Start(ctx, r.compileJob(c, config))
 }
 
-// start runs the configuration as one two-stage job. cleanup runs when the run ends or cannot
+// start runs a configuration compiled directly (an untitled file) as one two-stage job. cleanup runs when the run ends or cannot
 // start.
 func (r *Runner) start(ctx context.Context, config domain.RunConfiguration, cleanup func()) error {
 	c, err := r.compile(ctx, config, r.cacheOutput)
@@ -43,7 +50,7 @@ func (r *Runner) start(ctx context.Context, config domain.RunConfiguration, clea
 			finish(cleanup)
 			return nil, false
 		}
-		next := programJob(c, config, r.Environment(), mode)
+		next := programJob(c.output, c.folder, config, r.Environment(), mode)
 		next.Cleanup = cleanup
 		return &next, true
 	}
@@ -56,10 +63,10 @@ func (r *Runner) start(ctx context.Context, config domain.RunConfiguration, clea
 
 // programJob is stage 2: the executable with the program's arguments. A terminal echoes what
 // the user types, so Config.Echo follows the mode.
-func programJob(c compilation, config domain.RunConfiguration, env map[string]string, mode process.Mode) process.Job {
+func programJob(executable, folder string, config domain.RunConfiguration, env map[string]string, mode process.Mode) process.Job {
 	config.Echo = mode == process.Terminal
 	return process.Job{
-		Config: config, Command: c.output, Args: config.ProgramArgs, Dir: c.folder, Env: env, Mode: mode,
+		Config: config, Command: executable, Args: config.ProgramArgs, Dir: folder, Env: env, Mode: mode,
 		Finished: crashLine,
 	}
 }

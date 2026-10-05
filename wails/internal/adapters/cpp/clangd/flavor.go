@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp/cmake"
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
@@ -54,9 +55,14 @@ func (f Flavor) Command(map[string]string) (string, []string, error) {
 	return status.Path, args, nil
 }
 
-// RootOf is the folder of the file: a student's exercise is a folder, and a teacher's
-// compile_flags.txt or compile_commands.json there wins over the fallback flags.
+// RootOf is the root of the CMake project around the file: clangd finds build/compile_commands.json
+// there, with the include folders of the libraries. Without a CMakeLists.txt (an untitled file) it
+// is the folder of the file, where a teacher's compile_flags.txt or compile_commands.json wins
+// over the fallback flags.
 func (Flavor) RootOf(path string) string {
+	if project, ok := cmake.FindProject(path, ""); ok {
+		return project.Root
+	}
 	abs, err := filepath.Abs(path)
 	if err != nil {
 		abs = path
@@ -77,5 +83,5 @@ func (Flavor) Environment() map[string]string { return nil }
 
 // Manifests are the files that tell clangd how a project compiles (lsp.ManifestFiles).
 func (Flavor) Manifests() []string {
-	return []string{"compile_commands.json", "compile_flags.txt", ".clangd"}
+	return []string{"compile_commands.json", "compile_flags.txt", ".clangd", cmake.ListsFile, "build/compile_commands.json"}
 }

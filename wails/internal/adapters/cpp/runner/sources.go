@@ -25,10 +25,20 @@ func isSource(path string) bool { return sourceExtensions[strings.ToLower(filepa
 
 func isHeader(path string) bool { return headerExtensions[strings.ToLower(filepath.Ext(path))] }
 
-// Configure implements app.ProgramRunner. A folder with more than one source is a project
-// (every source is compiled together) and so is a header's folder; otherwise the file runs alone.
-// A header whose folder has no sources is still a project: Run answers ErrHeaderOnly.
+// Configure implements app.ProgramRunner: the file is part of a CMake project, whose CMakeLists.txt
+// is created first when the folder has none (cmake.go). A header whose folder has no sources has
+// no project to create: it is configured for a direct compilation and Run answers ErrHeaderOnly.
 func (r *Runner) Configure(path string, programArgs []string) domain.RunConfiguration {
+	if config, ok := r.configureProject(path, programArgs); ok {
+		return config
+	}
+	return configureDirect(path, programArgs)
+}
+
+// configureDirect is the configuration of a file compiled without CMake (an untitled file). A
+// folder with more than one source is a project (every source is compiled together) and so is a
+// header's folder; otherwise the file runs alone.
+func configureDirect(path string, programArgs []string) domain.RunConfiguration {
 	config := domain.NewFileRunConfiguration(domain.CodeLanguageCpp, path, programArgs)
 	folder := config.WorkingDir
 	config.Project = &domain.ProjectContext{Root: folder, Kind: domain.ProjectFolder}

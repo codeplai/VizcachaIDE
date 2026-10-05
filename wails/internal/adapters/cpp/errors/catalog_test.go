@@ -40,12 +40,7 @@ var fixtureOf = map[string][2]string{
 }
 
 func TestEveryCatalogIDHasAFixtureInBothFamilies(t *testing.T) {
-	var ids []string
-	for _, id := range catalogIDs(t) {
-		if !strings.HasPrefix(id, vcpkgIDPrefix) { // the libraries have their own tests (vcpkg_test.go)
-			ids = append(ids, id)
-		}
-	}
+	ids := compilerIDs(t)
 	if len(ids) != len(fixtureOf) {
 		t.Errorf("catalog has %d entries, fixtures cover %d", len(ids), len(fixtureOf))
 	}

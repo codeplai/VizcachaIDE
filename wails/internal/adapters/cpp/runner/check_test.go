@@ -41,15 +41,19 @@ func TestCheckOfAFolderThatIsGoneIsEmpty(t *testing.T) {
 func TestToolsReportVersions(t *testing.T) {
 	eachCompiler(t, func(t *testing.T, r *Runner, _ *testSink) {
 		tools := r.Tools(context.Background())
-		if len(tools) != 4 || tools[0].ID != "cxx" || tools[0].Version == "" || strings.Contains(tools[0].Version, " ") {
+		if len(tools) != 7 || tools[0].ID != "cxx" || tools[0].Version == "" || strings.Contains(tools[0].Version, " ") {
 			t.Fatalf("tools = %+v", tools)
 		}
 		t.Logf("%+v", tools)
 	})
 	t.Run("llvm tools", func(t *testing.T) {
 		bin := cpptest.LLVMBin(t)
-		r := New(newSupervisor(), Options{Settings: settings{path: filepath.Join(bin, cpptest.Exe("clang++"))}, AppDir: t.TempDir()})
+		settings := settings{path: filepath.Join(bin, cpptest.Exe("clang++")), cmakeBin: cpptest.CMakeBin(t)}
+		r := New(newSupervisor(), Options{Settings: settings, AppDir: t.TempDir()})
 		for _, tool := range r.Tools(context.Background()) {
+			if tool.ID == "vcpkg" {
+				continue // found by the vcpkg package, not here
+			}
 			if tool.Source == domain.ToolMissing || tool.Version == "" {
 				t.Errorf("%s = %+v, want found with a version", tool.ID, tool)
 			}
@@ -60,7 +64,7 @@ func TestToolsReportVersions(t *testing.T) {
 func TestToolsMissing(t *testing.T) {
 	r := New(newSupervisor(), Options{AppDir: t.TempDir(), BaseEnvironment: []string{"PATH="}})
 	tools := r.Tools(context.Background())
-	if len(tools) != 4 {
+	if len(tools) != 7 {
 		t.Fatalf("tools = %+v", tools)
 	}
 	for _, tool := range tools {

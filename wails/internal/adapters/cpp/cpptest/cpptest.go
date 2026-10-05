@@ -13,6 +13,8 @@ import (
 const (
 	LLVMVariable = "VIZCACHA_TEST_LLVM_BIN"
 	GCCVariable  = "VIZCACHA_TEST_GCC_BIN"
+	// CMakeVariable names the bin folder with cmake and ninja (docs/PLAN_CPP_CMAKE.md section 8).
+	CMakeVariable = "VIZCACHA_TEST_CMAKE_BIN"
 )
 
 // LLVMBin returns a bin folder with clang++, lldb-dap, clangd and clang-format, or skips.
@@ -29,6 +31,14 @@ func GCCBin(t *testing.T) string {
 	t.Helper()
 	return binFolder(t, GCCVariable, "g++", func(dev string) []string {
 		return []string{filepath.Join(dev, "mingw64", "bin")}
+	})
+}
+
+// CMakeBin returns a bin folder with cmake and ninja, or skips.
+func CMakeBin(t *testing.T) string {
+	t.Helper()
+	return binFolder(t, CMakeVariable, "cmake", func(dev string) []string {
+		return []string{filepath.Join(dev, "cmake", "bin")}
 	})
 }
 

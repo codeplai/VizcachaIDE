@@ -11,6 +11,9 @@ const (
 	ToolLldbDap     = "lldb-dap"
 	ToolClangd      = "clangd"
 	ToolClangFormat = "clang-format"
+	ToolCMake       = "cmake"
+	ToolNinja       = "ninja"
+	ToolVcpkg       = "vcpkg" // located by the vcpkg package (its root folder, not a bin folder)
 )
 
 // Profile is everything the frontend needs to know about C++. The install hints are the Windows
@@ -40,6 +43,18 @@ var Profile = domain.LanguageProfile{
 		{
 			ID: ToolClangFormat, Role: domain.RoleFormatter, LabelKey: "settings.toolClangFormat",
 			MissingKey: "errors.clangFormatNotFound", InstallURL: "https://github.com/mstorsjo/llvm-mingw/releases",
+		},
+		{
+			ID: ToolCMake, Role: domain.RoleRuntime, LabelKey: "settings.toolCMake",
+			MissingKey: "errors.cmakeNotFound", InstallURL: "https://cmake.org/download/",
+		},
+		{
+			ID: ToolNinja, Role: domain.RoleRuntime, LabelKey: "settings.toolNinja",
+			MissingKey: "errors.ninjaNotFound", InstallURL: "https://github.com/ninja-build/ninja/releases",
+		},
+		{
+			ID: ToolVcpkg, Role: domain.RoleRuntime, LabelKey: "settings.toolVcpkg",
+			MissingKey: "errors.vcpkgNotFound", InstallURL: "https://github.com/microsoft/vcpkg",
 		},
 	},
 }

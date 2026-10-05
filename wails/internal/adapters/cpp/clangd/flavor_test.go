@@ -2,6 +2,7 @@ package clangd
 
 import (
 	"errors"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -47,6 +48,26 @@ func TestRootIsTheFolderOfTheFile(t *testing.T) {
 	folder := t.TempDir()
 	if got := (Flavor{}).RootOf(filepath.Join(folder, "sub", "main.cpp")); got != filepath.Join(folder, "sub") {
 		t.Errorf("RootOf = %q", got)
+	}
+}
+
+func TestRootIsTheCMakeProjectAroundTheFile(t *testing.T) {
+	folder := t.TempDir()
+	sub := filepath.Join(folder, "src")
+	if err := os.MkdirAll(sub, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(folder, "CMakeLists.txt"), []byte("project(x)\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if got := (Flavor{}).RootOf(filepath.Join(sub, "util.cpp")); got != folder {
+		t.Errorf("RootOf = %q, want %q", got, folder)
+	}
+	manifests := (Flavor{}).Manifests()
+	for _, want := range []string{"CMakeLists.txt", "build/compile_commands.json"} {
+		if !slices.Contains(manifests, want) {
+			t.Errorf("manifests = %v, missing %s", manifests, want)
+		}
 	}
 }
 

@@ -20,6 +20,9 @@ func (r *Runner) Check(ctx context.Context, config domain.RunConfiguration) (str
 	if info, err := os.Stat(folderOf(config)); err != nil || !info.IsDir() {
 		return "", nil // for example an untitled run, whose folder is already deleted
 	}
+	if project, ok := projectOf(config); ok {
+		return r.checkProject(ctx, project)
+	}
 	sources, err := sourcesOf(config)
 	if err != nil {
 		return "", err

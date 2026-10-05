@@ -50,6 +50,19 @@ func catalogIDs(t *testing.T) []string {
 	return ids
 }
 
+// compilerIDs are the catalog ids recorded from the compilers and the program; the CPP-CMAKE-*
+// ones come from CMake and are tested with their own text (cmake_test.go).
+func compilerIDs(t *testing.T) []string {
+	t.Helper()
+	var ids []string
+	for _, id := range catalogIDs(t) {
+		if !strings.HasPrefix(id, "CPP-CMAKE-") && !strings.HasPrefix(id, vcpkgIDPrefix) {
+			ids = append(ids, id)
+		}
+	}
+	return ids
+}
+
 // readFixture returns the working directory of the header and what the compiler and the program
 // printed, with the crash line of the runner when the recorded run ended by an exception code.
 func readFixture(t *testing.T, family, name string) (workingDir, output string) {

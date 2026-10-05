@@ -116,6 +116,9 @@ func executableName(name string) string {
 // exePath is "" and err wraps ErrCompileFailed; the output is what the Assistant explains. Other
 // errors are app.MissingTool("cxx"), ErrHeaderOnly or a failure to start the compiler.
 func (r *Runner) CompileForDebug(ctx context.Context, config domain.RunConfiguration) (exePath, output string, err error) {
+	if project, ok := projectOf(config); ok {
+		return r.debugBuild(ctx, config, project)
+	}
 	c, err := r.compile(ctx, config, r.cacheOutput)
 	if err != nil {
 		return "", "", err
