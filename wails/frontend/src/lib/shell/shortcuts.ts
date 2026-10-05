@@ -5,6 +5,7 @@ import {
   debugActive,
   newFile,
   openFileFromDialog,
+  startNewProject,
   resumeDebugging,
   runActiveFile,
   runToCursor,
@@ -29,11 +30,12 @@ const FILE_SHORTCUTS: Record<string, Action> = {
   s: saveActiveFile
 }
 
-/** Ctrl (Cmd on macOS) + N, O, S, W, and Ctrl+Shift+S. */
+/** Ctrl (Cmd on macOS) + N, O, S, W, and Ctrl+Shift+S and Ctrl+Shift+N. */
 const fileShortcut = (event: KeyboardEvent): Action | null => {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return null
   const key = event.key.toLowerCase()
   if (key === 's' && event.shiftKey) return saveActiveAs
+  if (key === 'n' && event.shiftKey) return startNewProject
   if (event.shiftKey) return null
   return FILE_SHORTCUTS[key] ?? null
 }
@@ -70,7 +72,7 @@ const actionFor = (event: KeyboardEvent): Action | null => {
   }
 }
 
-/** Registers F5, F6, F7, F8, F9, Shift+F5, Shift+F6, Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S and Ctrl+W. Returns a function that removes them. */
+/** Registers F5, F6, F7, F8, F9, Shift+F5, Shift+F6, Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S, Ctrl+Shift+N and Ctrl+W. Returns a function that removes them. */
 export const registerShortcuts = (bridge: Bridge): (() => void) => {
   const handler = (event: KeyboardEvent): void => {
     const action = actionFor(event)

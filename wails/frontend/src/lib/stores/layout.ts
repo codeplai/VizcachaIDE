@@ -4,7 +4,7 @@ import { capabilities } from './codeLanguages'
 export type SidebarView = 'files' | 'outline' | 'search'
 export type OutputTab = 'output' | 'problems' | 'console'
 export type DebugTab = 'stack' | 'calls' | 'threads'
-export type DialogName = 'settings' | 'about' | 'packages'
+export type DialogName = 'settings' | 'about' | 'packages' | 'newProject'
 export type SettingsTab = 'general' | 'editor' | 'tools' | 'updates'
 
 export const sidebarView = writable<SidebarView>('files')

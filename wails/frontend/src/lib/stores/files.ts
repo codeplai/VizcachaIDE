@@ -29,12 +29,17 @@ export const filesWithProblems = derived(problems, (items) =>
   items.flatMap((item) => (item.diagnostic.location ? [item.diagnostic.location.file] : []))
 )
 
+/** Shows the files of a folder in the tree and remembers it for the next start. */
+export const showFolder = async (bridge: Bridge, tree: FileNode): Promise<void> => {
+  fileTree.set(tree)
+  await updateSettings(bridge, { lastFolder: tree.path })
+}
+
 /** Asks for a folder, shows its files and remembers it for the next start. */
 export const openFolder = async (bridge: Bridge): Promise<void> => {
   const tree = await askNativeDialog(() => bridge.files.openFolder(), null)
   if (!tree?.path) return
-  fileTree.set(tree)
-  await updateSettings(bridge, { lastFolder: tree.path })
+  await showFolder(bridge, tree)
 }
 
 export const openFile = async (bridge: Bridge, path: string): Promise<void> => {

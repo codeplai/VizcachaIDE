@@ -21,6 +21,12 @@ type ProjectContext struct {
 	Name string      `json:"name"`
 }
 
+// NewProject is what "New project" created: its folder and the file to open first.
+type NewProject struct {
+	Root     string `json:"root"`
+	MainFile string `json:"mainFile"`
+}
+
 // RunTarget says whether to run one file or its whole project.
 type RunTarget string
 

@@ -48,6 +48,22 @@ func (s *FilesService) OpenFolder() (domain.FileNode, error) {
 	return s.ListTree(chosen)
 }
 
+// ChooseFolder lets the user pick a folder and returns its path, or "" when the user cancels.
+// It opens nothing: New project uses it to ask for the location.
+func (s *FilesService) ChooseFolder() (string, error) {
+	ctx := s.context.Context()
+	if ctx == nil {
+		return "", nil
+	}
+	chosen, err := withStartFolder(s.lastFolder(), func(start string) (string, error) {
+		return runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{DefaultDirectory: start})
+	})
+	if err != nil {
+		return "", fmt.Errorf("choose folder: %w", err)
+	}
+	return chosen, nil
+}
+
 // ListTree returns the tree of a folder and remembers it as the last one.
 // An empty root means "the last folder"; with none, the result is an empty node.
 func (s *FilesService) ListTree(root string) (domain.FileNode, error) {

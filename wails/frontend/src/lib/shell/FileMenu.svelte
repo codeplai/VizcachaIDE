@@ -12,7 +12,8 @@
     openTabs,
     saveActiveAs,
     saveActiveFile,
-    saveAll
+    saveAll,
+    startNewProject
   } from '../stores'
   import NewFileMenu from './NewFileMenu.svelte'
   import RecentMenu from './RecentMenu.svelte'
@@ -27,6 +28,11 @@
 
   const entries: Entry[] = [
     { label: 'file.new', shortcut: 'Ctrl+N', run: () => void newFile(bridge) },
+    {
+      label: 'file.newProject',
+      shortcut: 'Ctrl+Shift+N',
+      run: () => void startNewProject(bridge)
+    },
     { label: 'file.open', shortcut: 'Ctrl+O', run: () => void openFileFromDialog(bridge) },
     { label: 'shell.openFolder', run: () => void openFolder(bridge) },
     {

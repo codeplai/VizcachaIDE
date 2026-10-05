@@ -43,6 +43,7 @@ func newPythonSupport(sink *bridge.WailsEventSink, store app.SettingsStore, text
 		Formatter: formatter,
 		Checker:   formatter,
 		Packages:  packages.New(supervisor, pythonRunner),
+		Scaffold:  python.Scaffold{},
 	}
 	return support, func(context.Context) { console.Reset() }, nil
 }

@@ -16,10 +16,11 @@ type LanguageSupport struct {
 	Debugger       Debugger
 	LanguageServer LanguageServer
 	Explainer      ErrorExplainer
-	Console        Console        // nil when Capabilities.Console is false
-	Formatter      CodeFormatter  // nil when Capabilities.Format is false
-	Checker        CodeChecker    // nil when Capabilities.Check is false
-	Packages       PackageManager // nil when Capabilities.PackageActions is empty
+	Console        Console         // nil when Capabilities.Console is false
+	Formatter      CodeFormatter   // nil when Capabilities.Format is false
+	Checker        CodeChecker     // nil when Capabilities.Check is false
+	Packages       PackageManager  // nil when Capabilities.PackageActions is empty
+	Scaffold       ProjectScaffold // nil when the language cannot create projects
 
 	// unavailable marks a language whose adapters do not exist yet (see UnavailableSupport).
 	unavailable bool
