@@ -31,7 +31,7 @@
   "terminal.session": { "en": "{number}: {shell}", "es": "{number}: {shell}" },
   "terminal.shell": { "en": "Shell", "es": "Shell" },
   "terminal.new": { "en": "+ New terminal", "es": "+ Nuevo terminal" },
-  "terminal.newTip": { "en": "Open another terminal in the open folder (Ctrl+`)", "es": "Abre otro terminal en la carpeta abierta (Ctrl+Ñ)" },
+  "terminal.newTip": { "en": "Open another terminal in the open folder ({keys} shows the terminal)", "es": "Abre otro terminal en la carpeta abierta ({keys} muestra el terminal)" },
   "terminal.kill": { "en": "Kill terminal", "es": "Cerrar terminal" },
   "terminal.killTip": { "en": "End this terminal and everything it started", "es": "Termina este terminal y todo lo que inició" },
   "terminal.exited": { "en": "[process exited with code {code}]", "es": "[el proceso terminó con el código {code}]" },

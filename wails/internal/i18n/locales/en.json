@@ -690,7 +690,7 @@
   "terminal.kill": "Kill terminal",
   "terminal.killTip": "End this terminal and everything it started",
   "terminal.new": "+ New terminal",
-  "terminal.newTip": "Open another terminal in the open folder (Ctrl+`)",
+  "terminal.newTip": "Open another terminal in the open folder ({{.keys}} shows the terminal)",
   "terminal.session": "{{.number}}: {{.shell}}",
   "terminal.sessions": "Open terminals",
   "terminal.shell": "Shell",

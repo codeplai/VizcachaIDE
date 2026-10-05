@@ -669,7 +669,7 @@
   "terminal.kill": "Cerrar terminal",
   "terminal.killTip": "Termina este terminal y todo lo que inició",
   "terminal.new": "+ Nuevo terminal",
-  "terminal.newTip": "Abre otro terminal en la carpeta abierta (Ctrl+Ñ)",
+  "terminal.newTip": "Abre otro terminal en la carpeta abierta ({keys} muestra el terminal)",
   "terminal.session": "{number}: {shell}",
   "terminal.sessions": "Terminales abiertos",
   "terminal.shell": "Shell",

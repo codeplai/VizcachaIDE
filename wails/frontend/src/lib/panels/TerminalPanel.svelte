@@ -5,6 +5,7 @@
   import { detectPlatform } from '../platform'
   import { activeTerminal, closeTerminal, startTerminal, terminalSessions } from '../stores'
   import TerminalView from './TerminalView.svelte'
+  import { terminalShortcut } from './terminalShortcut'
 
   let { visible }: { visible: boolean } = $props()
 
@@ -35,7 +36,7 @@
     <button
       type="button"
       class="action new"
-      title={$t('terminal.newTip')}
+      title={$t('terminal.newTip', { values: { keys: $terminalShortcut } })}
       onclick={() => void startTerminal(bridge)}
     >
       {$t('terminal.new')}

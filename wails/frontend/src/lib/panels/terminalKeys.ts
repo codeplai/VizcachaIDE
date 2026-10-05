@@ -8,7 +8,7 @@ export interface TerminalClipboard {
 /**
  * Ctrl+` (or Cmd+`) shows the terminal: the global shortcut handles it, xterm must not eat it.
  * The key left of 1 counts whatever it prints (º on a Spanish keyboard, where ` is a dead key),
- * and Ctrl+Ñ too, the shortcut VS Code uses with Spanish keyboards.
+ * and Ctrl+Ñ too on keyboards that have a Ñ (VS Code's shortcut there; nothing else prints ñ).
  */
 export const isTerminalToggle = (event: KeyboardEvent): boolean =>
   (event.ctrlKey || event.metaKey) &&
