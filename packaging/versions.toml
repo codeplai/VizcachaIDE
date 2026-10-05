@@ -131,3 +131,58 @@ drop = [
   "lib/clang/*/lib/linux/*",
   "lib/clang/*/lib/windows/*-i386.*", "lib/clang/*/lib/windows/*-aarch64.*", "lib/clang/*/lib/windows/*-arm.*",
 ]
+
+# ---------------------------------------------------------------------------------------------
+# C++ with CMake and vcpkg (M4, docs/PLAN_CPP_CMAKE.md section 6). packaging/fetch_cpp_tools.py stages
+# them next to llvm-mingw, under toolchain/cpp/. Every sha256 was computed from the downloaded file;
+# never invent one. Licenses: CMake BSD-3-Clause, Ninja Apache-2.0, vcpkg MIT, PowerShell MIT, 7-Zip
+# LGPL (their texts are in packaging/licenses/ and are copied to toolchain/licenses/).
+
+# CMake: the official binary. Pruned: documentation, man pages, the Help of the modules, the GUI and the
+# editor integrations (153 MB unpacked -> about 50 MB).
+[cpp.cmake]
+version = "4.4.4"
+url = "https://github.com/Kitware/CMake/releases/download/v{version}/cmake-{version}-windows-x86_64.zip"
+sha256 = "bace36e94b31c68ab6fa295f26dfa11219e0701cf7c94b0284a7d1cb13dac536"
+prune = [
+  "doc/", "man/", "share/cmake-4.4/Help/", "bin/cmake-gui.exe",
+  "share/aclocal/", "share/bash-completion/", "share/emacs/", "share/vim/",
+]
+
+# Ninja: one exe, placed next to cmake.exe (toolchain/cpp/cmake/bin/ninja.exe).
+[cpp.ninja]
+version = "1.13.2"
+url = "https://github.com/ninja-build/ninja/releases/download/v{version}/ninja-win.zip"
+sha256 = "07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65"
+
+# vcpkg: a snapshot of the ports (a pinned commit, no .git, no versions/ folder) plus the vcpkg.exe of the
+# vcpkg-tool release that snapshot names in scripts/vcpkg-tool-metadata.txt. The projects use no
+# builtin-baseline: their library versions are the ones of this snapshot. Note: GitHub does not promise
+# that the bytes of an archive/<sha>.tar.gz stay the same for ever; if the sha256 ever fails, bump the commit.
+[cpp.vcpkg]
+commit = "19780d9cdf84d0944cf9a318666703b89ab6629c"
+snapshot_url = "https://github.com/microsoft/vcpkg/archive/{commit}.tar.gz"
+snapshot_sha256 = "f31ac8f487488a750c342cc46931156f69f1168b6d88e3947271c322e74a5cb6"
+tool_release = "2026-09-26"
+tool_url = "https://github.com/microsoft/vcpkg-tool/releases/download/{tool_release}/vcpkg.exe"
+tool_sha256 = "2a4ae1467b9e797964c60c919d057b9e5dc1ec03f4b9632c1150026db25201f2"
+# What is kept of the snapshot (relative to its root). .vcpkg-root (empty) and vcpkg.disable-metrics are created.
+keep = ["ports/", "scripts/", "triplets/", "LICENSE.txt", "NOTICE.txt"]
+
+# The seed: downloads vcpkg itself needs on its first install (PowerShell for the compiler hash and 7-Zip).
+# The IDE copies what is missing into VCPKG_DOWNLOADS, so the student does not wait for them (about 100 MB).
+# Versions and URLs are those of scripts/vcpkg-tools.json of the snapshot (vcpkg checks their sha512).
+[[cpp.vcpkg_seed]]
+path = "PowerShell-7.6.6-win-x64.zip"
+url = "https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/PowerShell-7.6.6-win-x64.zip"
+sha256 = "02fe458be20493fbdf43f61ea20610b811ee6c738ab1676c61b9cfcd1a33c860"
+
+[[cpp.vcpkg_seed]]
+path = "7z2603-x64.7z.exe"
+url = "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe"
+sha256 = "0859c524b8a63551848f0c246abddcb1d0b7b656b0fbfe879f8d85e61a9e6edd"
+
+[[cpp.vcpkg_seed]]
+path = "tools/7zr-26.03-windows/7zr.exe"
+url = "https://github.com/ip7z/7zip/releases/download/26.03/7zr.exe"
+sha256 = "ad4c82fadcbdf93c03b4fc440f300509c7d60c5c2f4d183e35d9d70d6957037d"

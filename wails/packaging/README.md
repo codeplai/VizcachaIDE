@@ -118,6 +118,16 @@ python wails/packaging/smoke_test.py --cxx <stage>/toolchain/cpp/bin/clang++.exe
 # lldb-dap --version, clangd --version and clang-format --version
 ```
 
+**CMake, Ninja and vcpkg (M4).** `packaging/fetch_cpp_tools.py` (called by `fetch_cpp.py`) stages, from
+`[cpp.cmake]`, `[cpp.ninja]`, `[cpp.vcpkg]` and `[[cpp.vcpkg_seed]]`: `toolchain/cpp/cmake/` (CMake 4.4.4 without
+doc/, man/, Help or the GUI, 50 MB, with `ninja.exe` 1.13.2 in `cmake/bin`), `toolchain/cpp/vcpkg/` (a pinned
+snapshot of microsoft/vcpkg: `ports/`, `scripts/`, `triplets/`, plus the `vcpkg.exe` of the vcpkg-tool release
+named in its `scripts/vcpkg-tool-metadata.txt`, an empty `.vcpkg-root` and `vcpkg.disable-metrics`, 21 MB) and
+`toolchain/cpp/vcpkg-seed/` (PowerShell 7.6.6, 7-Zip 26.03 and 7zr, 109 MB, which the IDE copies into vcpkg's
+downloads folder). Every download is verified with the sha256 of `versions.toml`; the licenses come from
+`packaging/licenses/`. To bump vcpkg: change `commit` and `tool_release` (read it from the new snapshot's
+`scripts/vcpkg-tool-metadata.txt`), the seed versions from its `scripts/vcpkg-tools.json`, and recompute the hashes.
+
 Measured sizes, Windows amd64 (2026-10-04): pruned `toolchain/cpp` 372 MB on disk (4777 files) before lldb's Python was kept,
 411 MB (5485 files) with it, which adds roughly 12 MB to the zips below;
 `full-cpp` portable zip (IDE + C++) **107.3 MB** at zip level 9, so the target of 200 MB is met with room.

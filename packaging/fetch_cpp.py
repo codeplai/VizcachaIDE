@@ -5,7 +5,9 @@ Result layout (where ``wails/internal/adapters/cpp/locator.go`` looks for it)::
     <dest>/toolchain/cpp/bin/clang++.exe, clang.exe, ld.lld.exe, lldb-dap.exe, clangd.exe, clang-format.exe
     <dest>/toolchain/cpp/x86_64-w64-mingw32/        MinGW-w64 runtime, libc++, libunwind
     <dest>/toolchain/cpp/lib/clang/, include/        compiler headers and runtimes
-    <dest>/toolchain/licenses/                      llvm-mingw and MinGW-w64 licenses
+    <dest>/toolchain/cpp/cmake/bin/                 CMake and Ninja (packaging/fetch_cpp_tools.py)
+    <dest>/toolchain/cpp/vcpkg/, vcpkg-seed/        vcpkg (ports snapshot + vcpkg.exe) and its first-run downloads
+    <dest>/toolchain/licenses/                      the licenses of llvm-mingw, MinGW-w64, CMake, Ninja, vcpkg...
     <dest>/toolchain/VERSIONS.txt                   what was bundled (cpp lines are merged)
 
 Usage: python packaging/fetch_cpp.py --dest build/stage      (Windows x86_64 only)
@@ -20,25 +22,14 @@ from __future__ import annotations
 import argparse
 import shutil
 import zipfile
-from fnmatch import fnmatchcase
 from pathlib import Path
 
+from fetch_cpp_tools import fetch_cpp_tools, manifest_lines, matches_any
 from fetch_toolchain import download
 from versions import CACHE_DIR, Target, host_target, load_versions
 
 LICENSE_GLOBS = ("LICENSE.TXT", "x86_64-w64-mingw32/share/mingw32/COPYING*")
-MANIFEST_PREFIXES = ("cpp", "llvm")
-
-
-def matches_any(relative: str, patterns: list[str]) -> bool:
-    """True when ``relative`` equals a pattern, matches a glob, or lives below a folder pattern."""
-    for pattern in patterns:
-        if pattern.endswith("/"):
-            if relative.startswith(pattern):
-                return True
-        elif fnmatchcase(relative, pattern):
-            return True
-    return False
+MANIFEST_PREFIXES = ("cpp", "llvm", "cmake", "ninja", "vcpkg")
 
 
 def is_kept(relative: str, keep: list[str], drop: list[str]) -> bool:
@@ -79,7 +70,7 @@ def copy_licenses(cpp_dir: Path, licenses_dir: Path) -> None:
             shutil.copy2(found, licenses_dir / f"llvm-mingw-{found.name}")
 
 
-def merge_manifest(config: dict, target: Target, toolchain_dir: Path) -> None:
+def merge_manifest(config: dict, target: Target, toolchain_dir: Path, tools: dict) -> None:
     """Add the cpp lines to VERSIONS.txt, keeping the lines other fetchers wrote."""
     manifest = toolchain_dir / "VERSIONS.txt"
     kept = []
@@ -94,6 +85,7 @@ def merge_manifest(config: dict, target: Target, toolchain_dir: Path) -> None:
     cpp_lines = [
         f"cpp = {config['distribution']} {config['release']}",
         f"llvm = {config['llvm_version']}",
+        *manifest_lines(tools),
     ]
     manifest.write_text("\n".join(kept + cpp_lines) + "\n", encoding="utf-8")
 
@@ -106,7 +98,8 @@ def fetch_cpp(target: Target, dest: Path) -> Path:
     """Stage the bundled C++ toolchain under ``dest/toolchain`` and return that folder."""
     if target.key != "windows-amd64":
         raise SystemExit(f"No bundled C++ toolchain for {target.key}: only windows-amd64 has one")
-    config = load_versions()["cpp"]["windows"]
+    versions = load_versions()["cpp"]
+    config = versions["windows"]
     toolchain_dir = dest.resolve() / "toolchain"
     cpp_dir = toolchain_dir / "cpp"
     if cpp_dir.exists():
@@ -117,8 +110,11 @@ def fetch_cpp(target: Target, dest: Path) -> Path:
     if not (cpp_dir / "bin" / "clang++.exe").is_file():
         raise SystemExit("clang++.exe is missing after pruning: check keep in versions.toml")
     copy_licenses(cpp_dir, toolchain_dir / "licenses")
-    merge_manifest(config, target, toolchain_dir)
     print(f"[prune] {extracted} files kept, {skipped} skipped, {folder_size(cpp_dir) / 1e6:.0f} MB")
+    fetch_cpp_tools(versions, cpp_dir, toolchain_dir / "licenses")
+    merge_manifest(config, target, toolchain_dir, versions)
+    for name in ("cmake", "vcpkg", "vcpkg-seed"):
+        print(f"[size] cpp/{name}: {folder_size(cpp_dir / name) / 1e6:.0f} MB")
     return toolchain_dir
 
 
