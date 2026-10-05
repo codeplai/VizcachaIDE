@@ -129,7 +129,7 @@ describe('Packages for Rust', () => {
     const list = vi.spyOn(bridge.packages, 'list')
     const tidy = vi.spyOn(bridge.packages, 'tidy')
     const view = render(PackagesDialog)
-    await fireEvent.input(await screen.findByRole('textbox'), { target: { value: 'serde@1.0' } })
+    await fireEvent.input(await screen.findByRole('combobox'), { target: { value: 'serde@1.0' } })
     await fireEvent.click(view.baseElement.querySelector('button[type="submit"]') as HTMLElement)
     expect(add).toHaveBeenCalledWith('rust', 'C:/work/hola rust', 'serde@1.0')
     const buttons = [...view.baseElement.querySelectorAll('.dlg-button')]
@@ -139,6 +139,14 @@ describe('Packages for Rust', () => {
     await fireEvent.click(buttons[2] as HTMLElement)
     expect(list).toHaveBeenCalledWith('rust', 'C:/work/hola rust')
     expect(tidy).not.toHaveBeenCalled()
+  })
+
+  it('searches crates.io by name while the student types', async () => {
+    fileTree.set(cargoFolder)
+    const search = vi.spyOn(bridge.packages, 'search').mockResolvedValue([])
+    render(PackagesDialog)
+    await fireEvent.input(await screen.findByRole('combobox'), { target: { value: 'rand' } })
+    await vi.waitFor(() => expect(search).toHaveBeenCalledWith('rust', 'rand'), { timeout: 2000 })
   })
 
   it('validates crates and names per language and leaves the others as they were', () => {

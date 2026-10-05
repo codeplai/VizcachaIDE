@@ -18,6 +18,7 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/bridge"
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/lsp"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/packageindex"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
 )
 
@@ -49,6 +50,7 @@ func newRustSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts 
 		Formatter: rustfmt.New(locator),
 		Checker:   clippy.New(locator),
 		Packages:  packages.New(supervisor, rustRunner),
+		Search:    packages.NewSearch(packageindex.New()),
 		Scaffold:  packages.Scaffold{},
 	}
 	return support, func(context.Context) {}, nil

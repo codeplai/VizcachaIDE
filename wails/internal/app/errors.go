@@ -19,6 +19,10 @@ var (
 	// ErrUnsupported means the language of the file does not offer the action (Build in
 	// Python, a console in C++...).
 	ErrUnsupported = errors.New("this language does not support the action")
+	// ErrPackageIndexUnavailable means the package index could not be searched: the network is
+	// down, the site is blocked or its answer is not what was expected. The student can still
+	// type the exact name of the package.
+	ErrPackageIndexUnavailable = errors.New("the package index could not be searched")
 	// ErrUnknownCodeLanguage means no registered language matches a file or an id.
 	ErrUnknownCodeLanguage = errors.New("unknown code language")
 	// ErrInconsistentProfile means a language profile and its support disagree (a capability

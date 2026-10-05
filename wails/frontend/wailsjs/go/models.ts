@@ -542,6 +542,24 @@ export namespace domain {
 	        this.mainFile = source["mainFile"];
 	    }
 	}
+	export class PackageInfo {
+	    name: string;
+	    version: string;
+	    description: string;
+	    url: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PackageInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.version = source["version"];
+	        this.description = source["description"];
+	        this.url = source["url"];
+	    }
+	}
 	export class ProjectContext {
 	    root: string;
 	    kind: string;

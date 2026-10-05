@@ -20,6 +20,7 @@ type LanguageSupport struct {
 	Formatter      CodeFormatter   // nil when Capabilities.Format is false
 	Checker        CodeChecker     // nil when Capabilities.Check is false
 	Packages       PackageManager  // nil when Capabilities.PackageActions is empty
+	Search         PackageSearch   // nil when the language has no package index to search
 	Scaffold       ProjectScaffold // nil when the language cannot create projects
 
 	// unavailable marks a language whose adapters do not exist yet (see UnavailableSupport).

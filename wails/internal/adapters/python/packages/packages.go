@@ -38,7 +38,7 @@ func (m *Manager) Add(ctx context.Context, dir, pkg string) error {
 	if err != nil {
 		return err
 	}
-	return m.run(ctx, dir, []string{"-m", "pip", "install", name})
+	return m.run(ctx, dir, pipArguments("install", name))
 }
 
 // Remove implements app.PackageManager: "python -m pip uninstall -y <pkg>".
@@ -47,12 +47,18 @@ func (m *Manager) Remove(ctx context.Context, dir, pkg string) error {
 	if err != nil {
 		return err
 	}
-	return m.run(ctx, dir, []string{"-m", "pip", "uninstall", "-y", name})
+	return m.run(ctx, dir, pipArguments("uninstall", "-y", name))
 }
 
 // List implements app.PackageManager: "python -m pip list".
 func (m *Manager) List(ctx context.Context, dir string) error {
-	return m.run(ctx, dir, []string{"-m", "pip", "list"})
+	return m.run(ctx, dir, pipArguments("list"))
+}
+
+// pipArguments is "python -m pip <command...>" without pip's own "a new release is available"
+// notice, which students read as an error.
+func pipArguments(command ...string) []string {
+	return append([]string{"-m", "pip", "--disable-pip-version-check"}, command...)
 }
 
 func (m *Manager) run(ctx context.Context, dir string, args []string) error {
@@ -61,7 +67,7 @@ func (m *Manager) run(ctx context.Context, dir string, args []string) error {
 		return err
 	}
 	if err := m.supervisor.Start(ctx, job); err != nil {
-		return fmt.Errorf("pip %v: %w", args[2:], err)
+		return fmt.Errorf("pip %v: %w", args[3:], err)
 	}
 	return nil
 }
