@@ -8,6 +8,19 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Added
+- **File → New project…** (Ctrl+Shift+N): a name, the programming language and the folder where it
+  goes (always chosen, no default); VizcachaIDE writes the project and opens it ready for F5. Each
+  one starts with a program that asks your name and greets you. Go: `go.mod` + `main.go`; Python:
+  `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 for the code helper); Rust: `Cargo.toml`
+  + `src/main.rs` + `.gitignore`. Names with spaces and accents keep their folder name; the Go module
+  and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`).
+
+### Fixed
+- C++ programs on Windows showed accents wrong ("¿Cómo" as "┐C├│mo") and lost the accented letters
+  typed in Output ("Ñandú" read as "and"): every C++ program VizcachaIDE builds on Windows sets the
+  console to UTF-8 and reads `std::cin` through the console's Unicode input.
+
 ## [2.4.0] - 2026-10-04
 
 Wails edition. **Rust** is the fourth language: write, compile and run, understand compiler errors
@@ -286,6 +299,20 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Añadido
+- **Archivo → Nuevo proyecto…** (Ctrl+Shift+N): un nombre, el lenguaje de programación y la carpeta
+  donde va (siempre se elige, sin valor por defecto); VizcachaIDE escribe el proyecto y lo abre listo
+  para F5. Cada uno empieza con un programa que pregunta tu nombre y te saluda. Go: `go.mod` +
+  `main.go`; Python: `main.py`; C++: `main.cpp` + `compile_flags.txt` (C++17 para el ayudante de
+  código); Rust: `Cargo.toml` + `src/main.rs` + `.gitignore`. Los nombres con espacios y acentos
+  conservan su carpeta; el módulo de Go y el crate de Rust reciben una versión válida ("Mi Tienda
+  Ñandú" → `mi-tienda-nandu`).
+
+### Corregido
+- Los programas de C++ en Windows mostraban mal los acentos ("¿Cómo" como "┐C├│mo") y perdían las
+  letras acentuadas escritas en Salida ("Ñandú" se leía "and"): todo programa de C++ que VizcachaIDE
+  compila en Windows pone la consola en UTF-8 y lee `std::cin` con la entrada Unicode de la consola.
 
 ## [2.4.0] - 2026-10-04
 
