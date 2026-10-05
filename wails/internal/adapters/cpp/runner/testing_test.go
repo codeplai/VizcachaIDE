@@ -77,12 +77,17 @@ func (s *testSink) waitFinished(t *testing.T) int {
 	}
 }
 
-// settings is a fixed compiler path chosen by the user.
-type settings struct{ path string }
+// settings are the tool paths chosen by the user: the compiler and, when cmakeBin is given, the
+// cmake and ninja of that folder.
+type settings struct{ path, cmakeBin string }
 
 func (s settings) Load() (domain.Settings, error) {
 	loaded := domain.DefaultSettings()
 	loaded.ToolPaths = map[string]string{cpp.ToolCompiler: s.path}
+	if s.cmakeBin != "" {
+		loaded.ToolPaths[cpp.ToolCMake] = filepath.Join(s.cmakeBin, cpptest.Exe("cmake"))
+		loaded.ToolPaths[cpp.ToolNinja] = filepath.Join(s.cmakeBin, cpptest.Exe("ninja"))
+	}
 	return loaded, nil
 }
 func (settings) Save(domain.Settings) error { return nil }
@@ -103,11 +108,12 @@ func compilers(t *testing.T) map[string]string {
 // eachCompiler runs the test with a runner for every available compiler.
 func eachCompiler(t *testing.T, test func(t *testing.T, r *Runner, sink *testSink)) {
 	t.Helper()
+	cmakeBin := cpptest.CMakeBin(t)
 	for name, path := range compilers(t) {
 		t.Run(name, func(t *testing.T) {
 			sink := newTestSink()
 			r := New(process.New(sink), Options{
-				Settings: settings{path: path}, AppDir: t.TempDir(), CacheDir: t.TempDir(),
+				Settings: settings{path: path, cmakeBin: cmakeBin}, AppDir: t.TempDir(), CacheDir: t.TempDir(),
 				CompilingNotice: func() string { return "Compiling..." },
 			})
 			test(t, r, sink)

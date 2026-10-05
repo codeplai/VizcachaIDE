@@ -32,6 +32,6 @@ func (r *Runner) RunUntitled(ctx context.Context, _, source string, programArgs 
 		cleanup()
 		return domain.RunConfiguration{}, fmt.Errorf("save the untitled file: %w", err)
 	}
-	config := r.Configure(file, programArgs)
+	config := configureDirect(file, programArgs)
 	return config, r.start(ctx, config, cleanup)
 }

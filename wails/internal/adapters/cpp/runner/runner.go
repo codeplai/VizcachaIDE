@@ -1,7 +1,8 @@
 // Package runner is the C++ program runner: it implements app.ProgramRunner and app.CodeChecker.
-// Run is one two-stage job on the shared process supervisor: the compiler (pipes) writes the
-// executable into the build cache and the program then runs in a pseudoterminal so std::cin and
-// std::cout behave like in a console. Formatting (clang-format) belongs to the clangformat
+// Run is a job on the shared process supervisor in stages: CMake configures and builds the project
+// (pipes, filtered; cmake_run.go) and the program then runs in a pseudoterminal so std::cin and
+// std::cout behave like in a console. An untitled file has no folder to hold a CMake project and
+// is compiled directly in two stages (build.go). Formatting (clang-format) belongs to the clangformat
 // package and the debugger to lldbdap, which compiles with CompileForDebug.
 package runner
 
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp"
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp/cmake"
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
 )
@@ -37,6 +39,11 @@ type Options struct {
 	NoticeDelay time.Duration
 	// CacheDir is the folder that holds VizcachaIDE/build. Default: os.UserCacheDir().
 	CacheDir string
+	// Dependencies supplies the libraries (vcpkg) of CMake projects. Nil builds without them.
+	Dependencies cmake.Dependencies
+	// Language returns the language of the IDE, "es" or "en" (default "en"): the comments of the
+	// CMakeLists.txt it generates are written in it.
+	Language func() string
 }
 
 // Runner is the C++ adapter of the run ports.
@@ -49,6 +56,8 @@ type Runner struct {
 	terminal    func(ctx context.Context, compiler string) bool
 	probe       sync.Once
 	hasTerminal bool
+	mu          sync.Mutex
+	active      map[string]string // project root -> the file last configured in it (cmake.go)
 }
 
 var (
