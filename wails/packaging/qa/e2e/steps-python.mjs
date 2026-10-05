@@ -127,7 +127,13 @@ export const pythonSteps = (ctx, lang) => {
     const dialog = await page.$eval('[role=dialog]', (e) => e.innerText)
     must(!/\[notice\]/.test(dialog), 'pip still prints its version notice')
     await page.keyboard.press('Escape')
-    return `options ${options.slice(0, 4).join(', ')}…; numpy installed`
+    // The pip command must not be checked like a program (ruff reported "os error 2" on it).
+    await L.sleep(6000)
+    await press(page, '[role=tab]', lang === 'es' ? 'Problemas' : 'Problems')
+    await L.sleep(500)
+    const problems = await page.$$eval('button.problem', (els) => els.map((e) => e.innerText))
+    must(!problems.some((p) => /pip|os error/.test(p)), `problems after installing: ${problems.join(' | ')}`)
+    return `options ${options.slice(0, 4).join(', ')}…; numpy installed; no problems`
   })
 
   return list

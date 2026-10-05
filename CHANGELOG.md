@@ -28,7 +28,8 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ### Fixed
 - pip's "A new release of pip is available" notice no longer shows after installing (it looked
-  like an error).
+  like an error), and installing a package no longer leaves a false problem ("os error 2"): the
+  check that follows a successful run skipped Go's commands but not pip's or cargo's.
 - C++ programs on Windows showed accents wrong ("¿Cómo" as "┐C├│mo") and lost the accented letters
   typed in Output ("Ñandú" read as "and"): every C++ program VizcachaIDE builds on Windows sets the
   console to UTF-8 and reads `std::cin` through the console's Unicode input.
@@ -332,7 +333,9 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   `compile_flags.txt`… o la mayoría de sus fuentes), si no el de Ajustes. Antes era siempre un `.go`.
 
 ### Corregido
-- Ya no aparece el aviso de pip "A new release of pip is available" al instalar (parecía un error).
+- Ya no aparece el aviso de pip "A new release of pip is available" al instalar (parecía un error),
+  e instalar un paquete ya no deja un problema falso ("os error 2"): la comprobación que sigue a una
+  ejecución correcta omitía los comandos de Go pero no los de pip ni cargo.
 - Los programas de C++ en Windows mostraban mal los acentos ("¿Cómo" como "┐C├│mo") y perdían las
   letras acentuadas escritas en Salida ("Ñandú" se leía "and"): todo programa de C++ que VizcachaIDE
   compila en Windows pone la consola en UTF-8 y lee `std::cin` con la entrada Unicode de la consola.
