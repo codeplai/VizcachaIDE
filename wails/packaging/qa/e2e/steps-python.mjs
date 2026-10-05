@@ -110,5 +110,25 @@ export const pythonSteps = (ctx, lang) => {
     return `prompt >>>; results ${results.join(', ')}`
   })
 
+  add('py-packages-search', 'Packages: typing "nump" lists PyPI packages; choosing numpy installs it', async () => {
+    await open('hola.py')
+    await page.click('.more-trigger')
+    await press(page, '.menu-item', lang === 'es' ? 'Paquetes' : 'Packages')
+    await page.waitForSelector('#module-package', { timeout: 10000 })
+    await page.type('#module-package', 'nump')
+    await page.waitForSelector('[role=listbox] [role=option]', { timeout: 30000 })
+    const options = await page.$$eval('[role=listbox] [role=option] .name', (els) => els.map((e) => e.textContent.trim()))
+    must(options[0] === 'numpy', `options = ${options.join(', ')}`)
+    await L.shot(page, `${lang}-py-07-packages-search`)
+    await page.click('[role=listbox] [role=option]')
+    must((await page.$eval('#module-package', (e) => e.value)) === 'numpy', 'the chosen name is not in the field')
+    await page.keyboard.press('Enter')
+    await page.waitForFunction(() => /✓/.test(document.querySelector('[role=dialog]')?.innerText ?? ''), { timeout: 300000 })
+    const dialog = await page.$eval('[role=dialog]', (e) => e.innerText)
+    must(!/\[notice\]/.test(dialog), 'pip still prints its version notice')
+    await page.keyboard.press('Escape')
+    return `options ${options.slice(0, 4).join(', ')}…; numpy installed`
+  })
+
   return list
 }

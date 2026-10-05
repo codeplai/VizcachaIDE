@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -34,6 +36,7 @@ type Endpoints struct {
 	Crates     string // https://crates.io/api/v1/crates
 	PyPISearch string // https://pypi.org/search/
 	PyPIJSON   string // https://pypi.org/pypi/
+	PyPITop    string // the list of the most downloaded PyPI projects (pypi_top.go)
 	GoSearch   string // https://pkg.go.dev/search
 	GoProxy    string // https://proxy.golang.org/
 	GoPackage  string // https://pkg.go.dev/ (the page of a package)
@@ -45,6 +48,7 @@ func DefaultEndpoints() Endpoints {
 		Crates:     "https://crates.io/api/v1/crates",
 		PyPISearch: "https://pypi.org/search/",
 		PyPIJSON:   "https://pypi.org/pypi/",
+		PyPITop:    "https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min.json",
 		GoSearch:   "https://pkg.go.dev/search",
 		GoProxy:    "https://proxy.golang.org/",
 		GoPackage:  "https://pkg.go.dev/",
@@ -55,12 +59,21 @@ func DefaultEndpoints() Endpoints {
 type Index struct {
 	client    *http.Client
 	endpoints Endpoints
+	cacheDir  string // where the list of popular PyPI projects is kept ("" = memory only)
+	top       topList
 }
 
-// New creates an Index that reads the real indexes.
-func New() *Index { return NewWith(&http.Client{}, DefaultEndpoints()) }
+// New creates an Index that reads the real indexes and keeps the list of popular PyPI projects in
+// <user cache>/VizcachaIDE/index.
+func New() *Index {
+	index := NewWith(&http.Client{}, DefaultEndpoints())
+	if cache, err := os.UserCacheDir(); err == nil {
+		index.cacheDir = filepath.Join(cache, "VizcachaIDE", "index")
+	}
+	return index
+}
 
-// NewWith creates an Index with its own client and addresses (tests).
+// NewWith creates an Index with its own client and addresses (tests), without a disk cache.
 func NewWith(client *http.Client, endpoints Endpoints) *Index {
 	return &Index{client: client, endpoints: endpoints}
 }

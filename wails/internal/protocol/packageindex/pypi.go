@@ -11,9 +11,10 @@ import (
 )
 
 // PyPI searches PyPI. It has no search API, so the answer joins two sources: the package whose
-// name is exactly the query (the JSON API, reliable) first, then the results of the search page
-// (HTML, fragile). If the page cannot be read but the exact name exists, only that one is
-// returned; if neither works the error wraps app.ErrPackageIndexUnavailable.
+// name is exactly the query (the JSON API, reliable) first, then the popular projects whose name
+// contains it (pypi_top.go), or the results of the search page (HTML, today blocked for programs)
+// when that list is not available. If only the exact name is found, only that one is returned;
+// if nothing works the error wraps app.ErrPackageIndexUnavailable.
 func (i *Index) PyPI(ctx context.Context, query string) ([]domain.PackageInfo, error) {
 	query, ok := clean(query)
 	if !ok {
@@ -21,7 +22,10 @@ func (i *Index) PyPI(ctx context.Context, query string) ([]domain.PackageInfo, e
 	}
 	exactAnswer := make(chan *domain.PackageInfo, 1)
 	go func() { exactAnswer <- i.pypiExact(ctx, query) }()
-	listed, err := i.pypiSearch(ctx, query)
+	listed, err := i.pypiTop(ctx, query)
+	if err != nil || len(listed) == 0 {
+		listed, err = i.pypiSearch(ctx, query) // the search page, in case it is readable again
+	}
 	exact := <-exactAnswer
 	if err != nil && exact == nil {
 		return nil, err

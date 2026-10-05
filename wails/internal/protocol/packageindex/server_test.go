@@ -32,6 +32,7 @@ func fakeIndex(t *testing.T, routes map[string]func(http.ResponseWriter, *http.R
 		Crates:     server.URL + "/crates",
 		PyPISearch: server.URL + "/search/",
 		PyPIJSON:   server.URL + "/pypi/",
+		PyPITop:    server.URL + "/top.json",
 		GoSearch:   server.URL + "/gosearch",
 		GoProxy:    server.URL + "/proxy/",
 		GoPackage:  "https://pkg.go.dev/",

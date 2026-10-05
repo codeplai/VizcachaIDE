@@ -16,7 +16,7 @@ func TestLive(t *testing.T) {
 	}
 	index := New()
 	searches := map[string]func(context.Context, string) ([]domain.PackageInfo, error){
-		"numpy": index.PyPI, "rand": index.Crates, "github.com/google/uuid": index.Go,
+		"numpy": index.PyPI, "nump": index.PyPI, "rand": index.Crates, "github.com/google/uuid": index.Go, "uuid": index.Go,
 	}
 	for query, search := range searches {
 		found, err := search(context.Background(), query)
