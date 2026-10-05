@@ -462,5 +462,91 @@
    "body": "En algún punto el programa lanzó una excepción (throw) de tipo \"{type}\", o lo hizo una función de la biblioteca, y ningún try/catch la atrapó. Cuando eso pasa C++ termina el programa. El texto que sigue al tipo dice qué salió mal.",
    "fix": "Lee el mensaje que sigue al tipo: dice el motivo. Encuentra la línea que la lanza (el depurador te la muestra) y evita la causa, o rodea ese código con try { ... } catch (const std::exception& e) { ... } para manejarla."
   }
+ },
+ {
+  "id": "CPP-VCPKG-NO-INTERNET",
+  "patterns": [
+   "^curl operation failed with error code \\d+",
+   "^Failed to download",
+   "^Download failed, halting portfile",
+   "^[Dd]ownload failed",
+   "[Cc]ould not resolve host"
+  ],
+  "en": {
+   "title": "The library could not be downloaded",
+   "body": "To install a library the IDE downloads its source code, and the download failed. The most common cause is that the computer has no internet connection, or that a firewall, a proxy or the school network blocks the download.",
+   "fix": "Check that you are connected to the internet and try adding the library again. Libraries that were already installed keep working without internet."
+  },
+  "es": {
+   "title": "No se pudo descargar la librería",
+   "body": "Para instalar una librería la IDE descarga su código fuente, y la descarga falló. La causa más común es que el computador no tiene conexión a internet, o que un firewall, un proxy o la red del colegio bloquea la descarga.",
+   "fix": "Revisa que estés conectado a internet e intenta agregar la librería otra vez. Las librerías que ya se instalaron antes siguen funcionando sin internet."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-PORT-MISSING",
+  "patterns": [
+   "^(?P<port>[\\w.+-]+) does not exist$",
+   "^the port '(?P<port>[^']+)' does not exist"
+  ],
+  "en": {
+   "title": "There is no library called \"{port}\"",
+   "body": "The list of libraries has nothing named \"{port}\". Usually the name has a typo, or it is the name the library has on its web page and not the one the list uses (for example the list says \"nlohmann-json\", not \"json\").",
+   "fix": "Open the Packages tab, search the library by part of its name and pick it from the results. Then remove the wrong name from vcpkg.json if it is still there."
+  },
+  "es": {
+   "title": "No existe una librería llamada \"{port}\"",
+   "body": "La lista de librerías no tiene nada llamado \"{port}\". Lo más común es que el nombre tenga un error de escritura, o que sea el nombre de su página web y no el que usa la lista (por ejemplo la lista dice \"nlohmann-json\", no \"json\").",
+   "fix": "Abre la pestaña Paquetes, busca la librería por parte de su nombre y elígela de los resultados. Después quita el nombre equivocado de vcpkg.json si todavía está."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-BUILD-FAILED",
+  "patterns": [
+   "^building (?P<port>[^:\\s]+):(?P<triplet>\\S+) failed"
+  ],
+  "en": {
+   "title": "The library \"{port}\" could not be compiled",
+   "body": "Installing a library means compiling it on this computer, and \"{port}\" failed to build. The messages above this one say why: a download that failed, a tool the library needs that is missing, or a path that is too long.",
+   "fix": "Read the lines above this error and the log file that vcpkg prints after it (a file ending in -out.log or -err.log): the real reason is at its end. If the folder of your project is very deep, move it closer to the root of the drive. The library stays out of your project until it builds."
+  },
+  "es": {
+   "title": "No se pudo compilar la librería \"{port}\"",
+   "body": "Instalar una librería es compilarla en este computador, y \"{port}\" falló al construirse. Los mensajes de arriba dicen por qué: una descarga que falló, una herramienta que la librería necesita y no está, o una ruta demasiado larga.",
+   "fix": "Lee las líneas de arriba y el archivo de registro que vcpkg imprime después de este error (un archivo que termina en -out.log o -err.log): la razón real está al final. Si la carpeta de tu proyecto está muy adentro, muévela más cerca de la raíz del disco. La librería queda fuera de tu proyecto hasta que compile."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-PACKAGE-NOT-FOUND",
+  "patterns": [
+   "^Could not find a package configuration file provided by \"(?P<name>[^\"]+)\"",
+   "^By not providing \"Find(?P<name>[^.\"]+)\\.cmake\" in CMAKE_MODULE_PATH"
+  ],
+  "en": {
+   "title": "CMake does not find the library \"{name}\"",
+   "body": "CMakeLists.txt asks for the library \"{name}\" (find_package), but it is not installed in this project. Either it was never added, or it was removed and the line stayed.",
+   "fix": "Open the Packages tab, search \"{name}\" and install it: the IDE writes the lines of CMakeLists.txt for you. If the name of the package is different from the name of the library, search the library by its usual name. Or delete the find_package line if you no longer use it."
+  },
+  "es": {
+   "title": "CMake no encuentra la librería \"{name}\"",
+   "body": "El CMakeLists.txt pide la librería \"{name}\" (find_package), pero no está instalada en este proyecto. O nunca se agregó, o se quitó y la línea quedó.",
+   "fix": "Abre la pestaña Paquetes, busca \"{name}\" e instálala: la IDE escribe las líneas del CMakeLists.txt por ti. Si el nombre del paquete es distinto al de la librería, busca la librería por su nombre usual. O borra la línea find_package si ya no la usas."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-HOST-TOOL",
+  "patterns": [
+   "(?i)^(?:could not (?:find|locate)|unable to (?:find|locate)|failed to find) (?:a |an |the )?(?P<tool>python3?|perl|meson|nasm|yasm|bison|flex|autoconf|automake|libtool|pkg-config)\\b"
+  ],
+  "en": {
+   "title": "The library needs the tool \"{tool}\" to be compiled",
+   "body": "Some libraries use a helper program while they are compiled, and this computer does not have \"{tool}\". It is not part of the IDE: it is a separate program.",
+   "fix": "Install \"{tool}\" (for example from its official website; on Windows, make sure the installer adds it to PATH), restart the IDE and add the library again. If you do not need this library, pick a lighter alternative from the Packages tab."
+  },
+  "es": {
+   "title": "La librería necesita la herramienta \"{tool}\" para compilarse",
+   "body": "Algunas librerías usan un programa auxiliar mientras se compilan, y este computador no tiene \"{tool}\". No es parte de la IDE: es un programa aparte.",
+   "fix": "Instala \"{tool}\" (por ejemplo desde su página oficial; en Windows, asegúrate de que el instalador lo agregue al PATH), reinicia la IDE y vuelve a agregar la librería. Si no necesitas esta librería, elige una alternativa más liviana en la pestaña Paquetes."
+  }
  }
 ]
