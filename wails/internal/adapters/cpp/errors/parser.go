@@ -42,6 +42,7 @@ var handlers = []lineHandler{
 	(*parser).compilerLine,
 	(*parser).undefinedSymbolLine,
 	(*parser).undefinedReferenceLine,
+	(*parser).vcpkgLine,
 	(*parser).gnuTerminateLine,
 	(*parser).libcxxTerminateLine,
 	(*parser).crashLine,
