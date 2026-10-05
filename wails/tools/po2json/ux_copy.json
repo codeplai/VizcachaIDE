@@ -141,6 +141,7 @@
   "panels.noFrames": { "en": "Nothing to show: the program is not paused.", "es": "No hay nada que mostrar: el programa no está en pausa." },
 
   "shell.openFolder": { "en": "Open folder…", "es": "Abrir carpeta…" },
+  "shell.closeFolder": { "en": "Close folder", "es": "Cerrar carpeta" },
   "shell.goModules": { "en": "Go modules", "es": "Módulos de Go" },
   "shell.about": { "en": "About VizcachaIDE", "es": "Acerca de VizcachaIDE" },
   "shell.close": { "en": "Close", "es": "Cerrar" },

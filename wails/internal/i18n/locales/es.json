@@ -650,6 +650,7 @@
   "shell.aboutVersion": "Versión {{.version}}",
   "shell.aboutWarranty": "Este programa se ofrece SIN NINGUNA GARANTÍA. Es software libre: puedes usarlo, modificarlo y compartirlo bajo la licencia MIT.",
   "shell.close": "Cerrar",
+  "shell.closeFolder": "Cerrar carpeta",
   "shell.dismiss": "Descartar",
   "shell.goModules": "Módulos de Go",
   "shell.modulesAdd": "Agregar un paquete",

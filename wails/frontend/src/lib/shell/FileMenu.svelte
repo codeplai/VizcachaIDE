@@ -6,6 +6,8 @@
     activePath,
     closeActive,
     closeAll,
+    closeFolder,
+    fileTree,
     newFile,
     openFileFromDialog,
     openFolder,
@@ -22,7 +24,7 @@
     label: string
     shortcut?: string
     run: () => void
-    needs?: 'file' | 'tabs'
+    needs?: 'file' | 'tabs' | 'folder'
     separatorBefore?: boolean
   }
 
@@ -35,6 +37,7 @@
     },
     { label: 'file.open', shortcut: 'Ctrl+O', run: () => void openFileFromDialog(bridge) },
     { label: 'shell.openFolder', run: () => void openFolder(bridge) },
+    { label: 'shell.closeFolder', run: () => void closeFolder(bridge), needs: 'folder' },
     {
       label: 'file.save',
       shortcut: 'Ctrl+S',
@@ -60,7 +63,9 @@
   ]
 
   const disabled = (entry: Entry): boolean =>
-    (entry.needs === 'file' && !$activePath) || (entry.needs === 'tabs' && $openTabs.length === 0)
+    (entry.needs === 'file' && !$activePath) ||
+    (entry.needs === 'tabs' && $openTabs.length === 0) ||
+    (entry.needs === 'folder' && !$fileTree)
 </script>
 
 <DropdownMenu.Root>

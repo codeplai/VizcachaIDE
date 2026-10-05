@@ -61,5 +61,22 @@ export const newProjectSteps = (ctx, lang) => {
       return `${files.join(', ')} -> Hola, Ñandú`
     })
   }
+  add('close-folder', 'The Files panel closes the open folder: its tabs close and the panel is empty', async () => {
+    const name = 'Para Cerrar'
+    const created = await L.go(page, 'ProjectsService', 'Create', 'python', location, name)
+    await L.go(page, 'FilesService', 'ListTree', created.root)
+    await U.reload(page, ctx.url)
+    await U.openByName(page, 'main.py', `${name}/`)
+    const label = lang === 'es' ? 'Cerrar carpeta' : 'Close folder'
+    await page.click(`.side.files button.tool[aria-label="${label}"]`)
+    await page.waitForFunction(() => !document.querySelector('.tree'), { timeout: 10000 })
+    const tabs = await page.$$eval('.tabs [role=tab]', (els) => els.map((e) => e.textContent.trim()))
+    must(!tabs.some((tab) => tab.includes('main.py')), `tabs still open: ${tabs}`)
+    await L.shot(page, `${lang}-new-close-folder`)
+    await U.reload(page, ctx.url)
+    must(!(await page.$('.tree')), 'the closed folder came back after a reload')
+    return 'tree empty, main.py closed, not reopened after a reload'
+  })
+
   return list
 }

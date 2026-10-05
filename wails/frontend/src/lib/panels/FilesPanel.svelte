@@ -1,7 +1,15 @@
 <script lang="ts">
   import { bridge } from '../bridge'
   import { t } from '../i18n'
-  import { fileTree, folderOf, openFolder, refreshTree, selectedNode, startCreate } from '../stores'
+  import {
+    closeFolder,
+    fileTree,
+    folderOf,
+    openFolder,
+    refreshTree,
+    selectedNode,
+    startCreate
+  } from '../stores'
   import FileTreeMenu from './FileTreeMenu.svelte'
   import FileTreeNode from './FileTreeNode.svelte'
 
@@ -59,6 +67,15 @@
           <svg viewBox="0 0 16 16" aria-hidden="true"
             ><path d="M13 8a5 5 0 1 1-1.5-3.5 M13 2.5v3h-3" /></svg
           >
+        </button>
+        <button
+          type="button"
+          class="tool"
+          title={$t('shell.closeFolder')}
+          aria-label={$t('shell.closeFolder')}
+          onclick={() => void closeFolder(bridge)}
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8 M12 4l-8 8" /></svg>
         </button>
       </div>
     {/if}

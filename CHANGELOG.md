@@ -20,6 +20,9 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   packages with their version and description, and you choose the one to install (Python: PyPI,
   among its ~15 000 most downloaded projects plus any exact name; Go: pkg.go.dev; Rust: crates.io).
   Without network the dialog says so and still installs an exact name.
+- **Close folder** in the Files panel (the ✕ next to Refresh) and in the File menu: it closes the
+  tabs of that folder (asking about unsaved changes), empties the panel and is not reopened at the
+  next start. Files from elsewhere stay open.
 
 ### Changed
 - **New file** (Ctrl+N and the toolbar button) is written in the language you are working in: the
@@ -326,6 +329,9 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   paquetes que coinciden con su versión y descripción, y eliges cuál instalar (Python: PyPI, entre
   sus ~15 000 proyectos más descargados más cualquier nombre exacto; Go: pkg.go.dev; Rust:
   crates.io). Sin red el diálogo lo dice y deja instalar un nombre exacto.
+- **Cerrar carpeta** en el panel de Archivos (la ✕ junto a Actualizar) y en el menú Archivo: cierra
+  las pestañas de esa carpeta (preguntando por los cambios sin guardar), vacía el panel y no vuelve a
+  abrirse al siguiente inicio. Los archivos de otros lugares siguen abiertos.
 
 ### Cambiado
 - **Archivo nuevo** (Ctrl+N y el botón de la barra) se escribe en el lenguaje con el que estás
