@@ -9,6 +9,7 @@ import { connectFrames } from './frames'
 import { connectOutline } from './outline'
 import { connectRun } from './run'
 import { connectSettings } from './settings'
+import { connectTerminal } from './terminal'
 
 export * from './ansi'
 export * from './assistant'
@@ -45,6 +46,7 @@ export * from './runMember'
 export * from './rustToolchain'
 export * from './saving'
 export * from './settings'
+export * from './terminal'
 export * from './toolErrors'
 export * from './untitled'
 export * from './updates'
@@ -62,6 +64,7 @@ export const connectStores = async (bridge: Bridge): Promise<Unsubscribe> => {
     connectAssistant(bridge),
     connectOutline(bridge),
     connectExternalChanges(bridge),
+    connectTerminal(bridge),
     offSettings,
     offCodeLanguages,
     offUpdates

@@ -22,6 +22,7 @@ type LanguageSupport struct {
 	Packages       PackageManager  // nil when Capabilities.PackageActions is empty
 	Search         PackageSearch   // nil when the language has no package index to search
 	Scaffold       ProjectScaffold // nil when the language cannot create projects
+	Shell          ShellPaths      // nil when the language adds nothing to the terminal PATH
 
 	// unavailable marks a language whose adapters do not exist yet (see UnavailableSupport).
 	unavailable bool

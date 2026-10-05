@@ -18,6 +18,7 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 	"github.com/codeplai/VizcachaIDE/wails/internal/i18n"
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/process"
+	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/shellterm"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -152,6 +153,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 		return nil, err
 	}
 	updater, autoUpdate := newUpdater(sink, store)
+	terminals := shellterm.NewHost(shellterm.Options{Sink: sink, Folders: registry.ShellPaths})
 
 	return &backend{
 		services: []any{
@@ -168,9 +170,11 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 			bridge.NewSettingsService(sink, store, language, registry).
 				UseTools(bridge.NewExecutableDialog(sink, texts.withData)),
 			bridge.NewUpdatesService(updater),
+			bridge.NewTerminalService(terminals),
 		},
 		startup: autoUpdate,
 		shutdown: func(ctx context.Context) {
+			terminals.CloseAll() // no shell of the terminal outlives the IDE
 			shutdownLanguages(ctx, registry)
 			closeSupports(ctx)
 			_ = watcher.Close()

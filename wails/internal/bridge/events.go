@@ -32,6 +32,10 @@ const (
 	EventFileChanged = "file:changed"
 	// EventUpdateState carries a domain.UpdateState: checking, downloading or ready to install.
 	EventUpdateState = "update:state"
+	// EventTerminalOutput carries TerminalOutputPayload: raw text of an integrated terminal.
+	EventTerminalOutput = "terminal:output"
+	// EventTerminalExit carries TerminalExitPayload: the shell of a terminal ended.
+	EventTerminalExit = "terminal:exit"
 )
 
 // AllEvents lists every event name, in declaration order.
@@ -49,4 +53,6 @@ var AllEvents = []string{
 	EventSettingsChanged,
 	EventFileChanged,
 	EventUpdateState,
+	EventTerminalOutput,
+	EventTerminalExit,
 }

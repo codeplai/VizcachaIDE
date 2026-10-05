@@ -6,6 +6,7 @@ import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
+import * as TerminalService from '../../../wailsjs/go/bridge/TerminalService'
 import * as UpdatesService from '../../../wailsjs/go/bridge/UpdatesService'
 import {
   BrowserOpenURL,
@@ -13,7 +14,15 @@ import {
   ClipboardSetText,
   EventsOn
 } from '../../../wailsjs/runtime/runtime'
-import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
+import type {
+  Bridge,
+  ConsoleApi,
+  DebugApi,
+  FilesApi,
+  RunApi,
+  TerminalApi,
+  UpdatesApi
+} from './types'
 import { createCodeLanguagesApi, createPackagesApi, createProjectsApi } from './wailsCodeLanguages'
 
 // The generated classes and our plain interfaces describe the same JSON.
@@ -72,6 +81,20 @@ const createFilesApi = (): FilesApi => ({
   revealInExplorer: (path) => FilesService.RevealInExplorer(path)
 })
 
+const createUpdatesApi = (): UpdatesApi => ({
+  state: async () => fromWire(await UpdatesService.State()),
+  check: async () => fromWire(await UpdatesService.Check()),
+  download: () => UpdatesService.Download(),
+  install: () => UpdatesService.Install()
+})
+
+const createTerminalApi = (): TerminalApi => ({
+  start: (dir, cols, rows) => TerminalService.Start(dir, cols, rows),
+  write: (id, data) => TerminalService.Write(id, data),
+  resize: (id, cols, rows) => TerminalService.Resize(id, cols, rows),
+  close: (id) => TerminalService.Close(id)
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
@@ -107,12 +130,8 @@ export const createWailsBridge = (): Bridge => ({
     resolvedLanguage: async () =>
       (await SettingsService.ResolvedLanguage()) === 'es' ? 'es' : 'en'
   },
-  updates: {
-    state: async () => fromWire(await UpdatesService.State()),
-    check: async () => fromWire(await UpdatesService.Check()),
-    download: () => UpdatesService.Download(),
-    install: () => UpdatesService.Install()
-  },
+  updates: createUpdatesApi(),
+  terminal: createTerminalApi(),
   system: {
     openUrl: (url) => BrowserOpenURL(url),
     readClipboard: () => ClipboardGetText(),

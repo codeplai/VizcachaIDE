@@ -54,6 +54,7 @@ func newGoSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts *b
 		Packages:  packages.New(supervisor, goRunner),
 		Search:    packages.NewSearch(packageindex.New()),
 		Scaffold:  packages.Scaffold{},
+		Shell:     goRunner,
 	}
 	return support, func(context.Context) {}, nil
 }

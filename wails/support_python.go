@@ -46,6 +46,7 @@ func newPythonSupport(sink *bridge.WailsEventSink, store app.SettingsStore, text
 		Packages:  packages.New(supervisor, pythonRunner),
 		Search:    packages.NewSearch(packageindex.New()),
 		Scaffold:  python.Scaffold{},
+		Shell:     locator,
 	}
 	return support, func(context.Context) { console.Reset() }, nil
 }

@@ -48,3 +48,16 @@ type DiagnosticsPayload struct {
 type FileChangedPayload struct {
 	Path string `json:"path"`
 }
+
+// TerminalOutputPayload is the payload of EventTerminalOutput: raw UTF-8 text, escape
+// sequences included, that never ends in the middle of a character.
+type TerminalOutputPayload struct {
+	ID   string `json:"id"`
+	Data string `json:"data"`
+}
+
+// TerminalExitPayload is the payload of EventTerminalExit.
+type TerminalExitPayload struct {
+	ID       string `json:"id"`
+	ExitCode int    `json:"exitCode"`
+}
