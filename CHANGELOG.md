@@ -9,7 +9,7 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 ## [Unreleased]
 
 ### Added
-- **Integrated terminal**: a Terminal tab in the bottom panel (Ctrl+`) with a real shell (PowerShell on Windows, your shell elsewhere)
+- **Integrated terminal**: a Terminal tab in the bottom panel (Ctrl+`, or Ctrl+Ñ on a Spanish keyboard) with a real shell (PowerShell on Windows, your shell elsewhere)
   in the open folder. The IDE's own Go, Python, C++ and Rust come first in PATH, so `go`, `python`, `pip`, `clang++` and `cargo`
   work there exactly as with F5. Several terminals, New terminal and Kill terminal, copy/paste (Ctrl+Shift+C / Ctrl+Shift+V,
   right click) and light/dark colours.
@@ -322,6 +322,11 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 ## [Sin publicar]
 
 ### Añadido
+- **Terminal integrado**: una pestaña Terminal en el panel inferior (Ctrl+Ñ, o Ctrl+` en otros teclados)
+  con un shell real (PowerShell en Windows, tu shell en macOS y Linux) en la carpeta abierta. El Go,
+  Python, C++ y Rust de la IDE van primero en el PATH, así que `go`, `python`, `pip`, `clang++` y `cargo`
+  funcionan ahí igual que con F5. Varios terminales, Nuevo terminal y Cerrar terminal, copiar y pegar
+  (Ctrl+Shift+C / Ctrl+Shift+V, clic derecho) y colores claros u oscuros.
 - **Archivo → Nuevo proyecto…** (Ctrl+Shift+N): un nombre, el lenguaje de programación y la carpeta
   donde va (siempre se elige, sin valor por defecto); VizcachaIDE escribe el proyecto y lo abre listo
   para F5. Cada uno empieza con un programa que pregunta tu nombre y te saluda. Go: `go.mod` +

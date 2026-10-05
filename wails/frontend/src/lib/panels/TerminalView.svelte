@@ -6,6 +6,7 @@
   import { bridge } from '../bridge'
   import { t } from '../i18n'
   import { attachTerminalOutput, terminalFocusRequests, type TerminalSession } from '../stores'
+  import { orderedInput } from './terminalInput'
   import { terminalKeyHandler } from './terminalKeys'
   import { terminalFont, terminalTheme, watchTheme } from './terminalTheme'
 
@@ -57,7 +58,7 @@
         paste: () => void paste()
       })
     )
-    created.onData((data) => void bridge.terminal.write(session.id, data).catch(() => {}))
+    created.onData(orderedInput((data) => bridge.terminal.write(session.id, data)))
     created.onResize(
       ({ cols, rows }) => void bridge.terminal.resize(session.id, cols, rows).catch(() => {})
     )

@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
-import { terminalKeyHandler } from './terminalKeys'
+import { isTerminalToggle, terminalKeyHandler } from './terminalKeys'
 import { terminalTheme, watchTheme } from './terminalTheme'
 
 describe('terminal keys', () => {
@@ -43,5 +43,14 @@ describe('terminal theme', () => {
     await waitFor(() => expect(changed).toHaveBeenCalled())
     stop()
     root.removeAttribute('data-theme')
+  })
+})
+
+describe('the terminal shortcut on a Spanish keyboard', () => {
+  it('accepts Ctrl+Ñ and the key left of 1 (º), not plain Ñ', () => {
+    const press = (init: KeyboardEventInit) => isTerminalToggle(new KeyboardEvent('keydown', init))
+    expect(press({ key: 'ñ', code: 'Semicolon', ctrlKey: true })).toBe(true)
+    expect(press({ key: 'º', code: 'Backquote', ctrlKey: true })).toBe(true)
+    expect(press({ key: 'ñ', code: 'Semicolon' })).toBe(false)
   })
 })

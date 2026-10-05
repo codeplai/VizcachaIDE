@@ -5,12 +5,16 @@ export interface TerminalClipboard {
   paste: () => void
 }
 
-/** Ctrl+` (or Cmd+`) shows the terminal: the global shortcut handles it, xterm must not eat it. */
+/**
+ * Ctrl+` (or Cmd+`) shows the terminal: the global shortcut handles it, xterm must not eat it.
+ * The key left of 1 counts whatever it prints (º on a Spanish keyboard, where ` is a dead key),
+ * and Ctrl+Ñ too, the shortcut VS Code uses with Spanish keyboards.
+ */
 export const isTerminalToggle = (event: KeyboardEvent): boolean =>
   (event.ctrlKey || event.metaKey) &&
   !event.shiftKey &&
   !event.altKey &&
-  (event.key === '`' || event.code === 'Backquote')
+  (event.key === '`' || event.code === 'Backquote' || event.key.toLowerCase() === 'ñ')
 
 /**
  * The xterm key handler: returns false for the keys the terminal must not send to the shell.
