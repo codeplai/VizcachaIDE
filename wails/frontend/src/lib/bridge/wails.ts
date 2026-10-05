@@ -14,7 +14,7 @@ import {
   EventsOn
 } from '../../../wailsjs/runtime/runtime'
 import type { Bridge, ConsoleApi, DebugApi, FilesApi, RunApi } from './types'
-import { createCodeLanguagesApi, createPackagesApi } from './wailsCodeLanguages'
+import { createCodeLanguagesApi, createPackagesApi, createProjectsApi } from './wailsCodeLanguages'
 
 // The generated classes and our plain interfaces describe the same JSON.
 const fromWire = <T>(value: unknown): T => value as T
@@ -58,6 +58,7 @@ const createDebugApi = (): DebugApi => ({
 
 const createFilesApi = (): FilesApi => ({
   openFolder: async () => fromWire(await FilesService.OpenFolder()),
+  chooseFolder: () => FilesService.ChooseFolder(),
   listTree: async (root) => fromWire(await FilesService.ListTree(root)),
   readFile: (path) => FilesService.ReadFile(path),
   saveFile: (path, text) => FilesService.SaveFile(path, text),
@@ -75,6 +76,7 @@ export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
   packages: createPackagesApi(),
+  projects: createProjectsApi(),
   codeLanguages: createCodeLanguagesApi(),
   debug: createDebugApi(),
   language: {

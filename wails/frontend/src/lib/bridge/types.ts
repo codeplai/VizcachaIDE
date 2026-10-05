@@ -10,6 +10,7 @@ import type {
   FileNode,
   FrameVariables,
   LanguageProfile,
+  NewProject,
   RunConfiguration,
   Settings,
   SignatureHelp,
@@ -46,6 +47,12 @@ export interface PackagesApi {
   remove: (codeLanguage: CodeLanguage, dir: string, pkg: string) => Promise<void>
   tidy: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
   list: (codeLanguage: CodeLanguage, dir: string) => Promise<void>
+}
+
+/** Mirrors bridge.ProjectsService (Go). Errors start with an i18n key (`project.errorExists`). */
+export interface ProjectsApi {
+  /** Creates <location>/<name> with the language's template; returns the folder and main file. */
+  create: (codeLanguage: CodeLanguage, location: string, name: string) => Promise<NewProject>
 }
 
 /** Mirrors bridge.CodeLanguagesService (Go). Not to be confused with LanguageApi (the LSP). */
@@ -106,6 +113,8 @@ export interface ConsoleApi {
 /** Mirrors bridge.FilesService (Go). */
 export interface FilesApi {
   openFolder: () => Promise<FileNode>
+  /** Native folder dialog that opens nothing; "" when the user cancels. */
+  chooseFolder: () => Promise<string>
   listTree: (root: string) => Promise<FileNode>
   readFile: (path: string) => Promise<string>
   saveFile: (path: string, text: string) => Promise<void>
@@ -169,6 +178,7 @@ export interface Bridge {
   readonly isMock: boolean
   run: RunApi
   packages: PackagesApi
+  projects: ProjectsApi
   codeLanguages: CodeLanguagesApi
   debug: DebugApi
   language: LanguageApi

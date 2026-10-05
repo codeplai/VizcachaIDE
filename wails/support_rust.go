@@ -49,6 +49,7 @@ func newRustSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts 
 		Formatter: rustfmt.New(locator),
 		Checker:   clippy.New(locator),
 		Packages:  packages.New(supervisor, rustRunner),
+		Scaffold:  packages.Scaffold{},
 	}
 	return support, func(context.Context) {}, nil
 }

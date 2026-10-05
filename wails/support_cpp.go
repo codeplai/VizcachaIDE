@@ -45,6 +45,7 @@ func newCppSupport(sink *bridge.WailsEventSink, store app.SettingsStore, texts *
 		Explainer: explainer,
 		Formatter: clangformat.New(locator),
 		Checker:   cppRunner,
+		Scaffold:  cpp.Scaffold{},
 	}
 	return support, func(context.Context) {}, nil
 }

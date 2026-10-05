@@ -178,6 +178,12 @@ export interface FileNode {
   children: FileNode[]
 }
 
+/** What File > New project created: its folder and the file to open first. */
+export interface NewProject {
+  root: string
+  mainFile: string
+}
+
 export type ServerStatus = 'starting' | 'ready' | 'unavailable'
 /** What the interactive console answers to one snippet. */
 export interface ConsoleResult {

@@ -95,7 +95,8 @@ export const mockFiles = (codeLanguage: SampleLanguage = 'go'): FilesApi => {
   const editor = createTreeEditor(tree, texts)
   return {
     openFolder: async () => structuredClone(tree),
-    listTree: async () => structuredClone(tree),
+    chooseFolder: async () => project.dir,
+    listTree: async (root) => structuredClone(find(tree, root) ?? tree),
     readFile: async (path) => texts[path] ?? '',
     saveFile: async (path, text) => void (texts[path] = text),
     watchFiles: async () => {},

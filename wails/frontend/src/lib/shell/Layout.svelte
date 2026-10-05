@@ -14,6 +14,7 @@
   import ConfirmHost from './ConfirmHost.svelte'
   import DevControls from './DevControls.svelte'
   import FirstRunWizard from './FirstRunWizard.svelte'
+  import NewProjectDialog from './NewProjectDialog.svelte'
   import PackagesDialog from './PackagesDialog.svelte'
   import RunMemberDialog from './RunMemberDialog.svelte'
   import NoticeBar from './NoticeBar.svelte'
@@ -96,6 +97,7 @@
   <SettingsDialog />
   <AboutDialog />
   <PackagesDialog />
+  <NewProjectDialog />
   <RunMemberDialog />
   <ConfirmHost />
   <FirstRunWizard />

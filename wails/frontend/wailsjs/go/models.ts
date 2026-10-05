@@ -528,6 +528,20 @@ export namespace domain {
 		    return a;
 		}
 	}
+	export class NewProject {
+	    root: string;
+	    mainFile: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NewProject(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.root = source["root"];
+	        this.mainFile = source["mainFile"];
+	    }
+	}
 	export class ProjectContext {
 	    root: string;
 	    kind: string;
