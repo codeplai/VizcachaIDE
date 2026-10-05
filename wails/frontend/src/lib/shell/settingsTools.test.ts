@@ -67,7 +67,7 @@ describe('Settings tools', () => {
     expect(screen.getByText('test.debugpy')).toBeTruthy()
     expect(screen.getByText(/1\.8\.9/)).toBeTruthy()
     expect(document.getElementById('setting-debugpy')).toBeNull()
-    // Go has three tools with their own path, Python one, C++ four: the provided one has none.
-    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(8)
+    // Go has three tools with their own path, Python one, C++ seven: the provided one has none.
+    expect(screen.getAllByRole('button', { name: 'Choose…' })).toHaveLength(11)
   })
 })

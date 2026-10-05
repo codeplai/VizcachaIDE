@@ -65,6 +65,12 @@ const DEMO: Partial<Record<CodeLanguage, PackageInfo[]>> = {
       'A library to generate and parse UUIDs.',
       'https://crates.io/crates/uuid'
     )
+  ],
+  cpp: [
+    info('fmt', '12.2.0', 'Formatting library for C++', 'https://github.com/fmtlib/fmt'),
+    info('fmt-ranges', '1.0.0', 'Ranges support for fmt', 'https://github.com/fmtlib/fmt'),
+    info('nlohmann-json', '3.12.0', 'JSON for Modern C++', 'https://github.com/nlohmann/json'),
+    info('spdlog', '1.15.3', 'Fast C++ logging library', 'https://github.com/gabime/spdlog')
   ]
 }
 

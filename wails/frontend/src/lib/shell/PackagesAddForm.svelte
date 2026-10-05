@@ -31,9 +31,18 @@
 
   const isGo = $derived($activeCodeLanguage === 'go')
   const isRust = $derived($activeCodeLanguage === 'rust')
-  const placeholder = $derived(isGo ? 'github.com/user/pkg' : isRust ? 'serde' : 'requests')
+  const isCpp = $derived($activeCodeLanguage === 'cpp')
+  const placeholder = $derived(
+    isGo ? 'github.com/user/pkg' : isRust ? 'serde' : isCpp ? 'fmt' : 'requests'
+  )
   const invalidKey = $derived(
-    isGo ? 'shell.modulesPackageInvalid' : isRust ? 'packages.cargoNameInvalid' : 'packages.invalid'
+    isGo
+      ? 'shell.modulesPackageInvalid'
+      : isRust
+        ? 'packages.cargoNameInvalid'
+        : isCpp
+          ? 'packages.vcpkgNameInvalid'
+          : 'packages.invalid'
   )
   const packageOk = $derived(isValidPackage(packageName, $activeCodeLanguage))
   const listOpen = $derived($search.status === 'done' && $search.results.length > 0)

@@ -20,9 +20,11 @@
   const isGo = $derived($activeCodeLanguage === 'go')
   const isPython = $derived($activeCodeLanguage === 'python')
   const isRust = $derived($activeCodeLanguage === 'rust')
+  const isCpp = $derived($activeCodeLanguage === 'cpp')
   const hint = $derived.by(() => {
     if (isGo) return $t('shell.modulesIntro')
     if (isPython) return $t('packages.pipHint')
+    if (isCpp) return $t('packages.vcpkgHint')
     return isRust ? $t('packages.cargoHint') : undefined
   })
   const project = $derived.by(() => {

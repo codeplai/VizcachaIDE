@@ -43,3 +43,23 @@ func nonEmpty(values []string) []string {
 	}
 	return kept
 }
+
+// WithVariables returns env with the "NAME=value" entries set, replacing the variables of the
+// same name (whatever its case: Windows is case-insensitive).
+func WithVariables(env, variables []string) []string {
+	if len(variables) == 0 {
+		return env
+	}
+	replaced := map[string]bool{}
+	for _, entry := range variables {
+		name, _ := splitEntry(entry)
+		replaced[strings.ToUpper(name)] = true
+	}
+	result := make([]string, 0, len(env)+len(variables))
+	for _, entry := range env {
+		if name, _ := splitEntry(entry); !replaced[strings.ToUpper(name)] {
+			result = append(result, entry)
+		}
+	}
+	return append(result, variables...)
+}

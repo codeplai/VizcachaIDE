@@ -23,7 +23,9 @@ const TEMPLATES: Partial<
     main: 'main.cpp',
     files: () => ({
       'main.cpp': `#include <iostream>\n#include <string>\n\nint main() {\n    std::cout << "${GREETING}";\n    std::string nombre;\n    std::getline(std::cin, nombre);\n    std::cout << "Hola, " << nombre << std::endl;\n}\n`,
-      'compile_flags.txt': '-std=c++17\n-Wall\n-Wextra\n',
+      'CMakeLists.txt': 'cmake_minimum_required(VERSION 3.25)\nproject(app LANGUAGES CXX)\n',
+      'vcpkg.json': '{\n  "dependencies": []\n}\n',
+      '.gitignore': 'build/\n',
       '.clang-format': 'BasedOnStyle: LLVM\nIndentWidth: 4\n'
     })
   },

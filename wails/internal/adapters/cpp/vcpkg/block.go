@@ -5,12 +5,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/codeplai/VizcachaIDE/wails/internal/adapters/cpp/cmake"
 )
 
 // The markers of the block of CMakeLists.txt that the IDE owns (docs/PLAN_CPP_CMAKE.md 4.0).
 const (
-	LibrariesBegin = "# VizcachaIDE libraries (vcpkg) · begin"
-	LibrariesEnd   = "# VizcachaIDE libraries (vcpkg) · end"
+	LibrariesBegin = cmake.LibrariesBegin
+	LibrariesEnd   = cmake.LibrariesEnd
 
 	// CMakeFile is the project's CMake script.
 	CMakeFile = "CMakeLists.txt"

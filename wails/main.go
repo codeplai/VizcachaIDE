@@ -153,7 +153,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 		return nil, err
 	}
 	updater, autoUpdate := newUpdater(sink, store)
-	terminals := shellterm.NewHost(shellterm.Options{Sink: sink, Folders: registry.ShellPaths})
+	terminals := shellterm.NewHost(shellterm.Options{Sink: sink, Folders: registry.ShellPaths, Variables: registry.ShellVariables})
 
 	return &backend{
 		services: []any{

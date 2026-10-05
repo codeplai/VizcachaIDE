@@ -11,6 +11,9 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
+// Busy reports whether an operation is running.
+func (m *Manager) Busy() bool { return m.busy.Load() }
+
 // Stop cancels the operation in progress, if any.
 func (m *Manager) Stop() {
 	m.mu.Lock()
