@@ -16,6 +16,10 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   + `src/main.rs` + `.gitignore`. Names with spaces and accents keep their folder name; the Go module
   and the Rust crate get a valid version ("Mi Tienda Ñandú" → `mi-tienda-nandu`). A C++ project also
   gets a `.clang-format` with the IDE's style (LLVM, 4 spaces), so another editor formats it the same.
+- **Search packages by name** in the Packages dialog: while you type, a list shows the matching
+  packages with their version and description, and you choose the one to install (Python: PyPI,
+  among its ~15 000 most downloaded projects plus any exact name; Go: pkg.go.dev; Rust: crates.io).
+  Without network the dialog says so and still installs an exact name.
 
 ### Changed
 - **New file** (Ctrl+N and the toolbar button) is written in the language you are working in: the
@@ -23,6 +27,8 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   sources), else the default of Settings. It used to be always a `.go`.
 
 ### Fixed
+- pip's "A new release of pip is available" notice no longer shows after installing (it looked
+  like an error).
 - C++ programs on Windows showed accents wrong ("¿Cómo" as "┐C├│mo") and lost the accented letters
   typed in Output ("Ñandú" read as "and"): every C++ program VizcachaIDE builds on Windows sets the
   console to UTF-8 and reads `std::cin` through the console's Unicode input.
@@ -315,6 +321,10 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   conservan su carpeta; el módulo de Go y el crate de Rust reciben una versión válida ("Mi Tienda
   Ñandú" → `mi-tienda-nandu`). Un proyecto C++ también lleva un `.clang-format` con el estilo de la IDE
   (LLVM, 4 espacios), para que otro editor lo formatee igual.
+- **Buscar paquetes por nombre** en el diálogo de Paquetes: mientras escribes, una lista muestra los
+  paquetes que coinciden con su versión y descripción, y eliges cuál instalar (Python: PyPI, entre
+  sus ~15 000 proyectos más descargados más cualquier nombre exacto; Go: pkg.go.dev; Rust:
+  crates.io). Sin red el diálogo lo dice y deja instalar un nombre exacto.
 
 ### Cambiado
 - **Archivo nuevo** (Ctrl+N y el botón de la barra) se escribe en el lenguaje con el que estás
@@ -322,6 +332,7 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   `compile_flags.txt`… o la mayoría de sus fuentes), si no el de Ajustes. Antes era siempre un `.go`.
 
 ### Corregido
+- Ya no aparece el aviso de pip "A new release of pip is available" al instalar (parecía un error).
 - Los programas de C++ en Windows mostraban mal los acentos ("¿Cómo" como "┐C├│mo") y perdían las
   letras acentuadas escritas en Salida ("Ñandú" se leía "and"): todo programa de C++ que VizcachaIDE
   compila en Windows pone la consola en UTF-8 y lee `std::cin` con la entrada Unicode de la consola.
