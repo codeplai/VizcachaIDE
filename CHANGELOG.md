@@ -16,6 +16,16 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   and the language server follow the moved files. A folder cannot be dropped into itself.
 - Files panel: Copy, Paste (Ctrl/Cmd+C, Ctrl/Cmd+V) and Duplicate for files and folders. Copies never overwrite:
   they are named `name (copy).ext`, `name (copy 2).ext` (`nombre (copia).ext` in Spanish).
+- Search and replace in the files of the open folder (Ctrl+Shift+F), with match case, whole word and regular
+  expression (with `$1` in the replacement). Every result has "Replace", every file "Replace all in this file", and
+  "Replace all" asks first, naming how many matches in how many files. Open files change in the editor (undoable,
+  marked unsaved); the others change on disk. It never touches files outside the folder, binary files, or `build`,
+  `target`, `node_modules` and `.git`.
+- Quick open (Ctrl+P, Cmd+P on macOS): type part of a file name and pick from the files of the folder with the arrows
+  and Enter; matched letters are highlighted and, with nothing typed, recently opened files come first.
+- Snippets in the completion list for Go, Python, C++ and Rust: typing `for`, `if`, `while`, `func`/`def`/`fn`,
+  `main`, `print`/`println`/`cout`, `class`/`struct`, `switch`/`match` or `try` offers a template with tab stops and
+  a short description in your language, next to what the language server suggests.
 
 ## [2.6.0] - 2026-10-06
 
@@ -372,6 +382,17 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   soltar dentro de sí misma.
 - Panel Archivos: Copiar, Pegar (Ctrl/Cmd+C, Ctrl/Cmd+V) y Duplicar para archivos y carpetas. Las copias nunca
   sobrescriben: se llaman `nombre (copia).ext`, `nombre (copia 2).ext` (`name (copy).ext` en inglés).
+- Buscar y reemplazar en los archivos de la carpeta (Ctrl+Mayús+F), con distinguir mayúsculas, palabra completa y
+  expresión regular (con `$1` en el reemplazo). Cada resultado tiene "Reemplazar", cada archivo "Reemplazar todo en
+  este archivo" y hay un "Reemplazar todo" que pide confirmación diciendo cuántas coincidencias en cuántos archivos.
+  Los archivos abiertos cambian en el editor (se puede deshacer y quedan sin guardar); los demás, en el disco. Nunca
+  toca archivos fuera de la carpeta, binarios ni `build`, `target`, `node_modules` o `.git`.
+- Abrir archivo rápido (Ctrl+P, Cmd+P en macOS): escribe parte del nombre y elige entre los archivos de la carpeta
+  con flechas y Enter; muestra las letras que coinciden y, sin escribir, los archivos abiertos hace poco primero.
+- Plantillas (snippets) en el autocompletado de Go, Python, C++ y Rust: al escribir `for`, `if`, `while`,
+  `func`/`def`/`fn`, `main`, `print`/`println`/`cout`, `class`/`struct`, `switch`/`match` o `try` aparece una
+  plantilla con puntos de tabulación y una descripción corta en tu idioma, junto a lo que sugiere el servidor de
+  lenguaje.
 
 ## [2.6.0] - 2026-10-06
 

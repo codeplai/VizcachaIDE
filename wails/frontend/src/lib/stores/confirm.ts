@@ -68,6 +68,18 @@ export const confirmReplaceAll = (count: number, file: string) =>
     'cancel'
   )
 
+/** Asks before "Replace all" in the Search panel; it names how many matches in how many files. */
+export const confirmReplaceInFiles = (count: number, files: number) =>
+  ask(
+    'confirm.replaceInFiles',
+    { count, files },
+    [
+      { id: 'replace', labelKey: 'confirm.replaceCount', values: { count }, tone: 'primary' },
+      { id: 'cancel', labelKey: 'confirm.cancel', tone: 'plain' }
+    ],
+    'cancel'
+  )
+
 export interface DeleteDetails {
   /** Files inside the folder being deleted (undefined for a single file). */
   files?: number

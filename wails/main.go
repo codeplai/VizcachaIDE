@@ -167,6 +167,7 @@ func newBackend(sink *bridge.WailsEventSink) (*backend, error) {
 			bridge.NewAssistantService(sink, registry, language),
 			bridge.NewFilesServiceWithTexts(sink, store, watcher, texts.withData).
 				UseShell(filesystem.New()).UseLanguages(registry),
+			bridge.NewSearchService(watcher),
 			bridge.NewSettingsService(sink, store, language, registry).
 				UseTools(bridge.NewExecutableDialog(sink, texts.withData)),
 			bridge.NewUpdatesService(updater),

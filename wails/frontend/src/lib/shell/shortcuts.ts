@@ -6,6 +6,8 @@ import {
   debugActive,
   newFile,
   openFileFromDialog,
+  openQuickOpen,
+  showSearch,
   startNewProject,
   resumeDebugging,
   runActiveFile,
@@ -28,16 +30,18 @@ type Action = (bridge: Bridge) => Promise<void>
 const FILE_SHORTCUTS: Record<string, Action> = {
   n: newFile,
   o: openFileFromDialog,
+  p: openQuickOpen,
   w: closeActive,
   s: saveActiveFile
 }
 
-/** Ctrl (Cmd on macOS) + N, O, S, W, and Ctrl+Shift+S and Ctrl+Shift+N. */
+/** Ctrl (Cmd on macOS) + N, O, P (Quick open), S, W, and Ctrl+Shift+S, N and F (Search). */
 const fileShortcut = (event: KeyboardEvent): Action | null => {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return null
   const key = event.key.toLowerCase()
   if (key === 's' && event.shiftKey) return saveActiveAs
   if (key === 'n' && event.shiftKey) return startNewProject
+  if (key === 'f' && event.shiftKey) return async () => showSearch()
   if (event.shiftKey) return null
   return FILE_SHORTCUTS[key] ?? null
 }

@@ -10,6 +10,7 @@ import { mockProjects } from './mockProjects'
 import { sampleInlayHints } from './mockInlay'
 import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
+import { mockSearch } from './mockSearch'
 import { mockSettings } from './mockSettings'
 import { mockTerminal } from './mockTerminal'
 import { mockUpdates } from './mockUpdates'
@@ -98,6 +99,7 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
     console: mockConsole(),
     projects: mockProjects(files),
     files,
+    search: mockSearch(files),
     settings: mockSettings(state, emit),
     updates: mockUpdates(emit),
     terminal: mockTerminal(emit),

@@ -16,6 +16,7 @@
   import FirstRunWizard from './FirstRunWizard.svelte'
   import NewProjectDialog from './NewProjectDialog.svelte'
   import PackagesDialog from './PackagesDialog.svelte'
+  import QuickOpen from './QuickOpen.svelte'
   import RunMemberDialog from './RunMemberDialog.svelte'
   import NoticeBar from './NoticeBar.svelte'
   import Rail from './Rail.svelte'
@@ -99,6 +100,7 @@
   <PackagesDialog />
   <NewProjectDialog />
   <RunMemberDialog />
+  <QuickOpen />
   <ConfirmHost />
   <FirstRunWizard />
 </div>
