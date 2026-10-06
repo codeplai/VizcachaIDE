@@ -8,6 +8,12 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Fixed
+- Ctrl+C now stops a program in the integrated terminal on Windows (an endless loop could not be stopped): the
+  IDE no longer passes on an inherited "ignore Ctrl+C" flag to the programs it starts. Stop (F5) also lets a program
+  end on Ctrl+C first; a Python program shows where it was (`KeyboardInterrupt`), and the Assistant does not treat
+  that as an error.
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed
@@ -353,6 +359,12 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Corregido
+- Ctrl+C ahora detiene un programa en el terminal integrado en Windows (un bucle infinito no se podía detener): la
+  IDE ya no pasa a los programas que inicia una marca heredada de "ignorar Ctrl+C". Detener (F5) también deja que el
+  programa termine primero con Ctrl+C; un programa Python muestra dónde estaba (`KeyboardInterrupt`) y el Asistente
+  no lo trata como un error.
 
 ## [2.6.0] - 2026-10-06
 

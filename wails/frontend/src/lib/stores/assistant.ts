@@ -80,6 +80,14 @@ export const isPackageCommand = (config: RunConfiguration): boolean =>
   /^(go|cargo|python\d*(\.exe)?|py)\s/i.test(config.target)
 
 /**
+ * Whether a finished run failed and its output needs explaining. A run the user stopped did not
+ * fail: Stop sends Ctrl+C first, so Python ends with a KeyboardInterrupt traceback and its own exit
+ * code, which is not an error to explain.
+ */
+export const runFailed = (exitCode: number, stopped: boolean): boolean =>
+  exitCode !== 0 && exitCode !== TERMINATED_BY_USER && !stopped
+
+/**
  * After a run that compiled and finished, `go vet` looks for mistakes the compiler allows (a Printf
  * with the wrong values, code that can never run). It works in the background: the run is already
  * over and the UI never waits for it. Its warnings join the run's problems.
@@ -97,7 +105,7 @@ const vetInBackground = async (bridge: Bridge, config: RunConfiguration): Promis
 }
 
 const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
-  const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
+  const failed = runFailed(exitCode, get(stoppedByUser))
   const config = get(lastRunConfiguration)
   const items = failed
     ? await inTurn(() =>
