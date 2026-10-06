@@ -511,5 +511,21 @@
   "project.errorLocation": { "en": "The location does not exist. Choose another folder.", "es": "La ubicación no existe. Elige otra carpeta." },
   "project.errorExists": { "en": "That folder already exists and is not empty. Use another name or location.", "es": "Esa carpeta ya existe y no está vacía. Usa otro nombre u otra ubicación." },
   "project.errorNoScaffold": { "en": "This language cannot create projects yet.", "es": "Este lenguaje todavía no puede crear proyectos." },
-  "project.errorFailed": { "en": "The project could not be created: {reason}", "es": "No se pudo crear el proyecto: {reason}" }
+  "project.errorFailed": { "en": "The project could not be created: {reason}", "es": "No se pudo crear el proyecto: {reason}" },
+  "panels.references": { "en": "References", "es": "Referencias" },
+  "a11y.referencesList": { "en": "List of references", "es": "Lista de referencias" },
+  "editor.rename.label": { "en": "Rename symbol", "es": "Renombrar símbolo" },
+  "editor.rename.hint": { "en": "Enter to rename, Esc to cancel", "es": "Enter para renombrar, Esc para cancelar" },
+  "refactor.menuRename": { "en": "Rename symbol (F2)", "es": "Renombrar símbolo (F2)" },
+  "refactor.menuReferences": { "en": "Find all references (Shift+F12)", "es": "Buscar todas las referencias (Shift+F12)" },
+  "refactor.renamed": { "en": "Renamed in {places, plural, one {# place} other {# places}} across {files, plural, one {# file} other {# files}}.", "es": "Se renombró en {places, plural, one {# lugar} other {# lugares}} de {files, plural, one {# archivo} other {# archivos}}." },
+  "refactor.notRenameable": { "en": "This name cannot be renamed. Keywords and symbols from libraries are not yours to rename.", "es": "Este nombre no se puede renombrar. Las palabras reservadas y los símbolos de las bibliotecas no se pueden cambiar." },
+  "refactor.unsupported": { "en": "The code helper of this language cannot rename names here.", "es": "El ayudante de código de este lenguaje no puede renombrar nombres aquí." },
+  "refactor.unsupportedPython": { "en": "Python cannot rename names yet: its code helper needs the rope package. Install it with:", "es": "Python todavía no puede renombrar nombres: su ayudante de código necesita el paquete rope. Instálalo con:" },
+  "refactor.failed": { "en": "Could not rename: {reason}", "es": "No se pudo renombrar: {reason}" },
+  "refactor.referencesFailed": { "en": "Could not look for references: {reason}", "es": "No se pudo buscar dónde se usa: {reason}" },
+  "references.hint": { "en": "Put the cursor on a name and press Shift+F12 to see where it is used.", "es": "Pon el cursor sobre un nombre y presiona Shift+F12 para ver dónde se usa." },
+  "references.searching": { "en": "Searching…", "es": "Buscando…" },
+  "references.empty": { "en": "No uses found. Put the cursor on a name and press Shift+F12.", "es": "No se encontraron usos. Pon el cursor sobre un nombre y presiona Shift+F12." },
+  "references.summary": { "en": "{count, plural, one {# use} other {# uses}} of “{symbol}” in {files, plural, one {# file} other {# files}}", "es": "{count, plural, one {# uso} other {# usos}} de «{symbol}» en {files, plural, one {# archivo} other {# archivos}}" }
 }

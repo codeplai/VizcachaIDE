@@ -2,6 +2,7 @@
 import type { FileNode } from '../domain'
 import { SAMPLE_DIR, SAMPLE_SOURCES, sampleTree } from './mockData'
 import { CPP_DIR, CPP_SOURCES, cppTree } from './mockCpp'
+import { applyMockEdits } from './mockRefactor'
 import { PYTHON_DIR, PYTHON_SOURCES, pythonTree } from './mockPython'
 import { RUST_DIR, RUST_SOURCES, rustTree } from './mockRust'
 import type { SampleLanguage } from './mockScenarios'
@@ -122,6 +123,7 @@ export const mockFiles = (codeLanguage: SampleLanguage = 'go'): FilesApi => {
     rename: editor.rename,
     copy: editor.copy,
     moveToTrash: async (path) => void editor.remove(path),
-    revealInExplorer: async () => {}
+    revealInExplorer: async () => {},
+    applyTextEdits: async (edited) => applyMockEdits(texts, edited)
   }
 }

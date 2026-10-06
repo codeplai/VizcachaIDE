@@ -61,7 +61,9 @@ describe('replace', () => {
     await openFile(bridge, SAMPLE_MAIN)
     patchSearch({ query: 'sumar', replacement: 'add' })
     await runSearch(bridge)
-    const first = get(searchState).files[0]?.matches[0]
+    // calculadora.go calls sumar too (doble): take the match of main.go.
+    const mainFile = () => get(searchState).files.find((file) => file.path === SAMPLE_MAIN)
+    const first = mainFile()?.matches[0]
     if (!first) throw new Error('no match')
     await replaceMatch(bridge, SAMPLE_MAIN, first)
     const text = get(buffers)[SAMPLE_MAIN] ?? ''
@@ -69,7 +71,7 @@ describe('replace', () => {
     expect(text).toContain('sumar(5, 7)')
     expect(get(dirty)[SAMPLE_MAIN]).toBe(true)
     expect(get(searchState).replaced).toEqual({ files: 1, matches: 1 })
-    expect(get(searchState).files[0]?.matches).toHaveLength(2)
+    expect(mainFile()?.matches).toHaveLength(2)
   })
 
   it('replaces a file that is not open on disk, leaving no unsaved mark', async () => {
@@ -92,7 +94,7 @@ describe('replace', () => {
     const pending = replaceEverywhere(bridge)
     const request = get(pendingConfirm)
     expect(request?.messageKey).toBe('confirm.replaceInFiles')
-    expect(request?.values).toEqual({ count: 3, files: 1 })
+    expect(request?.values).toEqual({ count: 4, files: 2 })
     request?.answer('cancel')
     expect(await pending).toBe(false)
     expect(get(buffers)[SAMPLE_MAIN]).toContain('sumar')

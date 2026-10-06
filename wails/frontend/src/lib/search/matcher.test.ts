@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SearchOptions } from '../domainSearch'
-import { findInText, isValidQuery, replaceInText } from './matcher'
+import { characterColumn, findInText, isValidQuery, replaceInText } from './matcher'
 
 const plain: SearchOptions = { caseSensitive: false, wholeWord: false, regex: false }
 const withOptions = (change: Partial<SearchOptions>): SearchOptions => ({ ...plain, ...change })
@@ -76,5 +76,19 @@ describe('replaceInText', () => {
       text: 'abc',
       count: 0
     })
+  })
+})
+
+describe('characterColumn', () => {
+  it('counts an emoji before the match once, as the editor does', () => {
+    const text = 'print("🦙 hola")'
+    const [match] = findInText(text, 'hola', {
+      caseSensitive: false,
+      wholeWord: false,
+      regex: false
+    })
+    if (!match) throw new Error('no match')
+    expect(match.column).toBe(11)
+    expect(characterColumn(match)).toBe(10)
   })
 })

@@ -268,6 +268,20 @@ export namespace domain {
 		    return a;
 		}
 	}
+	export class EditSummary {
+	    files: number;
+	    edits: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new EditSummary(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.files = source["files"];
+	        this.edits = source["edits"];
+	    }
+	}
 	export class ErrorExplanation {
 	    explanationId: string;
 	    title: string;
@@ -300,6 +314,70 @@ export namespace domain {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.diagnostic = this.convertValues(source["diagnostic"], Diagnostic);
 	        this.explanation = this.convertValues(source["explanation"], ErrorExplanation);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class TextEdit {
+	    range: SourceRange;
+	    newText: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TextEdit(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.range = this.convertValues(source["range"], SourceRange);
+	        this.newText = source["newText"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileEdit {
+	    file: string;
+	    edits: TextEdit[];
+	
+	    static createFrom(source: any = {}) {
+	        return new FileEdit(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.file = source["file"];
+	        this.edits = this.convertValues(source["edits"], TextEdit);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -626,6 +704,38 @@ export namespace domain {
 	        this.name = source["name"];
 	    }
 	}
+	export class Reference {
+	    range: SourceRange;
+	    preview: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Reference(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.range = this.convertValues(source["range"], SourceRange);
+	        this.preview = source["preview"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class Release {
 	    version: string;
 	    notes: string;
@@ -647,6 +757,76 @@ export namespace domain {
 	        this.asset = source["asset"];
 	        this.assetSize = source["assetSize"];
 	    }
+	}
+	export class RenameResult {
+	    refusal: string;
+	    detail?: string;
+	    files: FileEdit[];
+	
+	    static createFrom(source: any = {}) {
+	        return new RenameResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.refusal = source["refusal"];
+	        this.detail = source["detail"];
+	        this.files = this.convertValues(source["files"], FileEdit);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class RenameTarget {
+	    refusal: string;
+	    range?: SourceRange;
+	    placeholder: string;
+	    detail?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new RenameTarget(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.refusal = source["refusal"];
+	        this.range = this.convertValues(source["range"], SourceRange);
+	        this.placeholder = source["placeholder"];
+	        this.detail = source["detail"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class ReplaceResult {
 	    files: number;
@@ -807,6 +987,7 @@ export namespace domain {
 	        this.activeParameter = source["activeParameter"];
 	    }
 	}
+	
 	
 	
 	

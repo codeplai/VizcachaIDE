@@ -20,7 +20,9 @@ const PHRASE_KEYS: Record<string, string> = {
   'on line': 'editor.search.onLine',
   'replaced $ matches': 'editor.search.replacedMatches',
   'replaced match on line $': 'editor.search.replacedMatch',
-  Completions: 'editor.completions'
+  Completions: 'editor.completions',
+  'Rename symbol': 'editor.rename.label',
+  'Enter to rename, Esc to cancel': 'editor.rename.hint'
 }
 
 export type Translate = (key: string) => string

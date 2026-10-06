@@ -25,6 +25,13 @@ describe('positions', () => {
     expect(offsetOf(state, 2, 2)).toBe(4)
     expect(offsetOf(state, 99, 99)).toBe(state.doc.length)
   })
+
+  it('counts columns in characters, as the backend does: an emoji is one column', () => {
+    const state = EditorState.create({ doc: 'x := "😀" + y\n' })
+    const y = state.doc.toString().indexOf('y') // UTF-16 offset: the emoji takes two units
+    expect(locationAt(state, y, 'main.go')).toEqual({ file: 'main.go', line: 1, column: 12 })
+    expect(offsetOf(state, 1, 12)).toBe(y)
+  })
 })
 
 describe('completion', () => {

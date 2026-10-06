@@ -8,6 +8,7 @@
     type LanguageWiring
   } from './createEditor'
   import { lspStatus, profileOf } from '../stores/codeLanguages'
+  import { registerEditorBridge } from '../stores/editorBridge'
   import { settings } from '../stores/settings'
   import type { RevealRequest } from '../stores/navigation'
   import type { EditorMarks } from './marks'
@@ -29,8 +30,17 @@
   let lastGoto = 0
 
   onMount(() => {
-    handle = createEditor(host, handlers, wiring, (file) => profileOf(file))
-    return () => handle?.destroy()
+    const editor = createEditor(host, handlers, wiring, (file) => profileOf(file))
+    handle = editor
+    const unregister = registerEditorBridge({
+      applyChanges: editor.applyChanges,
+      renameSymbol: editor.renameSymbol,
+      findReferences: editor.findReferences
+    })
+    return () => {
+      unregister()
+      editor.destroy()
+    }
   })
 
   $effect(() => handle?.show(path, text))

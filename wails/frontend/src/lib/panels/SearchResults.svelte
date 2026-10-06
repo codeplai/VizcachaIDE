@@ -11,6 +11,7 @@
     baseName
   } from '../stores'
   import type { SearchMatch } from '../domainSearch'
+  import { characterColumn } from '../search/matcher'
 
   /** The line cut around the match: leading blanks go, the match is marked. */
   const parts = (match: SearchMatch): { before: string; hit: string; after: string } => {
@@ -53,7 +54,7 @@
                 void goToLocation(bridge, {
                   file: file.path,
                   line: match.line,
-                  column: match.column
+                  column: characterColumn(match)
                 })}
             >
               <span class="line">{match.line}</span>

@@ -5,8 +5,10 @@ import type {
   CompletionItem,
   Diagnostic,
   DocumentSymbol,
+  EditSummary,
   InlayHint,
   ExplainedDiagnostic,
+  FileEdit,
   FileNode,
   FrameVariables,
   PackageInfo,
@@ -20,10 +22,11 @@ import type {
   ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
+import type { RefactorApi } from './typesRefactor'
 import type { SearchApi } from './typesSearch'
 import type { TerminalApi, UpdatesApi } from './typesShell'
 
-export type { SearchApi, TerminalApi, UpdatesApi }
+export type { RefactorApi, SearchApi, TerminalApi, UpdatesApi }
 
 export type Unsubscribe = () => void
 
@@ -84,7 +87,7 @@ export interface DebugApi {
 }
 
 /** Mirrors bridge.LanguageService (Go): code intelligence, routed by path. */
-export interface LanguageApi {
+export interface LanguageApi extends RefactorApi {
   openDocument: (path: string, text: string) => Promise<void>
   changeDocument: (path: string, text: string, version: number) => Promise<void>
   closeDocument: (path: string) => Promise<void>
@@ -141,6 +144,8 @@ export interface FilesApi {
   /** Sends the file or folder to the Recycle Bin; it never deletes permanently. */
   moveToTrash: (path: string) => Promise<void>
   revealInExplorer: (path: string) => Promise<void>
+  /** Edits files on disk (the ones a rename touches that are not open) and tells the watcher. */
+  applyTextEdits: (files: FileEdit[]) => Promise<EditSummary>
 }
 
 /** A ToolSpec.id ('go', 'dlv', 'gopls', 'python', 'clangd'...). */

@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | cpp-cmake | rust | newproject | terminal | files | editing | multi
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | cpp-cmake | rust | newproject | terminal | files | editing | refactor | multi
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -24,6 +24,7 @@ import { newProjectSteps } from './steps-newproject.mjs'
 import { terminalSteps } from './steps-terminal.mjs'
 import { filesSteps } from './steps-files.mjs'
 import { editingSteps } from './steps-editing.mjs'
+import { refactorSteps } from './steps-refactor.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -161,6 +162,13 @@ const main = async () => {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`editing-${lang}`, { language: lang }, (ctx) => editingSteps(ctx, lang))
+      }
+    }
+    // Rename symbol (F2) and Find all references (Shift+F12) with the real gopls.
+    if (wants('refactor')) {
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`refactor-${lang}`, { language: lang }, (ctx) => refactorSteps(ctx, lang))
       }
     }
     // Multi-file projects with an external library in every language (only on request: it

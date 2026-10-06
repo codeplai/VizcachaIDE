@@ -98,6 +98,21 @@ func (r *Router) InlayHints(ctx context.Context, visible domain.SourceRange) ([]
 	return r.serverFor(visible.Start.File).InlayHints(ctx, visible)
 }
 
+// PrepareRename implements app.LanguageServer.
+func (r *Router) PrepareRename(ctx context.Context, at domain.SourceLocation) (domain.RenameTarget, error) {
+	return r.serverFor(at.File).PrepareRename(ctx, at)
+}
+
+// Rename implements app.LanguageServer.
+func (r *Router) Rename(ctx context.Context, at domain.SourceLocation, newName string) (domain.RenameResult, error) {
+	return r.serverFor(at.File).Rename(ctx, at, newName)
+}
+
+// References implements app.LanguageServer.
+func (r *Router) References(ctx context.Context, at domain.SourceLocation) ([]domain.Reference, error) {
+	return r.serverFor(at.File).References(ctx, at)
+}
+
 // Shutdown stops every rust-analyzer.
 func (r *Router) Shutdown(ctx context.Context) error {
 	r.mu.Lock()

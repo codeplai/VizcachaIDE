@@ -128,3 +128,10 @@ export const replaceInText = (
   })
   return { text: lines.join('\n'), count }
 }
+
+/**
+ * The column of a match counted in characters, as the editor's locations are: search columns are
+ * UTF-16 units (they index the line text), and an emoji before the match counts twice there.
+ */
+export const characterColumn = (match: SearchMatch): number =>
+  Array.from(match.text.slice(0, match.column - 1)).length + 1
