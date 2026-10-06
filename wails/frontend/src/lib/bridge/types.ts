@@ -95,6 +95,8 @@ export interface LanguageApi {
   documentSymbols: (path: string) => Promise<DocumentSymbol[]>
   /** The hints of the visible lines of an open file (`visible.start.file`). */
   inlayHints: (visible: SourceRange) => Promise<InlayHint[]>
+  /** Where a new unsaved file named `name` lives while open (an absolute temporary path). */
+  untitledFile: (name: string) => Promise<string>
 }
 
 /** Mirrors bridge.AssistantService (Go). */

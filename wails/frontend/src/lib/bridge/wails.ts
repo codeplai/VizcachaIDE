@@ -106,6 +106,7 @@ export const createWailsBridge = (): Bridge => ({
     openDocument: (path, text) => LanguageService.OpenDocument(path, text),
     changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
     closeDocument: (path) => LanguageService.CloseDocument(path),
+    untitledFile: (name) => LanguageService.UntitledFile(name),
     completion: async (at) => fromWire(await LanguageService.Completion(toWire(at))),
     hover: (at) => LanguageService.Hover(toWire(at)),
     definition: async (at) => fromWire(await LanguageService.Definition(toWire(at))),

@@ -41,3 +41,7 @@ export function OpenDocument(arg1, arg2) {
 export function SignatureHelp(arg1) {
   return window['go']['bridge']['LanguageService']['SignatureHelp'](arg1);
 }
+
+export function UntitledFile(arg1) {
+  return window['go']['bridge']['LanguageService']['UntitledFile'](arg1);
+}

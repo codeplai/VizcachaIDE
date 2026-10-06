@@ -7,19 +7,26 @@ import { activePath, buffers, openTabs } from './files'
 
 const UNTITLED_DIR = 'untitled/'
 
-export const isUntitled = (path: string): boolean => path.startsWith(UNTITLED_DIR)
+/** The unsaved files of this session: absolute paths the backend gives (LanguageService.UntitledFile). */
+const untitledPaths = new Set<string>()
+
+export const isUntitled = (path: string): boolean =>
+  path.startsWith(UNTITLED_DIR) || untitledPaths.has(path)
+
+const baseName = (path: string): string =>
+  path.slice(Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1)
 
 /** The extension of a new file: the profile's first one, so the same lookup finds its language. */
 const extensionFor = (codeLanguage: CodeLanguage): string =>
   get(profiles).find((profile) => profile.id === codeLanguage)?.extensions[0] ??
   newFileTemplates[codeLanguage].extension
 
-const nextUntitledPath = (codeLanguage: CodeLanguage): string => {
-  const taken = new Set(Object.keys(get(buffers)))
+const nextUntitledName = (codeLanguage: CodeLanguage): string => {
+  const taken = new Set(Object.keys(get(buffers)).filter(isUntitled).map(baseName))
   const extension = extensionFor(codeLanguage)
   for (let number = 1; ; number++) {
-    const path = `${UNTITLED_DIR}${number === 1 ? 'main' : `main${number}`}${extension}`
-    if (!taken.has(path)) return path
+    const name = `${number === 1 ? 'main' : `main${number}`}${extension}`
+    if (!taken.has(name)) return name
   }
 }
 
@@ -32,7 +39,8 @@ export const openUntitled = async (
   codeLanguage: CodeLanguage,
   program: 'blank' | 'hello' = 'blank'
 ): Promise<string> => {
-  const path = nextUntitledPath(codeLanguage)
+  const path = await bridge.language.untitledFile(nextUntitledName(codeLanguage))
+  untitledPaths.add(path)
   const source = newFileTemplates[codeLanguage][program]
   buffers.update((all) => ({ ...all, [path]: source }))
   await bridge.language.openDocument(path, source)

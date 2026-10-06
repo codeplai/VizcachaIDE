@@ -8,6 +8,11 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Fixed
+- A new file not saved yet (Ctrl+N) had no code helper: no completion and no problems, because its path was
+  relative. Unsaved files now live in a temporary folder of their own, so gopls, pylsp, clangd and rust-analyzer
+  analyse them like any other file.
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed
@@ -353,6 +358,11 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Corregido
+- Un archivo nuevo sin guardar (Ctrl+N) no tenía ayudante de código: ni autocompletado ni problemas, porque su ruta
+  era relativa. Los archivos sin guardar ahora viven en una carpeta temporal propia, así que gopls, pylsp, clangd y
+  rust-analyzer los analizan como a cualquier otro archivo.
 
 ## [2.6.0] - 2026-10-06
 

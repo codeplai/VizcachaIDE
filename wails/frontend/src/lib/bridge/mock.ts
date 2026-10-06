@@ -31,6 +31,7 @@ const mockLanguage = (emit: Emit): LanguageApi => ({
     emit('lsp:status', { codeLanguage: codeLanguageOfPath(path), status: 'ready' }),
   changeDocument: async () => {},
   closeDocument: async () => {},
+  untitledFile: async (name) => `untitled/${name}`,
   completion: async () => [
     {
       label: 'Println',
