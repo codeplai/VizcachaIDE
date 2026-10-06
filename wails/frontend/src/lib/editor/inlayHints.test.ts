@@ -5,7 +5,7 @@ import type { InlayHint, SourceRange } from '../domain'
 import { sampleInlayHints } from '../bridge/mockInlay'
 import { SAMPLE_MAIN } from '../bridge/mockData'
 import type { LanguageApi } from './documentContext'
-import { INLAY_DELAY_MS, inlayHints } from './inlayHints'
+import { INLAY_DELAY_MS, INLAY_RETRY_MS, inlayHints } from './inlayHints'
 
 const typeHint = (line: number, column: number, label = ': int'): InlayHint => ({
   line,
@@ -86,6 +86,24 @@ describe('inlayHints', () => {
     expect(shown()).toEqual([': Vec<i32>'])
     await settle(60000)
     expect(ask).toHaveBeenCalledTimes(3)
+  })
+
+  it('keeps asking for minutes while a slow server indexes, then gives up', async () => {
+    let calls = 0
+    const ask = vi.fn(async () => (++calls === 7 ? [typeHint(1, 2, ': Vec<i32>')] : []))
+    setup(ask)
+    await settle()
+    for (const wait of INLAY_RETRY_MS.slice(0, 6)) await settle(wait)
+    expect(ask).toHaveBeenCalledTimes(7)
+    expect(shown()).toEqual([': Vec<i32>'])
+
+    const silent = vi.fn(async () => [])
+    setup(silent)
+    await settle()
+    for (const wait of INLAY_RETRY_MS) await settle(wait)
+    expect(silent).toHaveBeenCalledTimes(INLAY_RETRY_MS.length + 1)
+    await settle(600000)
+    expect(silent).toHaveBeenCalledTimes(INLAY_RETRY_MS.length + 1)
   })
 
   it('debounces a burst of edits into one request', async () => {
