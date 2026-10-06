@@ -1,7 +1,7 @@
 // Commands of the Files panel: create, rename, delete (Recycle Bin), reveal and copy path.
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
-import { confirmDelete } from './confirm'
+import { confirmDelete, confirmDeleteMany } from './confirm'
 import {
   GO_TEMPLATE,
   countFiles,
@@ -14,6 +14,7 @@ import {
   type TreeEditKind
 } from './fileTreeEdit'
 import { closeOpenFilesUnder, hasUnsavedUnder, moveOpenFiles } from './fileTreeTabs'
+import { actionTargets, pruneSelection } from './fileSelection'
 import { fileTree, openFile } from './files'
 import { collapsedFolders, selectedNode } from './layout'
 import { dismissNotice, notice, showNotice } from './notice'
@@ -23,14 +24,16 @@ const COPIED_NOTICE_MS = 2500
 const reasonOf = (error: unknown): string =>
   error instanceof Error ? error.message : String(error ?? '')
 
-const failed = (messageKey: string, name: string, error: unknown): void =>
+export const failed = (messageKey: string, name: string, error: unknown): void =>
   showNotice({ messageKey, values: { name }, actions: [], detail: reasonOf(error) })
 
 /** Reads the tree again from disk (after any change made by the panel). */
 export const refreshTree = async (bridge: Bridge): Promise<void> => {
   const root = get(fileTree)?.path
   if (!root) return
-  fileTree.set(await bridge.files.listTree(root))
+  const tree = await bridge.files.listTree(root)
+  fileTree.set(tree)
+  pruneSelection(tree)
 }
 
 /** The folder where "New file" goes for a given row: the folder itself, or the one holding the file. */
@@ -118,6 +121,37 @@ export const deleteEntry = async (bridge: Bridge, path: string): Promise<void> =
     return
   }
   await closeOpenFilesUnder(bridge, path)
+  await refreshTree(bridge)
+}
+
+/** Delete on a row: the selected entries when the row is one of them, otherwise only the row. */
+export const deleteSelected = async (bridge: Bridge, path: string): Promise<void> => {
+  const targets = actionTargets(path)
+  if (targets.length === 1) await deleteEntry(bridge, targets[0] ?? path)
+  else await deleteEntries(bridge, targets)
+}
+
+/** One question for all the entries, then each goes to the Recycle Bin and its tabs close. */
+export const deleteEntries = async (bridge: Bridge, paths: string[]): Promise<void> => {
+  const tree = get(fileTree)
+  const nodes = paths.map((path) => findNode(tree, path)).filter((node) => node !== null)
+  if (nodes.length === 0) return
+  const files = nodes.reduce((total, node) => total + countFiles(node), 0)
+  const answer = await confirmDeleteMany(
+    nodes.length,
+    files,
+    nodes.some((node) => hasUnsavedUnder(node.path))
+  )
+  if (answer !== 'delete') return
+  for (const node of nodes) {
+    try {
+      await bridge.files.moveToTrash(node.path)
+    } catch (error) {
+      failed('tree.deleteFailed', node.name, error)
+      break
+    }
+    await closeOpenFilesUnder(bridge, node.path)
+  }
   await refreshTree(bridge)
 }
 

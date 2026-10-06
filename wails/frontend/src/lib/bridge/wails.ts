@@ -77,6 +77,7 @@ const createFilesApi = (): FilesApi => ({
   createFile: (path, text) => FilesService.CreateFile(path, text),
   createFolder: (path) => FilesService.CreateFolder(path),
   rename: (from, to) => FilesService.Rename(from, to),
+  copy: (from, to) => FilesService.Copy(from, to),
   moveToTrash: (path) => FilesService.MoveToTrash(path),
   revealInExplorer: (path) => FilesService.RevealInExplorer(path)
 })

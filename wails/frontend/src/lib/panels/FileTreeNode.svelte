@@ -8,14 +8,14 @@
     clearEditError,
     collapsedFolders,
     commitEdit,
-    deleteEntry,
+    dropTarget,
+    endDrag,
     filesWithProblems,
     openFile,
-    selectedNode,
-    startRename,
-    toggleFolder,
+    selectedPaths,
     treeEdit
   } from '../stores'
+  import { rowEvents } from './fileTreeRow'
   import FileTreeEdit from './FileTreeEdit.svelte'
   import FileTreeMenu from './FileTreeMenu.svelte'
   import FileTreeNode from './FileTreeNode.svelte'
@@ -35,18 +35,10 @@
   )
   const showChildren = $derived(open && (node.children.length > 0 || creatingHere))
 
-  const onKeydown = (event: KeyboardEvent): void => {
-    if (event.key === 'F2' && depth > 0) {
-      event.preventDefault()
-      startRename(node.path)
-    } else if (event.key === 'Delete' && depth > 0) {
-      event.preventDefault()
-      void deleteEntry(bridge, node.path)
-    } else if (event.key === 'Enter' && !node.isDir) {
-      event.preventDefault()
-      void openFile(bridge, node.path)
-    }
-  }
+  const selected = $derived($selectedPaths.includes(node.path))
+  const dropping = $derived(node.isDir && $dropTarget === node.path)
+
+  const events = $derived(rowEvents(bridge, node, depth))
 </script>
 
 {#snippet dirRow(props: Record<string, unknown>)}
@@ -54,17 +46,22 @@
     {...props}
     type="button"
     class="file dir"
-    class:sel={node.path === $selectedNode}
+    class:sel={selected}
+    class:drop={dropping}
+    data-path={node.path}
     style:padding-left={indent}
     aria-expanded={open}
     aria-label={$t(open ? 'panels.collapseFolder' : 'panels.expandFolder', {
       values: { name: node.name }
     })}
-    onclick={() => {
-      selectedNode.set(node.path)
-      toggleFolder(node.path)
-    }}
-    onkeydown={onKeydown}
+    draggable={depth > 0}
+    ondragstart={events.onDragStart}
+    ondragend={endDrag}
+    ondragover={events.onDragOver}
+    ondragleave={() => dropping && dropTarget.set(null)}
+    ondrop={events.onDrop}
+    onclick={events.onClick}
+    onkeydown={events.onKeydown}
   >
     <span aria-hidden="true">{open ? '▾' : '▸'}</span>
     {node.name}
@@ -78,12 +75,18 @@
     class="file"
     data-path={node.path}
     class:on={node.path === $activePath}
-    class:sel={node.path === $selectedNode}
+    class:sel={selected}
     style:padding-left={indent}
     aria-current={node.path === $activePath ? 'true' : undefined}
-    onclick={() => selectedNode.set(node.path)}
+    draggable={depth > 0}
+    ondragstart={events.onDragStart}
+    ondragend={endDrag}
+    ondragover={events.onDragOver}
+    ondragleave={() => dropping && dropTarget.set(null)}
+    ondrop={events.onDrop}
+    onclick={events.onClick}
     ondblclick={() => openFile(bridge, node.path)}
-    onkeydown={onKeydown}
+    onkeydown={events.onKeydown}
   >
     {node.name}
     {#if hasProblems}
@@ -159,6 +162,11 @@
   .file.sel {
     background: var(--rail);
     color: var(--ink);
+  }
+  .file.drop {
+    background: var(--go-soft);
+    outline: 1px dashed var(--go);
+    outline-offset: -1px;
   }
   .file.on {
     background: var(--go-soft);

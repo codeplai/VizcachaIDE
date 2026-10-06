@@ -2,7 +2,11 @@
   import { bridge } from '../bridge'
   import { t } from '../i18n'
   import {
+    canDrop,
     closeFolder,
+    dragPaths,
+    dropEntries,
+    dropTarget,
     fileTree,
     folderOf,
     openFolder,
@@ -20,10 +24,37 @@
       if (event.target !== event.currentTarget) return
       ;(props.oncontextmenu as (event: MouseEvent) => void)?.(event)
     }
+
+  /** The empty area under the rows is the root folder as a drop target. */
+  const overBackground = (event: DragEvent): void => {
+    if (
+      event.target !== event.currentTarget ||
+      !$fileTree ||
+      !canDrop($dragPaths, $fileTree.path)
+    ) {
+      return
+    }
+    event.preventDefault()
+    dropTarget.set($fileTree.path)
+  }
+
+  const dropOnBackground = (event: DragEvent): void => {
+    if (event.target !== event.currentTarget || !$fileTree) return
+    event.preventDefault()
+    void dropEntries(bridge, $fileTree.path)
+  }
 </script>
 
 {#snippet area(props: Record<string, unknown>)}
-  <div {...props} class="tree-area" oncontextmenu={onlyBackground(props)}>
+  <div
+    {...props}
+    class="tree-area"
+    class:drop={$dropTarget === $fileTree?.path}
+    oncontextmenu={onlyBackground(props)}
+    ondragover={overBackground}
+    ondrop={dropOnBackground}
+    role="presentation"
+  >
     <ul class="tree" aria-label={$t('a11y.fileTree')}>
       <FileTreeNode node={$fileTree!} />
     </ul>
@@ -139,6 +170,9 @@
   }
   .tree-area {
     min-height: 100%;
+  }
+  .tree-area.drop {
+    background: var(--go-soft);
   }
   .tree {
     margin: 0;

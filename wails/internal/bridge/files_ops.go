@@ -24,6 +24,11 @@ func (s *FilesService) Rename(from, to string) error {
 	return s.fileOperations().Rename(from, to)
 }
 
+// Copy duplicates a file or folder (recursively); it never overwrites and refuses a target inside the source.
+func (s *FilesService) Copy(from, to string) error {
+	return s.fileOperations().Copy(from, to)
+}
+
 // MoveToTrash sends a file or folder to the Recycle Bin. It never deletes permanently.
 func (s *FilesService) MoveToTrash(path string) error {
 	return s.fileOperations().MoveToTrash(path)

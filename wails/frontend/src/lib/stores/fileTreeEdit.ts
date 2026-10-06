@@ -24,6 +24,8 @@ export const separatorOf = (path: string): string => (path.includes('\\') ? '\\'
 export const joinPath = (folder: string, name: string): string =>
   folder + separatorOf(folder) + name
 export const dirname = (path: string): string => path.slice(0, path.lastIndexOf(separatorOf(path)))
+export const basename = (path: string): string =>
+  path.slice(path.lastIndexOf(separatorOf(path)) + 1)
 export const isInside = (path: string, folder: string): boolean =>
   path === folder || path.startsWith(folder + separatorOf(folder))
 

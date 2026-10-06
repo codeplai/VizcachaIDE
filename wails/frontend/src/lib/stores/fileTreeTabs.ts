@@ -3,6 +3,7 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import { isInside } from './fileTreeEdit'
+import { breakpoints } from './debug'
 import { activePath, buffers, closeFile, dirty, openTabs } from './files'
 import { selectedNode } from './layout'
 import { forgetRecentFile } from './recentFiles'
@@ -28,6 +29,8 @@ export const moveOpenFiles = async (bridge: Bridge, from: string, to: string): P
   const texts = get(buffers)
   buffers.update((all) => rekey(all, moved))
   dirty.update((all) => rekey(all, moved))
+  const stops = get(breakpoints)
+  breakpoints.set(rekey(stops, moved))
   openTabs.update((tabs) => tabs.map(moved))
   activePath.update((path) => (path ? moved(path) : path))
   selectedNode.update((path) => (path ? moved(path) : path))
@@ -38,6 +41,10 @@ export const moveOpenFiles = async (bridge: Bridge, from: string, to: string): P
   for (const path of affected) {
     await bridge.language.closeDocument(path)
     await bridge.language.openDocument(moved(path), texts[path] ?? '')
+  }
+  for (const path of Object.keys(stops).filter((path) => moved(path) !== path)) {
+    await bridge.debug.setBreakpoints(path, [])
+    await bridge.debug.setBreakpoints(moved(path), stops[path] ?? [])
   }
 }
 

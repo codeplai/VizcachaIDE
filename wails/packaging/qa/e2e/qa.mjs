@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | cpp-cmake | rust | newproject | terminal | multi
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | cpp-cmake | rust | newproject | terminal | files | multi
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -22,6 +22,7 @@ import { rustSteps } from './steps-rust.mjs'
 import { multifileSteps } from './steps-multifile.mjs'
 import { newProjectSteps } from './steps-newproject.mjs'
 import { terminalSteps } from './steps-terminal.mjs'
+import { filesSteps } from './steps-files.mjs'
 
 const args = process.argv.slice(2)
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : null)
@@ -145,6 +146,13 @@ const main = async () => {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`terminal-${lang}`, { language: lang, toolPaths }, (ctx) => terminalSteps(ctx, lang))
+      }
+    }
+    // The Files panel: multi-select, copy, cut, paste, duplicate, drag and drop, delete several.
+    if (wants('files')) {
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`files-${lang}`, { language: lang }, (ctx) => filesSteps(ctx, lang))
       }
     }
     // Multi-file projects with an external library in every language (only on request: it

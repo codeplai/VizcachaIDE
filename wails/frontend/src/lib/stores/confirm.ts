@@ -80,6 +80,18 @@ const deleteMessageKey = (details: DeleteDetails): string => {
   return details.files === undefined ? 'confirm.delete' : 'confirm.deleteFolder'
 }
 
+/** Asks once before sending several selected entries to the Recycle Bin. */
+export const confirmDeleteMany = (items: number, files: number, unsaved: boolean) =>
+  ask(
+    unsaved ? 'confirm.deleteManyUnsaved' : 'confirm.deleteMany',
+    { items, files },
+    [
+      { id: 'delete', labelKey: 'confirm.moveToTrash', tone: 'danger' },
+      { id: 'cancel', labelKey: 'confirm.cancel', tone: 'plain' }
+    ],
+    'cancel'
+  )
+
 /** Asks before sending a file or folder to the Recycle Bin. */
 export const confirmDelete = (name: string, details: DeleteDetails = {}) =>
   ask(

@@ -6,6 +6,8 @@ import {bridge} from '../models';
 
 export function ChooseFolder():Promise<string>;
 
+export function Copy(arg1:string,arg2:string):Promise<void>;
+
 export function CreateFile(arg1:string,arg2:string):Promise<void>;
 
 export function CreateFolder(arg1:string):Promise<void>;

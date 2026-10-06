@@ -6,6 +6,10 @@ export function ChooseFolder() {
   return window['go']['bridge']['FilesService']['ChooseFolder']();
 }
 
+export function Copy(arg1, arg2) {
+  return window['go']['bridge']['FilesService']['Copy'](arg1, arg2);
+}
+
 export function CreateFile(arg1, arg2) {
   return window['go']['bridge']['FilesService']['CreateFile'](arg1, arg2);
 }

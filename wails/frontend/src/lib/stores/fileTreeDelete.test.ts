@@ -9,6 +9,8 @@ import {
   commitEdit,
   connectStores,
   deleteEntry,
+  deleteSelected,
+  selectEntry,
   dirty,
   editBuffer,
   fileTree,
@@ -17,6 +19,7 @@ import {
   openFile,
   openFolder,
   openTabs,
+  refreshTree,
   pendingConfirm,
   startCreate,
   treeEdit
@@ -120,5 +123,33 @@ describe('deleting', () => {
     await deleteEntry(bridge, CALC)
     expect(get(notice)?.messageKey).toBe('tree.deleteFailed')
     expect(namesInRoot()).toContain('calculadora.go')
+  })
+})
+
+describe('deleting several selected entries', () => {
+  const toggle = { toggle: true, range: false }
+
+  it('asks once, counting the items and the files, then trashes them all', async () => {
+    startCreate('folder', DIR)
+    await commitEdit(bridge, 'src')
+    await bridge.files.createFile(`${DIR}/src/a.go`, 'package a')
+    await refreshTree(bridge)
+    await openFile(bridge, CALC)
+    selectEntry(CALC, { toggle: false, range: false })
+    selectEntry(`${DIR}/src`, toggle)
+    const answer = answerWith('delete')
+    await deleteSelected(bridge, CALC)
+    expect(answer.asked()).toBe('confirm.deleteMany')
+    expect(namesInRoot()).not.toContain('calculadora.go')
+    expect(namesInRoot()).not.toContain('src')
+    expect(get(openTabs)).toEqual([])
+  })
+
+  it('cancelling keeps everything', async () => {
+    selectEntry(CALC, { toggle: false, range: false })
+    selectEntry(MAIN, toggle)
+    answerWith('cancel')
+    await deleteSelected(bridge, MAIN)
+    expect(namesInRoot()).toEqual(expect.arrayContaining(['main.go', 'calculadora.go']))
   })
 })

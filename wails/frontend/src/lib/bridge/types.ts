@@ -135,6 +135,8 @@ export interface FilesApi {
   createFolder: (path: string) => Promise<void>
   /** Fails if the target already exists. */
   rename: (from: string, to: string) => Promise<void>
+  /** Copies a file or folder (recursively); fails if the target exists or is inside the source. */
+  copy: (from: string, to: string) => Promise<void>
   /** Sends the file or folder to the Recycle Bin; it never deletes permanently. */
   moveToTrash: (path: string) => Promise<void>
   revealInExplorer: (path: string) => Promise<void>
