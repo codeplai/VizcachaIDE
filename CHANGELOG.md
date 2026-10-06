@@ -8,6 +8,8 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-10-05
+
 ### Added
 - **C++ projects use CMake**: a new C++ project is a CMake project (`CMakeLists.txt`, `CMakePresets.json`,
   `vcpkg.json`, `.gitignore`, `main.cpp` and `.clang-format`; no more `compile_flags.txt`). Every `.cpp` in the
@@ -48,6 +50,7 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   sources), else the default of Settings. It used to be always a `.go`.
 
 ### Fixed
+- The empty Problems tab said "Go checks your code as you type" in every language; it now names VizcachaIDE.
 - pip's "A new release of pip is available" notice no longer shows after installing (it looked
   like an error), and installing a package no longer leaves a false problem ("os error 2"): the
   check that follows a successful run skipped Go's commands but not pip's or cargo's.
@@ -334,6 +337,8 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 
 ## [Sin publicar]
 
+## [2.5.0] - 2026-10-05
+
 ### Añadido
 - **Los proyectos C++ usan CMake**: un proyecto C++ nuevo es un proyecto CMake (`CMakeLists.txt`,
   `CMakePresets.json`, `vcpkg.json`, `.gitignore`, `main.cpp` y `.clang-format`; ya no hay `compile_flags.txt`).
@@ -376,6 +381,7 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   `compile_flags.txt`… o la mayoría de sus fuentes), si no el de Ajustes. Antes era siempre un `.go`.
 
 ### Corregido
+- La pestaña Problemas vacía decía "Go revisa tu código mientras escribes" en todos los lenguajes; ahora nombra a VizcachaIDE.
 - Ya no aparece el aviso de pip "A new release of pip is available" al instalar (parecía un error),
   e instalar un paquete ya no deja un problema falso ("os error 2"): la comprobación que sigue a una
   ejecución correcta omitía los comandos de Go pero no los de pip ni cargo.

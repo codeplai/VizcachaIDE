@@ -99,7 +99,7 @@
   "empty.filesAction": "Abrir carpeta",
   "empty.outline": "Las funciones y tipos de este archivo aparecen aquí cuando Go termina de leerlo.",
   "empty.output": "Todavía no hay nada. Pulsa Ejecutar (F5) para ver lo que imprime tu programa.",
-  "empty.problems": "No hay problemas. Go revisa tu código mientras escribes.",
+  "empty.problems": "No hay problemas. VizcachaIDE revisa tu código mientras escribes.",
   "empty.tipDebugLead": "Para ver tu programa paso a paso,",
   "empty.tipDebugRest": "haz clic junto a un número de línea y pulsa Depurar.",
   "empty.tipRunLead": "Pulsa Ejecutar o F5",

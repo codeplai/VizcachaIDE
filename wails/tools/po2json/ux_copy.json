@@ -47,7 +47,7 @@
   "empty.files": { "en": "No folder open. Open a folder to see your project's files here.", "es": "No hay ninguna carpeta abierta. Abre una para ver aquí los archivos de tu proyecto." },
   "empty.filesAction": { "en": "Open folder", "es": "Abrir carpeta" },
   "empty.output": { "en": "Nothing here yet. Press Run (F5) to see what your program prints.", "es": "Todavía no hay nada. Pulsa Ejecutar (F5) para ver lo que imprime tu programa." },
-  "empty.problems": { "en": "No problems found. Go checks your code as you type.", "es": "No hay problemas. Go revisa tu código mientras escribes." },
+  "empty.problems": { "en": "No problems found. VizcachaIDE checks your code as you type.", "es": "No hay problemas. VizcachaIDE revisa tu código mientras escribes." },
   "empty.variables": { "en": "Variables appear when the program pauses. Add a breakpoint and press Debug.", "es": "Las variables aparecen cuando el programa se pausa. Pon un punto de interrupción y pulsa Depurar." },
   "empty.outline": { "en": "Functions and types of this file appear here once Go has read it.", "es": "Las funciones y tipos de este archivo aparecen aquí cuando Go termina de leerlo." },
   "empty.tipRunLead": { "en": "Press Run or F5", "es": "Pulsa Ejecutar o F5" },

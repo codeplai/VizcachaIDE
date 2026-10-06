@@ -99,7 +99,7 @@
   "empty.filesAction": "Open folder",
   "empty.outline": "Functions and types of this file appear here once Go has read it.",
   "empty.output": "Nothing here yet. Press Run (F5) to see what your program prints.",
-  "empty.problems": "No problems found. Go checks your code as you type.",
+  "empty.problems": "No problems found. VizcachaIDE checks your code as you type.",
   "empty.tipDebugLead": "To watch your program step by step,",
   "empty.tipDebugRest": "click next to a line number and press Debug.",
   "empty.tipRunLead": "Press Run or F5",
