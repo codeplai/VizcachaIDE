@@ -108,6 +108,23 @@ const createTerminalApi = (): TerminalApi => ({
   close: (id) => TerminalService.Close(id)
 })
 
+const createLanguageApi = (): Bridge['language'] => ({
+  openDocument: (path, text) => LanguageService.OpenDocument(path, text),
+  changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
+  closeDocument: (path) => LanguageService.CloseDocument(path),
+  untitledFile: (name) => LanguageService.UntitledFile(name),
+  completion: async (at) => fromWire(await LanguageService.Completion(toWire(at))),
+  hover: (at) => LanguageService.Hover(toWire(at)),
+  definition: async (at) => fromWire(await LanguageService.Definition(toWire(at))),
+  signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
+  documentHighlights: async (at) => fromWire(await LanguageService.DocumentHighlights(toWire(at))),
+  documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
+  inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible))),
+  prepareRename: async (at) => fromWire(await LanguageService.PrepareRename(toWire(at))),
+  rename: async (at, newName) => fromWire(await LanguageService.Rename(toWire(at), newName)),
+  references: async (at) => fromWire(await LanguageService.References(toWire(at)))
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
@@ -115,22 +132,7 @@ export const createWailsBridge = (): Bridge => ({
   projects: createProjectsApi(),
   codeLanguages: createCodeLanguagesApi(),
   debug: createDebugApi(),
-  language: {
-    openDocument: (path, text) => LanguageService.OpenDocument(path, text),
-    changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
-    closeDocument: (path) => LanguageService.CloseDocument(path),
-    completion: async (at) => fromWire(await LanguageService.Completion(toWire(at))),
-    hover: (at) => LanguageService.Hover(toWire(at)),
-    definition: async (at) => fromWire(await LanguageService.Definition(toWire(at))),
-    signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
-    documentHighlights: async (at) =>
-      fromWire(await LanguageService.DocumentHighlights(toWire(at))),
-    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
-    inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible))),
-    prepareRename: async (at) => fromWire(await LanguageService.PrepareRename(toWire(at))),
-    rename: async (at, newName) => fromWire(await LanguageService.Rename(toWire(at), newName)),
-    references: async (at) => fromWire(await LanguageService.References(toWire(at)))
-  },
+  language: createLanguageApi(),
   assistant: {
     explain: async (codeLanguage, raw, dir) =>
       fromWire(await AssistantService.Explain(toWire(codeLanguage), raw, dir)),

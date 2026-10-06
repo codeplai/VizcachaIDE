@@ -27,3 +27,5 @@ export function References(arg1:domain.SourceLocation):Promise<Array<domain.Refe
 export function Rename(arg1:domain.SourceLocation,arg2:string):Promise<domain.RenameResult>;
 
 export function SignatureHelp(arg1:domain.SourceLocation):Promise<domain.SignatureHelp>;
+
+export function UntitledFile(arg1:string):Promise<string>;

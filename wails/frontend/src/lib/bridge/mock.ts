@@ -46,6 +46,7 @@ const mockBasics = (
   },
   changeDocument: async (path, text) => void documents.set(path, text),
   closeDocument: async (path) => void documents.delete(path),
+  untitledFile: async (name) => `untitled/${name}`,
   completion: async () => [
     {
       label: 'Println',
