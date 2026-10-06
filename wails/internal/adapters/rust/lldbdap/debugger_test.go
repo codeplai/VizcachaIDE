@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -59,6 +60,9 @@ func fakeDebugger(t *testing.T, locator *rust.Locator) (*Debugger, *eventSink) {
 }
 
 func TestInitCommandsLoadTheFormattersAndStopAtPanic(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("Windows paths: elsewhere a backslash is part of a file name, not a separator")
+	}
 	toolchain := rust.Toolchain{Sysroot: `C:\Users\Ana María\rust`}
 	commands := InitCommands(toolchain, true, `C:\cache\vizcacha_rust_enums.py`)
 	if len(commands) != 3 || commands[0] != "breakpoint set --name rust_panic" ||
