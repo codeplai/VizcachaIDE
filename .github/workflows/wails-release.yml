@@ -176,8 +176,9 @@ jobs:
       - name: Checksums
         working-directory: release-assets
         run: |
-          rm -f SHA256SUMS-*.txt
-          sha256sum * > SHA256SUMS.txt
+          # The SHA256SUMS-<os>-<arch>.txt of each build stay: the IDE's updater verifies its
+          # download with the one of its platform. SHA256SUMS.txt covers everything for people.
+          sha256sum $(ls | grep -v '^SHA256SUMS') > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
       - name: Release notes (EN/ES)
@@ -193,12 +194,14 @@ jobs:
           | \`*-full-*\` | IDE + Go, Delve, gopls and Python (debugpy, python-lsp-server, ruff); on Windows also C++ (clang, lldb-dap, clangd, clang-format): nothing else to install |
           | \`*-full-go-*\` | IDE + Go, Delve and gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 with debugger, completion and formatter |
-          | \`*-windows-amd64-full-cpp-*\` | Windows only: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format). On macOS and Linux C++ uses the compiler of the system |
+          | \`*-windows-amd64-full-cpp-*\` | Windows only: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format) with CMake, Ninja and vcpkg for libraries. On macOS and Linux C++ uses the compiler of the system |
           | \`*-lite-*\` | IDE only; uses the Go / Python installed on your system |
           | \`*-windows-amd64-*-setup.exe\` | Windows installer (per user, no administrator) |
           | \`*-portable.zip\` | Windows, no installation needed |
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |
           | \`*.AppImage\` / \`*.tar.gz\` | Linux x86_64 (needs WebKitGTK 4.1: \`libwebkit2gtk-4.1-0\`) |
+
+          Rust is not bundled: VizcachaIDE uses the Rust installed with rustup (it tells you how). What changed: \`CHANGELOG.md\`.
 
           macOS and Windows builds are not code-signed yet: on macOS right-click the app and choose
           **Open** the first time; on Windows choose **More info > Run anyway** in SmartScreen.
@@ -211,12 +214,14 @@ jobs:
           | \`*-full-*\` | IDE + Go, Delve, gopls y Python (debugpy, python-lsp-server, ruff); en Windows también C++ (clang, lldb-dap, clangd, clang-format): no hace falta instalar nada más |
           | \`*-full-go-*\` | IDE + Go, Delve y gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 con depurador, autocompletado y formateador |
-          | \`*-windows-amd64-full-cpp-*\` | Sólo Windows: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format). En macOS y Linux C++ usa el compilador del sistema |
+          | \`*-windows-amd64-full-cpp-*\` | Sólo Windows: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format) con CMake, Ninja y vcpkg para librerías. En macOS y Linux C++ usa el compilador del sistema |
           | \`*-lite-*\` | Sólo el IDE; usa el Go o el Python instalado en tu sistema |
           | \`*-windows-amd64-*-setup.exe\` | Instalador de Windows (por usuario, sin administrador) |
           | \`*-portable.zip\` | Windows, sin instalación |
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |
           | \`*.AppImage\` / \`*.tar.gz\` | Linux x86_64 (requiere WebKitGTK 4.1: \`libwebkit2gtk-4.1-0\`) |
+
+          Rust no viene incluido: VizcachaIDE usa el Rust instalado con rustup (te indica cómo). Qué cambió: \`CHANGELOG.md\`.
 
           Las versiones de macOS y Windows aún no están firmadas: en macOS, clic derecho sobre la
           app y **Abrir** la primera vez; en Windows, **Más información > Ejecutar de todos modos**.
