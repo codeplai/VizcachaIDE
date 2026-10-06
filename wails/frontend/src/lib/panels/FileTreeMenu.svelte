@@ -5,10 +5,15 @@
   import { t } from '../i18n'
   import {
     closeFolder,
+    copyEntries,
     copyPath,
-    deleteEntry,
+    cutEntries,
+    deleteSelected,
+    duplicateEntries,
     fileTree,
     folderOf,
+    panelClipboard,
+    pasteEntries,
     revealEntry,
     startCreate,
     startRename
@@ -28,6 +33,7 @@
   /** The open folder itself (its row or the empty area) can be closed; its subfolders cannot. */
   const isRoot = $derived($fileTree !== null && (path === null || path === $fileTree.path))
   const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
+  const mod = isMac ? '⌘' : 'Ctrl+'
 </script>
 
 <ContextMenu.Root>
@@ -44,14 +50,33 @@
       <ContextMenu.Item class="menu-item" onSelect={() => startCreate('folder', folderOf(path))}>
         {$t('tree.newFolder')}
       </ContextMenu.Item>
+      <ContextMenu.Separator class="menu-sep" />
       {#if canChange && path}
+        <ContextMenu.Item class="menu-item tree-menu-row" onSelect={() => cutEntries(path)}>
+          {$t('tree.cut')}<kbd>{mod}X</kbd>
+        </ContextMenu.Item>
+        <ContextMenu.Item class="menu-item tree-menu-row" onSelect={() => copyEntries(path)}>
+          {$t('tree.copy')}<kbd>{mod}C</kbd>
+        </ContextMenu.Item>
+      {/if}
+      <ContextMenu.Item
+        class="menu-item tree-menu-row"
+        disabled={!$panelClipboard}
+        onSelect={() => void pasteEntries(bridge, folderOf(path) ?? undefined)}
+      >
+        {$t('tree.paste')}<kbd>{mod}V</kbd>
+      </ContextMenu.Item>
+      {#if canChange && path}
+        <ContextMenu.Item class="menu-item" onSelect={() => void duplicateEntries(bridge, path)}>
+          {$t('tree.duplicate')}
+        </ContextMenu.Item>
         <ContextMenu.Separator class="menu-sep" />
         <ContextMenu.Item class="menu-item tree-menu-row" onSelect={() => startRename(path)}>
           {$t('tree.rename')}<kbd>F2</kbd>
         </ContextMenu.Item>
         <ContextMenu.Item
           class="menu-item tree-menu-row"
-          onSelect={() => void deleteEntry(bridge, path)}
+          onSelect={() => void deleteSelected(bridge, path)}
         >
           {$t('tree.delete')}<kbd>{$t('tree.deleteKey')}</kbd>
         </ContextMenu.Item>

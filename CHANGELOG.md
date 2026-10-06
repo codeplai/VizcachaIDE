@@ -8,6 +8,15 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Added
+- Files panel: select several entries (Ctrl/Cmd+click toggles, Shift+click selects a range, Escape clears) and
+  delete them with one confirmation that counts the items and the files inside them.
+- Files panel: move files and folders by dragging them onto a folder (or the empty area for the root), or with
+  Cut and Paste (Ctrl/Cmd+X, Ctrl/Cmd+V while the panel has the focus). Open tabs, unsaved changes, breakpoints
+  and the language server follow the moved files. A folder cannot be dropped into itself.
+- Files panel: Copy, Paste (Ctrl/Cmd+C, Ctrl/Cmd+V) and Duplicate for files and folders. Copies never overwrite:
+  they are named `name (copy).ext`, `name (copy 2).ext` (`nombre (copia).ext` in Spanish).
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed
@@ -353,6 +362,16 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Añadido
+- Panel Archivos: selecciona varias entradas (Ctrl/Cmd+clic alterna, Mayús+clic selecciona un rango, Escape
+  limpia) y elimínalas con una sola confirmación que cuenta los elementos y los archivos que contienen.
+- Panel Archivos: mueve archivos y carpetas arrastrándolos a una carpeta (o al área vacía para la raíz), o con
+  Cortar y Pegar (Ctrl/Cmd+X, Ctrl/Cmd+V con el foco en el panel). Las pestañas abiertas, los cambios sin guardar,
+  los puntos de interrupción y el servidor de lenguaje siguen a los archivos movidos. Una carpeta no se puede
+  soltar dentro de sí misma.
+- Panel Archivos: Copiar, Pegar (Ctrl/Cmd+C, Ctrl/Cmd+V) y Duplicar para archivos y carpetas. Las copias nunca
+  sobrescriben: se llaman `nombre (copia).ext`, `nombre (copia 2).ext` (`name (copy).ext` en inglés).
 
 ## [2.6.0] - 2026-10-06
 
