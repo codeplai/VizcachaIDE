@@ -7,6 +7,7 @@
 import type { CodeLanguage } from './domainCodeLanguage'
 
 export * from './domainCodeLanguage'
+export * from './domainSearch'
 export * from './domainSettings'
 
 export type Severity = 'error' | 'warning' | 'info' | 'hint'

@@ -10,7 +10,7 @@ import { breakpointGutter } from './breakpointGutter'
 import type { DocumentContext, LanguageApi } from './documentContext'
 import { isExternalEdit } from './externalEdit'
 import { documentSync } from './documentSync'
-import { goCompletion } from './lspCompletion'
+import { editorCompletion } from './completions'
 import { goToDefinition, type OpenLocation } from './goToDefinition'
 import { hoverDocs } from './hoverDocs'
 import { inlayHints, type InlayHints } from './inlayHints'
@@ -52,7 +52,6 @@ const languageExtensions = (
   const { language, openLocation } = wiring
   return [
     ...(inlay ? [inlay.extension] : []),
-    goCompletion(language, file),
     hoverDocs(language, file),
     signatureHelp(language, file),
     goToDefinition(language, file, openLocation)
@@ -102,6 +101,7 @@ export const editorExtensions = (
     editorHighlighting,
     inlineHints,
     ...(sync ? [sync.extension] : []),
+    editorCompletion(wiring?.language ?? null, file),
     ...languageExtensions(wiring, file, inlay),
     EditorView.updateListener.of((update) => {
       if (update.docChanged && !isExternalEdit(update))

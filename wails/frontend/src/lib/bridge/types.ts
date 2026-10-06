@@ -20,9 +20,10 @@ import type {
   ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
+import type { SearchApi } from './typesSearch'
 import type { TerminalApi, UpdatesApi } from './typesShell'
 
-export type { TerminalApi, UpdatesApi }
+export type { SearchApi, TerminalApi, UpdatesApi }
 
 export type Unsubscribe = () => void
 
@@ -181,6 +182,7 @@ export interface Bridge {
   assistant: AssistantApi
   console: ConsoleApi
   files: FilesApi
+  search: SearchApi
   settings: SettingsApi
   updates: UpdatesApi
   terminal: TerminalApi

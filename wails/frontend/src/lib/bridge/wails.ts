@@ -5,6 +5,7 @@ import * as DebugService from '../../../wailsjs/go/bridge/DebugService'
 import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
+import * as SearchService from '../../../wailsjs/go/bridge/SearchService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import * as TerminalService from '../../../wailsjs/go/bridge/TerminalService'
 import * as UpdatesService from '../../../wailsjs/go/bridge/UpdatesService'
@@ -20,6 +21,7 @@ import type {
   DebugApi,
   FilesApi,
   RunApi,
+  SearchApi,
   TerminalApi,
   UpdatesApi
 } from './types'
@@ -81,6 +83,15 @@ const createFilesApi = (): FilesApi => ({
   revealInExplorer: (path) => FilesService.RevealInExplorer(path)
 })
 
+const createSearchApi = (): SearchApi => ({
+  search: async (root, query, options) =>
+    fromWire(await SearchService.Search(root, query, toWire(options))),
+  replace: async (root, query, options, replacement, paths, line, column) =>
+    fromWire(
+      await SearchService.Replace(root, query, toWire(options), replacement, paths, line, column)
+    )
+})
+
 const createUpdatesApi = (): UpdatesApi => ({
   state: async () => fromWire(await UpdatesService.State()),
   check: async () => fromWire(await UpdatesService.Check()),
@@ -123,6 +134,7 @@ export const createWailsBridge = (): Bridge => ({
   },
   console: createConsoleApi(),
   files: createFilesApi(),
+  search: createSearchApi(),
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),
