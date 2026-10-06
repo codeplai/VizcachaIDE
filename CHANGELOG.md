@@ -8,6 +8,8 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-10-06
+
 ### Added
 - Files panel: select several entries (Ctrl/Cmd+click toggles, Shift+click selects a range, Escape clears) and
   delete them with one confirmation that counts the items and the files inside them.
@@ -393,6 +395,8 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.7.0] - 2026-10-06
 
 ### Añadido
 - Panel Archivos: selecciona varias entradas (Ctrl/Cmd+clic alterna, Mayús+clic selecciona un rango, Escape
