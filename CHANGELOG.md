@@ -33,6 +33,13 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   python-lsp-server, clangd and rust-analyzer.
 - Find all references: press Shift+F12 (or More > Find all references) to list every use of the name under the
   cursor in a new References tab, grouped by file with the text of each line; a click opens the file at that place.
+- A rename is undone as a whole: the Undo button of its message, or Ctrl+Z right after it, restores every file
+  (open ones and files on disk), never just the one on screen.
+
+### Fixed
+- The code helpers (gopls, rust-analyzer, clangd, python-lsp-server) now hear when another program or git creates,
+  changes or deletes a source file of the project that is not open, so errors and references stay correct.
+- Rename no longer offers a keyword such as `func` as a name to change.
 
 ## [2.6.0] - 2026-10-06
 
@@ -408,6 +415,14 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 - Buscar todas las referencias: presiona Shift+F12 (o Más > Buscar todas las referencias) para listar cada uso del
   nombre bajo el cursor en una pestaña nueva, Referencias, agrupados por archivo y con el texto de cada línea; un
   clic abre el archivo en ese lugar.
+- Un cambio de nombre se deshace completo: el botón Deshacer de su mensaje, o Ctrl+Z justo después, restaura todos
+  los archivos (los abiertos y los del disco), no solo el que está en pantalla.
+
+### Corregido
+- Los ayudantes de código (gopls, rust-analyzer, clangd y python-lsp-server) ahora se enteran cuando otro programa
+  o git crea, cambia o borra un archivo de código del proyecto que no está abierto, y los errores y las
+  referencias se mantienen correctos.
+- Renombrar ya no ofrece una palabra reservada como `func` como nombre a cambiar.
 
 ## [2.6.0] - 2026-10-06
 

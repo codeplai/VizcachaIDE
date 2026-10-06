@@ -35,6 +35,7 @@ func NewFlavor(cfg Config) Flavor { return Flavor{cfg: cfg} }
 
 // New creates the C++ language server: clangd starts on the first OpenDocument.
 func New(sink app.EventSink, cfg Config, options lsp.Options) *lsp.Server {
+	options.SourceExtensions = []string{".cpp", ".cc", ".cxx", ".c", ".h", ".hpp", ".hh", ".hxx"}
 	options.Name, options.LanguageID, options.CodeLanguage = serverName, languageID, domain.CodeLanguageCpp
 	return lsp.New(sink, NewFlavor(cfg), options)
 }

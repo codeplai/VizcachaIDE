@@ -48,6 +48,7 @@ func NewFlavor(cfg Config) *Flavor { return &Flavor{cfg: cfg} }
 
 // New creates the Rust language server: rust-analyzer starts on the first OpenDocument.
 func New(sink app.EventSink, cfg Config, options lsp.Options) *lsp.Server {
+	options.SourceExtensions = []string{".rs"}
 	options.Name, options.LanguageID, options.CodeLanguage = serverName, languageID, domain.CodeLanguageRust
 	return lsp.New(sink, NewFlavor(cfg), options)
 }

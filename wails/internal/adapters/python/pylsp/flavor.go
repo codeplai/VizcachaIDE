@@ -40,6 +40,7 @@ func NewFlavor(cfg Config) Flavor {
 
 // New creates the Python language server: pylsp starts on the first OpenDocument.
 func New(sink app.EventSink, cfg Config, options lsp.Options) *lsp.Server {
+	options.SourceExtensions = []string{".py", ".pyi"}
 	options.Name, options.LanguageID, options.CodeLanguage = serverName, languageID, domain.CodeLanguagePython
 	return lsp.New(sink, NewFlavor(cfg), options)
 }

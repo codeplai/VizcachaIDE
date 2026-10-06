@@ -62,6 +62,7 @@ func (s *Server) exchange(ctx context.Context, limit time.Duration, method strin
 		return nil, errNotAnnounced
 	}
 	s.noticeManifests(ctx, conn)
+	s.noticeSources(ctx, conn)
 	result, err := conn.call(ctx, method, params)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {

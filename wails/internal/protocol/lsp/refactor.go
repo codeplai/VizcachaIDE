@@ -50,7 +50,7 @@ func (s *Server) PrepareRename(ctx context.Context, at domain.SourceLocation) (d
 		return domain.RenameTarget{Refusal: domain.RenameUnsupported}, nil
 	}
 	if !s.refactor.prepare.Load() {
-		return domain.RenameTarget{}, nil
+		return s.vetRenameTarget(doc, at, domain.RenameTarget{}), nil
 	}
 	raw, err := s.exchange(ctx, refactorTimeout, "textDocument/prepareRename", positionParams(doc, at.Line, at.Column), nil)
 	if err != nil {
@@ -60,7 +60,7 @@ func (s *Server) PrepareRename(ctx context.Context, at domain.SourceLocation) (d
 		}
 		return domain.RenameTarget{Refusal: reason, Detail: detail}, nil
 	}
-	return toRenameTarget(raw, doc), nil
+	return s.vetRenameTarget(doc, at, toRenameTarget(raw, doc)), nil
 }
 
 // toRenameTarget maps a prepareRename result: Range, {range, placeholder},

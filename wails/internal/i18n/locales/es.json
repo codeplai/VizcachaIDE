@@ -617,6 +617,13 @@
     "one": "Se renombró en {{.places}} lugar de {files, plural, one {# archivo} other {# archivos}}.",
     "other": "Se renombró en {{.places}} lugares de {files, plural, one {# archivo} other {# archivos}}."
   },
+  "refactor.undo": "Deshacer",
+  "refactor.undoPartial": {
+    "one": "No se pudo restaurar {{.files}} archivo porque cambió después del cambio de nombre.",
+    "other": "No se pudieron restaurar {{.files}} archivos porque cambiaron después del cambio de nombre."
+  },
+  "refactor.undoStale": "No se deshizo el cambio de nombre: modificaste esos archivos después.",
+  "refactor.undone": "Se deshizo el cambio de nombre en todos sus archivos.",
   "refactor.unsupported": "El ayudante de código de este lenguaje no puede renombrar nombres aquí.",
   "refactor.unsupportedPython": "Python todavía no puede renombrar nombres: su ayudante de código necesita el paquete rope. Instálalo con:",
   "references.empty": "No se encontraron usos. Pon el cursor sobre un nombre y presiona Shift+F12.",

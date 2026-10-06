@@ -113,6 +113,29 @@ describe('rename in the editor (F2)', () => {
   })
 })
 
+describe('Ctrl+Z right after a rename', () => {
+  const ctrlZ = (): void => {
+    parent
+      .querySelector('.cm-content')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true }))
+  }
+
+  it('undoes the whole rename instead of only this file', () => {
+    refactor.undoRename = vi.fn(() => true)
+    handle.applyChanges(FILE, [{ from: 19, to: 24, insert: 'suma' }])
+    ctrlZ()
+    expect(refactor.undoRename).toHaveBeenCalled()
+    expect(parent.querySelector('.cm-content')?.textContent).toContain('func suma(') // not undone alone
+  })
+
+  it('leaves Ctrl+Z to the editor when there is no fresh rename', () => {
+    refactor.undoRename = vi.fn(() => false)
+    handle.applyChanges(FILE, [{ from: 19, to: 24, insert: 'suma' }])
+    ctrlZ()
+    expect(parent.querySelector('.cm-content')?.textContent).toContain('func sumar(')
+  })
+})
+
 describe('find references in the editor (Shift+F12)', () => {
   it('asks for the uses of the word under the cursor', async () => {
     press('F12', true)

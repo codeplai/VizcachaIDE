@@ -13,15 +13,20 @@ const HELPER = 'package main\n\n// Greet says hello to a name.\nfunc Greet(name 
 const MAIN = 'package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("😀 año", Greet("vizcacha"))\n\tfmt.Println(Greet("otra"))\n}\n'
 
 const NOTICE = {
-  en: /Renamed in 3 places across 2 files/,
-  es: /Se renombró en 3 lugares de 2 archivos/
+  // gopls also renames the doc comment of the function, so the number of places is its own.
+  en: /Renamed in \d+ places? across 2 files/,
+  es: /Se renombró en \d+ lugares? de 2 archivos/
 }
 const REFUSED = {
   en: /cannot be renamed/,
   es: /no se puede renombrar/
 }
+const UNDONE = {
+  en: /rename was undone in all its files/,
+  es: /Se deshizo el cambio de nombre en todos sus archivos/
+}
 const REFERENCES_TAB = { en: 'References', es: 'Referencias' }
-const SUMMARY = { en: /3 uses of “Greet” in 2 files/, es: /3 usos de «Greet» en 2 archivos/ }
+const SUMMARY = { en: /\d+ uses of “Greet” in 2 files/, es: /\d+ usos de «Greet» en 2 archivos/ }
 
 /** Mouse-free: puts the cursor inside the first occurrence of a word on a line. */
 const cursorOn = (page, line, word) =>
@@ -101,15 +106,17 @@ export const refactorSteps = (ctx, lang) => {
     return `notice: ${(await noticeText(page)).split('\n')[0]}; tab: ${unsaved.trim()}`
   })
 
-  add('undo', 'Ctrl+Z undoes the rename of the open file in one step', async () => {
+  add('undo', 'Ctrl+Z right after the rename undoes it in every file, also helper.go on disk', async () => {
     await page.click('.cm-content')
     await page.keyboard.down('Control')
     await page.keyboard.press('z')
     await page.keyboard.up('Control')
-    await L.sleep(500)
+    await page.waitForFunction((re) => new RegExp(re).test(document.querySelector('.notice')?.innerText ?? ''), { timeout: 15000 }, UNDONE[lang].source)
     const text = await U.editorText(page)
     must(text === MAIN, `after undo main.go = ${text}`)
-    return 'main.go is back to Greet'
+    const helper = fs.readFileSync(path.join(root, 'helper.go'), 'utf8')
+    must(helper === HELPER, `after undo helper.go = ${helper}`)
+    return 'main.go and helper.go are back to Greet'
   })
 
   add('keyword', 'F2 on a keyword is refused with a translated message', async () => {
@@ -121,8 +128,8 @@ export const refactorSteps = (ctx, lang) => {
   })
 
   add('references', 'Shift+F12 lists the uses grouped by file and a click opens the file there', async () => {
-    // The rename above changed helper.go on disk: put it back and tell gopls via a fresh reload.
-    fs.writeFileSync(path.join(root, 'helper.go'), HELPER)
+    // Another program rewrites helper.go (closed): gopls must hear about it without a reload.
+    fs.writeFileSync(path.join(root, 'helper.go'), HELPER.replace('Greet says', 'Greet still says'))
     await L.go(page, 'FilesService', 'ListTree', root)
     await U.reload(page, ctx.url)
     await U.openByName(page, 'main.go', 'refactor/')

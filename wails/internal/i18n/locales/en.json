@@ -617,6 +617,13 @@
     "one": "Renamed in {{.places}} place across {files, plural, one {# file} other {# files}}.",
     "other": "Renamed in {{.places}} places across {files, plural, one {# file} other {# files}}."
   },
+  "refactor.undo": "Undo",
+  "refactor.undoPartial": {
+    "one": "{{.files}} file could not be restored because it changed after the rename.",
+    "other": "{{.files}} files could not be restored because it changed after the rename."
+  },
+  "refactor.undoStale": "The rename was not undone: you changed those files after it.",
+  "refactor.undone": "The rename was undone in all its files.",
   "refactor.unsupported": "The code helper of this language cannot rename names here.",
   "refactor.unsupportedPython": "Python cannot rename names yet: its code helper needs the rope package. Install it with:",
   "references.empty": "No uses found. Put the cursor on a name and press Shift+F12.",

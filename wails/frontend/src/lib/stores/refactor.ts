@@ -3,12 +3,18 @@
 import { get } from 'svelte/store'
 import type { Bridge } from '../bridge'
 import type { FileEdit, RenameRefusal, RenameTarget, SourceLocation } from '../domain'
-import { samePath } from '../samePath'
 import { applyChanges, editsToChanges, type Change } from '../textEdits'
 import { codeLanguageOf } from './codeLanguages'
 import { editorBridge } from './editorBridge'
 import { activePath, baseName, buffers, dirty } from './files'
 import { showNotice } from './notice'
+import {
+  openPathOf,
+  refreshClosedFile,
+  rememberRename,
+  undoRename,
+  type FileSnapshot
+} from './refactorUndo'
 
 const REFUSAL_KEYS: Record<Exclude<RenameRefusal, ''>, string> = {
   notRenameable: 'refactor.notRenameable',
@@ -31,9 +37,6 @@ const explainRefusal = (path: string, refusal: RenameRefusal, detail = ''): void
   showNotice({ messageKey: REFUSAL_KEYS[refusal], values: { reason: detail }, actions: [] })
 }
 
-const openPathOf = (file: string): string | null =>
-  Object.keys(get(buffers)).find((path) => samePath(path, file)) ?? null
-
 /** Whether the symbol can be renamed. When it cannot, the notice says why and this is null. */
 export const prepareRename = async (
   bridge: Bridge,
@@ -48,6 +51,8 @@ export const prepareRename = async (
 interface Applied {
   places: number
   files: number
+  /** What each file was before and after, to undo the rename as a whole. */
+  snapshots: FileSnapshot[]
 }
 
 /** Edits an open file: through the editor when it has the file (undoable), else its text. */
@@ -55,41 +60,61 @@ const editOpenFile = async (
   bridge: Bridge,
   path: string,
   edits: FileEdit['edits']
-): Promise<number> => {
+): Promise<{ places: number; snapshot: FileSnapshot | null }> => {
   const before = get(buffers)[path] ?? ''
+  const wasDirty = get(dirty)[path] ?? false
   const changes: Change[] = editsToChanges(before, edits)
-  if (changes.length === 0) return 0
+  if (changes.length === 0) return { places: 0, snapshot: null }
   const handled = editorBridge()?.applyChanges(path, changes) ?? false
-  const text = applyChanges(before, changes)
   if (!handled || path !== get(activePath)) {
+    const text = applyChanges(before, changes)
     buffers.update((all) => ({ ...all, [path]: text }))
     await bridge.language.changeDocument(path, text, 0) // the active file's editor syncs itself
   }
   dirty.update((all) => ({ ...all, [path]: true }))
-  return changes.length
+  const after = get(buffers)[path] ?? ''
+  return { places: changes.length, snapshot: { path, open: true, before, after, wasDirty } }
 }
 
-/** The language server reads closed files from disk: let it know they changed. */
-const refreshClosedFile = async (bridge: Bridge, path: string): Promise<void> => {
-  const text = await bridge.files.readFile(path)
-  await bridge.language.openDocument(path, text)
-  await bridge.language.closeDocument(path)
+/** Edits the closed files on disk and tells the language server; remembers their old text. */
+const editClosedFiles = async (bridge: Bridge, files: FileEdit[]): Promise<Applied> => {
+  const snapshots: FileSnapshot[] = []
+  const olds = await Promise.all(files.map((file) => bridge.files.readFile(file.file)))
+  const summary = await bridge.files.applyTextEdits(files)
+  for (const [index, file] of files.entries()) {
+    const after = await bridge.files.readFile(file.file)
+    snapshots.push({
+      path: file.file,
+      open: false,
+      before: olds[index] ?? '',
+      after,
+      wasDirty: false
+    })
+    await refreshClosedFile(bridge, file.file)
+  }
+  return { places: summary.edits, files: files.length, snapshots }
 }
 
 /** Applies the edits of a rename to every file: open ones in their buffers, the others on disk. */
 export const applyFileEdits = async (bridge: Bridge, files: FileEdit[]): Promise<Applied> => {
   const closed: FileEdit[] = []
-  let places = 0
+  const applied: Applied = { places: 0, files: files.length, snapshots: [] }
   for (const file of files) {
     const open = openPathOf(file.file)
-    if (open) places += await editOpenFile(bridge, open, file.edits)
-    else closed.push(file)
+    if (!open) {
+      closed.push(file)
+      continue
+    }
+    const done = await editOpenFile(bridge, open, file.edits)
+    applied.places += done.places
+    if (done.snapshot) applied.snapshots.push(done.snapshot)
   }
   if (closed.length > 0) {
-    places += (await bridge.files.applyTextEdits(closed)).edits
-    for (const file of closed) await refreshClosedFile(bridge, file.file)
+    const onDisk = await editClosedFiles(bridge, closed)
+    applied.places += onDisk.places
+    applied.snapshots.push(...onDisk.snapshots)
   }
-  return { places, files: files.length }
+  return applied
 }
 
 /** Renames the symbol at a position everywhere and says how much changed. */
@@ -105,10 +130,11 @@ export const renameSymbol = async (
       return false
     }
     const applied = await applyFileEdits(bridge, result.files)
+    rememberRename(applied.snapshots)
     showNotice({
       messageKey: 'refactor.renamed',
       values: { places: applied.places, files: applied.files },
-      actions: [],
+      actions: [{ labelKey: 'refactor.undo', run: () => void undoRename(bridge) }],
       tone: 'info'
     })
     return true

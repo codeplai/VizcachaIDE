@@ -37,6 +37,7 @@ func NewFlavor(cfg Config) Flavor { return Flavor{cfg: cfg} }
 
 // New creates the Go language server: gopls starts on the first OpenDocument.
 func New(sink app.EventSink, cfg Config, options lsp.Options) *lsp.Server {
+	options.SourceExtensions = []string{".go"}
 	options.Name, options.LanguageID, options.CodeLanguage = diagnosticName, languageID, domain.CodeLanguageGo
 	return lsp.New(sink, NewFlavor(cfg), options)
 }

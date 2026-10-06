@@ -53,6 +53,9 @@ type Options struct {
 	// this long. The next OpenDocument starts it again and the status is not "unavailable":
 	// that one means the tool is missing. Zero disables it.
 	IdleTimeout time.Duration
+	// SourceExtensions are the file extensions (lower case, with the dot) of the language: the
+	// source files with these under the project are watched for changes made outside the editor.
+	SourceExtensions []string
 	// AfterFunc schedules f after d; nil uses time.AfterFunc. Tests inject a fake clock.
 	AfterFunc func(d time.Duration, f func()) Timer
 }
@@ -75,6 +78,7 @@ type Server struct {
 	idle    idleShutdown
 	// settingsSent is the JSON of the last settings a pulling server heard of (pulled.go).
 	settingsSent string
+	sources      sourceWatch   // source files changed outside the editor (sources.go)
 	manifests    manifestWatch // go.mod, Cargo.toml... changed outside the editor (manifests.go)
 }
 

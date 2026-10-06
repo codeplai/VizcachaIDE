@@ -527,5 +527,9 @@
   "references.hint": { "en": "Put the cursor on a name and press Shift+F12 to see where it is used.", "es": "Pon el cursor sobre un nombre y presiona Shift+F12 para ver dónde se usa." },
   "references.searching": { "en": "Searching…", "es": "Buscando…" },
   "references.empty": { "en": "No uses found. Put the cursor on a name and press Shift+F12.", "es": "No se encontraron usos. Pon el cursor sobre un nombre y presiona Shift+F12." },
-  "references.summary": { "en": "{count, plural, one {# use} other {# uses}} of “{symbol}” in {files, plural, one {# file} other {# files}}", "es": "{count, plural, one {# uso} other {# usos}} de «{symbol}» en {files, plural, one {# archivo} other {# archivos}}" }
+  "references.summary": { "en": "{count, plural, one {# use} other {# uses}} of “{symbol}” in {files, plural, one {# file} other {# files}}", "es": "{count, plural, one {# uso} other {# usos}} de «{symbol}» en {files, plural, one {# archivo} other {# archivos}}" },
+  "refactor.undo": { "en": "Undo", "es": "Deshacer" },
+  "refactor.undone": { "en": "The rename was undone in all its files.", "es": "Se deshizo el cambio de nombre en todos sus archivos." },
+  "refactor.undoStale": { "en": "The rename was not undone: you changed those files after it.", "es": "No se deshizo el cambio de nombre: modificaste esos archivos después." },
+  "refactor.undoPartial": { "en": "{files, plural, one {# file} other {# files}} could not be restored because it changed after the rename.", "es": "{files, plural, one {No se pudo restaurar # archivo porque cambió} other {No se pudieron restaurar # archivos porque cambiaron}} después del cambio de nombre." }
 }

@@ -1,5 +1,5 @@
 // F2 renames the symbol under the cursor and Shift+F12 lists where it is used.
-import type { EditorState, Extension } from '@codemirror/state'
+import { Prec, type EditorState, type Extension } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import type { RenameTarget, SourceLocation } from '../domain'
 import { locationAt, offsetOf, type DocumentContext } from './documentContext'
@@ -13,6 +13,8 @@ export interface RefactorWiring {
   renameSymbol: (at: SourceLocation, newName: string) => Promise<boolean>
   /** Shows where the symbol is used. */
   findReferences: (at: SourceLocation, symbol: string) => Promise<void>
+  /** Ctrl+Z right after a rename undoes it in every file; false: nothing to undo, the editor does. */
+  undoRename?: () => boolean
 }
 
 export interface RefactorCommands {
@@ -78,6 +80,7 @@ export const refactoring = (file: DocumentContext, wiring: RefactorWiring): Refa
   const references = (view: EditorView): void => void showReferences(view, file, wiring)
   const extension = [
     renameBox,
+    Prec.high(keymap.of([{ key: 'Mod-z', run: () => wiring.undoRename?.() ?? false }])),
     keymap.of([
       {
         key: 'F2',
