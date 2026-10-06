@@ -90,10 +90,21 @@ export const rustSteps = (ctx, lang) => {
 
   add('rust-inlay', 'pistas/src/main.rs: an inlay hint shows the inferred type Vec<i32>', async () => {
     await open('pistas/main.rs')
-    await page.waitForFunction(
-      () => [...document.querySelectorAll('.cm-inlay-hint')].some((e) => e.textContent.includes('Vec<i32>')),
-      { timeout: 150000 }
-    )
+    try {
+      await page.waitForFunction(
+        () => [...document.querySelectorAll('.cm-inlay-hint')].some((e) => e.textContent.includes('Vec<i32>')),
+        { timeout: 150000 }
+      )
+    } catch (error) {
+      const file = path.join(folder, 'pistas', 'src', 'main.rs')
+      const debug = await page.evaluate(async (file) => {
+        const range = { start: { file, line: 1, column: 1 }, end: { file, line: 5, column: 1 } }
+        let direct
+        try { direct = await window.go.bridge.LanguageService.InlayHints(range) } catch (e) { direct = 'ERR ' + String(e) }
+        return { direct, hints: document.querySelectorAll('.cm-inlay-hint').length, status: document.querySelector('.statusbar, footer')?.textContent }
+      }, file)
+      throw new Error(`${error.message} DEBUG ${JSON.stringify(debug)}`)
+    }
     await L.shot(page, `${lang}-rust-05-inlay`)
     return 'hint "Vec<i32>"'
   })

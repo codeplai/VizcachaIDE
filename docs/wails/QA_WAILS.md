@@ -16,7 +16,12 @@ folder and the integrated terminal.
   step fails on main (70a4576), on 1d37c61 and on 2.4.0 itself (4ee9077), where it passed on
   2026-10-04, so something in this machine's environment changed. rust-analyzer still gives the
   `Vec<i32>` hint when asked directly (`TestRealRustAnalyzerGivesTheTypeOfAVec` passes); the
-  editor side is to be investigated separately.
+  editor side is to be investigated separately. **Solved after 2.5.0** (branch `fix/inlay-retries`):
+  the step's new debug output showed the backend answering `: Vec<i32>` while the editor drew
+  nothing. The editor gave up after ~30 s of retries, rust-analyzer now took longer to index
+  `pistas`, and nothing asked again (the server was already "ready" from the previous Rust project
+  and a project without problems sends no diagnostics). The editor now retries for ~3 minutes; the
+  Rust phase passes 18/18.
 - **Fixed during QA:** the empty Problems tab said "Go checks your code…" in every language.
 - **Known limitations:** the first install of a library needs internet and compiles it (about 3 min
   cold for `fmt`, 14 s from the binary cache); vcpkg extracts PowerShell 7 (247 MB) once per user;

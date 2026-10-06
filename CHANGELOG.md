@@ -8,6 +8,10 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Fixed
+- Inlay hints (the grey inferred types) never appeared when rust-analyzer took more than about 30 seconds to
+  index a project without problems: the editor now keeps asking for about three minutes.
+
 ## [2.5.0] - 2026-10-05
 
 ### Added
@@ -336,6 +340,10 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Corregido
+- Las pistas en línea (los tipos inferidos en gris) no aparecían cuando rust-analyzer tardaba más de unos 30
+  segundos en indexar un proyecto sin problemas: el editor ahora las sigue pidiendo durante unos tres minutos.
 
 ## [2.5.0] - 2026-10-05
 
