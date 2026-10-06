@@ -1,7 +1,7 @@
 // Editing features: replace in the Search panel (an open file changes in its buffer, a closed one
-// on disk), Quick open (Ctrl+P) and the snippets of the completion list. The steps use the QA
-// project (qa/mod: main.go and helper.go, both mention `greeting`). Registered in qa.mjs as the
-// phase `editing`.
+// on disk), Quick open (Ctrl+P) and the snippets of the completion list. The replace steps write
+// their own folder (qa/editing: main.go and helper.go, both mention `palabraUnica`, a word no other
+// phase uses), so other phases' files never change the counts. Registered in qa.mjs as `editing`.
 import fs from 'node:fs'
 import * as L from './lib.mjs'
 import * as U from './ui.mjs'
@@ -24,8 +24,14 @@ export const editingSteps = (ctx, lang) => {
   const page = pageOf(ctx)
   const list = []
   const add = (id, title, run) => list.push({ id, title, run })
-  const helper = U.projectFile('qa', 'mod', 'helper.go')
+  const folder = U.projectFile('qa', 'editing')
+  const helper = U.projectFile('qa', 'editing', 'helper.go')
   const original = () => fs.readFileSync(helper, 'utf8')
+  const writeFolder = () => {
+    fs.mkdirSync(folder, { recursive: true })
+    fs.writeFileSync(U.projectFile('qa', 'editing', 'main.go'), 'package main\n\nfunc main() { println(palabraUnica()) }\n')
+    fs.writeFileSync(helper, 'package main\n\nfunc palabraUnica() string { return "ok" }\n')
+  }
   const status = () => page.evaluate(() => document.querySelector('.side .status')?.innerText ?? '')
   const panelInputs = () => page.$$('.side input.input')
 
@@ -48,8 +54,9 @@ export const editingSteps = (ctx, lang) => {
   }
 
   add('replace-disk', 'Search > Replace all: confirmation names matches and files; a closed file changes on disk', async () => {
+    writeFolder()
     await U.reload(page, ctx.url)
-    await search('greeting')
+    await search('palabraUnica')
     must(SUMMARY[lang].test(await status()), `status = ${await status()}`)
     await openReplace('saludo')
     await page.click('.side .all')
@@ -61,26 +68,32 @@ export const editingSteps = (ctx, lang) => {
     await page.waitForFunction(() => !document.querySelector('[role=alertdialog]'), { timeout: 10000 })
     await L.sleep(800)
     const onDisk = original()
-    must(onDisk.includes('saludo') && !onDisk.includes('greeting'), `helper.go on disk: ${onDisk}`)
+    must(onDisk.includes('saludo') && !onDisk.includes('palabraUnica'), `helper.go on disk: ${onDisk}`)
     return 'helper.go on disk now says saludo'
   })
 
   add('replace-open', 'Replace in an open file edits the buffer: unsaved mark, disk untouched, Ctrl+Z undoes it', async () => {
-    fs.writeFileSync(helper, original().replaceAll('saludo', 'greeting'))
+    writeFolder()
     await U.reload(page, ctx.url)
-    await U.openByName(page, 'helper.go', 'qa/mod')
-    await search('greeting')
+    await U.openByName(page, 'helper.go', 'qa/editing')
+    await search('palabraUnica')
     await openReplace('hola')
-    await page.click('.side .mini[title], .side .mini')
+    // The per-match button of helper.go's group (main.go's group may come first).
+    await page.evaluate(() => {
+      const group = [...document.querySelectorAll('.side .file')].find(
+        (g) => g.querySelector('.file-name')?.textContent.trim() === 'helper.go'
+      )
+      group.querySelector('li.match .mini').click()
+    })
     await L.sleep(800)
     const text = await U.editorText(page)
     must(text.includes('hola'), `editor = ${text}`)
     must(await page.$('.tab .dot, [role=tab] .dot'), 'no unsaved mark on the tab')
-    must(original().includes('greeting'), 'the file on disk changed')
+    must(original().includes('palabraUnica'), 'the file on disk changed')
     await page.evaluate(() => document.querySelector('.cm-content').focus())
     await ctrl(page, 'KeyZ')
     await L.sleep(400)
-    must((await U.editorText(page)).includes('greeting'), 'Ctrl+Z did not undo the replacement')
+    must((await U.editorText(page)).includes('palabraUnica'), 'Ctrl+Z did not undo the replacement')
     await L.shot(page, `${lang}-editing-02-open`)
     return 'buffer changed, unsaved, undone'
   })
@@ -128,8 +141,9 @@ export const editingSteps = (ctx, lang) => {
   })
 
   add('restore', 'Leaves the QA project as it was', async () => {
-    fs.writeFileSync(helper, original().replaceAll('saludo', 'greeting').replaceAll('hola', 'greeting'))
-    return 'helper.go restored'
+    // The IDE still watches the folder (removing it fails with EPERM): put the files back instead.
+    writeFolder()
+    return 'qa/editing files restored'
   })
 
   return list
