@@ -7,7 +7,7 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/domain"
 )
 
-// ShellPaths implements app.ShellPaths: the folder of cargo (configured, else CARGO_HOME/bin where
+// ShellPaths implements app.ShellPaths: the folder of cargo (configured, bundled in toolchain/rust/bin, else CARGO_HOME/bin where
 // rustup puts cargo, rustc and rustup), so the terminal finds them even when the PATH of the
 // IDE does not list it.
 func (l *Locator) ShellPaths(context.Context) []string {

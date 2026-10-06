@@ -6,12 +6,15 @@
     xvfb-run -a python wails/packaging/smoke_test.py ./VizcachaIDE/VizcachaIDE --seconds 8
     python wails/packaging/smoke_test.py --python <stage>/toolchain/python/python.exe
     python wails/packaging/smoke_test.py --cxx <stage>/toolchain/cpp/bin/clang++.exe
+    python wails/packaging/smoke_test.py --rust <stage>/toolchain/rust/bin/rustc.exe
 
 Pass criteria: the process is alive after --seconds; with --go, ``go version`` of the bundled
 toolchain also works; with --python, the bundled interpreter must import debugpy, pylsp,
 pyflakes and ruff and ``python -m ruff --version`` must run (the executable may then be omitted, which
 checks only the interpreter); with --cxx, the bundled clang++ must compile and run a statically linked
 hello world from a folder whose name has spaces and accents, and lldb-dap, clangd and clang-format
+(next to it) must answer ``--version``; with --rust, the bundled rustc must report toolchain/rust as its
+sysroot and compile and run a hola.rs from such a folder, and cargo, rustfmt, clippy and rust-analyzer
 (next to it) must answer ``--version``. Only the PID started here is ever killed.
 """
 
@@ -102,6 +105,49 @@ def bundled_cxx_tools_check(cxx: Path) -> tuple[bool, str]:
     return True, "; ".join(lines)
 
 
+HELLO_RS = 'fn main() {\n    println!("hola desde Rust");\n}\n'
+RUST_HELLO_OUTPUT = "hola desde Rust"
+RUST_TOOLS = ("cargo", "rustfmt", "clippy-driver", "cargo-clippy", "rust-analyzer")
+
+
+def bundled_rust_check(rustc: Path) -> tuple[bool, str]:
+    """Compile and run hola.rs with the bundled rustc from "<tmp>/prueba con espacios y acentos ñandú",
+    and check that its sysroot is the toolchain/rust folder (no rustup involved)."""
+    sysroot = subprocess.run(
+        [str(rustc), "--print", "sysroot"], capture_output=True, text=True, timeout=60
+    ).stdout.strip()
+    if Path(sysroot).resolve() != rustc.resolve().parent.parent:
+        return False, f"sysroot {sysroot!r} is not the folder of the bundled rustc"
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = Path(tmp) / "prueba con espacios y acentos ñandú"
+        folder.mkdir()
+        source, program = folder / "hola.rs", folder / ("hola" + rustc.suffix)
+        source.write_text(HELLO_RS, encoding="utf-8")
+        build = subprocess.run(
+            [str(rustc), str(source), "-o", str(program)],
+            capture_output=True, text=True, timeout=300, cwd=folder,
+        )
+        if build.returncode != 0:
+            return False, f"compile failed: {build.stderr.strip()}"
+        run = subprocess.run([str(program)], capture_output=True, text=True, timeout=30, cwd=folder)
+    if run.stdout.strip() != RUST_HELLO_OUTPUT:
+        return False, f"unexpected output {run.stdout!r} (exit {run.returncode})"
+    return True, f"compiled and ran: {run.stdout.strip()}"
+
+
+def bundled_rust_tools_check(rustc: Path) -> tuple[bool, str]:
+    """cargo, rustfmt, clippy and rust-analyzer sit next to rustc and answer --version."""
+    lines = []
+    for name in RUST_TOOLS:
+        tool = rustc.with_name(name + rustc.suffix)
+        result = subprocess.run([str(tool), "--version"], capture_output=True, text=True, timeout=60)
+        text = (result.stdout or result.stderr).strip()
+        if result.returncode != 0 or not text:
+            return False, f"{name} --version failed (exit {result.returncode}): {text}"
+        lines.append(f"{name}: {text.splitlines()[0]}")
+    return True, "; ".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("executable", type=Path, nargs="?", default=None)
@@ -113,9 +159,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--cxx", type=Path, default=None, help="bundled clang++ to check (C++ variants)"
     )
+    parser.add_argument(
+        "--rust", type=Path, default=None, help="bundled rustc to check (the full variant)"
+    )
     args = parser.parse_args(argv)
-    if args.executable is None and args.python is None and args.cxx is None:
-        parser.error("give the executable, --python, --cxx, or a combination")
+    if all(value is None for value in (args.executable, args.python, args.cxx, args.rust)):
+        parser.error("give the executable, --python, --cxx, --rust, or a combination")
     if args.python is not None:
         ok, text = bundled_python_check(args.python)
         print(f"{'OK' if ok else 'FAIL'}: bundled python -> {text}")
@@ -125,6 +174,12 @@ def main(argv: list[str] | None = None) -> int:
         for check in (bundled_cxx_check, bundled_cxx_tools_check):
             ok, text = check(args.cxx)
             print(f"{'OK' if ok else 'FAIL'}: bundled c++ -> {text}")
+            if not ok:
+                return 1
+    if args.rust is not None:
+        for check in (bundled_rust_check, bundled_rust_tools_check):
+            ok, text = check(args.rust)
+            print(f"{'OK' if ok else 'FAIL'}: bundled rust -> {text}")
             if not ok:
                 return 1
     if args.executable is None:

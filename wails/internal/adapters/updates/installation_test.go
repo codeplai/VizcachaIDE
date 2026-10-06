@@ -53,3 +53,22 @@ func TestDetectInstallationReadsTheBundledToolchain(t *testing.T) {
 		t.Error("only Windows copies install themselves")
 	}
 }
+
+// The full variant bundles Rust too (2026-10-06); Linux and macOS have no C++, so go + python + rust.
+func TestDetectInstallationCountsRustInTheFullVariant(t *testing.T) {
+	dir := t.TempDir()
+	for _, sub := range []string{"toolchain/go", "toolchain/python", "toolchain/rust"} {
+		if err := os.MkdirAll(filepath.Join(dir, sub), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := DetectInstallation("linux", "amd64", dir); got.Variant != "full" {
+		t.Fatalf("go + python + rust: %+v", got)
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "toolchain", "cpp"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if got := DetectInstallation("windows", "amd64", dir); got.Variant != "full" {
+		t.Fatalf("go + python + rust + cpp: %+v", got)
+	}
+}

@@ -17,6 +17,9 @@ third-party software, all under permissive licenses:
   Go toolchain *  (The Go Authors) BSD-3-Clause   toolchain/go/LICENSE
   Delve (dlv) *   (Derek Parker)  MIT            toolchain/licenses/dlv-LICENSE.txt
   gopls *         (The Go Authors) BSD-3-Clause   toolchain/licenses/gopls-LICENSE.txt
+  Rust * (rustc, cargo, clippy,    MIT or         toolchain/licenses/rust-LICENSE-MIT.txt
+  rustfmt, rust-analyzer; the      Apache-2.0     toolchain/licenses/rust-LICENSE-APACHE.txt
+  Rust Project Developers)
   CMake * (Kitware)                BSD-3-Clause   toolchain/licenses/cmake-LICENSE.txt
   Ninja * (Google and others)      Apache-2.0     toolchain/licenses/ninja-LICENSE.txt
   vcpkg * (Microsoft)              MIT            toolchain/licenses/vcpkg-LICENSE.txt
@@ -43,7 +46,8 @@ el programa distribuido tiene licencia MIT. Incluye o enlaza el siguiente softwa
 todo con licencias permisivas:
 
   Wails v2 (MIT), Svelte / CodeMirror 6 / Vite (MIT), y solo en la variante "full":
-  Go (BSD-3-Clause), Delve (MIT) y gopls (BSD-3-Clause), con sus licencias en toolchain/.
+  Go (BSD-3-Clause), Delve (MIT), gopls (BSD-3-Clause) y Rust (MIT o Apache-2.0: rustc, cargo,
+  clippy, rustfmt, rust-analyzer), con sus licencias en toolchain/.
   La variante full-cpp incluye ademas CMake (BSD-3-Clause), Ninja (Apache-2.0), vcpkg (MIT) y,
   para la primera ejecucion de vcpkg, PowerShell (MIT) y 7-Zip (LGPL); sus licencias estan en
   toolchain/licenses/.

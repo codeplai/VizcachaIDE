@@ -186,3 +186,54 @@ sha256 = "0859c524b8a63551848f0c246abddcb1d0b7b656b0fbfe879f8d85e61a9e6edd"
 path = "tools/7zr-26.03-windows/7zr.exe"
 url = "https://github.com/ip7z/7zip/releases/download/26.03/7zr.exe"
 sha256 = "ad4c82fadcbdf93c03b4fc440f300509c7d60c5c2f4d183e35d9d70d6957037d"
+
+# ---------------------------------------------------------------------------------------------
+# Rust (docs/PLAN_RUST.md section 7, decision of 2026-10-06: the "full" variant bundles Rust). The official
+# standalone component tarballs of static.rust-lang.org (the files rustup downloads), installed into one
+# sysroot at toolchain/rust/ by packaging/fetch_rust.py. Windows uses the GNU target (no Visual Studio
+# needed; rust-mingw is the self-contained linker). rust-docs is not fetched. The sha256 values come from the
+# channel manifest https://static.rust-lang.org/dist/channel-rust-<version>.toml; to bump, run
+#     python packaging/print_rust_hashes.py <version>
+# and paste its output here. Never invent a hash. Licenses: MIT or Apache-2.0.
+
+[rust]
+version = "1.99.0"
+date = "2026-10-01"
+url_template = "https://static.rust-lang.org/dist/{date}/{filename}"
+
+[rust.sha256.windows-amd64]
+rustc = "015f770c3ca0b3226a24fe159f30b03782a91679ba16159f7d83550f768fb795"
+cargo = "36dc7cba4be341c5a6cb3e10f660c4565b6f87f318d3cb87519b2cfe8c630bca"
+rust-std = "a2382bf189d5621e09db647da419a8e1d4c604d60941cb116da00ce34042b1dd"
+rust-mingw = "ad2b4b41362a99a86e20a8dbcec4be81b99f2d507f6408a72c7a139bc1919080"
+clippy = "f1f9aab0118471915702e4f41ca044691909ee8d97cfd539fc257c3e3f64c107"
+rustfmt = "f43a1027e9b0ead09603e203023746c4dc4e71229591ab81183042af37ba403b"
+rust-analyzer = "805f49779e4af9e94733d583c316b75d0628ffd9bf7120609b02433dabae3e46"
+rust-src = "3f1f9b7ed48f4596fc87889b7b3c61747336a55c9c22db1ab0c697e0aadb77aa"
+
+[rust.sha256.linux-amd64]
+rustc = "77171ba2a0345fdf2abc4fedda55d6de078dae7a68527c28be8c77dcc9604bd5"
+cargo = "d7674918d28093097614cd9728b6ca60db9ea3038f640f0bd1e9a4188c7568ce"
+rust-std = "3e58dff2d0b72196b5ea4e90536e174d400de88564a52694686b81e091169933"
+clippy = "982442e32ad8dd3f0bb3a30db74038da5f71fd9bf1a865cc71da8ea5d4ec71ec"
+rustfmt = "b22c09ab9e258ec5571da170d88bd1624a4ea602e6d70d95720c5b47494cadce"
+rust-analyzer = "52dfae764797c3c7f32ba2ba82d49659741a867e7a3f45bc3291b822c955d6a8"
+rust-src = "3f1f9b7ed48f4596fc87889b7b3c61747336a55c9c22db1ab0c697e0aadb77aa"
+
+[rust.sha256.darwin-arm64]
+rustc = "334a66714ca316d71bbe5efe44f71762d0b276cea73be2987374693a837f7450"
+cargo = "76abff0ad79a10a3152dff640ea0d8b3c37637d9300bf55da41b95c3ddc069c1"
+rust-std = "a7c6de8aa21e7c31163a7656295b321bb85f5dce55ed8ea95ac9ac561202bb5b"
+clippy = "c31a0765ed31d98515a09a13b44486048873d90ac75bb1e6690a17fb36a5d4e2"
+rustfmt = "8b1436085c081e5efa88febadf667171a7a107073d168cd32b249a8eb70800da"
+rust-analyzer = "8004bdc89c8ec77ccb100a8480126af5cf9f65ded9a197e33eed47fa3f8623aa"
+rust-src = "3f1f9b7ed48f4596fc87889b7b3c61747336a55c9c22db1ab0c697e0aadb77aa"
+
+[rust.sha256.darwin-amd64]
+rustc = "7460910254f059b49b99ee3ddbcf7197d16b9505b59c166e14a1465ee323a81d"
+cargo = "939b71952afd63ae73bc00f3517c19f0dd7ac54884b5fac16a813ee50985d14d"
+rust-std = "18ee81961a73c3ae966ecb1e8f6096438c90aeefece8856201a6ecc17f5bc850"
+clippy = "cd93518193f16b21cfa7147a42cb03cd2d9ca9b3d0c2daf46dcae44c88a696df"
+rustfmt = "e5e59e6910aa6e716fbb8a53950e109fb675ead428688f3ba2d1702b50928f92"
+rust-analyzer = "abc0d38c2771a968e09a7ae23a1e149cdedfdd72f0d47659755f4fef4ca57615"
+rust-src = "3f1f9b7ed48f4596fc87889b7b3c61747336a55c9c22db1ab0c697e0aadb77aa"

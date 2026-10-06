@@ -25,11 +25,18 @@ var executables = map[string]string{ToolClippy: "cargo-clippy"}
 // bundledLldb is where full-cpp ships lldb-dap (docs/PLAN_CPP.md section 7); Rust shares it.
 const bundledLldb = "toolchain/cpp/bin"
 
+// bundledRust is the bin folder of the sysroot the full variant ships (packaging/fetch_rust.py):
+// rustc, cargo, clippy-driver, cargo-clippy, rustfmt and rust-analyzer, no rustup proxies.
+const bundledRust = "toolchain/rust/bin"
+
 // Options configures a Locator. All of them are optional.
 type Options struct {
 	Settings        app.SettingsStore // Settings.ToolPaths["rustc"], ["cargo"], ...
 	AppDir          string            // the folder of the executable (default: the running one)
 	BaseEnvironment []string          // default: os.Environ()
+	// CargoHome is the writable folder the bundled toolchain uses as CARGO_HOME when the
+	// environment sets none (the install folder may be read-only). Default: <user cache>/VizcachaIDE/cargo.
+	CargoHome string
 	// Probe runs a tool with arguments and returns what it printed, stdout and stderr together
 	// (default: runs it with a time limit).
 	Probe func(ctx context.Context, path string, args ...string) (string, error)
@@ -38,7 +45,7 @@ type Options struct {
 // Locator finds the tools of the rustup toolchain and lldb-dap, and reads the toolchain once.
 type Locator struct {
 	options Options
-	fixed   *toollocator.Locator // configured, then bundled (only lldb-dap is ever bundled)
+	fixed   *toollocator.Locator // configured, then bundled (toolchain/rust/bin; lldb-dap in toolchain/cpp/bin)
 	cargo   *toollocator.Locator // CARGO_HOME/bin, where rustup puts its proxies
 	onPath  *toollocator.Locator
 	mu      sync.Mutex
@@ -63,7 +70,7 @@ func NewLocator(options Options) *Locator {
 	return l
 }
 
-// Tool finds a tool: configured → bundled (lldb-dap) → CARGO_HOME/bin → PATH. Version is empty.
+// Tool finds a tool: configured → bundled (toolchain/rust/bin) → CARGO_HOME/bin → PATH. Version is empty.
 func (l *Locator) Tool(id string) domain.ToolStatus {
 	tool := toolFor(id)
 	for _, locator := range []*toollocator.Locator{l.fixed, l.cargo, l.onPath} {
@@ -111,6 +118,7 @@ func (l *Locator) Toolchain(ctx context.Context) (Toolchain, error) {
 // the linker and dlltool cargo must use (windowsgnu.go).
 func (l *Locator) Environment() []string {
 	env := append(Environment(l.options.BaseEnvironment), l.gnuVariables()...)
+	env = append(env, l.ShellVariables(context.Background())...)
 	cargo := l.Tool(ToolCargo)
 	if cargo.Source == domain.ToolMissing {
 		return env
@@ -130,7 +138,7 @@ func (l *Locator) configured(toolID string) string {
 }
 
 func toolFor(id string) toollocator.Tool {
-	tool := toollocator.Tool{Language: domain.CodeLanguageRust, Name: executables[id]}
+	tool := toollocator.Tool{Language: domain.CodeLanguageRust, Name: executables[id], BundledDirectories: []string{bundledRust}}
 	if id == ToolLldbDap {
 		tool.BundledDirectories = []string{bundledLldb}
 	}

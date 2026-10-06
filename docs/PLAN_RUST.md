@@ -630,6 +630,17 @@ fusiona el orquestador al integrar.
 
 ## 7. Empaquetado
 
+> **2026-10-06: el usuario decidió incluir Rust en `full`.** Esta nota revierte lo de abajo («Rust no se
+> empaqueta», «no hay variante `full-rust`») sólo para `full`; las demás variantes no cambian y no hay
+> `full-rust`. `packaging/fetch_rust.py` baja los tarballs oficiales de `static.rust-lang.org/dist/` (Rust 1.99.0,
+> rustc, cargo, rust-std, clippy, rustfmt, rust-analyzer, rust-src; en Windows el target GNU con `rust-mingw`;
+> sin rust-docs) y los instala en un solo sysroot, `toolchain/rust/`. El localizador busca configurado →
+> `toolchain/rust/bin` → rustup, y con el toolchain incluido pone `CARGO_HOME` en
+> `<caché del usuario>/VizcachaIDE/cargo` (la carpeta de instalación puede ser de sólo lectura). Tamaños medidos
+> (Windows amd64): `toolchain/rust` **1084 MB** descomprimido y **281 MB** en zip (nivel 9), contra los ~600 MB
+> que estimaba esta sección; `full` pasa de unos 247 MB a unos 528 MB de zip portable. La prueba de humo
+> `smoke_test.py --rust` compila y ejecuta un `hola.rs` con el `rustc` incluido.
+
 - **Rust no se empaqueta.** Un toolchain de Rust (rustc, biblioteca estándar, cargo, clippy, rustfmt,
   rust-analyzer) pesa más de 600 MB descomprimido; sumado al de `full-cpp` (objetivo de menos de 200 MB comprimido) el
   instalador ya no sería una descarga razonable para un colegio. Rust funciona en `lite` y en

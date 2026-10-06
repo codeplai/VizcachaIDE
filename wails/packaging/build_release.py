@@ -18,13 +18,15 @@ Variants (what goes under ``toolchain/``):
     full-go      Go, Delve and gopls (this was called "full" before Python was bundled)
     full-python  CPython + debugpy, python-lsp-server and ruff
     full-cpp     clang/clang++, lld, lldb-dap, clangd and clang-format (llvm-mingw, Windows only)
-    full         everything: Go + Python, plus C++ on Windows (macOS and Linux have no bundled C++
-                 compiler, they use the one of the system, so there ``full`` = Go + Python)
+    full         everything: Go + Python + Rust, plus C++ on Windows (macOS and Linux have no bundled
+                 C++ compiler, they use the one of the system, so there ``full`` = Go + Python + Rust).
+                 There is no separate full-rust variant: Rust ships only inside ``full``.
 
 The Go part uses the same code as the PyQt packaging: ``packaging/fetch_toolchain.py`` and
 ``packaging/go_tools.py`` are imported, not copied. The Python part is
-``packaging/fetch_python.py`` and the C++ part ``packaging/fetch_cpp.py`` (llvm-mingw pruned to x86_64,
-placed in ``toolchain/cpp/``). ``--variant both`` (lite + full-go) and ``--variant all`` (every
+``packaging/fetch_python.py``, the C++ part ``packaging/fetch_cpp.py`` (llvm-mingw pruned to x86_64,
+placed in ``toolchain/cpp/``) and the Rust part ``packaging/fetch_rust.py`` (the official standalone
+components installed into one sysroot, ``toolchain/rust/``). ``--variant both`` (lite + full-go) and ``--variant all`` (every
 variant) are shortcuts, and a comma list such as ``lite,full-python`` also works. ``full-cpp`` is
 skipped, with a note, for macOS and Linux targets.
 The toolchain is placed next to the executable, which is where ``toolchain.Locator`` looks
@@ -71,11 +73,11 @@ VARIANT_PARTS = {
     "full-go": ("go",),
     "full-python": ("python",),
     "full-cpp": ("cpp",),
-    "full": ("go", "python", "cpp"),
+    "full": ("go", "python", "cpp", "rust"),
 }
 # Parts that exist only for some operating systems; elsewhere the system tools are used.
 PART_OPERATING_SYSTEMS = {"cpp": ("windows",)}
-PARTS = ("go", "python", "cpp")
+PARTS = ("go", "python", "cpp", "rust")
 VARIANT_SHORTCUTS = {"both": ["lite", "full-go"], "all": list(VARIANT_PARTS)}
 PRODUCT = "VizcachaIDE"
 
@@ -90,7 +92,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--variant",
         default="both",
-        help="lite, full-go, full-python, full-cpp (Windows), full (Go + Python + C++), "
+        help="lite, full-go, full-python, full-cpp (Windows), full (Go + Python + Rust, + C++ on Windows), "
         "both (lite + full-go), all, "
         "or a comma list; default both",
     )
@@ -158,7 +160,7 @@ def drop_unavailable_variants(variants: list[str], os_name: str) -> list[str]:
 
 
 def stage_part(part: str, target: str, args: argparse.Namespace) -> Path:
-    """Fetch one toolchain part ("go", "python" or "cpp"); return the folder that contains toolchain/."""
+    """Fetch one toolchain part ("go", "python", "cpp" or "rust"); return the folder that contains toolchain/."""
     versions, fetch_toolchain, _ = load_legacy(args.cache_dir)
     os_name, arch = target.split("/")
     stage = STAGE_DIR / f"{os_name}-{arch}" / part
@@ -175,10 +177,14 @@ def stage_part(part: str, target: str, args: argparse.Namespace) -> Path:
         import fetch_python  # noqa: PLC0415
 
         fetch_python.fetch_python(versions.Target(os_name, arch), stage)
-    else:
+    elif part == "cpp":
         import fetch_cpp  # noqa: PLC0415
 
         fetch_cpp.fetch_cpp(versions.Target(os_name, arch), stage)
+    else:
+        import fetch_rust  # noqa: PLC0415
+
+        fetch_rust.fetch_rust(versions.Target(os_name, arch), stage)
     return stage
 
 

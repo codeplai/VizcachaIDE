@@ -36,7 +36,7 @@ func DetectInstallation(goos, goarch, exeDir string) Installation {
 // more than one is full (all languages; a 2.2 "full" with Go and Python updates to it).
 func variantOf(exeDir string) string {
 	var bundled []string
-	for _, part := range []string{"go", "python", "cpp"} {
+	for _, part := range []string{"go", "python", "cpp", "rust"} {
 		if exists(filepath.Join(exeDir, "toolchain", part)) {
 			bundled = append(bundled, part)
 		}
