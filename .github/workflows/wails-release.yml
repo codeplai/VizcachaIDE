@@ -77,7 +77,11 @@ jobs:
 
       - name: create-dmg (macOS)
         if: runner.os == 'macOS'
-        run: brew install create-dmg
+        run: |
+          brew install create-dmg
+          # Spotlight indexing a freshly mounted image keeps it busy and hdiutil detach times out
+          # ("timeout for DiskArbitration expired"), every time for the large full image on Intel.
+          sudo mdutil -a -i off || true
 
       - name: Wails CLI
         run: |
