@@ -1,5 +1,30 @@
 # QA — VizcachaIDE Wails 2.0.0-rc1
 
+## 2.5.0 (M4, C++ with CMake and vcpkg): QA, 2026-10-05
+
+Same environment and harness, branch `feature/cpp-cmake-vcpkg` (plan: `docs/PLAN_CPP_CMAKE.md`),
+with CMake 4.4.4, Ninja 1.13.2 and a vcpkg snapshot (2026-09-26, no `.git`) plus its seed in
+`wails/.toolchain-dev`. Also covers the work merged after 2.4.0: New project, package search, Close
+folder and the integrated terminal.
+
+- **Result: 116/118 steps pass.** Go, settings, first run (34/34), Python (14/14), C++ (16/16), the new
+  `cpp-cmake` phase (`steps-cpp-cmake.mjs`, 6 steps × EN/ES: New project C++ with CMake, `fmt` searched
+  and installed from the Packages dialog, `fmt::print` runs with no Problems, a breakpoint in the
+  debugger, an old folder without `CMakeLists.txt` gets one and runs, removing `fmt` cleans
+  `vcpkg.json` and the block), New project (12/12) and the terminal (12/12).
+- **The 2 failures are `rust-inlay` (EN and ES) and are not a regression of this release:** the same
+  step fails on main (70a4576), on 1d37c61 and on 2.4.0 itself (4ee9077), where it passed on
+  2026-10-04, so something in this machine's environment changed. rust-analyzer still gives the
+  `Vec<i32>` hint when asked directly (`TestRealRustAnalyzerGivesTheTypeOfAVec` passes); the
+  editor side is to be investigated separately.
+- **Fixed during QA:** the empty Problems tab said "Go checks your code…" in every language.
+- **Known limitations:** the first install of a library needs internet and compiles it (about 3 min
+  cold for `fmt`, 14 s from the binary cache); vcpkg extracts PowerShell 7 (247 MB) once per user;
+  with an antivirus hooking every process (Bitdefender's `bdhkm64.dll` here) a stack overflow is
+  reported as an access violation (0xC0000005); the full-cpp installer was not rebuilt (only the
+  fetch of CMake, Ninja, vcpkg and the seed was run: 50 + 21 + 109 MB).
+- Evidence: [qa-2.5/](qa-2.5/).
+
 ## 2.4.0 (M3, Rust): QA, 2026-10-04
 
 Same environment and harness, branch `m3-rust`, with Rust 1.99.0 stable (`x86_64-pc-windows-gnu`,

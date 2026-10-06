@@ -12,6 +12,8 @@ import (
 // at once.
 type backendTexts struct {
 	live *i18n.LiveTranslator
+	// language is the current language of the interface, "en" or "es".
+	language func() string
 }
 
 func newBackendTexts(currentLanguage func() string) (*backendTexts, error) {
@@ -19,7 +21,7 @@ func newBackendTexts(currentLanguage func() string) (*backendTexts, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load backend texts: %w", err)
 	}
-	return &backendTexts{live: live}, nil
+	return &backendTexts{live: live, language: currentLanguage}, nil
 }
 
 // text translates a key without placeholders (the shape adapters expect).

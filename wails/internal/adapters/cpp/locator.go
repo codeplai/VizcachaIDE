@@ -13,8 +13,13 @@ import (
 	"github.com/codeplai/VizcachaIDE/wails/internal/protocol/toollocator"
 )
 
-// bundledBin is where full-cpp ships llvm-mingw, relative to the folder of the executable.
-const bundledBin = "toolchain/cpp/bin"
+// Where full-cpp ships its tools, relative to the folder of the executable: llvm-mingw and Ninja
+// in bin, CMake in its own folder, vcpkg in its root.
+const (
+	bundledBin   = "toolchain/cpp/bin"
+	bundledCMake = "toolchain/cpp/cmake/bin"
+	bundledVcpkg = "toolchain/cpp/vcpkg"
+)
 
 // compilerNames is the PATH order: the courses use g++; clang++ and c++ cover LLVM and macOS.
 var compilerNames = []string{"g++", "clang++", "c++"}
@@ -100,7 +105,7 @@ func (l *Locator) compilerCandidates() []Compiler {
 	return found
 }
 
-// Tool finds lldb-dap, clangd or clang-format: configured → bundled → next to the compiler (the
+// Tool finds lldb-dap, clangd, clang-format, cmake, ninja or vcpkg: configured → bundled → next to the compiler (the
 // same bin folder of an LLVM or MinGW install) → PATH. Version is left empty.
 func (l *Locator) Tool(ctx context.Context, id string) domain.ToolStatus {
 	tool := toolFor(id, id)
@@ -127,7 +132,7 @@ func (l *Locator) configured(toolID string) string {
 }
 
 func toolFor(id, name string) toollocator.Tool {
-	tool := toollocator.Tool{Language: domain.CodeLanguageCpp, Name: name, BundledDirectories: []string{bundledBin}}
+	tool := toollocator.Tool{Language: domain.CodeLanguageCpp, Name: name, BundledDirectories: bundledDirectories(id)}
 	for _, spec := range Profile.Tools {
 		if spec.ID == id {
 			tool.Spec = spec
@@ -157,4 +162,17 @@ func applicationDirectory(given string) string {
 		return "."
 	}
 	return filepath.Dir(executable)
+}
+
+// bundledDirectories are where the installer may put a tool, in order of preference.
+func bundledDirectories(id string) []string {
+	switch id {
+	case ToolCMake:
+		return []string{bundledCMake}
+	case ToolNinja:
+		return []string{bundledCMake, bundledBin}
+	case ToolVcpkg:
+		return []string{bundledVcpkg}
+	}
+	return []string{bundledBin}
 }

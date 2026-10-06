@@ -39,9 +39,13 @@ type parser struct {
 type lineHandler func(p *parser, lines []string) (extra int, ok bool)
 
 var handlers = []lineHandler{
+	(*parser).cmakeLine,
 	(*parser).compilerLine,
 	(*parser).undefinedSymbolLine,
+	(*parser).duplicateSymbolLine,
+	(*parser).multipleDefinitionLine,
 	(*parser).undefinedReferenceLine,
+	(*parser).vcpkgLine,
 	(*parser).gnuTerminateLine,
 	(*parser).libcxxTerminateLine,
 	(*parser).crashLine,

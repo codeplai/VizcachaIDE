@@ -462,5 +462,175 @@
    "body": "En algún punto el programa lanzó una excepción (throw) de tipo \"{type}\", o lo hizo una función de la biblioteca, y ningún try/catch la atrapó. Cuando eso pasa C++ termina el programa. El texto que sigue al tipo dice qué salió mal.",
    "fix": "Lee el mensaje que sigue al tipo: dice el motivo. Encuentra la línea que la lanza (el depurador te la muestra) y evita la causa, o rodea ese código con try { ... } catch (const std::exception& e) { ... } para manejarla."
   }
+ },
+ {
+  "id": "CPP-VCPKG-NO-INTERNET",
+  "patterns": [
+   "^curl operation failed with error code \\d+",
+   "^Failed to download",
+   "^Download failed, halting portfile",
+   "^[Dd]ownload failed",
+   "[Cc]ould not resolve host"
+  ],
+  "en": {
+   "title": "The library could not be downloaded",
+   "body": "To install a library the IDE downloads its source code, and the download failed. The most common cause is that the computer has no internet connection, or that a firewall, a proxy or the school network blocks the download.",
+   "fix": "Check that you are connected to the internet and try adding the library again. Libraries that were already installed keep working without internet."
+  },
+  "es": {
+   "title": "No se pudo descargar la librería",
+   "body": "Para instalar una librería la IDE descarga su código fuente, y la descarga falló. La causa más común es que el computador no tiene conexión a internet, o que un firewall, un proxy o la red del colegio bloquea la descarga.",
+   "fix": "Revisa que estés conectado a internet e intenta agregar la librería otra vez. Las librerías que ya se instalaron antes siguen funcionando sin internet."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-PORT-MISSING",
+  "patterns": [
+   "^(?P<port>[\\w.+-]+) does not exist$",
+   "^the port '(?P<port>[^']+)' does not exist"
+  ],
+  "en": {
+   "title": "There is no library called \"{port}\"",
+   "body": "The list of libraries has nothing named \"{port}\". Usually the name has a typo, or it is the name the library has on its web page and not the one the list uses (for example the list says \"nlohmann-json\", not \"json\").",
+   "fix": "Open the Packages tab, search the library by part of its name and pick it from the results. Then remove the wrong name from vcpkg.json if it is still there."
+  },
+  "es": {
+   "title": "No existe una librería llamada \"{port}\"",
+   "body": "La lista de librerías no tiene nada llamado \"{port}\". Lo más común es que el nombre tenga un error de escritura, o que sea el nombre de su página web y no el que usa la lista (por ejemplo la lista dice \"nlohmann-json\", no \"json\").",
+   "fix": "Abre la pestaña Paquetes, busca la librería por parte de su nombre y elígela de los resultados. Después quita el nombre equivocado de vcpkg.json si todavía está."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-BUILD-FAILED",
+  "patterns": [
+   "^building (?P<port>[^:\\s]+):(?P<triplet>\\S+) failed"
+  ],
+  "en": {
+   "title": "The library \"{port}\" could not be compiled",
+   "body": "Installing a library means compiling it on this computer, and \"{port}\" failed to build. The messages above this one say why: a download that failed, a tool the library needs that is missing, or a path that is too long.",
+   "fix": "Read the lines above this error and the log file that vcpkg prints after it (a file ending in -out.log or -err.log): the real reason is at its end. If the folder of your project is very deep, move it closer to the root of the drive. The library stays out of your project until it builds."
+  },
+  "es": {
+   "title": "No se pudo compilar la librería \"{port}\"",
+   "body": "Instalar una librería es compilarla en este computador, y \"{port}\" falló al construirse. Los mensajes de arriba dicen por qué: una descarga que falló, una herramienta que la librería necesita y no está, o una ruta demasiado larga.",
+   "fix": "Lee las líneas de arriba y el archivo de registro que vcpkg imprime después de este error (un archivo que termina en -out.log o -err.log): la razón real está al final. Si la carpeta de tu proyecto está muy adentro, muévela más cerca de la raíz del disco. La librería queda fuera de tu proyecto hasta que compile."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-PACKAGE-NOT-FOUND",
+  "patterns": [
+   "^Could not find a package configuration file provided by \"(?P<name>[^\"]+)\"",
+   "^By not providing \"Find(?P<name>[^.\"]+)\\.cmake\" in CMAKE_MODULE_PATH"
+  ],
+  "en": {
+   "title": "CMake does not find the library \"{name}\"",
+   "body": "CMakeLists.txt asks for the library \"{name}\" (find_package), but it is not installed in this project. Either it was never added, or it was removed and the line stayed.",
+   "fix": "Open the Packages tab, search \"{name}\" and install it: the IDE writes the lines of CMakeLists.txt for you. If the name of the package is different from the name of the library, search the library by its usual name. Or delete the find_package line if you no longer use it."
+  },
+  "es": {
+   "title": "CMake no encuentra la librería \"{name}\"",
+   "body": "El CMakeLists.txt pide la librería \"{name}\" (find_package), pero no está instalada en este proyecto. O nunca se agregó, o se quitó y la línea quedó.",
+   "fix": "Abre la pestaña Paquetes, busca \"{name}\" e instálala: la IDE escribe las líneas del CMakeLists.txt por ti. Si el nombre del paquete es distinto al de la librería, busca la librería por su nombre usual. O borra la línea find_package si ya no la usas."
+  }
+ },
+ {
+  "id": "CPP-VCPKG-HOST-TOOL",
+  "patterns": [
+   "(?i)^(?:could not (?:find|locate)|unable to (?:find|locate)|failed to find) (?:a |an |the )?(?P<tool>python3?|perl|meson|nasm|yasm|bison|flex|autoconf|automake|libtool|pkg-config)\\b"
+  ],
+  "en": {
+   "title": "The library needs the tool \"{tool}\" to be compiled",
+   "body": "Some libraries use a helper program while they are compiled, and this computer does not have \"{tool}\". It is not part of the IDE: it is a separate program.",
+   "fix": "Install \"{tool}\" (for example from its official website; on Windows, make sure the installer adds it to PATH), restart the IDE and add the library again. If you do not need this library, pick a lighter alternative from the Packages tab."
+  },
+  "es": {
+   "title": "La librería necesita la herramienta \"{tool}\" para compilarse",
+   "body": "Algunas librerías usan un programa auxiliar mientras se compilan, y este computador no tiene \"{tool}\". No es parte de la IDE: es un programa aparte.",
+   "fix": "Instala \"{tool}\" (por ejemplo desde su página oficial; en Windows, asegúrate de que el instalador lo agregue al PATH), reinicia la IDE y vuelve a agregar la librería. Si no necesitas esta librería, elige una alternativa más liviana en la pestaña Paquetes."
+  }
+ },
+ {
+  "id": "CPP-CMAKE-NO-SOURCES",
+  "patterns": [
+   "^No SOURCES given to target: (?P<target>\\S+)"
+  ],
+  "en": {
+   "title": "CMake found no source files for \"{target}\"",
+   "body": "The program \"{target}\" is built from the .cpp files that are in the project folder, and CMake found none, so there is nothing to compile. Either the folder has no .cpp file yet or the code is in another folder (the files of a subfolder are not included).",
+   "fix": "Create a .cpp file (for example main.cpp) in the same folder as CMakeLists.txt, with a main function. If your code is in a subfolder, move it next to CMakeLists.txt."
+  },
+  "es": {
+   "title": "CMake no encontró archivos de código para \"{target}\"",
+   "body": "El programa \"{target}\" se construye con los archivos .cpp que están en la carpeta del proyecto, y CMake no encontró ninguno, así que no hay nada que compilar. O la carpeta aún no tiene un archivo .cpp, o el código está en otra carpeta (los archivos de una subcarpeta no se incluyen).",
+   "fix": "Crea un archivo .cpp (por ejemplo main.cpp) en la misma carpeta que CMakeLists.txt, con una función main. Si tu código está en una subcarpeta, muévelo junto a CMakeLists.txt."
+  }
+ },
+ {
+  "id": "CPP-CMAKE-MULTIPLE-MAIN",
+  "patterns": [
+   "^duplicate symbol: main$",
+   "^multiple definition of `main'"
+  ],
+  "en": {
+   "title": "The program has main() defined more than once",
+   "body": "All the .cpp files of a folder are built together into one program, and a program can have only one main function. Two of the files define it. This happens when several exercises, each with its own main(), are kept in the same folder.",
+   "fix": "Put each exercise that has its own main() in its own folder: VizcachaIDE creates a CMakeLists.txt there when you run it. If the second main() is a mistake, delete it or rename the function."
+  },
+  "es": {
+   "title": "El programa tiene main() definido más de una vez",
+   "body": "Todos los archivos .cpp de una carpeta se construyen juntos en un solo programa, y un programa solo puede tener una función main. Dos de los archivos la definen. Pasa cuando varios ejercicios, cada uno con su propio main(), están en la misma carpeta.",
+   "fix": "Pon cada ejercicio que tenga su propio main() en su propia carpeta: VizcachaIDE crea ahí un CMakeLists.txt al ejecutarlo. Si el segundo main() es un error, bórralo o cambia el nombre de la función."
+  }
+ },
+ {
+  "id": "CPP-CMAKE-LONG-PATH",
+  "patterns": [
+   "^The object file directory"
+  ],
+  "en": {
+   "title": "The path of the project folder is too long",
+   "body": "Windows limits how long a file path can be, and the temporary files the compiler writes inside the build folder go beyond that limit because the project sits too deep in the folder tree or has very long folder names. The build may fail with errors about files that cannot be created or found.",
+   "fix": "Move the project folder closer to the root of the disk (for example C:/projects/my_program) or give its folders shorter names, then run it again."
+  },
+  "es": {
+   "title": "La ruta de la carpeta del proyecto es demasiado larga",
+   "body": "Windows limita el largo de la ruta de un archivo, y los archivos temporales que el compilador escribe dentro de la carpeta build superan ese límite porque el proyecto está muy adentro del árbol de carpetas o tiene nombres de carpeta muy largos. La construcción puede fallar con errores de archivos que no se pueden crear o encontrar.",
+   "fix": "Mueve la carpeta del proyecto más cerca de la raíz del disco (por ejemplo C:/proyectos/mi_programa) o ponle nombres más cortos a sus carpetas, y ejecútalo otra vez."
+  }
+ },
+ {
+  "id": "CPP-CMAKE-TOOLS-MISSING",
+  "patterns": [
+   "unable to find a build program",
+   "^No CMAKE_CXX_COMPILER could be found",
+   "^The CMAKE_CXX_COMPILER:",
+   "^CMAKE_MAKE_PROGRAM is not set"
+  ],
+  "en": {
+   "title": "CMake cannot find Ninja or the C++ compiler",
+   "body": "To build a project CMake needs Ninja (which runs the build) and a C++ compiler. They come with the full version of VizcachaIDE. This copy cannot find one of them, or the path chosen in Settings does not exist any more.",
+   "fix": "Open Settings and check the paths of CMake, Ninja and the C++ compiler, or reinstall VizcachaIDE (full version) so they come with it. If you installed them yourself, their folders must be on the PATH."
+  },
+  "es": {
+   "title": "CMake no encuentra Ninja o el compilador de C++",
+   "body": "Para construir un proyecto CMake necesita Ninja (que ejecuta la construcción) y un compilador de C++. Vienen con la versión completa de VizcachaIDE. Esta copia no encuentra uno de ellos, o la ruta elegida en Ajustes ya no existe.",
+   "fix": "Abre Ajustes y revisa las rutas de CMake, Ninja y el compilador de C++, o reinstala VizcachaIDE (versión completa) para que vengan incluidos. Si los instalaste tú, sus carpetas deben estar en el PATH."
+  }
+ },
+ {
+  "id": "CPP-CMAKE-ERROR",
+  "codes": [
+   "CPP-CMAKE-ERROR"
+  ],
+  "en": {
+   "title": "CMake found a mistake in CMakeLists.txt",
+   "body": "CMakeLists.txt is the file that tells CMake how to build the program; VizcachaIDE creates it for you. CMake could not follow it, usually because a line has a typo or a command received something wrong. The error points to the line of CMakeLists.txt and to the command involved.",
+   "fix": "Open CMakeLists.txt, go to the line the error shows and compare it with the rest of the file: check the spelling of the command and that every parenthesis is closed. If you do not need your changes, delete CMakeLists.txt and run again: VizcachaIDE creates a new one."
+  },
+  "es": {
+   "title": "CMake encontró un error en CMakeLists.txt",
+   "body": "CMakeLists.txt es el archivo que le dice a CMake cómo construir el programa; VizcachaIDE lo crea por ti. CMake no pudo seguirlo, casi siempre porque una línea tiene una errata o un comando recibió algo incorrecto. El error señala la línea de CMakeLists.txt y el comando involucrado.",
+   "fix": "Abre CMakeLists.txt, ve a la línea que muestra el error y compárala con el resto del archivo: revisa cómo se escribe el comando y que cada paréntesis esté cerrado. Si no necesitas tus cambios, borra CMakeLists.txt y ejecuta otra vez: VizcachaIDE crea uno nuevo."
+  }
  }
 ]

@@ -80,7 +80,7 @@ describe('Settings dialog', () => {
     render(SettingsDialog)
     expect(await screen.findAllByText(/Included with VizcachaIDE/)).toHaveLength(2)
     // gopls, Python and its three modules, the four tools of C++ and the six of Rust.
-    expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(15)
+    expect(screen.getAllByText(/Found on your PATH/)).toHaveLength(18)
     const go = screen.getByLabelText('Go')
     await fireEvent.change(go, { target: { value: ' C:\\go\\bin\\go.exe ' } })
     await waitFor(() => expect(get(settings)?.toolPaths['go']).toBe('C:\\go\\bin\\go.exe'))

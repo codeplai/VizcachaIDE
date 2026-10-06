@@ -43,6 +43,32 @@ describe('the language a new file is written in', () => {
     ).toBe('cpp')
   })
 
+  it('takes CMakeLists.txt as C++ only when the folder has C++ sources', () => {
+    expect(
+      folderCodeLanguage(
+        folder('/p', [file('/p/CMakeLists.txt'), file('/p/main.cpp')]),
+        languageProfiles
+      )
+    ).toBe('cpp')
+    expect(
+      folderCodeLanguage(
+        folder('/p', [file('/p/CMakeLists.txt'), file('/p/a.py'), file('/p/b.py')]),
+        languageProfiles
+      )
+    ).toBe('python')
+    expect(
+      folderCodeLanguage(folder('/p', [file('/p/CMakeLists.txt')]), languageProfiles)
+    ).toBeNull()
+  })
+
+  it('does not count the sources of build/ and target/', () => {
+    const tree = folder('/p', [
+      file('/p/main.py'),
+      folder('/p/build', [file('/p/build/a.cpp'), file('/p/build/b.cpp')])
+    ])
+    expect(folderCodeLanguage(tree, languageProfiles)).toBe('python')
+  })
+
   it('is the language most sources have when there is no marker', () => {
     const tree = folder('/p', [
       file('/p/main.py'),

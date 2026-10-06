@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/sv
 import { get } from 'svelte/store'
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { bridge } from '../bridge'
+import type { FileNode } from '../domain'
 import { setupI18n } from '../i18n'
 import {
   activePath,
@@ -37,6 +38,20 @@ describe('Files panel header', () => {
     for (const name of ['New file', 'New folder', 'Refresh']) {
       expect(screen.getByRole('button', { name }).getAttribute('title')).toBe(name)
     }
+  })
+
+  it('shows the folders the build tools generate dimmed', () => {
+    const dir = (name: string): FileNode => ({
+      name,
+      path: `/p/${name}`,
+      isDir: true,
+      children: []
+    })
+    fileTree.set({ name: 'p', path: '/p', isDir: true, children: [dir('build'), dir('src')] })
+    const { container } = render(FilesPanel)
+    const dimmed = [...container.querySelectorAll('li.generated')]
+    expect(dimmed).toHaveLength(1)
+    expect(dimmed[0]?.textContent).toContain('build')
   })
 
   it('has no such buttons without a folder', () => {

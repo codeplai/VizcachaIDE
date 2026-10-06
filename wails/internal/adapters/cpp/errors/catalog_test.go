@@ -40,7 +40,7 @@ var fixtureOf = map[string][2]string{
 }
 
 func TestEveryCatalogIDHasAFixtureInBothFamilies(t *testing.T) {
-	ids := catalogIDs(t)
+	ids := compilerIDs(t)
 	if len(ids) != len(fixtureOf) {
 		t.Errorf("catalog has %d entries, fixtures cover %d", len(ids), len(fixtureOf))
 	}

@@ -74,7 +74,9 @@ const PACKAGE_NAMES: Partial<Record<CodeLanguage, RegExp>> = {
   go: /^[A-Za-z0-9][A-Za-z0-9._~/-]*(@[A-Za-z0-9._+-]+)?$/,
   python: /^[A-Za-z0-9][A-Za-z0-9._-]*(\[[A-Za-z0-9,_-]+\])?([=<>~!]=?[A-Za-z0-9._*+-]+)?$/,
   // `cargo add serde` or `cargo add serde@1.0`
-  rust: /^[A-Za-z][A-Za-z0-9_-]*(@[A-Za-z0-9._+*^~=<>-]+)?$/
+  rust: /^[A-Za-z][A-Za-z0-9_-]*(@[A-Za-z0-9._+*^~=<>-]+)?$/,
+  // a vcpkg port: lower case letters, digits and -, like `fmt` or `boost-asio`
+  cpp: /^[a-z0-9][a-z0-9-]*$/
 }
 
 /** True when `init` can take the text as a project name (a Go module path, a Cargo package name). */

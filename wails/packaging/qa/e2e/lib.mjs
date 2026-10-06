@@ -22,6 +22,21 @@ export const DEV_CXX = path.join(
   process.env.VIZCACHA_TEST_LLVM_BIN || path.join(WAILS_DIR, '.toolchain-dev', 'llvm-mingw-20260922-ucrt-x86_64', 'bin'),
   process.platform === 'win32' ? 'clang++.exe' : 'clang++'
 )
+/** CMake, Ninja and vcpkg of .toolchain-dev for the C++ steps (docs/PLAN_CPP_CMAKE.md section 8). */
+const DEV_TOOLCHAIN = path.join(WAILS_DIR, '.toolchain-dev')
+export const DEV_CMAKE_BIN = process.env.VIZCACHA_TEST_CMAKE_BIN || path.join(DEV_TOOLCHAIN, 'cmake', 'bin')
+export const DEV_VCPKG_ROOT = process.env.VIZCACHA_TEST_VCPKG_ROOT || path.join(DEV_TOOLCHAIN, 'vcpkg')
+export const DEV_VCPKG_SEED = process.env.VIZCACHA_TEST_VCPKG_SEED || path.join(DEV_TOOLCHAIN, 'vcpkg-seed')
+const exe = (name) => (process.platform === 'win32' ? `${name}.exe` : name)
+/** Settings.toolPaths for every C++ project: the compiler, CMake, Ninja and vcpkg's root. */
+export const DEV_CPP_TOOLS = {
+  cxx: DEV_CXX,
+  cmake: path.join(DEV_CMAKE_BIN, exe('cmake')),
+  ninja: path.join(DEV_CMAKE_BIN, exe('ninja')),
+  vcpkg: DEV_VCPKG_ROOT
+}
+/** The seed of vcpkg's own downloads is found through this variable, which `wails dev` inherits. */
+export const useDevVcpkgSeed = () => { process.env.VIZCACHA_TEST_VCPKG_SEED = DEV_VCPKG_SEED }
 /** The development rustup (docs/PLAN_RUST.md section 3.3): CARGO_HOME and RUSTUP_HOME for wails dev. */
 export const DEV_RUST = {
   CARGO_HOME: process.env.VIZCACHA_TEST_CARGO_HOME || path.join(WAILS_DIR, '.toolchain-dev', 'cargo'),

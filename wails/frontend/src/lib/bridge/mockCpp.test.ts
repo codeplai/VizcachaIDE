@@ -98,12 +98,15 @@ describe('C++ in the mock bridge', () => {
 })
 
 describe('C++ tools and the dev bar', () => {
-  it('declares the four tools of the backend profile', () => {
+  it('declares the seven tools of the backend profile', () => {
     expect(cppProfile.tools.map((spec) => [spec.id, spec.role])).toEqual([
       ['cxx', 'compiler'],
       ['lldb-dap', 'debugAdapter'],
       ['clangd', 'languageServer'],
-      ['clang-format', 'formatter']
+      ['clang-format', 'formatter'],
+      ['cmake', 'buildTool'],
+      ['ninja', 'buildTool'],
+      ['vcpkg', 'buildTool']
     ])
     expect(languageProfiles).toContain(cppProfile)
     expect(cppProfile.capabilities).toMatchObject({ build: true, console: false, debugInput: true })
@@ -112,7 +115,15 @@ describe('C++ tools and the dev bar', () => {
   it('reports each C++ tool with a version', async () => {
     const { bridge } = createMockBridge()
     const found = (await bridge.codeLanguages.tools()).filter((tool) => tool.codeLanguage === 'cpp')
-    expect(found.map((tool) => tool.id)).toEqual(['cxx', 'lldb-dap', 'clangd', 'clang-format'])
+    expect(found.map((tool) => tool.id)).toEqual([
+      'cxx',
+      'lldb-dap',
+      'clangd',
+      'clang-format',
+      'cmake',
+      'ninja',
+      'vcpkg'
+    ])
     expect(found.every((tool) => tool.version !== '')).toBe(true)
   })
 

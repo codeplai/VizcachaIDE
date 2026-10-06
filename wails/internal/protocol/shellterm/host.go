@@ -22,6 +22,9 @@ type Options struct {
 	Sink app.TerminalSink
 	// Folders returns the folders to put first in PATH (default: none).
 	Folders func(ctx context.Context) []string
+	// Variables returns "NAME=value" entries that every shell starts with, replacing a variable of
+	// the same name (default: none).
+	Variables func(ctx context.Context) []string
 	// Base is the environment the shells start from (default: os.Environ()).
 	Base []string
 	// Shell is the shell to start (default: ChooseShell for this machine).
@@ -51,9 +54,12 @@ func NewHost(options Options) *Host {
 
 // Start implements app.TerminalHost.
 func (h *Host) Start(dir string, cols, rows int) (string, error) {
-	var folders []string
+	var folders, variables []string
 	if h.options.Folders != nil {
 		folders = h.options.Folders(context.Background())
+	}
+	if h.options.Variables != nil {
+		variables = h.options.Variables(context.Background())
 	}
 	shell := h.options.Shell()
 	h.mu.Lock()
@@ -62,7 +68,7 @@ func (h *Host) Start(dir string, cols, rows int) (string, error) {
 	h.mu.Unlock()
 	s, err := startSession(id, pty.Program{
 		Command: shell.Path, Args: shell.Args, Dir: startDirectory(dir),
-		Env:         Environment(h.options.Base, folders),
+		Env:         WithVariables(Environment(h.options.Base, folders), variables),
 		Interactive: true, Columns: cols, Rows: rows,
 	}, h.options.Sink)
 	if err != nil {

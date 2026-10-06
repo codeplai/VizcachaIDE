@@ -17,9 +17,16 @@ third-party software, all under permissive licenses:
   Go toolchain *  (The Go Authors) BSD-3-Clause   toolchain/go/LICENSE
   Delve (dlv) *   (Derek Parker)  MIT            toolchain/licenses/dlv-LICENSE.txt
   gopls *         (The Go Authors) BSD-3-Clause   toolchain/licenses/gopls-LICENSE.txt
+  CMake * (Kitware)                BSD-3-Clause   toolchain/licenses/cmake-LICENSE.txt
+  Ninja * (Google and others)      Apache-2.0     toolchain/licenses/ninja-LICENSE.txt
+  vcpkg * (Microsoft)              MIT            toolchain/licenses/vcpkg-LICENSE.txt
+  PowerShell * (Microsoft)         MIT            toolchain/licenses/powershell-LICENSE.txt
+  7-Zip * (Igor Pavlov)            LGPL           toolchain/licenses/7zip-License.txt
   Microsoft WebView2 bootstrapper  Microsoft      Windows installer only; it installs the
                                                   WebView2 runtime if the PC lacks it
-  (* only in the "full" variant; the "lite" variant uses the Go installed on your system)
+  (* only in the "full" variants; the "lite" variant uses the Go installed on your system.
+   CMake, Ninja, vcpkg, PowerShell and 7-Zip only in full-cpp: PowerShell and 7-Zip are the
+   tools vcpkg downloads on its first run, shipped in toolchain/cpp/vcpkg-seed/)
 
 The platform web engine (WebView2 on Windows, WKWebView on macOS, WebKitGTK on Linux) is
 provided by the operating system and is not redistributed in the macOS and Linux packages.
@@ -37,6 +44,9 @@ todo con licencias permisivas:
 
   Wails v2 (MIT), Svelte / CodeMirror 6 / Vite (MIT), y solo en la variante "full":
   Go (BSD-3-Clause), Delve (MIT) y gopls (BSD-3-Clause), con sus licencias en toolchain/.
+  La variante full-cpp incluye ademas CMake (BSD-3-Clause), Ninja (Apache-2.0), vcpkg (MIT) y,
+  para la primera ejecucion de vcpkg, PowerShell (MIT) y 7-Zip (LGPL); sus licencias estan en
+  toolchain/licenses/.
   El instalador de Windows incluye el bootstrapper de Microsoft WebView2, que instala el
   runtime si el equipo no lo tiene. La variante "lite" usa el Go instalado en tu sistema.
 

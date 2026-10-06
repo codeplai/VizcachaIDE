@@ -107,7 +107,7 @@ export const cppProfile: LanguageProfile = {
     format: true,
     check: true,
     debugInput: true,
-    packageActions: [],
+    packageActions: ['add', 'remove', 'list'],
     threadsLabel: 'debug.threads'
   },
   tools: [
@@ -138,6 +138,27 @@ export const cppProfile: LanguageProfile = {
       labelKey: 'settings.toolClangFormat',
       missingKey: 'errors.clangFormatNotFound',
       installUrl: 'https://github.com/mstorsjo/llvm-mingw/releases'
+    }),
+    tool({
+      id: 'cmake',
+      role: 'buildTool',
+      labelKey: 'settings.toolCMake',
+      missingKey: 'errors.cmakeNotFound',
+      installUrl: 'https://cmake.org/download/'
+    }),
+    tool({
+      id: 'ninja',
+      role: 'buildTool',
+      labelKey: 'settings.toolNinja',
+      missingKey: 'errors.ninjaNotFound',
+      installUrl: 'https://github.com/ninja-build/ninja/releases'
+    }),
+    tool({
+      id: 'vcpkg',
+      role: 'buildTool',
+      labelKey: 'settings.toolVcpkg',
+      missingKey: 'errors.vcpkgNotFound',
+      installUrl: 'https://github.com/microsoft/vcpkg'
     })
   ]
 }

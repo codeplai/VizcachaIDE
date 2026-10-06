@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/codeplai/VizcachaIDE/wails/internal/app"
@@ -23,13 +24,17 @@ func touch(t *testing.T, folder string, names ...string) {
 
 func bareRunner() *Runner { return New(process.New(newTestSink()), Options{AppDir: "."}) }
 
-func TestConfigureOneSourceRunsTheFile(t *testing.T) {
-	folder := t.TempDir()
+func TestConfigureOneSourceCreatesTheCMakeProject(t *testing.T) {
+	folder := filepath.Join(t.TempDir(), "Ñandú")
+	if err := os.Mkdir(folder, 0o755); err != nil {
+		t.Fatal(err)
+	}
 	touch(t, folder, "hola.cpp", "util.h")
 	path := filepath.Join(folder, "hola.cpp")
-	config := bareRunner().Configure(path, []string{"a", "b c"})
+	r := New(process.New(newTestSink()), Options{AppDir: ".", Language: func() string { return "es" }})
+	config := r.Configure(path, []string{"a", "b c"})
 
-	if config.CodeLanguage != domain.CodeLanguageCpp || config.Mode != domain.RunFile || config.Target != path {
+	if config.CodeLanguage != domain.CodeLanguageCpp || config.Mode != domain.RunProject || config.Target != folder {
 		t.Fatalf("config = %+v", config)
 	}
 	if config.WorkingDir != folder || len(config.ProgramArgs) != 2 || config.ProgramArgs[1] != "b c" {
@@ -37,6 +42,38 @@ func TestConfigureOneSourceRunsTheFile(t *testing.T) {
 	}
 	if config.Project == nil || config.Project.Root != folder || config.Project.Kind != domain.ProjectFolder {
 		t.Fatalf("project = %+v", config.Project)
+	}
+	lists, err := os.ReadFile(filepath.Join(folder, "CMakeLists.txt"))
+	if err != nil || !strings.Contains(string(lists), "add_executable(nandu ") || !strings.Contains(string(lists), "Todo .cpp") {
+		t.Fatalf("CMakeLists.txt = %q, %v, want the Spanish template for target nandu", lists, err)
+	}
+	for _, name := range []string{"vcpkg.json", "CMakePresets.json", ".gitignore"} {
+		if _, err := os.Stat(filepath.Join(folder, name)); err != nil {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+}
+
+func TestConfigureKeepsAnExistingCMakeLists(t *testing.T) {
+	root := t.TempDir()
+	sub := filepath.Join(root, "src")
+	if err := os.Mkdir(sub, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	mine := "project(mio)\nadd_executable(mio src/a.cpp)\n"
+	if err := os.WriteFile(filepath.Join(root, "CMakeLists.txt"), []byte(mine), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	touch(t, sub, "a.cpp")
+	config := bareRunner().Configure(filepath.Join(sub, "a.cpp"), nil)
+	if config.Mode != domain.RunProject || config.Target != root {
+		t.Fatalf("config = %+v, want the project at %s", config, root)
+	}
+	if text, _ := os.ReadFile(filepath.Join(root, "CMakeLists.txt")); string(text) != mine {
+		t.Fatalf("CMakeLists.txt was changed: %q", text)
+	}
+	if _, err := os.Stat(filepath.Join(sub, "CMakeLists.txt")); err == nil {
+		t.Fatal("a subfolder of a project must not get its own CMakeLists.txt")
 	}
 }
 
@@ -46,7 +83,7 @@ func TestConfigureTwoSourcesIsAProject(t *testing.T) {
 		t.Fatal(err)
 	}
 	touch(t, folder, "main.cpp", "suma.cc")
-	config := bareRunner().Configure(filepath.Join(folder, "suma.cc"), nil)
+	config := configureDirect(filepath.Join(folder, "suma.cc"), nil)
 
 	if config.Mode != domain.RunProject || config.Target != folder {
 		t.Fatalf("config = %+v", config)
@@ -62,7 +99,7 @@ func TestConfigureTwoSourcesIsAProject(t *testing.T) {
 func TestConfigureHeaderResolvesToItsFolder(t *testing.T) {
 	folder := t.TempDir()
 	touch(t, folder, "main.cpp", "util.hpp")
-	config := bareRunner().Configure(filepath.Join(folder, "util.hpp"), nil)
+	config := configureDirect(filepath.Join(folder, "util.hpp"), nil)
 	if config.Mode != domain.RunProject || config.Target != folder {
 		t.Fatalf("config = %+v", config)
 	}

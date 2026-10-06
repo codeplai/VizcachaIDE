@@ -3,7 +3,7 @@
 //   cd wails/packaging/qa/e2e && npm install
 //   node qa.mjs                 # EN and ES, settings persistence and first run
 //   node qa.mjs --lang es       # one language only
-//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | rust | newproject | terminal | multi
+//   node qa.mjs --only persist  # one phase: en | es | persist | firstrun | python | cpp | cpp-cmake | rust | newproject | terminal | multi
 //
 // It backs up the real settings.json, starts `wails dev` (the frontend with the real bindings is
 // served on http://localhost:35115 here; Wails' default 34115 is reserved on some Windows PCs),
@@ -17,6 +17,7 @@ import { steps } from './steps.mjs'
 import { persistenceSteps, firstRunSteps } from './settings-steps.mjs'
 import { pythonSteps } from './steps-python.mjs'
 import { cppSteps } from './steps-cpp.mjs'
+import { cppCmakeSteps } from './steps-cpp-cmake.mjs'
 import { rustSteps } from './steps-rust.mjs'
 import { multifileSteps } from './steps-multifile.mjs'
 import { newProjectSteps } from './steps-newproject.mjs'
@@ -89,6 +90,7 @@ const main = async () => {
   fs.mkdirSync(L.WQ, { recursive: true })
   L.killLeftovers()
   L.backupSettings()
+  L.useDevVcpkgSeed()
   L.prepareProject()
   try {
     for (const lang of ['en', 'es']) {
@@ -109,7 +111,14 @@ const main = async () => {
     if (wants('cpp')) {
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
-        await session(`cpp-${lang}`, { language: lang, toolPaths: { cxx: L.DEV_CXX } }, (ctx) => cppSteps(ctx, lang))
+        await session(`cpp-${lang}`, { language: lang, toolPaths: { ...L.DEV_CPP_TOOLS } }, (ctx) => cppSteps(ctx, lang))
+      }
+    }
+    // C++ with CMake and vcpkg (M4): a new project, fmt from the Packages dialog, F5, debug, an old folder.
+    if (wants('cpp-cmake')) {
+      for (const lang of ['en', 'es']) {
+        if (onlyLang && onlyLang !== lang) continue
+        await session(`cpp-cmake-${lang}`, { language: lang, toolPaths: { ...L.DEV_CPP_TOOLS } }, (ctx) => cppCmakeSteps(ctx, lang))
       }
     }
     // Rust (M3): the development rustup of docs/PLAN_RUST.md section 3.3, inherited by wails dev.
@@ -123,7 +132,7 @@ const main = async () => {
     // File > New project in every language (after 2.4.0).
     if (wants('newproject')) {
       Object.assign(process.env, L.DEV_RUST)
-      const toolPaths = { python: L.DEV_PYTHON, cxx: L.DEV_CXX, 'lldb-dap': L.DEV_LLDB_DAP }
+      const toolPaths = { python: L.DEV_PYTHON, ...L.DEV_CPP_TOOLS, 'lldb-dap': L.DEV_LLDB_DAP }
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`newproject-${lang}`, { language: lang, toolPaths }, (ctx) => newProjectSteps(ctx, lang))
@@ -132,7 +141,7 @@ const main = async () => {
     // The integrated terminal: go, python, clang++ and cargo work in it as with F5.
     if (wants('terminal')) {
       Object.assign(process.env, L.DEV_RUST)
-      const toolPaths = { python: L.DEV_PYTHON, cxx: L.DEV_CXX, 'lldb-dap': L.DEV_LLDB_DAP }
+      const toolPaths = { python: L.DEV_PYTHON, ...L.DEV_CPP_TOOLS, 'lldb-dap': L.DEV_LLDB_DAP }
       for (const lang of ['en', 'es']) {
         if (onlyLang && onlyLang !== lang) continue
         await session(`terminal-${lang}`, { language: lang, toolPaths }, (ctx) => terminalSteps(ctx, lang))
@@ -143,7 +152,7 @@ const main = async () => {
     if (only === 'multi') {
       Object.assign(process.env, L.DEV_RUST)
       const lang = onlyLang ?? 'en'
-      const toolPaths = { python: L.DEV_PYTHON, cxx: L.DEV_CXX, 'lldb-dap': L.DEV_LLDB_DAP }
+      const toolPaths = { python: L.DEV_PYTHON, ...L.DEV_CPP_TOOLS, 'lldb-dap': L.DEV_LLDB_DAP }
       for (const codeLanguage of ['go', 'python', 'cpp', 'rust']) {
         if (option('--code') && option('--code') !== codeLanguage) continue
         await session(`multi-${codeLanguage}`, { language: lang, toolPaths }, (ctx) => multifileSteps(ctx, lang, codeLanguage))

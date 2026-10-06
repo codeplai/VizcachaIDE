@@ -20,10 +20,14 @@
   import FileTreeMenu from './FileTreeMenu.svelte'
   import FileTreeNode from './FileTreeNode.svelte'
 
+  const GENERATED_FOLDERS = ['target', 'build']
+
   let { node, depth = 0 }: { node: FileNode; depth?: number } = $props()
 
   const open = $derived(!$collapsedFolders.has(node.path))
   const indent = $derived(`${14 + depth * 12}px`)
+  // Folders the build tools generate (Cargo's target/, CMake's build/) are shown dimmed.
+  const generated = $derived(node.isDir && depth > 0 && GENERATED_FOLDERS.includes(node.name))
   const hasProblems = $derived(!node.isDir && $filesWithProblems.includes(node.path))
   const renaming = $derived($treeEdit?.kind === 'rename' && $treeEdit.path === node.path)
   const creatingHere = $derived(
@@ -88,7 +92,7 @@
   </button>
 {/snippet}
 
-<li>
+<li class:generated>
   {#if renaming && $treeEdit}
     <FileTreeEdit
       initial={node.name}
@@ -124,6 +128,9 @@
 <style>
   li {
     list-style: none;
+  }
+  li.generated {
+    opacity: 0.55;
   }
   ul {
     margin: 0;
