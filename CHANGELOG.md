@@ -8,6 +8,11 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Changed
+- The `full` installer now includes Rust (rustc, cargo, clippy, rustfmt and rust-analyzer, Rust 1.99.0; on Windows
+  the GNU toolchain, so no Visual Studio is needed) next to Go, Python and C++ (C++ on Windows only). Nothing else
+  to install to write Rust. The other variants are unchanged and keep using the Rust installed with rustup.
+
 ## [2.5.1] - 2026-10-06
 
 ### Fixed
@@ -346,6 +351,11 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Cambiado
+- El instalador `full` ahora incluye Rust (rustc, cargo, clippy, rustfmt y rust-analyzer, Rust 1.99.0; en Windows
+  el toolchain GNU, así que no hace falta Visual Studio) junto con Go, Python y C++ (C++ sólo en Windows). No hay
+  que instalar nada más para escribir Rust. Las demás variantes no cambian y siguen usando el Rust instalado con rustup.
 
 ## [2.5.1] - 2026-10-06
 

@@ -1,6 +1,6 @@
 name: wails-release
 
-# Push a tag like wails-v2.0.0-rc1 to build the lite, full-go, full-python and full (Go + Python, plus C++ on Windows)
+# Push a tag like wails-v2.0.0-rc1 to build the lite, full-go, full-python and full (Go + Python + Rust, plus C++ on Windows)
 # packages of the Wails variant on Windows, macOS (arm64 + x86_64) and Linux, plus full-cpp (llvm-mingw) on Windows only,
 # and create a DRAFT GitHub Release (EN/ES notes). macOS and Linux have no bundled C++ compiler: they use the system one.
 # workflow_dispatch builds the same artifacts without creating a release (dry run).
@@ -113,7 +113,7 @@ jobs:
       - name: Build lite, full-go, full-python, full-cpp (Windows) and full
         run: python wails/packaging/build_release.py --variant all --target ${{ matrix.target }}
 
-      - name: Smoke test (the app stays alive, bundled go, python and C++ work)
+      - name: Smoke test (the app stays alive, bundled go, python, Rust and C++ work)
         run: |
           cd wails/dist
           python_smoke="python ../packaging/smoke_test.py"
@@ -126,15 +126,17 @@ jobs:
                 python -m zipfile -e "$(ls release/VizcachaIDE-*-windows-amd64-${variant}-portable.zip)" "$work"
                 root="$work/VizcachaIDE"; exe="$root/VizcachaIDE.exe"
                 go="$root/toolchain/go/bin/go.exe"; py="$root/toolchain/python/python.exe"
-                cxx="$root/toolchain/cpp/bin/clang++.exe" ;;
+                cxx="$root/toolchain/cpp/bin/clang++.exe"; rs="$root/toolchain/rust/bin/rustc.exe" ;;
               macOS)
                 app=$(ls -d work/VizcachaIDE-*-macos-*-${variant}/VizcachaIDE.app)
                 exe="$app/Contents/MacOS/vizcacha"
-                go="$app/Contents/MacOS/toolchain/go/bin/go"; py="$app/Contents/MacOS/toolchain/python/bin/python3" ;;
+                go="$app/Contents/MacOS/toolchain/go/bin/go"; py="$app/Contents/MacOS/toolchain/python/bin/python3"
+                rs="$app/Contents/MacOS/toolchain/rust/bin/rustc" ;;
               Linux)
                 tar -xzf release/VizcachaIDE-*-linux-amd64-${variant}.tar.gz -C "$work"
                 root="$work/VizcachaIDE"; exe="$root/VizcachaIDE"
                 go="$root/toolchain/go/bin/go"; py="$root/toolchain/python/bin/python3"
+                rs="$root/toolchain/rust/bin/rustc"
                 python_smoke="xvfb-run -a python ../packaging/smoke_test.py" ;;
             esac
             extra=""
@@ -143,6 +145,9 @@ jobs:
             esac
             case "$variant" in
               full-python|full) extra="$extra --python $py" ;;
+            esac
+            case "$variant" in
+              full) extra="$extra --rust $rs" ;;
             esac
             case "$variant" in
               full-cpp|full) [ "${{ runner.os }}" = "Windows" ] && extra="$extra --cxx $cxx" ;;
@@ -195,7 +200,7 @@ jobs:
 
           | Download | Contents |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve, gopls and Python (debugpy, python-lsp-server, ruff); on Windows also C++ (clang, lldb-dap, clangd, clang-format): nothing else to install |
+          | \`*-full-*\` | IDE + Go, Delve, gopls, Python (debugpy, python-lsp-server, ruff) and Rust (rustc, cargo, clippy, rustfmt, rust-analyzer); on Windows also C++ (clang, lldb-dap, clangd, clang-format): nothing else to install |
           | \`*-full-go-*\` | IDE + Go, Delve and gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 with debugger, completion and formatter |
           | \`*-windows-amd64-full-cpp-*\` | Windows only: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format) with CMake, Ninja and vcpkg for libraries. On macOS and Linux C++ uses the compiler of the system |
@@ -205,7 +210,7 @@ jobs:
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |
           | \`*.AppImage\` / \`*.tar.gz\` | Linux x86_64 (needs WebKitGTK 4.1: \`libwebkit2gtk-4.1-0\`) |
 
-          Rust is not bundled: VizcachaIDE uses the Rust installed with rustup (it tells you how). What changed: \`CHANGELOG.md\`.
+          Rust is bundled in the \`*-full-*\` download only; the other downloads use the Rust installed with rustup (the IDE tells you how). What changed: \`CHANGELOG.md\`.
 
           macOS and Windows builds are not code-signed yet: on macOS right-click the app and choose
           **Open** the first time; on Windows choose **More info > Run anyway** in SmartScreen.
@@ -215,7 +220,7 @@ jobs:
 
           | Descarga | Contenido |
           |---|---|
-          | \`*-full-*\` | IDE + Go, Delve, gopls y Python (debugpy, python-lsp-server, ruff); en Windows también C++ (clang, lldb-dap, clangd, clang-format): no hace falta instalar nada más |
+          | \`*-full-*\` | IDE + Go, Delve, gopls, Python (debugpy, python-lsp-server, ruff) y Rust (rustc, cargo, clippy, rustfmt, rust-analyzer); en Windows también C++ (clang, lldb-dap, clangd, clang-format): no hace falta instalar nada más |
           | \`*-full-go-*\` | IDE + Go, Delve y gopls |
           | \`*-full-python-*\` | IDE + Python 3.12 con depurador, autocompletado y formateador |
           | \`*-windows-amd64-full-cpp-*\` | Sólo Windows: IDE + C++ (llvm-mingw: clang, lldb-dap, clangd, clang-format) con CMake, Ninja y vcpkg para librerías. En macOS y Linux C++ usa el compilador del sistema |
@@ -225,7 +230,7 @@ jobs:
           | \`*-macos-arm64-*.dmg\` / \`*-macos-amd64-*.dmg\` | macOS, Apple Silicon / Intel |
           | \`*.AppImage\` / \`*.tar.gz\` | Linux x86_64 (requiere WebKitGTK 4.1: \`libwebkit2gtk-4.1-0\`) |
 
-          Rust no viene incluido: VizcachaIDE usa el Rust instalado con rustup (te indica cómo). Qué cambió: \`CHANGELOG.md\`.
+          Rust viene incluido sólo en la descarga \`*-full-*\`; las demás usan el Rust instalado con rustup (la IDE te indica cómo). Qué cambió: \`CHANGELOG.md\`.
 
           Las versiones de macOS y Windows aún no están firmadas: en macOS, clic derecho sobre la
           app y **Abrir** la primera vez; en Windows, **Más información > Ejecutar de todos modos**.

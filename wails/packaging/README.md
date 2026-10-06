@@ -8,13 +8,14 @@ Variants (what goes under `toolchain/`, next to the executable):
 | `full-go` | Go, Delve, gopls | the old Go-only `full` (renamed) |
 | `full-python` | CPython 3.12, debugpy, python-lsp-server (+ pyflakes), ruff | Python only |
 | `full-cpp` | llvm-mingw (clang/clang++, lld, lldb-dap, clangd, clang-format), x86_64 only | **Windows only**; macOS and Linux use the system compiler |
-| `full` | Go + Python + C++ | nothing else to install. On macOS and Linux there is no C++ part, so `full` = Go + Python |
+| `full` | Go + Python + Rust + C++ | nothing else to install. On macOS and Linux there is no C++ part, so `full` = Go + Python + Rust. Rust ships only here: there is no `full-rust` |
 
 All pins live in `packaging/versions.toml`. The Go part is the PyQt one: `build_release.py` imports
 `packaging/fetch_toolchain.py` and `packaging/go_tools.py`; the Python part is
 `packaging/fetch_python.py` (see "How Python is bundled"); the C++ part is `packaging/fetch_cpp.py`
-(see "How C++ is bundled"). `full` now means Go + Python + C++ (it was Go + Python in 2.2). Stages live
-in `wails/dist/stage/<os>-<arch>/{go,python,cpp}` and `full` is merged into `.../full` (licenses and
+(see "How C++ is bundled"); the Rust part is `packaging/fetch_rust.py` (see "How Rust is bundled"). `full` now
+means Go + Python + C++ + Rust (it was Go + Python in 2.2). Stages live
+in `wails/dist/stage/<os>-<arch>/{go,python,cpp,rust}` and `full` is merged into `.../full` (licenses and
 `VERSIONS.txt` merged). `full-cpp` is skipped, with a note, when the target is not Windows.
 
 ```bash
@@ -138,6 +139,34 @@ Measured sizes, Windows amd64 (2026-10-04): pruned `toolchain/cpp` 372 MB on dis
 installers are built by CI. Smoke-tested from the unpacked zips: the app starts, bundled go, python and C++ answer.
 
 The antivirus caveat of MinGW binaries (rare false positives) is covered by `SHA256SUMS` and the release notes.
+
+## How Rust is bundled (`full` only)
+
+Decision of 2026-10-06 (see `docs/PLAN_RUST.md` section 7): the `full` installer includes Rust; there is no
+`full-rust` variant. `packaging/fetch_rust.py` downloads the official standalone component tarballs from
+`https://static.rust-lang.org/dist/<date>/` (the files rustup itself downloads), verifies each with the sha256 of
+`[rust.sha256.<os>-<arch>]` in `versions.toml` (taken from `channel-rust-<version>.toml`; regenerate with
+`python packaging/print_rust_hashes.py <version>`), and installs them into one sysroot, `toolchain/rust/`, by
+copying the files each component's `manifest.in` lists (there is no bash on Windows). Components: rustc, cargo,
+rust-std, clippy, rustfmt, rust-analyzer, rust-src and, on Windows only, rust-mingw (the self-contained MinGW linker);
+rust-docs is never fetched. Targets: `x86_64-pc-windows-gnu` (not msvc: no Visual Studio needed),
+`x86_64-unknown-linux-gnu`, `aarch64-apple-darwin` and `x86_64-apple-darwin`.
+
+Layout: `toolchain/rust/bin/{rustc,cargo,clippy-driver,cargo-clippy,rustfmt,cargo-fmt,rust-analyzer}`,
+`toolchain/rust/lib/rustlib/...` (with `etc/lldb_lookup.py`, used by the debugger). `rustc --print sysroot` is
+`toolchain/rust`. The locator (`wails/internal/adapters/rust/`) tries the configured path, then
+`toolchain/rust/bin`, then rustup; with the bundled toolchain it sets `CARGO_HOME` to
+`<user cache dir>/VizcachaIDE/cargo`, because the install folder can be read-only.
+
+```bash
+python packaging/fetch_rust.py --os windows --arch amd64 --dest wails/dist/stage/windows-amd64/rust
+python wails/packaging/smoke_test.py --rust <stage>/toolchain/rust/bin/rustc.exe
+# compiles and runs hola.rs from a folder with spaces and accents; cargo, rustfmt, clippy and rust-analyzer answer --version
+```
+
+Measured sizes, Windows amd64 (2026-10-06, Rust 1.99.0): `toolchain/rust` **1084 MB** on disk (`rustc_driver` DLL 341 MB,
+`lib/rustlib/x86_64-pc-windows-gnu/bin` MinGW 245 MB, rust-analyzer 68 MB, cargo 60 MB, clippy 49 MB, rustdoc 21 MB, rust-src
+3689 files); **281 MB** as a zip at level 9. That is added to the `full` download.
 
 ## Windows installer (NSIS)
 
