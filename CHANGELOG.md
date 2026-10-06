@@ -8,7 +8,12 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.5.1] - 2026-10-06
+
 ### Fixed
+- The Linux and macOS builds of 2.5.0 did not compile: a copy of the C++ console helper had been left in a Go
+  package folder. The CI now builds and tests on Windows, macOS and Linux.
+- Releases keep the `SHA256SUMS-<os>-<arch>.txt` files the automatic update checks its download with.
 - Inlay hints (the grey inferred types) never appeared when rust-analyzer took more than about 30 seconds to
   index a project without problems: the editor now keeps asking for about three minutes.
 
@@ -341,7 +346,13 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 
 ## [Sin publicar]
 
+## [2.5.1] - 2026-10-06
+
 ### Corregido
+- Las versiones de Linux y macOS de la 2.5.0 no compilaban: una copia de la ayuda de consola de C++ había quedado en
+  la carpeta de un paquete Go. El CI ahora compila y prueba en Windows, macOS y Linux.
+- Las versiones publicadas conservan los archivos `SHA256SUMS-<sistema>-<arquitectura>.txt` con los que la
+  actualización automática verifica su descarga.
 - Las pistas en línea (los tipos inferidos en gris) no aparecían cuando rust-analyzer tardaba más de unos 30
   segundos en indexar un proyecto sin problemas: el editor ahora las sigue pidiendo durante unos tres minutos.
 
