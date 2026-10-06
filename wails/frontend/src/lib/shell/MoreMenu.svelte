@@ -8,6 +8,8 @@
     buildActiveFile,
     capabilities,
     checkForUpdates,
+    codeLanguageOf,
+    editorBridge,
     isUntitled,
     openDialog,
     settingsTab
@@ -19,7 +21,23 @@
   const canBuild = $derived(
     ($capabilities?.build ?? false) && $activePath !== null && !isUntitled($activePath)
   )
+  // Rename and references need the language server of the open file.
+  const canRefactor = $derived($activePath !== null && codeLanguageOf($activePath) !== null)
   const entries = $derived([
+    ...(canRefactor
+      ? [
+          {
+            label: 'refactor.menuRename',
+            inEditor: true,
+            run: () => editorBridge()?.renameSymbol()
+          },
+          {
+            label: 'refactor.menuReferences',
+            inEditor: true,
+            run: () => editorBridge()?.findReferences()
+          }
+        ]
+      : []),
     ...(canBuild ? [{ label: 'actions.build', run: () => void buildActiveFile(bridge) }] : []),
     ...(hasPackages
       ? [
@@ -40,6 +58,21 @@
     },
     { label: 'shell.about', run: () => openDialog.set('about') }
   ])
+
+  // Entries that act in the editor run once the menu has closed, so the menu does not take the
+  // focus back from the editor (the rename box would lose it at once).
+  let afterClose: (() => void) | null = null
+  const choose = (entry: { run: () => void; inEditor?: boolean }): void => {
+    if (entry.inEditor) afterClose = entry.run
+    else entry.run()
+  }
+  const closed = (event: Event): void => {
+    if (!afterClose) return
+    event.preventDefault()
+    const run = afterClose
+    afterClose = null
+    run()
+  }
 </script>
 
 <DropdownMenu.Root>
@@ -47,9 +80,9 @@
     {$t('actions.more')}
   </DropdownMenu.Trigger>
   <DropdownMenu.Portal>
-    <DropdownMenu.Content class="menu" align="end" sideOffset={6}>
+    <DropdownMenu.Content class="menu" align="end" sideOffset={6} onCloseAutoFocus={closed}>
       {#each entries as entry (entry.label)}
-        <DropdownMenu.Item class="menu-item" onSelect={entry.run}>
+        <DropdownMenu.Item class="menu-item" onSelect={() => choose(entry)}>
           {$t(entry.label)}
         </DropdownMenu.Item>
       {/each}

@@ -59,12 +59,13 @@ type Options struct {
 
 // Server implements app.LanguageServer with a lazily started language server process.
 type Server struct {
-	sink   app.EventSink
-	flavor Flavor
-	opts   Options
-	docs   *openDocuments
-	busy   atomic.Bool // the last query timed out: the next ones wait less
-	hints  atomic.Bool // the initialize result announced inlayHintProvider
+	sink     app.EventSink
+	flavor   Flavor
+	opts     Options
+	docs     *openDocuments
+	busy     atomic.Bool  // the last query timed out: the next ones wait less
+	hints    atomic.Bool  // the initialize result announced inlayHintProvider
+	refactor refactorCaps // rename and references support announced by the server
 
 	mu      sync.Mutex
 	state   serverState

@@ -15,6 +15,9 @@ const fakeInlayVariable = "VIZCACHA_FAKE_INLAY"
 // fakeAnswer is what the fake server replies: with VIZCACHA_FAKE_INLAY=1 it announces the
 // provider and always has a hint to give (so an answer of [] proves the server was not asked).
 func fakeAnswer(method string) any {
+	if os.Getenv(fakeRefactorVariable) == "1" {
+		return refactorAnswer(method)
+	}
 	if os.Getenv(fakeInlayVariable) != "1" {
 		return nil
 	}

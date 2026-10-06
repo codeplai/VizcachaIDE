@@ -44,6 +44,10 @@ func factorial(n int) int {
 func restar(a, b int) int {
     return a - b
 }
+
+func doble(a int) int {
+    return sumar(a, a)
+}
 `
 }
 

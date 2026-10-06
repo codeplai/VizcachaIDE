@@ -8,6 +8,15 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+### Added
+- Rename a symbol: press F2 in the editor (or More > Rename symbol), type the new name in the little box that
+  opens at the name and press Enter. Every use is renamed in all the files of the project: open files change in
+  their tab (Ctrl+Z undoes it, they stay unsaved) and the others are edited on disk. A short message tells how
+  many places and files changed. Keywords and library names are refused with an explanation. Works with gopls,
+  python-lsp-server, clangd and rust-analyzer.
+- Find all references: press Shift+F12 (or More > Find all references) to list every use of the name under the
+  cursor in a new References tab, grouped by file with the text of each line; a click opens the file at that place.
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed
@@ -353,6 +362,16 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+### Añadido
+- Renombrar un símbolo: presiona F2 en el editor (o Más > Renombrar símbolo), escribe el nombre nuevo en la
+  cajita que se abre junto al nombre y presiona Enter. Se renombran todos los usos en los archivos del proyecto:
+  los archivos abiertos cambian en su pestaña (Ctrl+Z lo deshace y quedan sin guardar) y los demás se editan en
+  el disco. Un mensaje corto dice cuántos lugares y archivos cambiaron. Las palabras reservadas y los nombres de
+  bibliotecas se rechazan con una explicación. Funciona con gopls, python-lsp-server, clangd y rust-analyzer.
+- Buscar todas las referencias: presiona Shift+F12 (o Más > Buscar todas las referencias) para listar cada uso del
+  nombre bajo el cursor en una pestaña nueva, Referencias, agrupados por archivo y con el texto de cada línea; un
+  clic abre el archivo en ese lugar.
 
 ## [2.6.0] - 2026-10-06
 

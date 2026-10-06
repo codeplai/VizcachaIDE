@@ -17,6 +17,7 @@ import { inlayHints, type InlayHints } from './inlayHints'
 import { inlineHints } from './inlineHint'
 import { emptyMarks, marksField } from './marks'
 import { problemLint } from './problemLint'
+import { refactoring, type RefactorCommands, type RefactorWiring } from './refactor'
 import { popupTheme } from './popupTheme'
 import { signatureHelp } from './signatureHelp'
 import { editorHighlighting, editorTheme } from './theme'
@@ -30,6 +31,8 @@ export interface EditorHandlers {
 export interface LanguageWiring {
   language: LanguageApi
   openLocation: OpenLocation
+  /** Rename (F2) and find references (Shift+F12); absent in editors without a backend. */
+  refactor?: RefactorWiring
 }
 
 const keys = Prec.high(
@@ -46,12 +49,14 @@ const keys = Prec.high(
 const languageExtensions = (
   wiring: LanguageWiring | null,
   file: DocumentContext,
-  inlay: InlayHints | null
+  inlay: InlayHints | null,
+  refactor: RefactorCommands | null
 ): Extension[] => {
   if (!wiring) return []
   const { language, openLocation } = wiring
   return [
     ...(inlay ? [inlay.extension] : []),
+    ...(refactor ? [refactor.extension] : []),
     goCompletion(language, file),
     hoverDocs(language, file),
     signatureHelp(language, file),
@@ -71,6 +76,8 @@ export interface EditorExtensions {
   flush: () => Promise<void>
   /** The inlay hints, when the editor has a language service. */
   inlay: InlayHints | null
+  /** Rename and find references, when the editor has a language service. */
+  refactor: RefactorCommands | null
 }
 
 export const editorExtensions = (
@@ -82,6 +89,7 @@ export const editorExtensions = (
   const sync = wiring ? documentSync(wiring.language, getPath) : null
   const file: DocumentContext = { path: getPath, flush: sync?.flush ?? (async () => {}) }
   const inlay = wiring ? inlayHints(wiring.language, file) : null
+  const refactor = wiring?.refactor ? refactoring(file, wiring.refactor) : null
   const extensions = [
     marksField.init(() => emptyMarks),
     phrases.of([]),
@@ -102,12 +110,12 @@ export const editorExtensions = (
     editorHighlighting,
     inlineHints,
     ...(sync ? [sync.extension] : []),
-    ...languageExtensions(wiring, file, inlay),
+    ...languageExtensions(wiring, file, inlay, refactor),
     EditorView.updateListener.of((update) => {
       if (update.docChanged && !isExternalEdit(update))
         handlers.onChange(update.state.doc.toString())
       if (update.selectionSet || update.docChanged) reportCursor(update.state, handlers)
     })
   ]
-  return { extensions, flush: file.flush, inlay }
+  return { extensions, flush: file.flush, inlay, refactor }
 }

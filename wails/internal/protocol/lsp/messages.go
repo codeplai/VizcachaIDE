@@ -14,7 +14,7 @@ var plainText = []string{"plaintext"}
 // clientCapabilities mirrors the 1.0 client: plain text, no snippets, hierarchical symbols.
 func clientCapabilities() map[string]any {
 	return map[string]any{
-		"workspace": map[string]any{"workspaceFolders": true, "didChangeWatchedFiles": map[string]any{"dynamicRegistration": false}},
+		"workspace": map[string]any{"workspaceFolders": true, "workspaceEdit": map[string]any{"documentChanges": true}, "didChangeWatchedFiles": map[string]any{"dynamicRegistration": false}},
 		"general":   map[string]any{"positionEncodings": []string{"utf-16"}},
 		"textDocument": map[string]any{
 			"synchronization":    map[string]any{"didSave": false},
@@ -25,6 +25,8 @@ func clientCapabilities() map[string]any {
 			"documentSymbol":     map[string]any{"hierarchicalDocumentSymbolSupport": true},
 			"publishDiagnostics": map[string]any{},
 			"inlayHint":          map[string]any{},
+			"references":         map[string]any{},
+			"rename":             map[string]any{"prepareSupport": true},
 			"signatureHelp": map[string]any{"signatureInformation": map[string]any{
 				"documentationFormat":    plainText,
 				"parameterInformation":   map[string]any{"labelOffsetSupport": true},
@@ -44,7 +46,7 @@ func initializeParams(root string, initializationOptions any, pullsConfiguration
 	capabilities := clientCapabilities()
 	if pullsConfiguration { // the server may ask workspace/configuration (pulled.go)
 		capabilities["workspace"] = map[string]any{
-			"workspaceFolders": true, "configuration": true,
+			"workspaceFolders": true, "configuration": true, "workspaceEdit": map[string]any{"documentChanges": true},
 			"didChangeWatchedFiles": map[string]any{"dynamicRegistration": false},
 		}
 	}

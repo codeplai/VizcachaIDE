@@ -66,6 +66,7 @@ func (s *Server) handshake(ctx context.Context, conn *connection, root string) e
 		return err
 	}
 	s.hints.Store(announcesInlayHints(result))
+	s.refactor.store(result)
 	if err := conn.notify(ctx, "initialized", protocol.InitializedParams{}); err != nil {
 		return err
 	}
