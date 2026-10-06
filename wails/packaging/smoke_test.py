@@ -113,6 +113,9 @@ RUST_TOOLS = ("cargo", "rustfmt", "clippy-driver", "cargo-clippy", "rust-analyze
 def bundled_rust_check(rustc: Path) -> tuple[bool, str]:
     """Compile and run hola.rs with the bundled rustc from "<tmp>/prueba con espacios y acentos ñandú",
     and check that its sysroot is the toolchain/rust folder (no rustup involved)."""
+    # The workflow passes a relative path on macOS (work/...app) and the compile runs from another
+    # folder: resolve it first.
+    rustc = Path(rustc).resolve()
     sysroot = subprocess.run(
         [str(rustc), "--print", "sysroot"], capture_output=True, text=True, timeout=60
     ).stdout.strip()
