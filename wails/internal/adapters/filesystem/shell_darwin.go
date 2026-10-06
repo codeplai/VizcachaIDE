@@ -11,7 +11,7 @@ import (
 
 func trash(path string) error {
 	if err := run(true, "osascript", "-e", trashScript(path)); err != nil {
-		return fmt.Errorf("%w: %v", app.ErrTrashUnavailable, err)
+		return fmt.Errorf("%w: %w", app.ErrTrashUnavailable, err)
 	}
 	return nil
 }

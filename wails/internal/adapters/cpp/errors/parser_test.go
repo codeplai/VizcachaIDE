@@ -2,6 +2,7 @@ package errors
 
 import (
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -97,6 +98,9 @@ func TestFatalErrorIsAnError(t *testing.T) {
 }
 
 func TestLinkerErrors(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("the fixtures were recorded on Windows: the linker names the file with a drive path")
+	}
 	want := map[string]string{
 		"gcc":   "undefined reference to `calcular(int)'",
 		"clang": "undefined symbol: calcular(int)",

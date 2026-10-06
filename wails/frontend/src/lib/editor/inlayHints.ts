@@ -14,11 +14,7 @@ import type { InlayHint } from '../domain'
 import type { DocumentContext, LanguageApi } from './documentContext'
 
 export const INLAY_DELAY_MS = 300
-/**
- * A server still indexing answers with no hints: ask again, for about three minutes. rust-analyzer
- * can take over a minute on a slow or busy PC, and a project without problems sends no diagnostics
- * (nor a new status, when another project already made the server ready) to trigger a refresh.
- */
+/** A server still indexing gives no hints: ask again for ~3 min (rust-analyzer can take >1 min). */
 export const INLAY_RETRY_MS = [2000, 4000, 8000, 16000, ...Array<number>(6).fill(30000)]
 
 class InlayWidget extends WidgetType {
