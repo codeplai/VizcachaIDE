@@ -36,7 +36,8 @@ include = ["vizcacha*"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = [".claude", ".kilo", ".venv", "build", "dist"]
+# testdata: recorded fixtures and samples with errors on purpose (the IDE must explain them).
+extend-exclude = [".claude", ".kilo", ".venv", "build", "dist", "testdata"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C90"]
@@ -46,6 +47,11 @@ ignore = ["N802"]
 [tool.ruff.lint.per-file-ignores]
 # data tables of Go builtins/stdlib docs
 "vizcacha/infrastructure/static_completion/go_analyzer.py" = ["E501"]
+# Release scripts of the toolchains and of the Wails edition (download tables, long URLs).
+"packaging/fetch_*.py" = ["E501"]
+"wails/packaging/*.py" = ["E501", "C901"]
+# Runs inside the learner's Python: the exception name and % formatting are part of its protocol.
+"wails/internal/adapters/python/repl/repl.py" = ["E501", "N818", "UP031"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 8

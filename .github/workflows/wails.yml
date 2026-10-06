@@ -60,6 +60,13 @@ jobs:
           go install github.com/wailsapp/wails/v2/cmd/wails@${WAILS_VERSION}
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
+      # main.go embeds frontend/dist: build it before anything compiles the Go package.
+      - name: Frontend dependencies and build
+        run: |
+          npm ci
+          npm run build
+        working-directory: wails/frontend
+
       - name: Go vet and tests
         run: |
           go vet -tags "$GO_TAGS" ./...
@@ -70,10 +77,6 @@ jobs:
         with:
           version: ${{ env.GOLANGCI_LINT_VERSION }}
           working-directory: wails
-
-      - name: Frontend dependencies
-        run: npm ci
-        working-directory: wails/frontend
 
       - name: Frontend check (svelte-check, eslint, prettier)
         run: npm run check
