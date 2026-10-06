@@ -1,7 +1,7 @@
 import type { Bridge } from '../bridge'
 import { goToLocation } from '../stores/navigation'
 import { renameSymbol, prepareRename } from '../stores/refactor'
-import { hasFreshRename, undoRename } from '../stores/refactorUndo'
+import { hasFreshRename, hasFreshUndo, redoRename, undoRename } from '../stores/refactorUndo'
 import { findReferences } from '../stores/references'
 import type { LanguageWiring } from './extensions'
 
@@ -16,6 +16,11 @@ export const languageWiring = (bridge: Bridge): LanguageWiring => ({
     undoRename: () => {
       if (!hasFreshRename()) return false
       void undoRename(bridge)
+      return true
+    },
+    redoRename: () => {
+      if (!hasFreshUndo()) return false
+      void redoRename(bridge)
       return true
     }
   }

@@ -531,5 +531,6 @@
   "refactor.undo": { "en": "Undo", "es": "Deshacer" },
   "refactor.undone": { "en": "The rename was undone in all its files.", "es": "Se deshizo el cambio de nombre en todos sus archivos." },
   "refactor.undoStale": { "en": "The rename was not undone: you changed those files after it.", "es": "No se deshizo el cambio de nombre: modificaste esos archivos después." },
-  "refactor.undoPartial": { "en": "{files, plural, one {# file} other {# files}} could not be restored because it changed after the rename.", "es": "{files, plural, one {No se pudo restaurar # archivo porque cambió} other {No se pudieron restaurar # archivos porque cambiaron}} después del cambio de nombre." }
+  "refactor.undoPartial": { "en": "{files, plural, one {# file} other {# files}} could not be restored because it changed after the rename.", "es": "{files, plural, one {No se pudo restaurar # archivo porque cambió} other {No se pudieron restaurar # archivos porque cambiaron}} después del cambio de nombre." },
+  "refactor.redone": { "en": "The rename was done again in all its files.", "es": "Se rehizo el cambio de nombre en todos sus archivos." }
 }

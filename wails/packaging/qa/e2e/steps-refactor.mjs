@@ -119,6 +119,45 @@ export const refactorSteps = (ctx, lang) => {
     return 'main.go and helper.go are back to Greet'
   })
 
+  const keys = async (page, key, shift = false) => {
+    await page.keyboard.down('Control')
+    if (shift) await page.keyboard.down('Shift')
+    await page.keyboard.press(key)
+    if (shift) await page.keyboard.up('Shift')
+    await page.keyboard.up('Control')
+    await L.sleep(800)
+  }
+
+  add('undo-again', 'a second Ctrl+Z never re-applies or half-reverts the rename: helper.go keeps the original name', async () => {
+    await keys(page, 'z')
+    const text = await U.editorText(page)
+    must(text === MAIN, `after the second Ctrl+Z main.go = ${text}`)
+    const helper = fs.readFileSync(path.join(root, 'helper.go'), 'utf8')
+    must(helper === HELPER, `after the second Ctrl+Z helper.go = ${helper}`)
+    return 'main.go and helper.go still say Greet'
+  })
+
+  add('redo', 'Ctrl+Y redoes the rename in every file as a unit, and Ctrl+Z undoes it again', async () => {
+    // The first Ctrl+Z of undo-again had nothing to undo, so the whole-undo is no longer the last
+    // step: redo from a fresh rename + undo.
+    must(await cursorOn(page, 7, 'Greet'), 'Greet not on line 7')
+    await page.keyboard.press('F2')
+    await page.waitForSelector('.cm-rename input', { timeout: 10000 })
+    await page.keyboard.type('Salute')
+    await page.keyboard.press('Enter')
+    await page.waitForFunction(() => document.querySelector('.cm-content').cmTile.view.state.doc.toString().includes('Salute("otra")'), { timeout: 30000 })
+    await keys(page, 'z')
+    must((await U.editorText(page)) === MAIN, 'the whole undo did not restore main.go')
+    await keys(page, 'y')
+    const text = await U.editorText(page)
+    must(text.includes('Salute("otra")') && !text.includes('Greet'), `after Ctrl+Y main.go = ${text}`)
+    const helper = fs.readFileSync(path.join(root, 'helper.go'), 'utf8')
+    must(helper.includes('func Salute(') && !helper.includes('Greet('), `after Ctrl+Y helper.go = ${helper}`)
+    await keys(page, 'z')
+    must((await U.editorText(page)) === MAIN && fs.readFileSync(path.join(root, 'helper.go'), 'utf8') === HELPER, 'Ctrl+Z after the redo did not undo every file')
+    return 'redone and undone again in both files'
+  })
+
   add('keyword', 'F2 on a keyword is refused with a translated message', async () => {
     must(await cursorOn(page, 5, 'func'), 'func not on line 5')
     await page.keyboard.press('F2')

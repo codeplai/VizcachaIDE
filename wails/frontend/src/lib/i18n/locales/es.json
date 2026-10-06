@@ -585,6 +585,7 @@
   "refactor.menuReferences": "Buscar todas las referencias (Shift+F12)",
   "refactor.menuRename": "Renombrar símbolo (F2)",
   "refactor.notRenameable": "Este nombre no se puede renombrar. Las palabras reservadas y los símbolos de las bibliotecas no se pueden cambiar.",
+  "refactor.redone": "Se rehizo el cambio de nombre en todos sus archivos.",
   "refactor.referencesFailed": "No se pudo buscar dónde se usa: {reason}",
   "refactor.renamed": "Se renombró en {places, plural, one {# lugar} other {# lugares}} de {files, plural, one {# archivo} other {# archivos}}.",
   "refactor.undo": "Deshacer",

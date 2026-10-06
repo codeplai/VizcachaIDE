@@ -1,3 +1,4 @@
+import { isolateHistory, redo, undo } from '@codemirror/commands'
 import { Compartment, EditorSelection, EditorState, type Extension } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import type { LanguageProfile } from '../domain'
@@ -30,6 +31,9 @@ export interface EditorHandle {
   goTo: (line: number, column: number) => void
   /** Applies changes to an open file (shown or not) as one undoable step; false: not held here. */
   applyChanges: (path: string, changes: Change[]) => boolean
+  /** Undoes / redoes the last history step of an open file, shown or not. */
+  undoFile: (path: string) => boolean
+  redoFile: (path: string) => boolean
   /** Starts renaming the symbol at the cursor (F2). */
   renameSymbol: () => void
   /** Lists where the symbol at the cursor is used (Shift+F12). */
@@ -49,6 +53,24 @@ const newFileState = (
     extensions: [extensions, languageExtensionsFor(path, profile)]
   })
 
+/** Runs a history command on an open file: on the view when shown, else on its saved state. */
+const historyOn = (
+  view: EditorView,
+  states: Map<string, EditorState>,
+  shown: string | null,
+  path: string,
+  command: (target: { state: EditorState; dispatch: EditorView['dispatch'] }) => boolean
+): boolean => {
+  if (path === shown) return command(view)
+  const state = states.get(path)
+  if (!state) return false
+  const scratch = new EditorView({ state }) // detached: only to run the command on that state
+  const done = command(scratch)
+  states.set(path, scratch.state)
+  scratch.destroy()
+  return done
+}
+
 /** Applies changes to the file on screen, or to the saved state of another open file. */
 const applyChangesTo = (
   view: EditorView,
@@ -58,12 +80,12 @@ const applyChangesTo = (
   changes: Change[]
 ): boolean => {
   if (path === shown) {
-    view.dispatch({ changes })
+    view.dispatch({ changes, annotations: isolateHistory.of('full') })
     return true
   }
   const state = states.get(path)
   if (!state) return false
-  states.set(path, state.update({ changes }).state)
+  states.set(path, state.update({ changes, annotations: isolateHistory.of('full') }).state)
   return true
 }
 
@@ -114,6 +136,8 @@ export const createEditor = (
 
   return {
     applyChanges: (path, changes) => applyChangesTo(view, states, currentPath, path, changes),
+    undoFile: (path) => historyOn(view, states, currentPath, path, undo),
+    redoFile: (path) => historyOn(view, states, currentPath, path, redo),
     renameSymbol: () => refactor?.rename(view),
     findReferences: () => refactor?.references(view),
     show: (path, text) => {

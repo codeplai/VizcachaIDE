@@ -15,6 +15,8 @@ export interface RefactorWiring {
   findReferences: (at: SourceLocation, symbol: string) => Promise<void>
   /** Ctrl+Z right after a rename undoes it in every file; false: nothing to undo, the editor does. */
   undoRename?: () => boolean
+  /** Ctrl+Y right after such an undo redoes the rename in every file. */
+  redoRename?: () => boolean
 }
 
 export interface RefactorCommands {
@@ -80,7 +82,13 @@ export const refactoring = (file: DocumentContext, wiring: RefactorWiring): Refa
   const references = (view: EditorView): void => void showReferences(view, file, wiring)
   const extension = [
     renameBox,
-    Prec.high(keymap.of([{ key: 'Mod-z', run: () => wiring.undoRename?.() ?? false }])),
+    Prec.high(
+      keymap.of([
+        { key: 'Mod-z', run: () => wiring.undoRename?.() ?? false },
+        { key: 'Mod-y', mac: 'Mod-Shift-z', run: () => wiring.redoRename?.() ?? false },
+        { key: 'Mod-Shift-z', run: () => wiring.redoRename?.() ?? false }
+      ])
+    ),
     keymap.of([
       {
         key: 'F2',

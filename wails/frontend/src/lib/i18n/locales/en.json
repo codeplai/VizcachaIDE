@@ -585,6 +585,7 @@
   "refactor.menuReferences": "Find all references (Shift+F12)",
   "refactor.menuRename": "Rename symbol (F2)",
   "refactor.notRenameable": "This name cannot be renamed. Keywords and symbols from libraries are not yours to rename.",
+  "refactor.redone": "The rename was done again in all its files.",
   "refactor.referencesFailed": "Could not look for references: {reason}",
   "refactor.renamed": "Renamed in {places, plural, one {# place} other {# places}} across {files, plural, one {# file} other {# files}}.",
   "refactor.undo": "Undo",

@@ -34,6 +34,8 @@
     handle = editor
     const unregister = registerEditorBridge({
       applyChanges: editor.applyChanges,
+      undoFile: editor.undoFile,
+      redoFile: editor.redoFile,
       renameSymbol: editor.renameSymbol,
       findReferences: editor.findReferences
     })

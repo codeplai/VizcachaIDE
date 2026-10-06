@@ -8,6 +8,10 @@ export interface EditorBridge {
    * has no state for that file (then the caller edits the file's text itself).
    */
   applyChanges: (path: string, changes: Change[]) => boolean
+  /** Undoes the last history step of an open file (shown or not): pops it, appends nothing. */
+  undoFile: (path: string) => boolean
+  /** Redoes the step undone last in an open file. */
+  redoFile: (path: string) => boolean
   /** Starts renaming the symbol at the cursor (F2). */
   renameSymbol: () => void
   /** Finds every use of the symbol at the cursor (Shift+F12). */

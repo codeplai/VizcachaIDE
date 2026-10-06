@@ -66,6 +66,8 @@ describe('rename', () => {
     const applyChanges = vi.fn(() => true)
     const unregister = registerEditorBridge({
       applyChanges,
+      undoFile: () => false,
+      redoFile: () => false,
       renameSymbol: () => {},
       findReferences: () => {}
     })
