@@ -6,6 +6,7 @@ import {
   activePath,
   buffers,
   codeLanguageOf,
+  isUntitled,
   newFile,
   openTabs,
   openUntitled,
@@ -45,6 +46,25 @@ describe('untitled files', () => {
     expect(get(buffers)[cpp]).toContain('cout << "Hola, C++" << endl;')
     const go = await openUntitled(bridge, 'go')
     expect(get(buffers)[go]).toContain('package main')
+  })
+
+  it('uses the absolute path the backend gives, one folder per file, and still knows it is unsaved', async () => {
+    const real = {
+      ...bridge,
+      language: {
+        ...bridge.language,
+        untitledFile: async (name: string) =>
+          `C:\\Temp\\VizcachaIDE\\untitled\\42\\${name.replace(/\.\w+$/, '')}\\${name}`
+      }
+    }
+    const first = await openUntitled(real, 'go')
+    expect(first).toBe('C:\\Temp\\VizcachaIDE\\untitled\\42\\main\\main.go')
+    expect(await openUntitled(real, 'go')).toBe(
+      'C:\\Temp\\VizcachaIDE\\untitled\\42\\main2\\main2.go'
+    )
+    expect(isUntitled(first)).toBe(true)
+    expect(isUntitled('C:\\proyectos\\main.go')).toBe(false)
+    expect(codeLanguageOf(first)).toBe('go')
   })
 
   it('New opens a file of the default language and "New file of" the one chosen', async () => {

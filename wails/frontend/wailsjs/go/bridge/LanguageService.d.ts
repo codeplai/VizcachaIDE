@@ -21,3 +21,5 @@ export function InlayHints(arg1:domain.SourceRange):Promise<Array<domain.InlayHi
 export function OpenDocument(arg1:string,arg2:string):Promise<void>;
 
 export function SignatureHelp(arg1:domain.SourceLocation):Promise<domain.SignatureHelp>;
+
+export function UntitledFile(arg1:string):Promise<string>;

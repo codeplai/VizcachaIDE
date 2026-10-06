@@ -13,6 +13,9 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
   IDE no longer passes on an inherited "ignore Ctrl+C" flag to the programs it starts. Stop (F5) also lets a program
   end on Ctrl+C first; a Python program shows where it was (`KeyboardInterrupt`), and the Assistant does not treat
   that as an error.
+- A new file not saved yet (Ctrl+N) had no code helper: no completion and no problems, because its path was
+  relative. Unsaved files now live in a temporary folder of their own, so gopls, pylsp, clangd and rust-analyzer
+  analyse them like any other file.
 
 ## [2.6.0] - 2026-10-06
 
@@ -365,6 +368,9 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
   IDE ya no pasa a los programas que inicia una marca heredada de "ignorar Ctrl+C". Detener (F5) también deja que el
   programa termine primero con Ctrl+C; un programa Python muestra dónde estaba (`KeyboardInterrupt`) y el Asistente
   no lo trata como un error.
+- Un archivo nuevo sin guardar (Ctrl+N) no tenía ayudante de código: ni autocompletado ni problemas, porque su ruta
+  era relativa. Los archivos sin guardar ahora viven en una carpeta temporal propia, así que gopls, pylsp, clangd y
+  rust-analyzer los analizan como a cualquier otro archivo.
 
 ## [2.6.0] - 2026-10-06
 
