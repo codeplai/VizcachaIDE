@@ -130,6 +130,24 @@ describe('snippets per language', () => {
     expect(view.state.sliceDoc(from, to)).toBe('i')
     view.destroy()
   })
+
+  it('renames every occurrence of a repeated field when the editor allows several selections', async () => {
+    const result = await ask('go', 'for')
+    const option = result?.options.find((item) => item.label === 'for') as Completion
+    const state = EditorState.create({
+      doc: 'for',
+      extensions: [
+        languageExtensionsFor(FILES.go, profileOf('go')),
+        EditorState.allowMultipleSelections.of(true)
+      ]
+    })
+    const view = new EditorView({ state })
+    ;(option.apply as (...args: unknown[]) => void)(view, option, 0, 3)
+    expect(view.state.selection.ranges).toHaveLength(3)
+    view.dispatch(view.state.replaceSelection('k'))
+    expect(view.state.doc.toString()).toBe('for k := 0; k < n; k++ {\n    \n}')
+    view.destroy()
+  })
 })
 
 describe('merging with the language server', () => {

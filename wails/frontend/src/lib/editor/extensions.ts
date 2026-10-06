@@ -4,7 +4,7 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirro
 import { bracketMatching } from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
 import { gotoLine, search, searchKeymap } from '@codemirror/search'
-import { Prec, type Compartment, type EditorState, type Extension } from '@codemirror/state'
+import { EditorState, Prec, type Compartment, type Extension } from '@codemirror/state'
 import { EditorView, drawSelection, keymap, lineNumbers } from '@codemirror/view'
 import { breakpointGutter } from './breakpointGutter'
 import type { DocumentContext, LanguageApi } from './documentContext'
@@ -95,6 +95,11 @@ export const editorExtensions = (
     breakpointGutter(handlers.onToggleBreakpoint),
     lineNumbers(),
     history(),
+    // Several selections: a snippet's repeated field (the `i` of `for i := 0; i < n; i++`) is one
+    // selection per occurrence, so typing renames them all; without this only the first changed.
+    // Alt+click adds a cursor, as in VS Code: Ctrl+click stays "go to definition".
+    EditorState.allowMultipleSelections.of(true),
+    EditorView.clickAddsSelectionRange.of((event) => event.altKey),
     drawSelection(),
     bracketMatching(),
     closeBrackets(),

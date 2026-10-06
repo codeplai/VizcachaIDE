@@ -1,4 +1,5 @@
 import { insertNewlineAndIndent } from '@codemirror/commands'
+import { EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockBridge } from '../bridge/mock'
@@ -53,6 +54,16 @@ describe('createEditor', () => {
     expect(viewOf().state.doc.toString()).toBe('func f() {\n\tx()\n}')
     expect(viewOf().state.doc.lineAt(viewOf().state.selection.main.head).number).toBe(3)
     expect(handlers.onChange).not.toHaveBeenCalled()
+  })
+
+  it('allows several selections (snippet fields), added with Alt+click, not Ctrl+click', () => {
+    editor = createEditor(host, handlers)
+    editor.show('a.go', 'package main\n')
+    const state = viewOf().state
+    expect(state.facet(EditorState.allowMultipleSelections)).toBe(true)
+    const adds = state.facet(EditorView.clickAddsSelectionRange)
+    expect(adds.some((add) => add(new MouseEvent('mousedown', { altKey: true })))).toBe(true)
+    expect(adds.some((add) => add(new MouseEvent('mousedown', { ctrlKey: true })))).toBe(false)
   })
 
   it('reports the cursor position with 1-based line and column', () => {
