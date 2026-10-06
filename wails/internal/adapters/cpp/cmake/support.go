@@ -32,10 +32,11 @@ const (
 )
 
 // ConsoleSource writes the UTF-8 console helper into dir (once) and returns its path. It is ""
-// outside Windows, where nothing is needed, or when the file cannot be written. Direct
-// compilations (an untitled file) and the CMake include share the same copy.
+// outside Windows, where nothing is needed, without a dir (never the working directory: a Go
+// package folder must not get a .cpp) or when the file cannot be written. Direct compilations
+// (an untitled file) and the CMake include share the same copy.
 func ConsoleSource(dir string) string {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != "windows" || dir == "" {
 		return ""
 	}
 	return writeIfChanged(filepath.Join(dir, consoleFile), utf8Console)
