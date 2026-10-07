@@ -4,7 +4,11 @@ import {domain} from '../models';
 import {app} from '../models';
 import {bridge} from '../models';
 
+export function ApplyTextEdits(arg1:Array<domain.FileEdit>):Promise<domain.EditSummary>;
+
 export function ChooseFolder():Promise<string>;
+
+export function Copy(arg1:string,arg2:string):Promise<void>;
 
 export function CreateFile(arg1:string,arg2:string):Promise<void>;
 

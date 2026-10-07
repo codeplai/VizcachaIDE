@@ -1,9 +1,10 @@
 <script lang="ts">
   import { t } from '../i18n'
-  import { capabilities, outputTab, problemCount } from '../stores'
+  import { capabilities, outputTab, problemCount, referenceCount } from '../stores'
   import ConsolePanel from './ConsolePanel.svelte'
   import OutputPanel from './OutputPanel.svelte'
   import ProblemsPanel from './ProblemsPanel.svelte'
+  import ReferencesPanel from './ReferencesPanel.svelte'
   import TerminalPanel from './TerminalPanel.svelte'
 
   // The terminal is created the first time its tab is shown and then stays alive (hidden), so
@@ -37,6 +38,17 @@
       {$t('panels.problems')}
       {#if $problemCount > 0}<span class="count">{$problemCount}</span>{/if}
     </button>
+    <button
+      type="button"
+      role="tab"
+      class="otab"
+      class:on={$outputTab === 'references'}
+      aria-selected={$outputTab === 'references'}
+      onclick={() => outputTab.set('references')}
+    >
+      {$t('panels.references')}
+      {#if $referenceCount > 0}<span class="count info">{$referenceCount}</span>{/if}
+    </button>
     {#if $capabilities?.console}
       <button
         type="button"
@@ -63,7 +75,8 @@
   <div class="body">
     {#if $outputTab === 'output'}<OutputPanel
       />{:else if $outputTab === 'console' && $capabilities?.console}<ConsolePanel
-      />{:else if $outputTab === 'problems'}<ProblemsPanel />{/if}
+      />{:else if $outputTab === 'problems'}<ProblemsPanel
+      />{:else if $outputTab === 'references'}<ReferencesPanel />{/if}
     {#if terminalSeen}
       <div class="terminal-slot" hidden={$outputTab !== 'terminal'}>
         <TerminalPanel visible={$outputTab === 'terminal'} />
@@ -122,5 +135,8 @@
     color: var(--win);
     border-radius: 999px;
     padding: 0 6px;
+  }
+  .count.info {
+    background: var(--go);
   }
 </style>

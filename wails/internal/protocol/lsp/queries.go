@@ -28,31 +28,69 @@ func (s *Server) requestIf(ctx context.Context, method string, params any, needs
 	if s.busy.Load() {
 		limit = busyTimeout
 	}
+	raw, err := s.exchange(ctx, limit, method, params, needs)
+	return raw, err == nil
+}
+
+var (
+	// errNotAnswered means the server is missing, not ready in time or timed out.
+	errNotAnswered = errors.New("the language server did not answer")
+	// errNotAnnounced means the server did not announce the capability of the method.
+	errNotAnnounced = errors.New("the language server does not support this")
+)
+
+// exchange sends a query within limit. Besides the transport errors above, it returns the error
+// the server answered with (a *jsonrpc2.Error).
+func (s *Server) exchange(ctx context.Context, limit time.Duration, method string, params any, needs *atomic.Bool) (json.RawMessage, error) {
 	ctx, cancel := context.WithTimeout(ctx, limit)
 	defer cancel()
 	conn, ready, usable := s.snapshot()
 	if !usable {
-		return nil, false
+		return nil, errNotAnswered
 	}
 	select {
 	case <-ready:
 	case <-ctx.Done():
 		s.busy.Store(true)
-		return nil, false
+		return nil, errNotAnswered
 	}
-	if conn, usable = s.readyConnection(conn); !usable || (needs != nil && !needs.Load()) {
-		return nil, false
+	conn, usable = s.readyConnection(conn)
+	if !usable {
+		return nil, errNotAnswered
+	}
+	if needs != nil && !needs.Load() {
+		return nil, errNotAnnounced
 	}
 	s.noticeManifests(ctx, conn)
+	s.noticeSources(ctx, conn)
 	result, err := conn.call(ctx, method, params)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
 			s.busy.Store(true)
+			return nil, errNotAnswered
 		}
-		return nil, false
+		return nil, err
 	}
 	s.busy.Store(false)
-	return result, true
+	return result, nil
+}
+
+// awaitReady waits until the server is ready (its capabilities are then known); false when it
+// is missing, unavailable or did not get ready within limit.
+func (s *Server) awaitReady(ctx context.Context, limit time.Duration) bool {
+	ctx, cancel := context.WithTimeout(ctx, limit)
+	defer cancel()
+	conn, ready, usable := s.snapshot()
+	if !usable {
+		return false
+	}
+	select {
+	case <-ready:
+	case <-ctx.Done():
+		return false
+	}
+	_, usable = s.readyConnection(conn)
+	return usable
 }
 
 // snapshot returns the connection and the channel closed when the server is ready.

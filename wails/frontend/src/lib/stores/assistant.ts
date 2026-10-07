@@ -80,6 +80,14 @@ export const isPackageCommand = (config: RunConfiguration): boolean =>
   /^(go|cargo|python\d*(\.exe)?|py)\s/i.test(config.target)
 
 /**
+ * Whether a finished run failed and its output needs explaining. A run the user stopped did not
+ * fail: Stop sends Ctrl+C first, so Python ends with a KeyboardInterrupt traceback and its own exit
+ * code, which is not an error to explain.
+ */
+export const runFailed = (exitCode: number, stopped: boolean): boolean =>
+  exitCode !== 0 && exitCode !== TERMINATED_BY_USER && !stopped
+
+/**
  * After a run that compiled and finished, `go vet` looks for mistakes the compiler allows (a Printf
  * with the wrong values, code that can never run). It works in the background: the run is already
  * over and the UI never waits for it. Its warnings join the run's problems.
@@ -97,7 +105,7 @@ const vetInBackground = async (bridge: Bridge, config: RunConfiguration): Promis
 }
 
 const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
-  const failed = exitCode !== 0 && exitCode !== TERMINATED_BY_USER
+  const failed = runFailed(exitCode, get(stoppedByUser))
   const config = get(lastRunConfiguration)
   const items = failed
     ? await inTurn(() =>
@@ -115,16 +123,39 @@ const explainRun = async (bridge: Bridge, exitCode: number): Promise<void> => {
   }
 }
 
-/** Sends Go's output and gopls' diagnostics to the Assistant so the cards are explained. */
+/** How long output that arrives after `run:finished` waits for more before the run is explained again. */
+export const LATE_OUTPUT_DELAY_MS = 150
+
+/**
+ * Sends Go's output and gopls' diagnostics to the Assistant so the cards are explained.
+ *
+ * Events are not always delivered in the order they were sent (the development server writes
+ * each one from its own goroutine): the crash line "Segmentation fault" could arrive after
+ * `run:finished`, the run was explained without it and its card never showed. Output that comes
+ * after the end explains the run again, with the same exit code.
+ */
 export const connectAssistant = (bridge: Bridge): Unsubscribe => {
   let timer: ReturnType<typeof setTimeout> | undefined
+  let late: ReturnType<typeof setTimeout> | undefined
+  let finishedWith: number | null = null
   const quietly = (work: Promise<void>): void => void work.catch(() => undefined)
   const offs = [
     bridge.on('run:started', () => {
       runNumber += 1
+      finishedWith = null
+      clearTimeout(late)
       runDiagnostics.set([])
     }),
-    bridge.on('run:finished', ({ exitCode }) => quietly(explainRun(bridge, exitCode))),
+    bridge.on('run:finished', ({ exitCode }) => {
+      finishedWith = exitCode
+      quietly(explainRun(bridge, exitCode))
+    }),
+    bridge.on('run:output', () => {
+      if (finishedWith === null) return
+      const exitCode = finishedWith
+      clearTimeout(late)
+      late = setTimeout(() => quietly(explainRun(bridge, exitCode)), LATE_OUTPUT_DELAY_MS)
+    }),
     bridge.on('lsp:diagnostics', () => {
       clearTimeout(timer)
       timer = setTimeout(() => quietly(refreshExplanations(bridge)), REFRESH_DELAY_MS)
@@ -132,6 +163,7 @@ export const connectAssistant = (bridge: Bridge): Unsubscribe => {
   ]
   return () => {
     clearTimeout(timer)
+    clearTimeout(late)
     offs.forEach((off) => off())
   }
 }

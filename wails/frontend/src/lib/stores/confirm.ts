@@ -68,6 +68,18 @@ export const confirmReplaceAll = (count: number, file: string) =>
     'cancel'
   )
 
+/** Asks before "Replace all" in the Search panel; it names how many matches in how many files. */
+export const confirmReplaceInFiles = (count: number, files: number) =>
+  ask(
+    'confirm.replaceInFiles',
+    { count, files },
+    [
+      { id: 'replace', labelKey: 'confirm.replaceCount', values: { count }, tone: 'primary' },
+      { id: 'cancel', labelKey: 'confirm.cancel', tone: 'plain' }
+    ],
+    'cancel'
+  )
+
 export interface DeleteDetails {
   /** Files inside the folder being deleted (undefined for a single file). */
   files?: number
@@ -79,6 +91,18 @@ const deleteMessageKey = (details: DeleteDetails): string => {
   if (details.unsaved) return 'confirm.deleteUnsaved'
   return details.files === undefined ? 'confirm.delete' : 'confirm.deleteFolder'
 }
+
+/** Asks once before sending several selected entries to the Recycle Bin. */
+export const confirmDeleteMany = (items: number, files: number, unsaved: boolean) =>
+  ask(
+    unsaved ? 'confirm.deleteManyUnsaved' : 'confirm.deleteMany',
+    { items, files },
+    [
+      { id: 'delete', labelKey: 'confirm.moveToTrash', tone: 'danger' },
+      { id: 'cancel', labelKey: 'confirm.cancel', tone: 'plain' }
+    ],
+    'cancel'
+  )
 
 /** Asks before sending a file or folder to the Recycle Bin. */
 export const confirmDelete = (name: string, details: DeleteDetails = {}) =>

@@ -2,9 +2,11 @@
 // so it behaves as in a real terminal: its output is line buffered and survives a crash, and
 // what the user types is echoed back by the terminal itself.
 //
-// Spike result (M0, track N0): github.com/aymanbagabas/go-pty passes on Windows except for
-// Ctrl+C, which ConPTY ignores when written as ETX. Interrupt therefore only asks politely;
-// the caller (protocol/process) kills the process tree after its grace period, as it does today.
+// Built on github.com/aymanbagabas/go-pty. On Windows, Ctrl+C written as ETX reaches the
+// program once the IDE clears the inherited "ignore Ctrl+C" flag before starting it (see
+// acceptCtrlC); the M0 spike missed that and concluded ConPTY ignored it. Interrupt still
+// only asks: the caller (protocol/process) kills the process tree after its grace period if the
+// program handles Ctrl+C and keeps running.
 package pty
 
 import (
@@ -83,6 +85,7 @@ func Start(program Program) (*Terminal, error) {
 	cmd := device.Command(program.Command, program.Args...)
 	cmd.Dir = program.Dir
 	cmd.Env = program.environment()
+	acceptCtrlC()
 	if err := cmd.Start(); err != nil {
 		_ = device.Close()
 		return nil, err
@@ -106,8 +109,8 @@ func (t *Terminal) Write(p []byte) (int, error) { return t.device.Write(p) }
 // Resize tells the program the new size of the terminal.
 func (t *Terminal) Resize(columns, lines int) error { return t.device.Resize(columns, lines) }
 
-// Interrupt sends Ctrl+C. Unix terminals deliver SIGINT; ConPTY may ignore it (see the
-// package comment), so the caller must still kill the tree if the program stays alive.
+// Interrupt sends Ctrl+C: SIGINT on Unix, CTRL_C_EVENT through ConPTY on Windows. A program may
+// handle it and keep running, so the caller must still kill the tree if it stays alive.
 func (t *Terminal) Interrupt() error {
 	_, err := t.device.Write([]byte{etx})
 	return err

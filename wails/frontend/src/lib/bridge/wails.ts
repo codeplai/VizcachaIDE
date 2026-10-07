@@ -5,6 +5,7 @@ import * as DebugService from '../../../wailsjs/go/bridge/DebugService'
 import * as FilesService from '../../../wailsjs/go/bridge/FilesService'
 import * as LanguageService from '../../../wailsjs/go/bridge/LanguageService'
 import * as RunService from '../../../wailsjs/go/bridge/RunService'
+import * as SearchService from '../../../wailsjs/go/bridge/SearchService'
 import * as SettingsService from '../../../wailsjs/go/bridge/SettingsService'
 import * as TerminalService from '../../../wailsjs/go/bridge/TerminalService'
 import * as UpdatesService from '../../../wailsjs/go/bridge/UpdatesService'
@@ -20,6 +21,7 @@ import type {
   DebugApi,
   FilesApi,
   RunApi,
+  SearchApi,
   TerminalApi,
   UpdatesApi
 } from './types'
@@ -77,8 +79,19 @@ const createFilesApi = (): FilesApi => ({
   createFile: (path, text) => FilesService.CreateFile(path, text),
   createFolder: (path) => FilesService.CreateFolder(path),
   rename: (from, to) => FilesService.Rename(from, to),
+  copy: (from, to) => FilesService.Copy(from, to),
   moveToTrash: (path) => FilesService.MoveToTrash(path),
-  revealInExplorer: (path) => FilesService.RevealInExplorer(path)
+  revealInExplorer: (path) => FilesService.RevealInExplorer(path),
+  applyTextEdits: async (files) => fromWire(await FilesService.ApplyTextEdits(toWire(files)))
+})
+
+const createSearchApi = (): SearchApi => ({
+  search: async (root, query, options) =>
+    fromWire(await SearchService.Search(root, query, toWire(options))),
+  replace: async (root, query, options, replacement, paths, line, column) =>
+    fromWire(
+      await SearchService.Replace(root, query, toWire(options), replacement, paths, line, column)
+    )
 })
 
 const createUpdatesApi = (): UpdatesApi => ({
@@ -95,6 +108,23 @@ const createTerminalApi = (): TerminalApi => ({
   close: (id) => TerminalService.Close(id)
 })
 
+const createLanguageApi = (): Bridge['language'] => ({
+  openDocument: (path, text) => LanguageService.OpenDocument(path, text),
+  changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
+  closeDocument: (path) => LanguageService.CloseDocument(path),
+  untitledFile: (name) => LanguageService.UntitledFile(name),
+  completion: async (at) => fromWire(await LanguageService.Completion(toWire(at))),
+  hover: (at) => LanguageService.Hover(toWire(at)),
+  definition: async (at) => fromWire(await LanguageService.Definition(toWire(at))),
+  signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
+  documentHighlights: async (at) => fromWire(await LanguageService.DocumentHighlights(toWire(at))),
+  documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
+  inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible))),
+  prepareRename: async (at) => fromWire(await LanguageService.PrepareRename(toWire(at))),
+  rename: async (at, newName) => fromWire(await LanguageService.Rename(toWire(at), newName)),
+  references: async (at) => fromWire(await LanguageService.References(toWire(at)))
+})
+
 export const createWailsBridge = (): Bridge => ({
   isMock: false,
   run: createRunApi(),
@@ -102,19 +132,7 @@ export const createWailsBridge = (): Bridge => ({
   projects: createProjectsApi(),
   codeLanguages: createCodeLanguagesApi(),
   debug: createDebugApi(),
-  language: {
-    openDocument: (path, text) => LanguageService.OpenDocument(path, text),
-    changeDocument: (path, text, version) => LanguageService.ChangeDocument(path, text, version),
-    closeDocument: (path) => LanguageService.CloseDocument(path),
-    completion: async (at) => fromWire(await LanguageService.Completion(toWire(at))),
-    hover: (at) => LanguageService.Hover(toWire(at)),
-    definition: async (at) => fromWire(await LanguageService.Definition(toWire(at))),
-    signatureHelp: async (at) => fromWire(await LanguageService.SignatureHelp(toWire(at))),
-    documentHighlights: async (at) =>
-      fromWire(await LanguageService.DocumentHighlights(toWire(at))),
-    documentSymbols: async (path) => fromWire(await LanguageService.DocumentSymbols(path)),
-    inlayHints: async (visible) => fromWire(await LanguageService.InlayHints(toWire(visible)))
-  },
+  language: createLanguageApi(),
   assistant: {
     explain: async (codeLanguage, raw, dir) =>
       fromWire(await AssistantService.Explain(toWire(codeLanguage), raw, dir)),
@@ -123,6 +141,7 @@ export const createWailsBridge = (): Bridge => ({
   },
   console: createConsoleApi(),
   files: createFilesApi(),
+  search: createSearchApi(),
   settings: {
     get: async () => fromWire(await SettingsService.Get()),
     save: (settings) => SettingsService.Save(toWire(settings)),

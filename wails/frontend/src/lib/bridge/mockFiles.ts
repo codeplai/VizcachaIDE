@@ -2,6 +2,7 @@
 import type { FileNode } from '../domain'
 import { SAMPLE_DIR, SAMPLE_SOURCES, sampleTree } from './mockData'
 import { CPP_DIR, CPP_SOURCES, cppTree } from './mockCpp'
+import { applyMockEdits } from './mockRefactor'
 import { PYTHON_DIR, PYTHON_SOURCES, pythonTree } from './mockPython'
 import { RUST_DIR, RUST_SOURCES, rustTree } from './mockRust'
 import type { SampleLanguage } from './mockScenarios'
@@ -49,6 +50,7 @@ interface TreeEditor {
   add: (path: string, isDir: boolean, text?: string) => void
   remove: (path: string) => FileNode
   rename: (from: string, to: string) => Promise<void>
+  copy: (from: string, to: string) => Promise<void>
 }
 
 const createTreeEditor = (tree: FileNode, texts: Record<string, string>): TreeEditor => {
@@ -77,6 +79,8 @@ const createTreeEditor = (tree: FileNode, texts: Record<string, string>): TreeEd
     if (from.toLowerCase() !== to.toLowerCase() && find(tree, to)) {
       throw new Error(`${basenameOf(to)} already exists`)
     }
+    if (from !== to && isInside(to, from))
+      throw new Error(`${basenameOf(from)} cannot go inside itself`)
     const moved = { ...rebase(remove(from), from, to), name: basenameOf(to) }
     const parent = parentOf(to)
     parent.children = sortNodes([...parent.children, moved])
@@ -85,7 +89,19 @@ const createTreeEditor = (tree: FileNode, texts: Record<string, string>): TreeEd
       delete texts[key]
     }
   }
-  return { add, remove, rename }
+  const copy: TreeEditor['copy'] = async (from, to) => {
+    const source = find(tree, from)
+    if (!source) throw new Error(`${from} does not exist`)
+    if (isInside(to, from)) throw new Error(`${basenameOf(from)} cannot go inside itself`)
+    if (find(tree, to)) throw new Error(`${basenameOf(to)} already exists`)
+    const copied = { ...rebase(structuredClone(source), from, to), name: basenameOf(to) }
+    const parent = parentOf(to)
+    parent.children = sortNodes([...parent.children, copied])
+    for (const key of Object.keys(texts).filter((key) => isInside(key, from))) {
+      texts[to + key.slice(from.length)] = texts[key] ?? ''
+    }
+  }
+  return { add, remove, rename, copy }
 }
 
 export const mockFiles = (codeLanguage: SampleLanguage = 'go'): FilesApi => {
@@ -105,7 +121,9 @@ export const mockFiles = (codeLanguage: SampleLanguage = 'go'): FilesApi => {
     createFile: async (path, text) => editor.add(path, false, text),
     createFolder: async (path) => editor.add(path, true),
     rename: editor.rename,
+    copy: editor.copy,
     moveToTrash: async (path) => void editor.remove(path),
-    revealInExplorer: async () => {}
+    revealInExplorer: async () => {},
+    applyTextEdits: async (edited) => applyMockEdits(texts, edited)
   }
 }

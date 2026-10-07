@@ -20,4 +20,12 @@ export function InlayHints(arg1:domain.SourceRange):Promise<Array<domain.InlayHi
 
 export function OpenDocument(arg1:string,arg2:string):Promise<void>;
 
+export function PrepareRename(arg1:domain.SourceLocation):Promise<domain.RenameTarget>;
+
+export function References(arg1:domain.SourceLocation):Promise<Array<domain.Reference>>;
+
+export function Rename(arg1:domain.SourceLocation,arg2:string):Promise<domain.RenameResult>;
+
 export function SignatureHelp(arg1:domain.SourceLocation):Promise<domain.SignatureHelp>;
+
+export function UntitledFile(arg1:string):Promise<string>;

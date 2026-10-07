@@ -8,6 +8,48 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-10-06
+
+### Added
+- Files panel: select several entries (Ctrl/Cmd+click toggles, Shift+click selects a range, Escape clears) and
+  delete them with one confirmation that counts the items and the files inside them.
+- Files panel: move files and folders by dragging them onto a folder (or the empty area for the root), or with
+  Cut and Paste (Ctrl/Cmd+X, Ctrl/Cmd+V while the panel has the focus). Open tabs, unsaved changes, breakpoints
+  and the language server follow the moved files. A folder cannot be dropped into itself.
+- Files panel: Copy, Paste (Ctrl/Cmd+C, Ctrl/Cmd+V) and Duplicate for files and folders. Copies never overwrite:
+  they are named `name (copy).ext`, `name (copy 2).ext` (`nombre (copia).ext` in Spanish).
+- Search and replace in the files of the open folder (Ctrl+Shift+F), with match case, whole word and regular
+  expression (with `$1` in the replacement). Every result has "Replace", every file "Replace all in this file", and
+  "Replace all" asks first, naming how many matches in how many files. Open files change in the editor (undoable,
+  marked unsaved); the others change on disk. It never touches files outside the folder, binary files, or `build`,
+  `target`, `node_modules` and `.git`.
+- Quick open (Ctrl+P, Cmd+P on macOS): type part of a file name and pick from the files of the folder with the arrows
+  and Enter; matched letters are highlighted and, with nothing typed, recently opened files come first.
+- Snippets in the completion list for Go, Python, C++ and Rust: typing `for`, `if`, `while`, `func`/`def`/`fn`,
+  `main`, `print`/`println`/`cout`, `class`/`struct`, `switch`/`match` or `try` offers a template with tab stops and
+  a short description in your language, next to what the language server suggests.
+- Rename a symbol: press F2 in the editor (or More > Rename symbol), type the new name in the little box that
+  opens at the name and press Enter. Every use is renamed in all the files of the project: open files change in
+  their tab (Ctrl+Z undoes it, they stay unsaved) and the others are edited on disk. A short message tells how
+  many places and files changed. Keywords and library names are refused with an explanation. Works with gopls,
+  python-lsp-server, clangd and rust-analyzer.
+- Find all references: press Shift+F12 (or More > Find all references) to list every use of the name under the
+  cursor in a new References tab, grouped by file with the text of each line; a click opens the file at that place.
+- A rename is undone as a whole: the Undo button of its message, or Ctrl+Z right after it, restores every file
+  (open ones and files on disk), never just the one on screen.
+
+### Fixed
+- The code helpers (gopls, rust-analyzer, clangd, python-lsp-server) now hear when another program or git creates,
+  changes or deletes a source file of the project that is not open, so errors and references stay correct.
+- Rename no longer offers a keyword such as `func` as a name to change.
+- Ctrl+C now stops a program in the integrated terminal on Windows (an endless loop could not be stopped): the
+  IDE no longer passes on an inherited "ignore Ctrl+C" flag to the programs it starts. Stop (F5) also lets a program
+  end on Ctrl+C first; a Python program shows where it was (`KeyboardInterrupt`), and the Assistant does not treat
+  that as an error.
+- A new file not saved yet (Ctrl+N) had no code helper: no completion and no problems, because its path was
+  relative. Unsaved files now live in a temporary folder of their own, so gopls, pylsp, clangd and rust-analyzer
+  analyse them like any other file.
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed
@@ -353,6 +395,52 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.7.0] - 2026-10-06
+
+### Añadido
+- Panel Archivos: selecciona varias entradas (Ctrl/Cmd+clic alterna, Mayús+clic selecciona un rango, Escape
+  limpia) y elimínalas con una sola confirmación que cuenta los elementos y los archivos que contienen.
+- Panel Archivos: mueve archivos y carpetas arrastrándolos a una carpeta (o al área vacía para la raíz), o con
+  Cortar y Pegar (Ctrl/Cmd+X, Ctrl/Cmd+V con el foco en el panel). Las pestañas abiertas, los cambios sin guardar,
+  los puntos de interrupción y el servidor de lenguaje siguen a los archivos movidos. Una carpeta no se puede
+  soltar dentro de sí misma.
+- Panel Archivos: Copiar, Pegar (Ctrl/Cmd+C, Ctrl/Cmd+V) y Duplicar para archivos y carpetas. Las copias nunca
+  sobrescriben: se llaman `nombre (copia).ext`, `nombre (copia 2).ext` (`name (copy).ext` en inglés).
+- Buscar y reemplazar en los archivos de la carpeta (Ctrl+Mayús+F), con distinguir mayúsculas, palabra completa y
+  expresión regular (con `$1` en el reemplazo). Cada resultado tiene "Reemplazar", cada archivo "Reemplazar todo en
+  este archivo" y hay un "Reemplazar todo" que pide confirmación diciendo cuántas coincidencias en cuántos archivos.
+  Los archivos abiertos cambian en el editor (se puede deshacer y quedan sin guardar); los demás, en el disco. Nunca
+  toca archivos fuera de la carpeta, binarios ni `build`, `target`, `node_modules` o `.git`.
+- Abrir archivo rápido (Ctrl+P, Cmd+P en macOS): escribe parte del nombre y elige entre los archivos de la carpeta
+  con flechas y Enter; muestra las letras que coinciden y, sin escribir, los archivos abiertos hace poco primero.
+- Plantillas (snippets) en el autocompletado de Go, Python, C++ y Rust: al escribir `for`, `if`, `while`,
+  `func`/`def`/`fn`, `main`, `print`/`println`/`cout`, `class`/`struct`, `switch`/`match` o `try` aparece una
+  plantilla con puntos de tabulación y una descripción corta en tu idioma, junto a lo que sugiere el servidor de
+  lenguaje.
+- Renombrar un símbolo: presiona F2 en el editor (o Más > Renombrar símbolo), escribe el nombre nuevo en la
+  cajita que se abre junto al nombre y presiona Enter. Se renombran todos los usos en los archivos del proyecto:
+  los archivos abiertos cambian en su pestaña (Ctrl+Z lo deshace y quedan sin guardar) y los demás se editan en
+  el disco. Un mensaje corto dice cuántos lugares y archivos cambiaron. Las palabras reservadas y los nombres de
+  bibliotecas se rechazan con una explicación. Funciona con gopls, python-lsp-server, clangd y rust-analyzer.
+- Buscar todas las referencias: presiona Shift+F12 (o Más > Buscar todas las referencias) para listar cada uso del
+  nombre bajo el cursor en una pestaña nueva, Referencias, agrupados por archivo y con el texto de cada línea; un
+  clic abre el archivo en ese lugar.
+- Un cambio de nombre se deshace completo: el botón Deshacer de su mensaje, o Ctrl+Z justo después, restaura todos
+  los archivos (los abiertos y los del disco), no solo el que está en pantalla.
+
+### Corregido
+- Los ayudantes de código (gopls, rust-analyzer, clangd y python-lsp-server) ahora se enteran cuando otro programa
+  o git crea, cambia o borra un archivo de código del proyecto que no está abierto, y los errores y las
+  referencias se mantienen correctos.
+- Renombrar ya no ofrece una palabra reservada como `func` como nombre a cambiar.
+- Ctrl+C ahora detiene un programa en el terminal integrado en Windows (un bucle infinito no se podía detener): la
+  IDE ya no pasa a los programas que inicia una marca heredada de "ignorar Ctrl+C". Detener (F5) también deja que el
+  programa termine primero con Ctrl+C; un programa Python muestra dónde estaba (`KeyboardInterrupt`) y el Asistente
+  no lo trata como un error.
+- Un archivo nuevo sin guardar (Ctrl+N) no tenía ayudante de código: ni autocompletado ni problemas, porque su ruta
+  era relativa. Los archivos sin guardar ahora viven en una carpeta temporal propia, así que gopls, pylsp, clangd y
+  rust-analyzer los analizan como a cualquier otro archivo.
 
 ## [2.6.0] - 2026-10-06
 

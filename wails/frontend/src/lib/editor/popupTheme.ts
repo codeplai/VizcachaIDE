@@ -27,6 +27,7 @@ export const popupTheme = EditorView.theme({
     background: 'var(--go-soft)',
     color: 'var(--ink)'
   },
+  '.cm-completionIcon-snippet:after': { content: "'✂'", fontSize: '85%' },
   '.cm-completionDetail': { color: 'var(--muted)', fontStyle: 'normal', marginLeft: '10px' },
   '.cm-tooltip-lint': { padding: '0' },
   '.cm-diagnostic': { padding: '8px 12px', font: '400 13px/1.45 var(--ui)' },

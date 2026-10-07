@@ -100,6 +100,13 @@ type LanguageServer interface {
 	DocumentSymbols(ctx context.Context, path string) ([]domain.DocumentSymbol, error)
 	// InlayHints returns the hints of the visible part of an open document (Start.File).
 	InlayHints(ctx context.Context, visible domain.SourceRange) ([]domain.InlayHint, error)
+	// PrepareRename tells whether the symbol at a position can be renamed (and its range).
+	PrepareRename(ctx context.Context, at domain.SourceLocation) (domain.RenameTarget, error)
+	// Rename returns the edits, over every affected file, that rename the symbol at a position.
+	// Nothing is written: the caller applies them.
+	Rename(ctx context.Context, at domain.SourceLocation, newName string) (domain.RenameResult, error)
+	// References returns every use of the symbol at a position, declaration included.
+	References(ctx context.Context, at domain.SourceLocation) ([]domain.Reference, error)
 	Shutdown(ctx context.Context) error
 }
 

@@ -4,19 +4,20 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirro
 import { bracketMatching } from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
 import { gotoLine, search, searchKeymap } from '@codemirror/search'
-import { Prec, type Compartment, type EditorState, type Extension } from '@codemirror/state'
+import { EditorState, Prec, type Compartment, type Extension } from '@codemirror/state'
 import { EditorView, drawSelection, keymap, lineNumbers } from '@codemirror/view'
 import { breakpointGutter } from './breakpointGutter'
 import type { DocumentContext, LanguageApi } from './documentContext'
 import { isExternalEdit } from './externalEdit'
 import { documentSync } from './documentSync'
-import { goCompletion } from './lspCompletion'
+import { editorCompletion } from './completions'
 import { goToDefinition, type OpenLocation } from './goToDefinition'
 import { hoverDocs } from './hoverDocs'
 import { inlayHints, type InlayHints } from './inlayHints'
 import { inlineHints } from './inlineHint'
 import { emptyMarks, marksField } from './marks'
 import { problemLint } from './problemLint'
+import { refactoring, type RefactorCommands, type RefactorWiring } from './refactor'
 import { popupTheme } from './popupTheme'
 import { signatureHelp } from './signatureHelp'
 import { editorHighlighting, editorTheme } from './theme'
@@ -30,6 +31,8 @@ export interface EditorHandlers {
 export interface LanguageWiring {
   language: LanguageApi
   openLocation: OpenLocation
+  /** Rename (F2) and find references (Shift+F12); absent in editors without a backend. */
+  refactor?: RefactorWiring
 }
 
 const keys = Prec.high(
@@ -46,13 +49,14 @@ const keys = Prec.high(
 const languageExtensions = (
   wiring: LanguageWiring | null,
   file: DocumentContext,
-  inlay: InlayHints | null
+  inlay: InlayHints | null,
+  refactor: RefactorCommands | null
 ): Extension[] => {
   if (!wiring) return []
   const { language, openLocation } = wiring
   return [
     ...(inlay ? [inlay.extension] : []),
-    goCompletion(language, file),
+    ...(refactor ? [refactor.extension] : []),
     hoverDocs(language, file),
     signatureHelp(language, file),
     goToDefinition(language, file, openLocation)
@@ -71,6 +75,8 @@ export interface EditorExtensions {
   flush: () => Promise<void>
   /** The inlay hints, when the editor has a language service. */
   inlay: InlayHints | null
+  /** Rename and find references, when the editor has a language service. */
+  refactor: RefactorCommands | null
 }
 
 export const editorExtensions = (
@@ -82,12 +88,18 @@ export const editorExtensions = (
   const sync = wiring ? documentSync(wiring.language, getPath) : null
   const file: DocumentContext = { path: getPath, flush: sync?.flush ?? (async () => {}) }
   const inlay = wiring ? inlayHints(wiring.language, file) : null
+  const refactor = wiring?.refactor ? refactoring(file, wiring.refactor) : null
   const extensions = [
     marksField.init(() => emptyMarks),
     phrases.of([]),
     breakpointGutter(handlers.onToggleBreakpoint),
     lineNumbers(),
     history(),
+    // Several selections: a snippet's repeated field (the `i` of `for i := 0; i < n; i++`) is one
+    // selection per occurrence, so typing renames them all; without this only the first changed.
+    // Alt+click adds a cursor, as in VS Code: Ctrl+click stays "go to definition".
+    EditorState.allowMultipleSelections.of(true),
+    EditorView.clickAddsSelectionRange.of((event) => event.altKey),
     drawSelection(),
     bracketMatching(),
     closeBrackets(),
@@ -102,12 +114,13 @@ export const editorExtensions = (
     editorHighlighting,
     inlineHints,
     ...(sync ? [sync.extension] : []),
-    ...languageExtensions(wiring, file, inlay),
+    editorCompletion(wiring?.language ?? null, file),
+    ...languageExtensions(wiring, file, inlay, refactor),
     EditorView.updateListener.of((update) => {
       if (update.docChanged && !isExternalEdit(update))
         handlers.onChange(update.state.doc.toString())
       if (update.selectionSet || update.docChanged) reportCursor(update.state, handlers)
     })
   ]
-  return { extensions, flush: file.flush, inlay }
+  return { extensions, flush: file.flush, inlay, refactor }
 }

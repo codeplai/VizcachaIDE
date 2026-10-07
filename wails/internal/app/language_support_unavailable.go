@@ -90,6 +90,15 @@ func (unavailableServer) DocumentSymbols(context.Context, string) ([]domain.Docu
 func (unavailableServer) InlayHints(context.Context, domain.SourceRange) ([]domain.InlayHint, error) {
 	return []domain.InlayHint{}, nil
 }
+func (unavailableServer) PrepareRename(context.Context, domain.SourceLocation) (domain.RenameTarget, error) {
+	return domain.RenameTarget{Refusal: domain.RenameUnsupported}, nil
+}
+func (unavailableServer) Rename(context.Context, domain.SourceLocation, string) (domain.RenameResult, error) {
+	return domain.RenameResult{Refusal: domain.RenameUnsupported, Files: []domain.FileEdit{}}, nil
+}
+func (unavailableServer) References(context.Context, domain.SourceLocation) ([]domain.Reference, error) {
+	return []domain.Reference{}, nil
+}
 func (unavailableServer) Shutdown(context.Context) error { return nil }
 
 type unavailableExplainer struct{}

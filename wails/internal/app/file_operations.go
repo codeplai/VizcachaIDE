@@ -88,10 +88,14 @@ func (o *FileOperations) CreateFolder(path string) error {
 	return nil
 }
 
-// Rename moves a file or folder; it fails if the target exists (a change of letter case is allowed).
+// Rename renames a file or folder, or moves it into another folder. It fails if the target
+// exists (a change of letter case is allowed) or is inside the source.
 func (o *FileOperations) Rename(from, to string) error {
 	if err := ValidateEntryName(filepath.Base(to)); err != nil {
 		return err
+	}
+	if !strings.EqualFold(from, to) && sameOrInside(to, from) {
+		return fmt.Errorf("%w: %s", ErrIntoItself, from)
 	}
 	if !strings.EqualFold(from, to) && exists(to) {
 		return fmt.Errorf("%w: %s", ErrAlreadyExists, to)

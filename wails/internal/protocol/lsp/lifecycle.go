@@ -40,6 +40,7 @@ func (s *Server) ensureStartedLocked(path string) {
 func (s *Server) initialize(conn *connection, root string) {
 	ctx, cancel := context.WithTimeout(context.Background(), initializeTimeout)
 	defer cancel()
+	s.rememberSources(root)
 	s.rememberManifests(root) // what the server is about to read
 	err := s.handshake(ctx, conn, root)
 	s.mu.Lock()
@@ -66,6 +67,7 @@ func (s *Server) handshake(ctx context.Context, conn *connection, root string) e
 		return err
 	}
 	s.hints.Store(announcesInlayHints(result))
+	s.refactor.store(result)
 	if err := conn.notify(ctx, "initialized", protocol.InitializedParams{}); err != nil {
 		return err
 	}

@@ -5,8 +5,10 @@ import type {
   CompletionItem,
   Diagnostic,
   DocumentSymbol,
+  EditSummary,
   InlayHint,
   ExplainedDiagnostic,
+  FileEdit,
   FileNode,
   FrameVariables,
   PackageInfo,
@@ -20,9 +22,11 @@ import type {
   ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
+import type { RefactorApi } from './typesRefactor'
+import type { SearchApi } from './typesSearch'
 import type { TerminalApi, UpdatesApi } from './typesShell'
 
-export type { TerminalApi, UpdatesApi }
+export type { RefactorApi, SearchApi, TerminalApi, UpdatesApi }
 
 export type Unsubscribe = () => void
 
@@ -83,7 +87,7 @@ export interface DebugApi {
 }
 
 /** Mirrors bridge.LanguageService (Go): code intelligence, routed by path. */
-export interface LanguageApi {
+export interface LanguageApi extends RefactorApi {
   openDocument: (path: string, text: string) => Promise<void>
   changeDocument: (path: string, text: string, version: number) => Promise<void>
   closeDocument: (path: string) => Promise<void>
@@ -95,6 +99,8 @@ export interface LanguageApi {
   documentSymbols: (path: string) => Promise<DocumentSymbol[]>
   /** The hints of the visible lines of an open file (`visible.start.file`). */
   inlayHints: (visible: SourceRange) => Promise<InlayHint[]>
+  /** Where a new unsaved file named `name` lives while open (an absolute temporary path). */
+  untitledFile: (name: string) => Promise<string>
 }
 
 /** Mirrors bridge.AssistantService (Go). */
@@ -135,9 +141,13 @@ export interface FilesApi {
   createFolder: (path: string) => Promise<void>
   /** Fails if the target already exists. */
   rename: (from: string, to: string) => Promise<void>
+  /** Copies a file or folder (recursively); fails if the target exists or is inside the source. */
+  copy: (from: string, to: string) => Promise<void>
   /** Sends the file or folder to the Recycle Bin; it never deletes permanently. */
   moveToTrash: (path: string) => Promise<void>
   revealInExplorer: (path: string) => Promise<void>
+  /** Edits files on disk (the ones a rename touches that are not open) and tells the watcher. */
+  applyTextEdits: (files: FileEdit[]) => Promise<EditSummary>
 }
 
 /** A ToolSpec.id ('go', 'dlv', 'gopls', 'python', 'clangd'...). */
@@ -181,6 +191,7 @@ export interface Bridge {
   assistant: AssistantApi
   console: ConsoleApi
   files: FilesApi
+  search: SearchApi
   settings: SettingsApi
   updates: UpdatesApi
   terminal: TerminalApi

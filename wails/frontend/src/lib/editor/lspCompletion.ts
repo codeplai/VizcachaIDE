@@ -1,5 +1,4 @@
-import { autocompletion, type Completion, type CompletionSource } from '@codemirror/autocomplete'
-import type { Extension } from '@codemirror/state'
+import type { Completion, CompletionSource } from '@codemirror/autocomplete'
 import type { CompletionItem, CompletionKind } from '../domain'
 import { locationAt, type DocumentContext, type LanguageApi } from './documentContext'
 
@@ -47,6 +46,3 @@ export const goCompletionSource =
     if (context.aborted || items.length === 0) return null
     return { from: word.from, options: items.map(toCompletion), validFor: /^\w*$/ }
   }
-
-export const goCompletion = (language: LanguageApi, file: DocumentContext): Extension =>
-  autocompletion({ override: [goCompletionSource(language, file)], icons: true })

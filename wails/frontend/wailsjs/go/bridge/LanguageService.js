@@ -38,6 +38,22 @@ export function OpenDocument(arg1, arg2) {
   return window['go']['bridge']['LanguageService']['OpenDocument'](arg1, arg2);
 }
 
+export function PrepareRename(arg1) {
+  return window['go']['bridge']['LanguageService']['PrepareRename'](arg1);
+}
+
+export function References(arg1) {
+  return window['go']['bridge']['LanguageService']['References'](arg1);
+}
+
+export function Rename(arg1, arg2) {
+  return window['go']['bridge']['LanguageService']['Rename'](arg1, arg2);
+}
+
 export function SignatureHelp(arg1) {
   return window['go']['bridge']['LanguageService']['SignatureHelp'](arg1);
+}
+
+export function UntitledFile(arg1) {
+  return window['go']['bridge']['LanguageService']['UntitledFile'](arg1);
 }

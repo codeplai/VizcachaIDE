@@ -1,3 +1,4 @@
+import { isolateHistory, redo, undo } from '@codemirror/commands'
 import { Compartment, EditorSelection, EditorState, type Extension } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import type { LanguageProfile } from '../domain'
@@ -13,6 +14,7 @@ import { languageExtensionsFor } from './languageSupport'
 import { setMarks, type EditorMarks } from './marks'
 import { pushDiagnostics } from './problemLint'
 import { minimalChange } from './textChange'
+import type { Change } from '../textEdits'
 
 export type { EditorHandlers, LanguageWiring } from './extensions'
 
@@ -27,6 +29,15 @@ export interface EditorHandle {
   /** Asks the language server for the inlay hints again (it finished analysing the file). */
   refreshInlayHints: () => void
   goTo: (line: number, column: number) => void
+  /** Applies changes to an open file (shown or not) as one undoable step; false: not held here. */
+  applyChanges: (path: string, changes: Change[]) => boolean
+  /** Undoes / redoes the last history step of an open file, shown or not. */
+  undoFile: (path: string) => boolean
+  redoFile: (path: string) => boolean
+  /** Starts renaming the symbol at the cursor (F2). */
+  renameSymbol: () => void
+  /** Lists where the symbol at the cursor is used (Shift+F12). */
+  findReferences: () => void
   destroy: () => void
 }
 
@@ -42,6 +53,55 @@ const newFileState = (
     extensions: [extensions, languageExtensionsFor(path, profile)]
   })
 
+/** Runs a history command on an open file: on the view when shown, else on its saved state. */
+const historyOn = (
+  view: EditorView,
+  states: Map<string, EditorState>,
+  shown: string | null,
+  path: string,
+  command: (target: { state: EditorState; dispatch: EditorView['dispatch'] }) => boolean
+): boolean => {
+  if (path === shown) return command(view)
+  const state = states.get(path)
+  if (!state) return false
+  const scratch = new EditorView({ state }) // detached: only to run the command on that state
+  const done = command(scratch)
+  states.set(path, scratch.state)
+  scratch.destroy()
+  return done
+}
+
+/** Applies changes to the file on screen, or to the saved state of another open file. */
+const applyChangesTo = (
+  view: EditorView,
+  states: Map<string, EditorState>,
+  shown: string | null,
+  path: string,
+  changes: Change[]
+): boolean => {
+  if (path === shown) {
+    view.dispatch({ changes, annotations: isolateHistory.of('full') })
+    return true
+  }
+  const state = states.get(path)
+  if (!state) return false
+  states.set(path, state.update({ changes, annotations: isolateHistory.of('full') }).state)
+  return true
+}
+
+const showMarks = (view: EditorView, marks: EditorMarks): void =>
+  view.dispatch({ effects: [setMarks.of(marks), ...pushDiagnostics(view.state, marks.problems)] })
+
+/** Puts the cursor on a 1-based line and column, scrolls to it and focuses the editor. */
+const goToIn = (view: EditorView, line: number, column: number): void => {
+  const pos = offsetOf(view.state, line, column)
+  view.dispatch({
+    selection: EditorSelection.cursor(pos),
+    effects: EditorView.scrollIntoView(pos, { y: 'center' })
+  })
+  view.focus()
+}
+
 export const createEditor = (
   parent: HTMLElement,
   handlers: EditorHandlers,
@@ -53,7 +113,12 @@ export const createEditor = (
   const states = new Map<string, EditorState>()
   let currentPath: string | null = null
   let currentPhrases: Extension = []
-  const { extensions, inlay } = editorExtensions(handlers, phrases, wiring, () => currentPath)
+  const { extensions, inlay, refactor } = editorExtensions(
+    handlers,
+    phrases,
+    wiring,
+    () => currentPath
+  )
   const view = new EditorView({ parent, state: EditorState.create({ extensions }) })
 
   const applyText = (text: string): void => {
@@ -70,14 +135,16 @@ export const createEditor = (
   }
 
   return {
+    applyChanges: (path, changes) => applyChangesTo(view, states, currentPath, path, changes),
+    undoFile: (path) => historyOn(view, states, currentPath, path, undo),
+    redoFile: (path) => historyOn(view, states, currentPath, path, redo),
+    renameSymbol: () => refactor?.rename(view),
+    findReferences: () => refactor?.references(view),
     show: (path, text) => {
       if (path !== currentPath) switchTo(path, text)
       applyText(text)
     },
-    setMarks: (marks) =>
-      view.dispatch({
-        effects: [setMarks.of(marks), ...pushDiagnostics(view.state, marks.problems)]
-      }),
+    setMarks: (marks) => showMarks(view, marks),
     setPhrases: (next) => {
       currentPhrases = next
       view.dispatch({ effects: phrases.reconfigure(next) })
@@ -85,14 +152,7 @@ export const createEditor = (
     setFontSize: (pixels) => parent.style.setProperty('--editor-font-size', `${pixels}px`),
     setInlayHints: (enabled) => inlay?.setEnabled(enabled),
     refreshInlayHints: () => inlay?.refresh(),
-    goTo: (line, column) => {
-      const pos = offsetOf(view.state, line, column)
-      view.dispatch({
-        selection: EditorSelection.cursor(pos),
-        effects: EditorView.scrollIntoView(pos, { y: 'center' })
-      })
-      view.focus()
-    },
+    goTo: (line, column) => goToIn(view, line, column),
     destroy: () => view.destroy()
   }
 }

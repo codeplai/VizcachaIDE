@@ -6,14 +6,16 @@ import { mockConsole } from './mockConsole'
 import { defaultSettings, sampleLocation, sampleSymbols } from './mockData'
 import { mockDebug, mockRun, type MockState } from './mockExecution'
 import { mockFiles } from './mockFiles'
+import { mockRefactor } from './mockRefactor'
 import { mockProjects } from './mockProjects'
 import { sampleInlayHints } from './mockInlay'
 import { codeLanguageOfPath, mockCodeLanguages, mockPackages } from './mockCodeLanguages'
 import type { Emit, SampleLanguage, Scenario } from './mockScenarios'
+import { mockSearch } from './mockSearch'
 import { mockSettings } from './mockSettings'
 import { mockTerminal } from './mockTerminal'
 import { mockUpdates } from './mockUpdates'
-import type { Bridge, LanguageApi } from './types'
+import type { Bridge, FilesApi, LanguageApi } from './types'
 
 export interface MockControls {
   /** Replays one of the three states of the prototype. */
@@ -26,11 +28,25 @@ export interface MockBridge {
   controls: MockControls
 }
 
-const mockLanguage = (emit: Emit): LanguageApi => ({
-  openDocument: async (path) =>
-    emit('lsp:status', { codeLanguage: codeLanguageOfPath(path), status: 'ready' }),
-  changeDocument: async () => {},
-  closeDocument: async () => {},
+const mockLanguage = (emit: Emit, files: FilesApi): LanguageApi => {
+  const documents = new Map<string, string>() // what the editor has open, like a real server
+  return {
+    ...mockRefactor(files, documents),
+    ...mockBasics(emit, documents)
+  }
+}
+
+const mockBasics = (
+  emit: Emit,
+  documents: Map<string, string>
+): Omit<LanguageApi, 'prepareRename' | 'rename' | 'references'> => ({
+  openDocument: async (path, text) => {
+    documents.set(path, text)
+    emit('lsp:status', { codeLanguage: codeLanguageOfPath(path), status: 'ready' })
+  },
+  changeDocument: async (path, text) => void documents.set(path, text),
+  closeDocument: async (path) => void documents.delete(path),
+  untitledFile: async (name) => `untitled/${name}`,
   completion: async () => [
     {
       label: 'Println',
@@ -89,7 +105,7 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
     packages: mockPackages(),
     codeLanguages: mockCodeLanguages(state),
     debug,
-    language: mockLanguage(emit),
+    language: mockLanguage(emit, files),
     assistant: mockAssistant(
       () => state.scenario,
       () => resolveLanguage(state.settings.language, systemLanguage()),
@@ -98,6 +114,7 @@ export const createMockBridge = ({ sampleLanguage = 'go' }: MockOptions = {}): M
     console: mockConsole(),
     projects: mockProjects(files),
     files,
+    search: mockSearch(files),
     settings: mockSettings(state, emit),
     updates: mockUpdates(emit),
     terminal: mockTerminal(emit),

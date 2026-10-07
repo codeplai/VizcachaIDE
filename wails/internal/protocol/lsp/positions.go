@@ -22,9 +22,14 @@ func pathToURI(path string) protocol.DocumentURI {
 	return uri.File(abs)
 }
 
-// uriToPath is the inverse of pathToURI.
+// uriToPath is the inverse of pathToURI. A Windows drive letter is upper case, as the editor and
+// the file dialogs spell it (URIs carry it in lower case).
 func uriToPath(documentURI protocol.DocumentURI) string {
-	return uri.URI(documentURI).Filename()
+	path := uri.URI(documentURI).Filename()
+	if runtime.GOOS == "windows" && len(path) >= 2 && path[1] == ':' {
+		path = strings.ToUpper(path[:1]) + path[1:]
+	}
+	return path
 }
 
 // pathKey normalises a path so the same file always maps to the same key
