@@ -2,11 +2,8 @@ import type {
   Breakpoint,
   CodeLanguage,
   ConsoleResult,
-  CompletionItem,
   Diagnostic,
-  DocumentSymbol,
   EditSummary,
-  InlayHint,
   ExplainedDiagnostic,
   FileEdit,
   FileNode,
@@ -16,17 +13,16 @@ import type {
   NewProject,
   RunConfiguration,
   Settings,
-  SignatureHelp,
   SourceLocation,
-  SourceRange,
   ToolStatus
 } from '../domain'
 import type { EventName, EventPayloads } from '../events'
+import type { LanguageApi } from './typesLanguage'
 import type { RefactorApi } from './typesRefactor'
 import type { SearchApi } from './typesSearch'
 import type { TerminalApi, UpdatesApi } from './typesShell'
 
-export type { RefactorApi, SearchApi, TerminalApi, UpdatesApi }
+export type { LanguageApi, RefactorApi, SearchApi, TerminalApi, UpdatesApi }
 
 export type Unsubscribe = () => void
 
@@ -84,23 +80,6 @@ export interface DebugApi {
   /** Arguments and locals of any frame of the paused stack (the Calls view). */
   frameVariables: (frameId: number) => Promise<FrameVariables>
   stop: () => Promise<void>
-}
-
-/** Mirrors bridge.LanguageService (Go): code intelligence, routed by path. */
-export interface LanguageApi extends RefactorApi {
-  openDocument: (path: string, text: string) => Promise<void>
-  changeDocument: (path: string, text: string, version: number) => Promise<void>
-  closeDocument: (path: string) => Promise<void>
-  completion: (at: SourceLocation) => Promise<CompletionItem[]>
-  hover: (at: SourceLocation) => Promise<string>
-  definition: (at: SourceLocation) => Promise<SourceLocation | null>
-  signatureHelp: (at: SourceLocation) => Promise<SignatureHelp | null>
-  documentHighlights: (at: SourceLocation) => Promise<SourceRange[]>
-  documentSymbols: (path: string) => Promise<DocumentSymbol[]>
-  /** The hints of the visible lines of an open file (`visible.start.file`). */
-  inlayHints: (visible: SourceRange) => Promise<InlayHint[]>
-  /** Where a new unsaved file named `name` lives while open (an absolute temporary path). */
-  untitledFile: (name: string) => Promise<string>
 }
 
 /** Mirrors bridge.AssistantService (Go). */
