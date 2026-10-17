@@ -57,7 +57,7 @@ describe('one font size', () => {
     await zoomEditor(bridge, 'in')
     expect((await bridge.settings.get()).fontSize).toBe(16)
     await waitFor(() => {
-      const host = view.container.querySelector<HTMLElement>('.code > div')
+      const host = view.container.querySelector<HTMLElement>('.code .host')
       expect(host?.style.getPropertyValue('--editor-font-size')).toBe('16px')
     })
     expect(document.documentElement.style.getPropertyValue('--editor-font-size')).toBe('')

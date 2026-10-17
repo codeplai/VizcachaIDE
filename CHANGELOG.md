@@ -8,6 +8,20 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-10-17
+
+### Added
+- Split editor: show a second editor to the right, left, below or above the first one, as in VS Code. Right-click
+  in the editor and pick "Split ...", use More, or press Ctrl/Cmd+\ to split to the right. The second editor has
+  a selector for any open file and a button to close the split; a file shown in both stays in step while you type.
+- Right-click in the editor opens a menu with Cut, Copy, Paste and Select all, each with its shortcut.
+- A Theme button in the status bar switches between "Like my system", Light and Dark with one click (the same
+  setting as Settings > Theme).
+
+### Fixed
+- After accepting a suggestion from the code helper, the cursor is placed right after the inserted text and the
+  editor keeps the focus.
+
 ## [2.7.0] - 2026-10-06
 
 ### Added
@@ -395,6 +409,21 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.8.0] - 2026-10-17
+
+### Añadido
+- Editor dividido: muestra un segundo editor a la derecha, a la izquierda, abajo o arriba del primero, como en
+  VS Code. Haz clic derecho en el editor y elige "Dividir ...", usa Más, o pulsa Ctrl/Cmd+\ para dividir a la
+  derecha. El segundo editor tiene un selector con los archivos abiertos y un botón para cerrar la división; un
+  archivo mostrado en los dos se mantiene sincronizado mientras escribes.
+- El clic derecho en el editor abre un menú con Cortar, Copiar, Pegar y Seleccionar todo, cada uno con su atajo.
+- Un botón Tema en la barra de estado cambia entre "Como mi sistema", Claro y Oscuro con un clic (es el mismo
+  ajuste que Ajustes > Tema).
+
+### Corregido
+- Al aceptar una sugerencia del ayudante de código, el cursor queda justo después del texto insertado y el editor
+  conserva el foco.
 
 ## [2.7.0] - 2026-10-06
 

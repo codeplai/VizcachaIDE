@@ -1,4 +1,4 @@
-import type { Completion, CompletionSource } from '@codemirror/autocomplete'
+import { pickedCompletion, type Completion, type CompletionSource } from '@codemirror/autocomplete'
 import type { CompletionItem, CompletionKind } from '../domain'
 import { locationAt, type DocumentContext, type LanguageApi } from './documentContext'
 
@@ -14,11 +14,28 @@ const COMPLETION_TYPES: Record<CompletionKind, string> = {
   other: 'text'
 }
 
+/**
+ * Inserts the text and leaves the cursor right after it, back in the editor: the list can take
+ * the focus (a click on it), and an insertion alone would not say where the cursor goes.
+ */
+const insertItem =
+  (text: string): Completion['apply'] =>
+  (view, completion, from, to) => {
+    view.dispatch({
+      changes: { from, to, insert: text },
+      selection: { anchor: from + text.length },
+      scrollIntoView: true,
+      userEvent: 'input.complete',
+      annotations: pickedCompletion.of(completion)
+    })
+    view.focus()
+  }
+
 export const toCompletion = (item: CompletionItem): Completion => ({
   label: item.label,
   type: COMPLETION_TYPES[item.kind],
   detail: item.detail || undefined,
-  apply: item.insertText || item.label,
+  apply: insertItem(item.insertText || item.label),
   info: item.documentation
     ? () => {
         const box = document.createElement('div')

@@ -1,4 +1,4 @@
-import { isolateHistory, redo, undo } from '@codemirror/commands'
+import { isolateHistory, redo, selectAll, undo } from '@codemirror/commands'
 import { Compartment, EditorSelection, EditorState, type Extension } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import type { LanguageProfile } from '../domain'
@@ -34,6 +34,12 @@ export interface EditorHandle {
   /** Undoes / redoes the last history step of an open file, shown or not. */
   undoFile: (path: string) => boolean
   redoFile: (path: string) => boolean
+  /** The selected text ('' when only the cursor is there). */
+  selectedText: () => string
+  /** Replaces the selection (or inserts at the cursor) with the text; '' deletes the selection. */
+  replaceSelection: (text: string, userEvent: string) => void
+  selectAll: () => void
+  focus: () => void
   /** Starts renaming the symbol at the cursor (F2). */
   renameSymbol: () => void
   /** Lists where the symbol at the cursor is used (Shift+F12). */
@@ -102,6 +108,23 @@ const goToIn = (view: EditorView, line: number, column: number): void => {
   view.focus()
 }
 
+/** What the context menu (cut, copy, paste, select all) needs from the view. */
+const selectionTools = (view: EditorView) => ({
+  selectedText: (): string => {
+    const { from, to } = view.state.selection.main
+    return view.state.sliceDoc(from, to)
+  },
+  replaceSelection: (text: string, userEvent: string): void => {
+    view.dispatch({ ...view.state.replaceSelection(text), scrollIntoView: true, userEvent })
+    view.focus()
+  },
+  selectAll: (): void => {
+    selectAll(view)
+    view.focus()
+  },
+  focus: (): void => view.focus()
+})
+
 export const createEditor = (
   parent: HTMLElement,
   handlers: EditorHandlers,
@@ -138,6 +161,7 @@ export const createEditor = (
     applyChanges: (path, changes) => applyChangesTo(view, states, currentPath, path, changes),
     undoFile: (path) => historyOn(view, states, currentPath, path, undo),
     redoFile: (path) => historyOn(view, states, currentPath, path, redo),
+    ...selectionTools(view),
     renameSymbol: () => refactor?.rename(view),
     findReferences: () => refactor?.references(view),
     show: (path, text) => {
@@ -145,10 +169,7 @@ export const createEditor = (
       applyText(text)
     },
     setMarks: (marks) => showMarks(view, marks),
-    setPhrases: (next) => {
-      currentPhrases = next
-      view.dispatch({ effects: phrases.reconfigure(next) })
-    },
+    setPhrases: (next) => view.dispatch({ effects: phrases.reconfigure((currentPhrases = next)) }),
     setFontSize: (pixels) => parent.style.setProperty('--editor-font-size', `${pixels}px`),
     setInlayHints: (enabled) => inlay?.setEnabled(enabled),
     refreshInlayHints: () => inlay?.refresh(),

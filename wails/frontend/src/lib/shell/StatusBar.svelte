@@ -27,6 +27,15 @@
   const runtimeVersion = $derived(
     runtimeSpec ? (toolStatus(runtimeSpec.id, $tools)?.version ?? '') : ''
   )
+  const themeOrder = ['system', 'light', 'dark'] as const
+  const themeKey = {
+    system: 'settings.themeSystem',
+    light: 'settings.themeLight',
+    dark: 'settings.themeDark'
+  } as const
+  const theme = $derived($settings?.theme ?? 'system')
+  // One click moves to the next theme, so the dark one is never more than two clicks away.
+  const nextTheme = $derived(themeOrder[(themeOrder.indexOf(theme) + 1) % themeOrder.length])
   const unavailableKey = $derived(serverSpec?.missingKey || 'errors.goplsNotFound')
 </script>
 
@@ -52,6 +61,9 @@
   <span class="sp">
     {$t('status.position', { values: { line: $cursor.line, column: $cursor.column } })}
   </span>
+  <button type="button" onclick={() => updateSettings(bridge, { theme: nextTheme })}>
+    {$t('settings.theme')}: {$t(themeKey[theme])}
+  </button>
   <button type="button" onclick={() => updateSettings(bridge, { language: otherLanguage })}>
     {$t(`language.${language}`)}
   </button>

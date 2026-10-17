@@ -18,14 +18,18 @@ export interface EditorBridge {
   findReferences: () => void
 }
 
-let current: EditorBridge | null = null
+// With the editor split there are two; the one the user touched last answers.
+const editors: EditorBridge[] = []
 
-/** Registers the editor; returns what to call when it goes away. */
+/** Registers an editor (or marks it as the one in use); returns what to call when it goes away. */
 export const registerEditorBridge = (editor: EditorBridge): (() => void) => {
-  current = editor
+  const at = editors.indexOf(editor)
+  if (at >= 0) editors.splice(at, 1)
+  editors.push(editor)
   return () => {
-    if (current === editor) current = null
+    const index = editors.indexOf(editor)
+    if (index >= 0) editors.splice(index, 1)
   }
 }
 
-export const editorBridge = (): EditorBridge | null => current
+export const editorBridge = (): EditorBridge | null => editors.at(-1) ?? null

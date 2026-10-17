@@ -12,6 +12,7 @@ import {
   resumeDebugging,
   runActiveFile,
   showTerminal,
+  splitEditor,
   runToCursor,
   saveActiveAs,
   saveActiveFile,
@@ -54,6 +55,12 @@ const panelShortcut = (event: KeyboardEvent): Action | null => {
   return async () => toggle()
 }
 
+/** Ctrl+\ splits the editor to the right (as in VS Code). */
+const splitShortcut = (event: KeyboardEvent): Action | null =>
+  (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key === '\\'
+    ? async () => splitEditor('right')
+    : null
+
 /** Ctrl+` shows and focuses the terminal. */
 const terminalShortcut = (event: KeyboardEvent): Action | null =>
   isTerminalToggle(event) ? showTerminal : null
@@ -67,7 +74,7 @@ const actionFor = (event: KeyboardEvent): Action | null => {
   if (toggle) return toggle
   if (inTerminal(event)) return null
   const debugging = get(debugActive)
-  const panelAction = panelShortcut(event)
+  const panelAction = panelShortcut(event) ?? splitShortcut(event)
   if (panelAction) return panelAction
   const fileAction = fileShortcut(event)
   if (fileAction) return fileAction

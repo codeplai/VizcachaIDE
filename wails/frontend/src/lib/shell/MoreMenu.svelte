@@ -12,7 +12,8 @@
     editorBridge,
     isUntitled,
     openDialog,
-    settingsTab
+    settingsTab,
+    splitEditor
   } from '../stores'
 
   // The package manager of the open file's language; languages without one have no entry.
@@ -37,6 +38,12 @@
             run: () => editorBridge()?.findReferences()
           }
         ]
+      : []),
+    ...($activePath !== null
+      ? (['right', 'left', 'down', 'up'] as const).map((direction) => ({
+          label: `editor.split.${direction}`,
+          run: () => splitEditor(direction)
+        }))
       : []),
     ...(canBuild ? [{ label: 'actions.build', run: () => void buildActiveFile(bridge) }] : []),
     ...(hasPackages
