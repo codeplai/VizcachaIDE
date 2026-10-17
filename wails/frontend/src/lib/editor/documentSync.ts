@@ -9,9 +9,11 @@ export interface DocumentSync {
 
 const SYNC_DELAY_MS = 150
 
+// Shared by every editor: a file open in two of them must still count its versions up.
+const versions = new Map<string, number>()
+
 /** Keeps gopls' copy of the document current: edits are batched, and `flush` sends them at once. */
 export const documentSync = (language: LanguageApi, getPath: () => string | null): DocumentSync => {
-  const versions = new Map<string, number>()
   let pending: { path: string; text: string } | null = null
   let timer: ReturnType<typeof setTimeout> | undefined
 
