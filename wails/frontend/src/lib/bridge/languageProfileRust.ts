@@ -9,6 +9,7 @@ export const rustProfile: LanguageProfile = {
   indent: { useTabs: false, size: 4 },
   capabilities: {
     build: true,
+    test: true,
     console: false,
     format: true,
     check: true,

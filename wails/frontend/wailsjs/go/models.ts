@@ -96,6 +96,7 @@ export namespace domain {
 	}
 	export class Capabilities {
 	    build: boolean;
+	    test: boolean;
 	    console: boolean;
 	    format: boolean;
 	    check: boolean;
@@ -110,6 +111,7 @@ export namespace domain {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.build = source["build"];
+        this.test = source["test"];
 	        this.console = source["console"];
 	        this.format = source["format"];
 	        this.check = source["check"];

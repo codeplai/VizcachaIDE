@@ -58,6 +58,14 @@ export const buildActiveFile = async (bridge: Bridge): Promise<void> => {
   await withToolErrors(bridge, codeLanguageOf(path), () => bridge.run.build(path, args))
 }
 
+/** Runs the tests of the open file's project (Rust: cargo test); the output is a run's. */
+export const testActiveFile = async (bridge: Bridge): Promise<void> => {
+  const path = get(activePath)
+  if (!path || isUntitled(path)) return
+  resetRun()
+  await withToolErrors(bridge, codeLanguageOf(path), () => bridge.run.test(path))
+}
+
 export const stopProgram = (bridge: Bridge): Promise<void> => {
   stoppedByUser.set(true)
   return bridge.run.stop()

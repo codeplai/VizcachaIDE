@@ -106,6 +106,17 @@ const nameOf = (codeLanguage: CodeLanguage): string => {
 const reasonOf = (error: unknown): string =>
   error instanceof Error ? error.message : String(error ?? '')
 
+/** The message key the backend put in the failure ("errors.rustNoProject"), when we have its text. */
+const reasonKeyIn = (reason: string): string | null => {
+  const key = /\b(errors\.[A-Za-z]+)\b/.exec(reason)?.[1]
+  if (!key) return null
+  try {
+    return get(t)(key) === key ? null : key
+  } catch {
+    return null
+  }
+}
+
 /**
  * Runs `action` (an action on a file of `codeLanguage`); when the backend says a tool is missing or
  * the language lacks the action, shows the matching IDE message. Other failures are thrown.
@@ -125,7 +136,7 @@ export const withToolErrors = async (
     if (tool) return explainMissingTool(bridge, tool, TOOL_ID.test(reason))
     if (!UNSUPPORTED.test(reason)) throw error
     showNotice({
-      messageKey: 'errors.unsupportedAction',
+      messageKey: reasonKeyIn(reason) ?? 'errors.unsupportedAction',
       values: { codeLanguage: codeLanguage ? nameOf(codeLanguage) : '' },
       actions: []
     })

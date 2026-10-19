@@ -76,6 +76,25 @@ func (s *RunService) Build(path string, programArgs []string) (domain.RunConfigu
 	return config, nil
 }
 
+// Test runs the tests of the project around path (cargo test). Languages without tests answer
+// app.ErrUnsupported.
+func (s *RunService) Test(path string) (domain.RunConfiguration, error) {
+	support, err := s.supportFor(path)
+	if err != nil {
+		return domain.RunConfiguration{}, fmt.Errorf("test %s: %w", path, err)
+	}
+	tester, ok := support.Runner.(app.ProjectTester)
+	if !ok {
+		return domain.RunConfiguration{}, fmt.Errorf("test %s: %w", path, app.ErrUnsupported)
+	}
+	config, err := tester.Test(context.Background(), path)
+	if err != nil {
+		return config, fmt.Errorf("test %s: %w", path, err)
+	}
+	s.remember(support.Runner)
+	return config, nil
+}
+
 // RunUntitled runs unsaved source from a temporary folder. The extension of the untitled name
 // ("untitled-1.py") decides the language.
 func (s *RunService) RunUntitled(path, source string, programArgs []string) (domain.RunConfiguration, error) {

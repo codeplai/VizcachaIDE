@@ -25,7 +25,7 @@ var Profile = domain.LanguageProfile{
 	ID: domain.CodeLanguageRust, NameKey: "codeLanguage.rust", Extensions: []string{".rs"},
 	Indent: domain.IndentStyle{UseTabs: false, Size: 4},
 	Capabilities: domain.Capabilities{
-		Build: true, Console: false, Format: true, Check: true, DebugInput: true,
+		Build: true, Test: true, Console: false, Format: true, Check: true, DebugInput: true,
 		// Cargo has no "tidy": dependencies are added and removed one by one.
 		PackageActions: []domain.PackageAction{domain.PackageInit, domain.PackageAdd, domain.PackageRemove, domain.PackageList},
 		ThreadsLabel:   "debug.threads",

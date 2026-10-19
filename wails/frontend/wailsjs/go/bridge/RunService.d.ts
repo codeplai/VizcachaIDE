@@ -19,3 +19,5 @@ export function SplitArguments(arg1:string):Promise<Array<string>>;
 export function Stop():Promise<void>;
 
 export function WriteInput(arg1:string):Promise<void>;
+
+export function Test(arg1:string):Promise<domain.RunConfiguration>;

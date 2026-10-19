@@ -8,6 +8,16 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-10-19
+
+### Added
+- Rust: a Test button in the title bar (and Test in the More menu) runs `cargo test` for the crate of the open
+  file, or for the whole workspace, and shows the report in the output like a run. It only appears for Rust.
+
+### Changed
+- When an action cannot run, the message now says why when the reason is known (for example, that tests need a
+  Cargo project) instead of the generic "not supported".
+
 ## [2.8.0] - 2026-10-17
 
 ### Added
@@ -409,6 +419,16 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.9.0] - 2026-10-19
+
+### Añadido
+- Rust: un botón Probar en la barra superior (y Probar en el menú Más) ejecuta `cargo test` del crate del archivo
+  abierto, o de todo el workspace, y muestra el informe en la salida como una ejecución. Solo aparece en Rust.
+
+### Cambiado
+- Cuando una acción no se puede hacer, el mensaje ahora dice el motivo si se conoce (por ejemplo, que las pruebas
+  necesitan un proyecto de Cargo) en vez del genérico "no soportado".
 
 ## [2.8.0] - 2026-10-17
 
