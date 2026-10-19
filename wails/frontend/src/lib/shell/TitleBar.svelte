@@ -19,6 +19,7 @@
   import FileMenu from './FileMenu.svelte'
   import MoreMenu from './MoreMenu.svelte'
   import PanelToggles from './PanelToggles.svelte'
+  import TestButton from './TestButton.svelte'
 </script>
 
 <header class="titlebar">
@@ -73,6 +74,7 @@
       >
         <span class="bug"></span><span>{$t('actions.debug')}</span><span class="k">F6</span>
       </button>
+      <TestButton />
       {#if $running}
         <button
           class="btn"

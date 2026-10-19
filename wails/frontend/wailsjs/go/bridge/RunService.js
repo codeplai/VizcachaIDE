@@ -37,3 +37,7 @@ export function Stop() {
 export function WriteInput(arg1) {
   return window['go']['bridge']['RunService']['WriteInput'](arg1);
 }
+
+export function Test(arg1) {
+  return window['go']['bridge']['RunService']['Test'](arg1);
+}

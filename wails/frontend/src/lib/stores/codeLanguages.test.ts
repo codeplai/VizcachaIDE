@@ -62,18 +62,21 @@ describe('code languages from the backend', () => {
     expect(get(capabilities)).toMatchObject({
       console: true,
       build: true,
+      test: false,
       threadsLabel: 'debug.goroutines'
     })
     activePath.set('main.py')
     expect(get(capabilities)).toMatchObject({
       console: true,
       build: false,
+      test: false,
       threadsLabel: 'debug.threads'
     })
     activePath.set('main.cpp')
     expect(get(capabilities)).toMatchObject({
       console: false,
       build: true,
+      test: false,
       packageActions: ['add', 'remove', 'list']
     })
   })

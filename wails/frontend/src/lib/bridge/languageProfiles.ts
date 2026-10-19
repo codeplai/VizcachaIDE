@@ -15,6 +15,7 @@ export const goProfile: LanguageProfile = {
   indent: { useTabs: true, size: 4 },
   capabilities: {
     build: true,
+    test: false,
     console: true,
     format: true,
     check: true,
@@ -54,6 +55,7 @@ export const pythonProfile: LanguageProfile = {
   indent: { useTabs: false, size: 4 },
   capabilities: {
     build: false,
+    test: false,
     console: true,
     format: true,
     check: true,
@@ -103,6 +105,7 @@ export const cppProfile: LanguageProfile = {
   indent: { useTabs: false, size: 4 },
   capabilities: {
     build: true,
+    test: false,
     console: false,
     format: true,
     check: true,

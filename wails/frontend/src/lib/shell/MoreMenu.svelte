@@ -13,7 +13,8 @@
     isUntitled,
     openDialog,
     settingsTab,
-    splitEditor
+    splitEditor,
+    testActiveFile
   } from '../stores'
 
   // The package manager of the open file's language; languages without one have no entry.
@@ -44,6 +45,9 @@
           label: `editor.split.${direction}`,
           run: () => splitEditor(direction)
         }))
+      : []),
+    ...($capabilities?.test && canBuild
+      ? [{ label: 'actions.test', run: () => void testActiveFile(bridge) }]
       : []),
     ...(canBuild ? [{ label: 'actions.build', run: () => void buildActiveFile(bridge) }] : []),
     ...(hasPackages

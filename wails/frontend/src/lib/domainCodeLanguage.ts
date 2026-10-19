@@ -20,6 +20,8 @@ export interface IndentStyle {
 /** Which buttons and panels apply to a language. */
 export interface Capabilities {
   build: boolean
+  /** The language can run the tests of the project (Rust: cargo test). */
+  test: boolean
   console: boolean
   format: boolean
   check: boolean

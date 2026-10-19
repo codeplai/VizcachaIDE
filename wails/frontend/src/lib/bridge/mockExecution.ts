@@ -20,6 +20,7 @@ import {
   emitDebugStart,
   emitFailedRun,
   emitSuccessfulBuild,
+  emitSuccessfulTest,
   emitSuccessfulRun,
   sampleOf,
   type Emit,
@@ -58,6 +59,9 @@ const configurationFor = (state: MockState, path: string): RunConfiguration => {
   return { ...configuration, target: path || configuration.target }
 }
 
+/** What the backend answers for a language without tests. */
+const NO_TESTS_ERROR = 'test: language does not support the action'
+
 export const mockRun = (state: MockState, emit: Emit): RunApi & RunMemberApi => {
   const language = (): Language => resolveLanguage(state.settings.language, systemLanguage())
   const run: RunApi['run'] = async (path) => {
@@ -75,6 +79,11 @@ export const mockRun = (state: MockState, emit: Emit): RunApi & RunMemberApi => 
     else emitSuccessfulBuild(emit, sample)
     return configurationFor(state, path)
   }
+  const test: RunApi['test'] = async (path) => {
+    if (sampleFor(state, path) !== 'rust') throw new Error(NO_TESTS_ERROR)
+    emitSuccessfulTest(emit)
+    return configurationFor(state, path)
+  }
   const runMember: RunMemberApi['runMember'] = async (path) => {
     emitSuccessfulRun(emit, 'rust')
     return configurationFor(state, path)
@@ -84,6 +93,7 @@ export const mockRun = (state: MockState, emit: Emit): RunApi & RunMemberApi => 
     runMember,
     runUntitled: (path, _source, args) => run(path, args),
     build,
+    test,
     splitArguments: async (text) => text.split(/\s+/).filter(Boolean),
     check: async () => '',
     stop: async () => emit('run:finished', { exitCode: TERMINATED_BY_USER, durationMs: 0 }),

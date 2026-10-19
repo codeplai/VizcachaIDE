@@ -75,3 +75,10 @@ type PackageSearch interface {
 type MemberRunner interface {
 	ConfigureMember(path, member string, programArgs []string) (domain.RunConfiguration, error)
 }
+
+// ProjectTester is a ProgramRunner whose projects have tests the IDE can run (Rust: cargo test).
+// It runs on the shared process slot, so it emits the run events. Languages without it do not
+// offer Capabilities.Test.
+type ProjectTester interface {
+	Test(ctx context.Context, path string) (domain.RunConfiguration, error)
+}

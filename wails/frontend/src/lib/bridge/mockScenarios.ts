@@ -130,6 +130,23 @@ export const emitSuccessfulBuild = (emit: Emit, codeLanguage: SampleLanguage = '
   emit('run:finished', { exitCode: 0, durationMs: 300 })
 }
 
+/** What `cargo test` prints for the sample crate: the notice, then the harness's own report. */
+export const emitSuccessfulTest = (emit: Emit): void => {
+  const sample = sampleOf('rust')
+  clearProblems(emit, 'rust')
+  emit('run:started', { ...sample.configuration, target: 'cargo test' })
+  if (sample.notice) emit('run:output', { stream: 'stdout', text: `${sample.notice}\n` })
+  const report = [
+    'running 2 tests',
+    'test tests::adds ... ok',
+    'test tests::doubles ... ok',
+    '',
+    'test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out'
+  ]
+  emit('run:output', { stream: 'stdout', text: `${report.join('\n')}\n` })
+  emit('run:finished', { exitCode: 0, durationMs: 900 })
+}
+
 /** What a native program leaves when it dies after printing: the system's text and exit code. */
 const CRASHES = {
   // The exit code of SIGSEGV.

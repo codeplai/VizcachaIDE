@@ -33,7 +33,9 @@ type IndentStyle struct {
 // Capabilities says which buttons and panels apply to a language. The language registry checks
 // that they match the ports of the language support, so they can never disagree.
 type Capabilities struct {
-	Build   bool `json:"build"`
+	Build bool `json:"build"`
+	// Test says the language can run the tests of the project (Rust: cargo test).
+	Test    bool `json:"test"`
 	Console bool `json:"console"`
 	Format  bool `json:"format"`
 	Check   bool `json:"check"`
