@@ -61,6 +61,13 @@
   <span class="sp">
     {$t('status.position', { values: { line: $cursor.line, column: $cursor.column } })}
   </span>
+  <button
+    type="button"
+    title={$t('tooltips.toggleErrors')}
+    onclick={() => updateSettings(bridge, { inlineErrors: !($settings?.inlineErrors ?? true) })}
+  >
+    {$t(($settings?.inlineErrors ?? true) ? 'status.errorsShown' : 'status.errorsHidden')}
+  </button>
   <button type="button" onclick={() => updateSettings(bridge, { theme: nextTheme })}>
     {$t('settings.theme')}: {$t(themeKey[theme])}
   </button>

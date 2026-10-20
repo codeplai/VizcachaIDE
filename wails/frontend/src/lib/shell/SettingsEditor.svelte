@@ -43,6 +43,17 @@
   </label>
 </div>
 
+<div class="field check">
+  <label>
+    <input
+      type="checkbox"
+      checked={$settings?.inlineErrors ?? true}
+      onchange={(event) => updateSettings(bridge, { inlineErrors: event.currentTarget.checked })}
+    />
+    {$t('settings.inlineErrors')}
+  </label>
+</div>
+
 <style>
   .check label {
     display: flex;

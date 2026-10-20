@@ -949,6 +949,7 @@ export namespace domain {
 	    lastUpdateCheck: string;
 	    recentFiles: string[];
 	    inlayHints: boolean;
+	    inlineErrors: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Settings(source);
@@ -969,6 +970,7 @@ export namespace domain {
 	        this.lastUpdateCheck = source["lastUpdateCheck"];
 	        this.recentFiles = source["recentFiles"];
 	        this.inlayHints = source["inlayHints"];
+        this.inlineErrors = source["inlineErrors"];
 	    }
 	}
 	export class SignatureHelp {

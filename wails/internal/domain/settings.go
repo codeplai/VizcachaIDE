@@ -49,6 +49,9 @@ type Settings struct {
 	RecentFiles []string `json:"recentFiles"`
 	// InlayHints draws the hints of the language server (inferred types, parameter names).
 	InlayHints bool `json:"inlayHints"`
+	// InlineErrors draws the problems of the code (underlines and messages) while it is written.
+	// A build or run always shows them, whatever this says.
+	InlineErrors bool `json:"inlineErrors"`
 }
 
 // MaxRecentFiles is how many entries Settings.RecentFiles keeps.
@@ -60,5 +63,6 @@ func DefaultSettings() Settings {
 		Language: LanguageAuto, Theme: ThemeSystem, FontSize: 14, ToolPaths: map[string]string{},
 		FirstRun: true, DefaultCodeLanguage: CodeLanguageGo, EnabledCodeLanguages: []CodeLanguage{},
 		FormatOnSave: true, RecentFiles: []string{}, CheckUpdates: true, InlayHints: true,
+		InlineErrors: true,
 	}
 }

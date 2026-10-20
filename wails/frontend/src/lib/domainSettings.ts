@@ -26,6 +26,8 @@ export interface Settings {
   lastUpdateCheck: string
   /** Draw the language server's inlay hints (inferred types, parameter names). */
   inlayHints: boolean
+  /** Draw the problems of the code while it is written; a build or run shows them anyway. */
+  inlineErrors: boolean
 }
 
 export type UpdateStatus =
