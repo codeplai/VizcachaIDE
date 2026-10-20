@@ -15,6 +15,9 @@
   "actions.build": { "en": "Build", "es": "Compilar" },
 
   "errors.rustNoProject": { "en": "Tests need a Cargo project: a folder with a Cargo.toml. Create one with New project.", "es": "Las pruebas necesitan un proyecto de Cargo: una carpeta con un Cargo.toml. Crea uno con Nuevo proyecto." },
+  "settings.inlineErrors": { "en": "Show errors in the code while I write (a build always shows them)", "es": "Mostrar los errores en el código mientras escribo (al compilar siempre se muestran)" },
+  "status.errorsHidden": { "en": "Errors in code: hidden", "es": "Errores en el código: ocultos" },
+  "status.errorsShown": { "en": "Errors in code: shown", "es": "Errores en el código: visibles" },
   "tooltips.run": { "en": "Run your program (F5)", "es": "Ejecuta tu programa (F5)" },
   "tooltips.debug": { "en": "Run step by step and see your variables (F6)", "es": "Ejecuta paso a paso y mira tus variables (F6)" },
   "tooltips.stopDebugging": { "en": "Shift+F5", "es": "Shift+F5" },
@@ -368,6 +371,7 @@
   "shell.modulesTidyTitle": { "en": "Dependencies", "es": "Dependencias" },
   "shell.modulesWorking": { "en": "Working… this can take a moment if Go needs to download something.", "es": "Trabajando… puede tardar un poco si Go necesita descargar algo." },
   "tooltips.test": { "en": "Run the tests of your project (cargo test)", "es": "Ejecuta las pruebas de tu proyecto (cargo test)" },
+  "tooltips.toggleErrors": { "en": "Show or hide the errors drawn in the code (a build always shows them)", "es": "Muestra u oculta los errores dibujados en el código (al compilar siempre se muestran)" },
   "tree.copyFailed": { "en": "Could not copy the path. Select it in the file manager and copy it from there.", "es": "No se pudo copiar la ruta. Selecciónala en el explorador de archivos y cópiala desde ahí." },
   "tree.copyPath": { "en": "Copy path", "es": "Copiar ruta" },
   "tree.copy": { "en": "Copy", "es": "Copiar" },

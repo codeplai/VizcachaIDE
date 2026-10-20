@@ -8,6 +8,12 @@ All notable changes to VizcachaIDE are documented in this file. The format is ba
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-10-20
+
+### Added
+- Errors in the code can be hidden while you write, when the messages under the lines get in the way: a button in
+  the status bar and a checkbox in Settings > Editor. A build or run always shows them again, until you type.
+
 ## [2.9.0] - 2026-10-19
 
 ### Added
@@ -419,6 +425,13 @@ Aquí se documentan los cambios importantes de VizcachaIDE. El formato sigue
 [versionado semántico](https://semver.org/lang/es/).
 
 ## [Sin publicar]
+
+## [2.10.0] - 2026-10-20
+
+### Añadido
+- Los errores en el código se pueden ocultar mientras escribes, cuando los mensajes bajo las líneas estorban: un
+  botón en la barra de estado y una casilla en Ajustes > Editor. Al compilar o ejecutar siempre se muestran de
+  nuevo, hasta que vuelves a escribir.
 
 ## [2.9.0] - 2026-10-19
 

@@ -171,5 +171,6 @@ export const defaultSettings = (defaultCodeLanguage: CodeLanguage = 'go'): Setti
   recentFiles: [],
   checkUpdates: true,
   lastUpdateCheck: '',
-  inlayHints: true
+  inlayHints: true,
+  inlineErrors: true
 })

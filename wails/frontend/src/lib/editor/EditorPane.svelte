@@ -13,10 +13,12 @@
     debugActive,
     debugState,
     editBuffer,
+    errorsRevealed,
     editorSplit,
     openTabs,
     problems,
     revealRequest,
+    showErrorsInCode,
     showInSplit,
     toggleBreakpoint
   } from '../stores'
@@ -31,7 +33,7 @@
   const marks = $derived(
     toMarks(
       $activePath,
-      $problems,
+      $showErrorsInCode ? $problems : [],
       ($activePath && $breakpoints[$activePath]) || [],
       $debugState?.frames[0]?.location?.file ?? null,
       $debugState?.frames[0]?.location?.line ?? null
@@ -40,13 +42,19 @@
   const splitMarks = $derived(
     toMarks(
       $editorSplit?.path ?? null,
-      $problems,
+      $showErrorsInCode ? $problems : [],
       ($editorSplit && $breakpoints[$editorSplit.path]) || [],
       $debugState?.frames[0]?.location?.file ?? null,
       $debugState?.frames[0]?.location?.line ?? null
     )
   )
   const wiring = languageWiring(bridge)
+  // Typing hides again the problems a run had revealed (when the setting keeps them off).
+  const editedByUser = (path: string | null, text: string): void => {
+    if (!path) return
+    errorsRevealed.set(false)
+    editBuffer(path, text)
+  }
   // Left and up put the second editor first; right and down put it after the first.
   const stacked = $derived($editorSplit?.direction === 'down' || $editorSplit?.direction === 'up')
   const splitFirst = $derived(
@@ -68,7 +76,7 @@
           {wiring}
           fontSize={$editorFontSize}
           goto={$revealRequest}
-          onChange={(text) => $activePath && editBuffer($activePath, text)}
+          onChange={(text) => editedByUser($activePath, text)}
           onCursor={(line, column) => cursor.set({ line, column })}
           onToggleBreakpoint={(line) => $activePath && toggleBreakpoint(bridge, $activePath, line)}
         />
@@ -99,7 +107,7 @@
               {wiring}
               fontSize={$editorFontSize}
               goto={null}
-              onChange={(text) => editBuffer(split.path, text)}
+              onChange={(text) => editedByUser(split.path, text)}
               onCursor={(line, column) => cursor.set({ line, column })}
               onToggleBreakpoint={(line) => toggleBreakpoint(bridge, split.path, line)}
             />

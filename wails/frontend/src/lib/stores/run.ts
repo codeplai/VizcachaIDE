@@ -4,6 +4,7 @@ import type { RunConfiguration } from '../domain'
 import type { RunFinishedPayload } from '../events'
 import { writeOver } from './carriageReturn'
 import { debugOutput } from './debug'
+import { errorsRevealed } from './errorDisplay'
 
 /** One raw line of program output, before it is turned into display text. */
 export interface RawRunLine {
@@ -80,6 +81,7 @@ export const connectRun = (bridge: Bridge): Unsubscribe => {
     bridge.on('run:started', (config) => {
       debugOutput.set([]) // a new run replaces what an ended debug session printed
       runResult.set(null)
+      errorsRevealed.set(true) // a build or run always shows the problems
       running.set(true)
       lastRunConfiguration.set(config)
       openTail = null
